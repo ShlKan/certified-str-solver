@@ -1,0 +1,1 @@
+[0m[[0m[33mwarn[0m] [0m[0minsecure HTTP request is deprecated 'http://logicrunch.research.it.uu.se/maven/'; switch to HTTPS or opt-in as ("uuverifiers" at "http://logicrunch.research.it.uu.se/maven/").withAllowInsecureProtocol(true)[0m

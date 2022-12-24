@@ -1,0 +1,31 @@
+=====================================================
+The following 2 automata have empty intersection:
+Automaton 1:
+initial state: 1
+state 0 [accept]:
+  y -> 0
+state 1 [reject]:
+  y -> 0
+
+Automaton 2:
+initial state: 1
+state 0 [accept]:
+  x -> 0
+state 1 [reject]:
+  x -> 0
+
+=====================================================
+The following 2 automata have empty intersection:
+Automaton 1:
+initial state: 0
+state 0 [accept]:
+  y -> 0
+
+Automaton 2:
+initial state: 1
+state 0 [accept]:
+  x -> 0
+state 1 [reject]:
+  x -> 0
+
+unsat

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+for f in extracted-constraints/unsat/small/*.smt2; do
+    echo "processing $f
+    	 "
+    ../ORI2CAVA/ori2cava $f
+done

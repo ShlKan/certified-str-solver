@@ -1,0 +1,13 @@
+#!/bin/bash
+
+for f in extracted-constraints/unsat/big/*.out; do
+    echo "$f
+     "
+    ./$f
+    echo "
+      ---
+"
+done
+
+
+#rm -f tests/*a

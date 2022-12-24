@@ -1,0 +1,36 @@
+#!/bin/bash
+
+ocamlopt -I zarith Automata_lib.ml
+ocamlopt -I zarith Forward.ml
+
+for f in extracted-constraints/sat/big/*.ml; do
+    echo "processing $f
+    "
+    ocamlopt -I zarith -o extracted.cmx -c $f
+    ocamlopt -I zarith -o $f.out zarith/zarith.cmxa Automata_lib.cmx Forward.cmx extracted.cmx
+done
+
+
+for f in extracted-constraints/sat/small/*.ml; do
+    echo "processing $f
+    "
+    ocamlopt -I zarith -o extracted.cmx -c $f
+    ocamlopt -I zarith -o $f.out zarith/zarith.cmxa Automata_lib.cmx Forward.cmx extracted.cmx
+done
+
+for f in extracted-constraints/unsat/big/*.ml; do
+    echo "processing $f
+    "
+    ocamlopt -I zarith -o extracted.cmx -c $f
+    ocamlopt -I zarith -o $f.out zarith/zarith.cmxa Automata_lib.cmx Forward.cmx extracted.cmx
+done
+
+for f in extracted-constraints/unsat/small/*.ml; do
+    echo "processing $f
+    "
+    ocamlopt -I zarith -o extracted.cmx -c $f
+    ocamlopt -I zarith -o $f.out zarith/zarith.cmxa Automata_lib.cmx Forward.cmx extracted.cmx
+done
+
+
+#rm -f tests/*a

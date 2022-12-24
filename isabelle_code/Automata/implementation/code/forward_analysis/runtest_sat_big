@@ -1,0 +1,27 @@
+#!/bin/bash
+
+#for f in extracted-constraints/big/*.smt2; do
+#    echo "processing $f
+#    	 "
+#    ../ORI2CAVA/ori2cava $f
+#done
+
+
+rm result_sat_big
+
+for f in extracted-constraints/sat/big/*.ml; do
+    echo "processing $f
+    "
+    ocamlc -I zarith -o extracted.cmo -c $f
+    ocamlc -o auto zarith/zarith.cma Automata_lib.cmo Forward.cmo extracted.cmo
+    echo "running $f
+    "
+
+    echo $f >> result_sat_big
+    (timeout 3600s /usr/bin/time ./auto) 2>&1 | cat >> result_sat_big
+#    echo "------------------------------------
+#"
+done
+
+
+#rm -f tests/*a

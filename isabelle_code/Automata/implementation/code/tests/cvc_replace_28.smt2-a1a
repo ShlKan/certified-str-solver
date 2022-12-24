@@ -1,0 +1,65 @@
+Automaton 1:
+initial state: 0
+state 0 [reject]:
+  \u0000-; -> 6
+  ]-\uffff -> 6
+  =-[ -> 6
+  \u005c -> 0
+  < -> 8
+state 1 [reject]:
+  T -> 2
+  ]-\uffff -> 6
+  \u0000-S -> 6
+  U-[ -> 6
+  \u005c -> 0
+state 2 [accept]:
+  \u0000-\uffff -> 2
+state 3 [reject]:
+  ]-\uffff -> 6
+  J-[ -> 6
+  \u0000-H -> 6
+  \u005c -> 0
+  I -> 4
+state 4 [reject]:
+  P -> 1
+  Q-[ -> 6
+  ]-\uffff -> 6
+  \u005c -> 0
+  \u0000-O -> 6
+state 5 [reject]:
+  ]-\uffff -> 6
+  \u0000-B -> 6
+  D-[ -> 6
+  \u005c -> 0
+  C -> 7
+state 6 [reject]:
+  \u0000-[ -> 6
+  ]-\uffff -> 6
+  \u005c -> 0
+state 7 [reject]:
+  \u0000-Q -> 6
+  ]-\uffff -> 6
+  S-[ -> 6
+  R -> 3
+  \u005c -> 0
+state 8 [reject]:
+  ]-\uffff -> 6
+  \u0000-R -> 6
+  T-[ -> 6
+  \u005c -> 0
+  S -> 5
+
+Automaton 2:
+initial state: 0
+state 0 [reject]:
+  < -> 2
+state 1 [reject]:
+  > -> 5
+state 2 [reject]:
+  / -> 3
+state 3 [reject]:
+  t -> 4
+state 4 [reject]:
+  d -> 1
+state 5 [accept]:
+

@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: Princess
+Implementation-Version: nightly-SNAPSHOT
+Specification-Vendor: uuverifiers
+Specification-Title: Princess
+Implementation-Vendor-Id: uuverifiers
+Specification-Version: nightly-SNAPSHOT
+Implementation-Vendor: uuverifiers
+Main-Class: ap.CmdlMain
+

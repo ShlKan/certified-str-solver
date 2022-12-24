@@ -1,0 +1,4 @@
+
+#!/bin/bash
+
+ostrich/ostrich +certificates "$1"
