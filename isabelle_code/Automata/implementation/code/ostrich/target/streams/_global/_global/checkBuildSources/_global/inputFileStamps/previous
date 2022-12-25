@@ -1,1 +1,0 @@
-["sbt.Task[scala.collection.Seq[scala.Tuple2[java.nio.file.Path, sbt.nio.FileStamp]]]",{"hashes":[["/home/ksl/workspace/ostrich/build.sbt","a1dac0fdade3c9d0f664a3dfe03f6a4b228318ea"],["/home/ksl/workspace/ostrich/project/assembly.sbt","85cbec8537e5d5714004c2ad7b264521707eedf7"]],"lastModifiedTimes":[]}]
