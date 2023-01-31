@@ -727,7 +727,7 @@ proof -
     by simp
 qed
 
-subsubsection {* Sets *}
+subsubsection \<open> Set \<close>
 
 text \<open> 
 While worklist algorithm operate logically on multisets, 

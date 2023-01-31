@@ -114,8 +114,7 @@ lemma reachable_to_reachable_epsilon:
   using reachable
   apply (induction x arbitrary: q)
   apply (simp add: epsilon_reachable_def) 
-  apply (meson epsilon_reach.simps(2) last.simps list.sel(1))
-  apply (meson epsilon_reach.simps(2) last.simps list.sel(1) not_Cons_self2)
+  apply force
 proof -
   fix a x q
   assume ind_hyp: "(\<And>q. LTS_is_reachable (\<Delta> (epsilon_elim \<A>)) q x q' \<Longrightarrow>

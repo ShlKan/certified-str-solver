@@ -1355,24 +1355,37 @@ definition NFA_construct_reachable where
      (NFA_initial_automaton I S) 
      (accessible (LTS_forget_labels D) I)"
 
-lemma NFA_insert_state___comp_fun_commute :
-  "comp_fun_commute (NFA_insert_state FP D)"
-apply (simp add: NFA_insert_state_def comp_fun_commute_def o_def)
+lemma NFA_insert_state___comp_fun_commute_on :
+  "comp_fun_commute_on Q (NFA_insert_state FP D)"
+apply (simp add: NFA_insert_state_def comp_fun_commute_on_def o_def)
 apply (subst fun_eq_iff)
 apply simp
-apply (metis Un_commute Un_left_commute insert_commute)
-done
+  apply (metis Un_commute Un_left_commute insert_commute)
+  done
 
 lemma fold_NFA_insert_state : 
 "finite Q \<Longrightarrow> Finite_Set.fold (NFA_insert_state FP D) \<A> Q =
 \<lparr> \<Q>=Q \<union> (\<Q> \<A>), \<Sigma> = \<Sigma> \<A>, 
   \<Delta> = \<Delta> \<A> \<union> {qsq. qsq \<in> D \<and> fst qsq \<in> Q \<and> (fst (snd qsq) \<noteq> {}) }, 
   \<I>=\<I> \<A>, \<F> = (\<F> \<A>) \<union> {q. q \<in> Q \<and> FP q} \<rparr>"
-apply (induct rule: finite_induct)
-apply (simp) 
-apply (simp add: comp_fun_commute.fold_insert [OF NFA_insert_state___comp_fun_commute])
-apply (auto simp add: NFA_insert_state_def)
-done
+   apply (induct rule: finite_induct)
+   apply (simp) 
+proof -
+  fix x F
+  assume fin_F: "finite F "
+     and xNinF: "x \<notin> F"
+     and fold_pre: "Finite_Set.fold (NFA_insert_state FP D) \<A> F =
+           \<lparr>\<Q> = F \<union> \<Q> \<A>, \<Sigma> = \<Sigma> \<A>, \<Delta> = \<Delta> \<A> \<union> {qsq \<in> D. fst qsq \<in> F \<and> fst (snd qsq) \<noteq> {}},
+              \<I> = \<I> \<A>, \<F> = \<F> \<A> \<union> {q \<in> F. FP q}\<rparr>"
+  show "Finite_Set.fold (NFA_insert_state FP D) \<A> (insert x F) =
+           \<lparr>\<Q> = insert x F \<union> \<Q> \<A>, \<Sigma> = \<Sigma> \<A>,
+              \<Delta> = \<Delta> \<A> \<union> {qsq \<in> D. fst qsq \<in> insert x F \<and> fst (snd qsq) \<noteq> {}}, \<I> = \<I> \<A>,
+              \<F> = \<F> \<A> \<union> {q \<in> insert x F. FP q}\<rparr>"
+      
+    apply (simp add: comp_fun_commute_on.fold_insert [OF NFA_insert_state___comp_fun_commute_on, 
+                                           of x F "insert x F" FP D \<A>] fold_pre fin_F xNinF)
+    by (auto simp add: NFA_insert_state_def fold_pre)
+  qed
 
 lemma NFA_construct_reachable_simp :
  "finite (accessible (LTS_forget_labels D) I) \<Longrightarrow>
@@ -2166,7 +2179,7 @@ proof -
       by blast
     from rm''_eq D'_eq have D'_eq': "D' = D0 \<union> ?rs'" unfolding D'_eq rm'_q rm''_q 
       apply simp
-      by (metis (mono_tags, hide_lams))
+      by (metis (mono_tags, opaque_lifting))
     
     show ?thesis unfolding D'_eq' step1 by (simp add: rm'_q rm''_q rm''_q')
   qed
