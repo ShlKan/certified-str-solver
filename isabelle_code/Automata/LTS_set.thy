@@ -189,7 +189,7 @@ proof -
   proof -
     from inpath_LTS obtain \<pi>' b where
      "\<pi> = b # \<pi>' \<and> a \<in> fst b"
-      by (metis (no_types, hide_lams) 
+      by (metis (no_types, opaque_lifting) 
               LTS_path_L_def \<open>inPath (a # w) 
               (LTS_path_L \<pi>) \<and> \<pi> = \<pi>1 @ \<pi>2\<close> inPath.simps(2) 
               inPath.simps(3) map_eq_Cons_D neq_Nil_conv)
@@ -494,11 +494,11 @@ qed
      case False
      assume "\<pi>1 \<noteq> []"
      have "snd (last \<pi>1) = last l1"
-       by (metis (no_types, hide_lams) False LTS_path_def \<pi>\<pi>1\<pi>2 append_butlast_last_id last.simps last_appendR list.distinct(1) list.map(2) map_append map_is_Nil_conv)
+       by (metis (no_types, opaque_lifting) False LTS_path_def \<pi>\<pi>1\<pi>2 append_butlast_last_id last.simps last_appendR list.distinct(1) list.map(2) map_append map_is_Nil_conv)
     from this LTS_is_path_concat LTS_is_path_\<Delta> \<pi>\<pi>1\<pi>2 have 
     "LTS_is_path \<Delta> (last l1) \<pi>2"  
       by (simp add: LTS_is_path_concat False)
-   then show "(last l1, fst fb, snd fb) \<in> \<Delta>" sledgehammer
+   then show "(last l1, fst fb, snd fb) \<in> \<Delta>" 
      by (simp add: w\<pi>2eq)
  qed
   from con1 con2 con3 con4 con5 show ?thesis 
