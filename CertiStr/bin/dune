@@ -1,0 +1,4 @@
+(executable
+ (public_name CertiStr)
+ (name main)
+ (libraries Transducer dolmen dolmen_loop))

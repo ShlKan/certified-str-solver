@@ -200,25 +200,25 @@ proof
                     LTS_is_reachable (\<Delta> \<A>) q1' (inputE \<pi>) q2'"
           apply (induction l arbitrary: q q1 q1')
           apply simp
-          apply simp
         proof -
           fix a l q q1 q1'
           assume ind_hyp: "\<And>q q1 q1'.
            l \<noteq> [] \<and>
-           epsilon_reach l (\<Delta>e' (productT \<T> \<A> F)) \<and>
-           hd l = (q1, q1') \<and> last l = (q2, q2') \<Longrightarrow>
-           q = (q1, q1') \<Longrightarrow>
+           epsilon_reach l (\<Delta>e' (productT \<T> \<A> F)) \<and> hd l = q \<and> last l = q' \<Longrightarrow>
+           q = (q1, q1') \<and> q' = (q2, q2') \<Longrightarrow>
            \<exists>\<pi>. [] = outputE \<pi> \<and>
                LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) q1 \<pi> q2 \<and>
-               LTS_is_reachable (\<Delta> \<A>) q1' (inputE \<pi>) q2'"
-             and p1: "epsilon_reach (a # l) (\<Delta>e' (productT \<T> \<A> F)) \<and>
-                      a = (q1, q1') \<and> (if l = [] then a else last l) = (q2, q2')"
+               LTS_is_reachable (NFA_set_interval.NFA_rec.\<Delta> \<A>) q1' (inputE \<pi>)
+                q2'"
+             and p1: " a # l \<noteq> [] \<and>
+       epsilon_reach (a # l) (\<Delta>e' (productT \<T> \<A> F)) \<and>
+       hd (a # l) = q \<and> last (a # l) = q'"
              and p2: "q = (q1, q1') \<and> q' = (q2, q2')"
           show "\<exists>\<pi>. [] = outputE \<pi> \<and> LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) q1 \<pi> q2 \<and> 
                     LTS_is_reachable (\<Delta> \<A>) q1' (inputE \<pi>) q2'"
           proof (cases "l = []")
             case True
-            from this p1
+            from this p1 p2
             have eq_qq': "(q1, q1') = (q2, q2')" by auto
             from this
             have "[] = outputE [] \<and> LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) q1 [] q2 \<and> 
@@ -230,15 +230,16 @@ proof
             from False obtain q3 l' where
             q3l'_def: "l = q3 # l'" 
               using list.exhaust by blast
-            from p1 this
+            from p1 this p2
             have qq3in: "(q, q3) \<in> (\<Delta>e' (productT \<T> \<A> F)) \<and> 
                         epsilon_reach (q3#l') (\<Delta>e' (productT \<T> \<A> F))"
-              by (simp add: p1 p2)
-            from ind_hyp[of "fst q3" "snd q3" q3]
+              apply (simp add: p1 p2) by auto
+              
+            from ind_hyp[of q3 "fst q3" "snd q3"]
             have "\<exists>\<pi>. [] = outputE \<pi> \<and>
                      LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) (fst q3) \<pi> q2 \<and>
                       LTS_is_reachable (\<Delta> \<A>) (snd q3) (inputE \<pi>) q2'"
-              using p1 q3l'_def by auto
+              using p1 p2 q3l'_def by auto
             from this obtain \<pi> where
             \<pi>_def: "[] = outputE \<pi> \<and>
                LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) (fst q3) \<pi> q2 \<and>
