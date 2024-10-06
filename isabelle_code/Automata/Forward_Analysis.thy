@@ -1,7 +1,8 @@
 
-(*  
-    Authors:     Shuanglong Kan <shuanglong@uni-kl.de>           
-*)
+(*  Author: Shuanglong Kan <kanshuanglong@outlook.com> *)
+
+
+section \<open> Abstract Forward Analysis \<close>
 
 theory Forward_Analysis
 
@@ -10,13 +11,12 @@ imports NFA_set
 begin 
 
 
-
 datatype 'v CONCAT_constr = 
          Sing_V 'v |
        Concat_V 'v "'v CONCAT_constr"
 
 
-
+text \<open> \<close>
 definition str_constr_sat :: "'v set \<Rightarrow> ('v \<Rightarrow> 'a list option) \<Rightarrow> 
                               ('v \<Rightarrow> (('q::NFA_states), 'a) NFA_rec option) \<Rightarrow>
                               ('v \<Rightarrow> ('v \<times> 'v) set option) \<Rightarrow>  bool" 
@@ -314,7 +314,9 @@ proof
           by metis
         from this p2
         have pre2: "?S = \<Union> (set (a # l))"
-          by auto
+          by (metis Diff_cancel Diff_disjoint 
+                    Sup_insert Un_Diff Un_Diff_Int list.simps(15) 
+                    sup_bot_left sup_bot_right)
         from p2
         have pre3: "acyclic rc (a # l)"
           using acyclic_tail by blast
@@ -445,7 +447,7 @@ proof
             have Suaa: "Su \<subseteq> aa"
               using \<open>Su = \<Union> (set (l_S (a # l) (S - Su))) \<union> (aa - (S - Su))\<close> by auto
             from p3 
-            have Su_nempty: "Su \<noteq> {}" by simp
+            have Su_nempty: "Su \<noteq> {}" by blast
             from p3 acyclic.simps(2)[of rc aa "a # l"]
             have "aa \<inter> \<Union> (set (a # l)) = {} \<and>
                   (\<forall>v1 v2 v.
@@ -673,6 +675,7 @@ proof -
         from c3 have c5: "NFA (NFA_rename_states (the (rm v2)) (\<lambda>q. (b, q)))"
           by (simp add: NFA_rename_states___is_well_formed)
 
+  
 
         let ?Q1 = "\<Q> (NFA_rename_states (the (rm v1)) (\<lambda>q. (a, q)))"
         let ?Q2 = "\<Q> (NFA_rename_states (the (rm v2)) (\<lambda>q. (b, q)))"
@@ -1550,7 +1553,7 @@ qed
       assume "v \<noteq> x"
       from this p21 p3 z2
       have k1: "the (xb v) = the (\<sigma> v)"
-        by (metis (no_types, hide_lams) \<open>(\<forall>v'. v' \<noteq> x \<longrightarrow> (\<forall>a'. (\<sigma> v' = Some a') = (xb v' = Some a'))) \<and> xb x = Some xa\<close> option.exhaust)
+        by (metis (no_types, opaque_lifting) \<open>(\<forall>v'. v' \<noteq> x \<longrightarrow> (\<forall>a'. (\<sigma> v' = Some a') = (xb v' = Some a'))) \<and> xb x = Some xa\<close> option.exhaust)
       have "x \<in> S" 
       using x_in_S by blast
       from this k1 p3 show ?thesis
@@ -1560,7 +1563,7 @@ qed
       using x_in_S by blast
     from this p21 p3
     have "\<forall>v. v \<notin> S \<longrightarrow> the (xb v) = the (rm v)"
-      by (metis (full_types, hide_lams) 
+      by (metis (full_types, opaque_lifting) 
                  \<open>(\<forall>v'. v' \<noteq> x \<longrightarrow> (\<forall>a'. (\<sigma> v' = Some a') = (xb v' = Some a'))) \<and> 
                  xb x = Some xa\<close> option.exhaust)        
     from this z3 z5 show "S \<subseteq> dom xb \<and>

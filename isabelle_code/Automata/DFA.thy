@@ -660,7 +660,8 @@ proof -
          have "q'' = q2'" 
            using LTS_is_deterministic_def
                  LTS_is_weak_deterministic_def
-           by (metis (no_types, hide_lams) insert_disjoint(2) insert_subset subsetI subset_antisym)
+           by (metis (no_types, opaque_lifting) 
+                      insert_disjoint(2) insert_subset subsetI subset_antisym)
          from this pt5 pt2
          show "\<exists>x\<in>\<F> \<A>'. LTS_is_reachable (\<Delta> \<A>') q2' w x"
            by blast
