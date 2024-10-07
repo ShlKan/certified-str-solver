@@ -612,7 +612,7 @@ assumes f_inj_on: "inj_on f S"
                   S Map.empty {} 
                   (state_map_\<alpha> (qm, n))"
 shows "state_map_invar (qm'', Suc n)"
-      "qm.\<alpha> qm'' = qm.\<alpha> qm ((f q) \<mapsto> states_enumerate n)"
+      "qm.\<alpha> qm'' = (qm.\<alpha> qm) ((f q) \<mapsto> states_enumerate n)"
       "NFA_construct_reachable_map_OK S 
           (state_map_\<alpha> (qm, n)) 
           {q} (state_map_\<alpha> (qm'', Suc n))"
@@ -624,10 +624,12 @@ proof -
   from q_nin_dom have fq_nin_dom_rm: "f q \<notin> dom (qm.\<alpha> qm)"
     unfolding state_map_\<alpha>_def by (simp add: dom_def)
 
-  have qm''_props: "qm.invar qm''" "qm.\<alpha> qm'' = qm.\<alpha> qm(f q \<mapsto> states_enumerate n)"
+  have qm''_props: "qm.invar qm''" "qm.\<alpha> qm'' = 
+      (qm.\<alpha> qm)(f q \<mapsto> states_enumerate n)"
     using qm.update_dj_correct [OF invar_qm fq_nin_dom_rm]
     by (simp_all add: qm''_def)  
-  show "qm.\<alpha> qm'' = qm.\<alpha> qm(f q \<mapsto> states_enumerate n)" by (fact qm''_props(2))
+  show "qm.\<alpha> qm'' = (qm.\<alpha> qm) (f q \<mapsto> states_enumerate n)" 
+    by (fact qm''_props(2))
 
   show invar_qm''_n: "state_map_invar (qm'', Suc n)"
     using invar_qm_n
@@ -654,8 +656,9 @@ proof -
     from f_inj_on q_in_S q'_in_S have fqq'[simp]: "f q' = f q \<longleftrightarrow> q' = q"
       unfolding inj_on_def by auto
 
-    from q'_in_dom have "q' = q \<or> q' \<in> (dom (state_map_\<alpha> (qm, n)))" unfolding state_map_\<alpha>_def
-      by (auto simp add: qm''_props o_def dom_def)
+    from q'_in_dom have "q' = q \<or> q' \<in> (dom (state_map_\<alpha> (qm, n)))" 
+      unfolding state_map_\<alpha>_def
+      using fq_nin_dom_rm invar_qm qm''_def qm.update_dj_correct(1) by auto
     with q'_in_S show "q' \<in> ?rs" by auto
   qed
 
@@ -805,7 +808,7 @@ proof -
 
       from state_map_extend_thm [OF f_inj_on invar_qm_n q_in_S q_nin_dom map_OK]
       have invar_qm''_n: "state_map_invar (qm'', Suc n)" and
-           qm''_alpha: "map_op_\<alpha> qm_ops qm'' = map_op_\<alpha> qm_ops qm(ff q \<mapsto> states_enumerate n)" and
+           qm''_alpha: "map_op_\<alpha> qm_ops qm'' = (map_op_\<alpha> qm_ops qm)(ff q \<mapsto> states_enumerate n)" and
            map_OK': "NFA_construct_reachable_map_OK S (state_map_\<alpha> (qm, n)) {q2_\<alpha> q} (state_map_\<alpha> (qm'', Suc n))" and
            dom_eq: "S \<inter> dom (state_map_\<alpha> (qm'', Suc n)) = insert (q2_\<alpha> q) ((dom (state_map_\<alpha> (qm, n))) \<inter> S)"
         using qm''_def[symmetric] ff_OK [OF invar_q q_in_S, symmetric]
@@ -1072,7 +1075,6 @@ shows "NFA_construct_reachable_impl_step_interval DS qm0 n D0 q \<le>
   apply (rename_tac r)
   defer
   apply (clarify, simp add: br_def)+
-  apply (simp add: br_def )
   apply (rename_tac it N i1 q'' qm n D' NN r' qm' n' i2 q')
   defer
      apply (simp add: br_def D0'_eq)
@@ -1156,7 +1158,7 @@ proof -
     from state_map_extend_thm [OF f_inj_on invar_qm_n 
                       q'_in_S q'_nin_dom qm_OK', folded qm'_def]
     have invar_qm'_n: "state_map_invar (qm', Suc n)" and
-         qm'_alpha: "qm.\<alpha> qm' = qm.\<alpha> qm(f (q2_\<alpha> q') 
+         qm'_alpha: "qm.\<alpha> qm' = (qm.\<alpha> qm)(f (q2_\<alpha> q') 
           \<mapsto> states_enumerate n)" and
          qm'_OK: 
           "NFA_construct_reachable_map_OK S 
@@ -1365,23 +1367,21 @@ apply (refine_rcg)
   apply (clarify, simp add: br_def )
   apply fastforce
   using DS_OK0 DS_OK1 apply force
-  apply (clarify, simp add: br_def  R'_def)
+  using DS_OK apply blast
   apply (clarify, simp add: br_def DS_OK R'_def)
-    apply (clarify, simp add: br_def DS_OK R'_def)
-   apply (clarify, simp add: br_def nfa_invar_def DS_OK R'_def)
-  apply clarify
-  apply (rename_tac x1 x2 x3 x4 qm'' q' As n'' \<A>  qm n 
-                    Qs i DD Is Fs q2 q1 bga qm' n' D' bja r)
+  apply (clarify, simp add: br_def DS_OK R'_def)
+  apply (clarify, simp add: br_def nfa_invar_def DS_OK R'_def)
+  apply (rename_tac x1b x2a x2b q' \<A> qm n Qs i DD Is Fs x2g qm' n' D' x2j r)
   defer
-  apply (rename_tac y As x q rm \<A> qm n Qs i DD Is Fs r)
+  apply (rename_tac x1b x2a x2b q qm n Qs i DD Is Fs r)
 using [[goals_limit = 6]]
 proof -
   
-  fix q rm \<A> qm n Qs i DD Is Fs r
+  fix \<A> rm q qm n Qs i DD Is Fs r
   {
    assume rm_q: "state_map_\<alpha> (qm, n) (q2_\<alpha> q) = Some r" and
-         in_R': "rm = state_map_\<alpha> (qm, n) \<and> state_map_invar (qm, n)" and
-         in_R: "\<A> = nfa_\<alpha> (Qs, i, DD, Is, Fs) \<and> nfa_invar (Qs, i, DD, Is, Fs)" and
+         in_R': "state_map_invar (qm, n)" and
+         in_R: "nfa_invar (Qs, i, DD, Is, Fs)" and
          invar_q: "q2_invar q" and
          q_in: "q2_\<alpha> q \<in> accessible (LTS_forget_labels D) (q2_\<alpha> ` set II)"
 
@@ -1397,7 +1397,7 @@ proof -
     by (simp add: nfa_invar_def s.correct nfa_\<alpha>_def)
 }
   {
-  fix x3 x4 qm'' q' \<A> qm n Qs  DD Is Fs bga qm' n' D' bja r
+  fix x1b x2a x2b q' \<A> qm n Qs i DD Is Fs x2g qm' n' D' x2j r
   assume r_nin_Q: "r \<notin> \<Q> \<A>" and 
        rm_q': "state_map_\<alpha> (qm, n) (q2_\<alpha> q') = Some r" and
        weak_invar: "NFA_construct_reachable_abstract_impl_weak_invar 
@@ -1937,12 +1937,11 @@ shows "NFA_construct_reachable_interval_impl_step_prod DS qm0 n D0 q \<le>
   apply (clarify, simp add: br_def)+
   defer
   apply (simp add: br_def D0'_eq)
+  apply (clarify)
   defer
+  apply (clarify)
   defer
   apply (rename_tac it N i1 i2 q'' qm n D' t r' NN qm' i3 i4 q')
-  apply simp
-  defer
-  defer
 proof -
   fix it N i1 i2 q'' qm n D' NN i3 i4 q'
   assume aq'_in_it: "((i3, i4), q') \<in> it"
@@ -2048,6 +2047,48 @@ proof -
     apply (smt Collect_cong case_prod_conv prod.collapse)
     by (simp add:  D0'_eq 
           NFA_construct_reachable_abstract_impl_foreach_invar_prod.simps D''_def)
+ { (* It remains to show that adding to the transition systems works. 
+        Here, a case distinction
+        depending on whether the input is weak deterministic, is needed. *)
+    fix r'
+    assume pre1 :"semIs i1 = semIs i3" and
+           pre2 : "semIs i2 = semIs i4"
+    from semInopemtpy pre1 pre2 inj_semIs
+    have pre3: "i1 = i3 \<and> i2 = i4" by auto
+      
+    from qm_OK rm_q have r_intro1: "state_map_\<alpha> (qm, n) (q2_\<alpha> q) = Some r"
+      unfolding NFA_construct_reachable_map_OK_def by simp
+
+    from rm_q rm_eq have r_intro2: "qm.lookup (ff q) qm0 = Some r" 
+      using invar_qm0_n
+      unfolding state_map_\<alpha>_def state_map_invar_def
+      using ff_OK [OF invar_q q_in_S] by (simp add: qm.correct)
+    have "insert (r, semIs i3 \<inter> semIs i4, r') (interval_to_set ` d.\<alpha> D') = 
+          interval_to_set `
+          d.\<alpha> (d.add r (intersectIs i3 i4) r' D') \<and>
+          d.invar (d.add r  (intersectIs i3 i4) r' D')"
+      by (metis (no_types, lifting) semInopemtpy Interval.intersectIs_correct 
+          automaton_by_lts_interval_syntax.interval_to_set.simps 
+          d_add_OK image_insert invar_D' lts_add.lts_add_correct(1) 
+          lts_add.lts_add_correct(2))
+    from pre1 pre2 this D0'_eq have 
+       "insert (the (state_map_\<alpha> (qm, n) (q2_\<alpha> q)), semIs i3 \<inter> semIs i4, r')
+       (interval_to_set ` d.\<alpha> D') =
+       interval_to_set `
+       d.\<alpha> (d.add (the (qm.lookup (ff q) qm0)) (intersectIs i3 i4) r' D') \<and>
+       d.invar (d.add (the (qm.lookup (ff q) qm0)) (intersectIs i3 i4) r' D') \<and>
+       q2_invar q''"   
+      by (simp add: r_intro1 r_intro2 invar_q'')
+    from this pre1 pre2 pre3 show "
+     insert (the (state_map_\<alpha> (qm, n) (q2_\<alpha> q)), semIs i3 \<inter> semIs i4, r')
+        (interval_to_set ` d.\<alpha> D') =
+       interval_to_set `
+       d.\<alpha> (d.add (the (qm.lookup (ff q) qm0)) (intersectIs i1 i2) r' D') \<and>
+       d.invar (d.add (the (qm.lookup (ff q) qm0)) (intersectIs i1 i2) r' D') \<and>
+       q2_invar q''
+    "
+      by (simp add: pre1 pre2)
+  } 
   (* "... and the case that the map needs to be extended." *)
   { assume "qm.lookup (ff q'') qm = None"
     with invar_qm_n have q'_nin_dom: 
@@ -2064,7 +2105,7 @@ proof -
     from state_map_extend_thm [OF f_inj_on invar_qm_n 
                       q'_in_S q'_nin_dom qm_OK', folded qm'_def]
     have invar_qm'_n: "state_map_invar (qm', Suc n)" and
-         qm'_alpha: "qm.\<alpha> qm' = qm.\<alpha> qm(f (q2_\<alpha> q') 
+         qm'_alpha: "qm.\<alpha> qm' = (qm.\<alpha> qm) (f (q2_\<alpha> q') 
           \<mapsto> states_enumerate n)" and
          qm'_OK: 
           "NFA_construct_reachable_map_OK S 
@@ -2120,48 +2161,7 @@ proof -
       by auto
   }
  
-  { (* It remains to show that adding to the transition systems works. 
-        Here, a case distinction
-        depending on whether the input is weak deterministic, is needed. *)
-    fix r'
-    assume pre1 :"semIs i1 = semIs i3" and
-           pre2 : "semIs i2 = semIs i4"
-    from semInopemtpy pre1 pre2 inj_semIs
-    have pre3: "i1 = i3 \<and> i2 = i4" by auto
-      
-    from qm_OK rm_q have r_intro1: "state_map_\<alpha> (qm, n) (q2_\<alpha> q) = Some r"
-      unfolding NFA_construct_reachable_map_OK_def by simp
-
-    from rm_q rm_eq have r_intro2: "qm.lookup (ff q) qm0 = Some r" 
-      using invar_qm0_n
-      unfolding state_map_\<alpha>_def state_map_invar_def
-      using ff_OK [OF invar_q q_in_S] by (simp add: qm.correct)
-    have "insert (r, semIs i3 \<inter> semIs i4, r') (interval_to_set ` d.\<alpha> D') = 
-          interval_to_set `
-          d.\<alpha> (d.add r (intersectIs i3 i4) r' D') \<and>
-          d.invar (d.add r  (intersectIs i3 i4) r' D')"
-      by (metis (no_types, lifting) semInopemtpy Interval.intersectIs_correct 
-          automaton_by_lts_interval_syntax.interval_to_set.simps 
-          d_add_OK image_insert invar_D' lts_add.lts_add_correct(1) 
-          lts_add.lts_add_correct(2))
-    from pre1 pre2 this D0'_eq have 
-       "insert (the (state_map_\<alpha> (qm, n) (q2_\<alpha> q)), semIs i3 \<inter> semIs i4, r')
-       (interval_to_set ` d.\<alpha> D') =
-       interval_to_set `
-       d.\<alpha> (d.add (the (qm.lookup (ff q) qm0)) (intersectIs i3 i4) r' D') \<and>
-       d.invar (d.add (the (qm.lookup (ff q) qm0)) (intersectIs i3 i4) r' D') \<and>
-       q2_invar q''"   
-      by (simp add: r_intro1 r_intro2 invar_q'')
-    from this pre1 pre2 pre3 show "
-     insert (the (state_map_\<alpha> (qm, n) (q2_\<alpha> q)), semIs i3 \<inter> semIs i4, r')
-        (interval_to_set ` d.\<alpha> D') =
-       interval_to_set `
-       d.\<alpha> (d.add (the (qm.lookup (ff q) qm0)) (intersectIs i1 i2) r' D') \<and>
-       d.invar (d.add (the (qm.lookup (ff q) qm0)) (intersectIs i1 i2) r' D') \<and>
-       q2_invar q''
-    "
-      by (simp add: pre1 pre2)
-  } 
+ 
 qed
 
 definition NFA_construct_reachable_prod_interval_impl where
@@ -2290,19 +2290,19 @@ apply (refine_rcg)
   apply fast
   apply (simp add: br_def nfa_invar_def DS_OK DS_OK1 nfa_\<alpha>_def)
   apply (clarify, simp  add:  R'_def )
-  apply (rename_tac q' qm'' rm \<A> qm n Qs As DD Is Fs n'' q bga qm' n' D' bja r)
   apply (simp add: br_def)
+  apply (rename_tac x1b x2a x2b q' e' \<A> qm n Qs As DD Is Fs 
+            bga qm' n'  D' bja r)
   defer
-  apply (rename_tac x1b x2a x2b q rm \<A> qm n Qs As DD Is Fs r)
+  apply (rename_tac x1b x2a x2b q qm n Qs As DD Is Fs r)
 using [[goals_limit = 6]]
 proof -
   
   {
-    fix q rm \<A> qm n Qs As DD Is Fs r
+    fix q qm n Qs As DD Is Fs r
    assume rm_q: "state_map_\<alpha> (qm, n) (q2_\<alpha> q) = Some r" and
-         in_R': "rm = state_map_\<alpha> (qm, n) \<and> state_map_invar (qm, n)" and
-         in_R: "\<A> = nfa_\<alpha> (Qs, As, DD, Is, Fs) \<and> 
-                    nfa_invar (Qs, As, DD, Is, Fs)" and
+         in_R': "state_map_invar (qm, n)" and
+         in_R: "nfa_invar (Qs, As, DD, Is, Fs)" and
          invar_q: "q2_invar q" and
          q_in: "q2_\<alpha> q \<in> accessible (LTS_forget_labels 
                 {(q, a1 \<inter> a2, q') |q a1 a2 q'. (q, (a1, a2), q') \<in> D}
@@ -2320,18 +2320,15 @@ proof -
 }
 
   {
-  fix x1 x2 x1b x2a x2b q qm'' rm \<A> qm n Qs As DD Is Fs n'' q' bga qm' n' D' bja r
+  fix x1b x2a x2b q' e' \<A> qm n Qs As DD Is Fs bga qm' n' D' bja r
     assume r_nin_Q: "r \<notin> \<Q> \<A>" and 
        rm_q': "state_map_\<alpha> (qm, n) (q2_\<alpha> q') = Some r" and
        weak_invar: "NFA_construct_reachable_abstract_impl_weak_invar 
              Sig I FP {(q, a1 \<inter> a2, q') |q a1 a2 q'. (q, (a1, a2), q') \<in> D}
          (state_map_\<alpha> (qm, n), \<A>)" and
-       invar_qm_n: "n'' = state_map_\<alpha> (qm', n') \<and>
-       state_map_invar (qm', n') \<and>
-       q = interval_to_set ` d.\<alpha> D' \<and>
+       invar_qm_n: " state_map_invar (qm', n') \<and>
        d.invar D' \<and> list_all2 (\<lambda>x x'. x' = q2_\<alpha> x \<and> q2_invar x) bja bga" and
-       in_R_R_\<A>: "rm = state_map_\<alpha> (qm, n) \<and>
-       state_map_invar (qm, n) \<and> ((Qs, As, DD, Is, Fs), \<A>) \<in> R" and
+       in_R_R_\<A>: "state_map_invar (qm, n) \<and> ((Qs, As, DD, Is, Fs), \<A>) \<in> R" and
        invar_q': "q2_invar q'" and 
        q'_in_S: "q2_\<alpha> q' \<in> S"
 
@@ -5786,9 +5783,8 @@ proof (intro nfa_determinise.intro nfa_OK dfa_by_map_correct2 nfa_determinise_ax
       apply (simp add: determinise_NFA_def)
     proof -
       {
-        fix a b x
-        assume p1: "b = {q'. \<exists>q\<in>set_op_\<alpha> ss_ops q. (q, a, q') \<in> NFA_set_interval.NFA_rec.\<Delta> (\<alpha> n)} \<and>
-       set_op_\<alpha> ss_ops q \<noteq> {} \<and>
+        fix a x
+        assume p1: "set_op_\<alpha> ss_ops q \<noteq> {} \<and>
        (\<exists>qa. qa \<in> set_op_\<alpha> ss_ops q \<and>
              (\<exists>q'. (qa, a, q') \<in> NFA_set_interval.NFA_rec.\<Delta> (\<alpha> n))) \<and>
        a \<noteq> {}"
