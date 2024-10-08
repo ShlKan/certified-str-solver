@@ -574,6 +574,7 @@ lemma lang_var_correct:
       and rm_v_OK: "NFA (the (rm v))"
       and finite_RC: "finite RC" 
       and a_neq_b : "a \<noteq> b"
+      and \<Sigma>_eq : "\<forall> v1 v2. (v1,v2) \<in> RC \<longrightarrow> \<Sigma>(the (rm v1)) = \<Sigma>(the (rm v2))"
   shows "lang_var v RC rm a b \<le> 
          SPEC (\<lambda> \<A>. \<forall> w. NFA \<A> \<and> ((NFA_accept \<A> w) \<longleftrightarrow>   
                                 (NFA_accept (the (rm v)) w) \<and>
@@ -675,18 +676,22 @@ proof -
         from c3 have c5: "NFA (NFA_rename_states (the (rm v2)) (\<lambda>q. (b, q)))"
           by (simp add: NFA_rename_states___is_well_formed)
 
-  
 
         let ?Q1 = "\<Q> (NFA_rename_states (the (rm v1)) (\<lambda>q. (a, q)))"
         let ?Q2 = "\<Q> (NFA_rename_states (the (rm v2)) (\<lambda>q. (b, q)))"
         from a_neq_b have c45: "?Q1 \<inter> ?Q2 = {}"
           unfolding NFA_rename_states_def
           by fastforce
-        from c4 c5 c45 efficient_NFA_concatenation___is_well_formed
+        from \<Sigma>_eq efficient_NFA_concatenation___is_well_formed 
+            [of "NFA_rename_states (the (rm v1)) (\<lambda>q. (a, q))"
+                "NFA_rename_states (the (rm v2)) (\<lambda>q. (b, q))", 
+             OF c4 c5 c45
+                ]
         have c6: "NFA (efficient_NFA_concatenation 
               (NFA_rename_states (the (rm v1)) (\<lambda>q. (a, q)))
               (NFA_rename_states (the (rm v2)) (\<lambda>q. (b, q))))"
-          by (simp add: efficient_NFA_concatenation___is_well_formed)
+          apply simp
+        using c2 by presburger
 
         from c6 NFA_isomorphic_wf_normalise_states 
         have c7: "NFA (NFA_normalise_states
@@ -923,6 +928,8 @@ lemma language_vars_correct:
       and finite_rc: "finite (dom rc) \<and> (\<forall> v \<in> S. v \<in> dom (rc) \<longrightarrow> finite (the (rc v)))" 
       and finite_rm: "S \<subseteq> dom rm" 
       and finite_S: "finite S"
+      and \<Sigma>_eq: "\<forall>v1 v2 v. (v1, v2) \<in> the (rc v) \<longrightarrow> 
+                          \<Sigma> (the (rm v1)) = \<Sigma> (the (rm v2))"
       and a_neq_b : "a \<noteq> b"
   shows "language_vars S rc rm a b \<le> 
          SPEC (\<lambda> rm1. dom rm1 = dom rm \<and> 
@@ -1136,6 +1143,7 @@ proof -
            NFA (the (rm v)) \<Longrightarrow>
            finite RC \<Longrightarrow>
            a \<noteq> b \<Longrightarrow>
+           \<forall>v1 v2. (v1, v2) \<in> RC \<longrightarrow> \<Sigma> (the (rm v1)) = \<Sigma> (the (rm v2)) \<Longrightarrow>
            lang_var v RC rm a b
            \<le> SPEC (\<lambda>\<A>. NFA \<A> \<and>
                         (\<forall>w. NFA_accept \<A> w =
@@ -1189,6 +1197,7 @@ proof -
         NFA (the (rm v)) \<Longrightarrow>
         finite RC \<Longrightarrow>
         a \<noteq> b \<Longrightarrow>
+         \<forall>v1 v2. (v1, v2) \<in> RC \<longrightarrow> \<Sigma> (the (rm v1)) = \<Sigma> (the (rm v2)) \<Longrightarrow>
         lang_var v RC rm a b
         \<le> SPEC (\<lambda>\<A>. NFA \<A> \<and>
                      (\<forall>w. NFA_accept \<A> w =
@@ -1211,8 +1220,9 @@ w = w1 @ w2))))))"
   have con2: "NFA (the (\<sigma> x))"
     by (meson p3 subsetD x_in_S)
   note lang_var_correct' = lang_var_correct[OF con1 con2 finite_RC a_neq_b]
-  from lang_var_correct' 
-  have lang_var': "lang_var x (the (rc x)) \<sigma> a b
+  from lang_var_correct' \<Sigma>_eq
+  have lang_var': " 
+  lang_var x (the (rc x)) \<sigma> a b
   \<le> SPEC (\<lambda>\<A>. \<forall>w. NFA \<A> \<and>
                    NFA_accept \<A> w =
                    (NFA_accept (the (\<sigma> x)) w \<and>
@@ -1220,7 +1230,7 @@ w = w1 @ w2))))))"
                         \<exists>w1 w2.
                            NFA_accept (the (\<sigma> v1)) w1 \<and>
                            NFA_accept (the (\<sigma> v2)) w2 \<and> w = w1 @ w2)))"
-    by auto
+    by (metis (mono_tags, lifting) acyc p3 p31' x_in_S)
   from p3 have "\<forall> v. v \<notin> S \<longrightarrow> the (\<sigma> v) = the (rm v)" by auto
       from this have "\<forall> v. v \<notin> S \<longrightarrow> 
               (\<forall> w. NFA_accept (the (\<sigma> v)) w = NFA_accept (the (rm v)) w)"
@@ -1609,6 +1619,7 @@ qed qed qed
                                    \<exists>w1. NFA_accept (the (rmi v1)) w1 \<and>
                                         (\<exists>w2.
 NFA_accept (the (rmi v2)) w2 \<and> w = w1 @ w2))))))})"
+    
     using order_trans by blast
 qed}qed
 
