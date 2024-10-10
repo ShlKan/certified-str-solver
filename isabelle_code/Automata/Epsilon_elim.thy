@@ -1,13 +1,12 @@
 theory Epsilon_elim
 
-imports Main NFA_set_interval NFA_epsilon
+imports Main NFA_set NFA_epsilon
 
 begin
 
 definition epsilon_elim :: "('q, 'a) NFAe_rec \<Rightarrow> ('q, 'a) NFA_rec" where
     "epsilon_elim \<A>e = \<lparr>
      \<Q> = \<Q>e \<A>e,
-     \<Sigma> = \<Sigma>e \<A>e,
      \<Delta> = (\<Delta>e \<A>e) \<union> {(q, \<alpha> ,q'') | q \<alpha> q' q''. 
                                     epsilon_reachable q q' (\<Delta>e' \<A>e) \<and>
                                       (q', \<alpha>, q'') \<in> \<Delta>e \<A>e},
@@ -531,9 +530,7 @@ proof -
       by auto
 
     have qini: "q \<in> \<I>e \<A> \<union> {q' | q q'. epsilon_reachable q q' (\<Delta>e' \<A>) \<and> q \<in> \<I>e \<A>}"
-      by (metis (mono_tags, lifting) NFA_rec.select_convs(4) 
-                 epsilon_elim_def qq'_def)
-
+      by (metis (mono_tags, lifting) NFA_rec.select_convs(3) epsilon_elim_def qq'_def)
     from this 
     have "\<exists> q_ini. epsilon_reachable q_ini q (\<Delta>e' \<A>) \<and> q_ini \<in> \<I>e \<A>"
     proof (cases "q \<in> \<I>e \<A>")
