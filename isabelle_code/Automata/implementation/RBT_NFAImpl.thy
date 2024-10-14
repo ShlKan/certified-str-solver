@@ -9,7 +9,7 @@ imports  "Collections.Collections"
 begin
 
 
-interpretation rs_nfa_defs: nfa_dfa_by_lts_interval_defs rs_ops rs_ops
+interpretation rs_nfa_defs: nfa_dfa_by_lts_interval_defs rs_ops
                             rs_ops rs_ops rs_lts_ops rs_lts_ops
   by intro_locales
 

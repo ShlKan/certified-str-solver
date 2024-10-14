@@ -2,7 +2,7 @@ theory NFAByLTS_Interval
                                       
 imports "Collections.Collections" "HOL.Enum"
       "../../General/Accessible_Impl"
-  LTSSpec LTSGA NFASpec LTS_Impl Interval "../DFA"
+  LTSSpec LTSGA NFASpec LTS_Impl Interval 
 
 begin
 
