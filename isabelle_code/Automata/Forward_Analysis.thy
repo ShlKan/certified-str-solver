@@ -575,7 +575,8 @@ lemma lang_var_correct:
       and finite_RC: "finite RC" 
       and a_neq_b : "a \<noteq> b"
   shows "lang_var v RC rm a b \<le> 
-         SPEC (\<lambda> \<A>. \<forall> w. NFA \<A> \<and> ((NFA_accept \<A> w) \<longleftrightarrow>   
+         SPEC (\<lambda> \<A>. \<forall> w. NFA \<A> \<and>  \<Sigma>(\<A>) = \<Sigma>(the (rm v)) 
+                          \<and> ((NFA_accept \<A> w) \<longleftrightarrow>   
                                 (NFA_accept (the (rm v)) w) \<and>
                                 (\<forall> (v1, v2) \<in> RC. \<exists> w1 w2.
                                   NFA_accept (the (rm v1)) w1 \<and> 
@@ -609,7 +610,7 @@ proof -
                      (NFA_rename_states (the (rm v1)) (Pair a))
                      (NFA_rename_states (the (rm v2)) (Pair b))))))
         \<sigma>
-       \<le> SPEC (\<lambda>A. NFA A \<and>
+       \<le> SPEC (\<lambda>A. NFA A \<and> 
                     (\<forall>w. NFA_accept A w =
                          (NFA_accept (the (rm v)) w \<and>
                           (\<forall>x\<in>RC - (it - {x}).
@@ -621,7 +622,7 @@ proof -
     proof -
       assume p1: "x \<in> it" and
              p2: "it \<subseteq> RC" and
-             p3: "NFA \<sigma> \<and>
+             p3: "NFA \<sigma> \<and> \<Sigma> \<sigma> = \<Sigma> (the (rm v)) \<and>
     (\<forall>w. NFA_accept \<sigma> w =
          (NFA_accept (the (rm v)) w \<and>
           (\<forall>x\<in>RC - it.
@@ -639,7 +640,7 @@ proof -
                 (efficient_NFA_concatenation (NFA_rename_states (the (rm v1)) (Pair a))
                   (NFA_rename_states (the (rm v2)) (Pair b))))))
      \<sigma>
-    \<le> SPEC (\<lambda>A. NFA A \<and>
+    \<le> SPEC (\<lambda>A. NFA A \<and> 
                  (\<forall>w. NFA_accept A w =
                       (NFA_accept (the (rm v)) w \<and>
                        (\<forall>x\<in>RC - (it - {x}).
@@ -652,7 +653,7 @@ proof -
     proof 
       {
       fix w
-      assume p11: "NFA \<sigma> \<and>
+      assume p11: "NFA \<sigma> \<and> \<Sigma> \<sigma> = \<Sigma> (the (rm v)) \<and>
     (\<forall>w. NFA_accept \<sigma> w =
          (NFA_accept (the (rm v)) w \<and>
           (\<forall>x\<in>RC - it.
@@ -675,18 +676,22 @@ proof -
         from c3 have c5: "NFA (NFA_rename_states (the (rm v2)) (\<lambda>q. (b, q)))"
           by (simp add: NFA_rename_states___is_well_formed)
 
-  
 
         let ?Q1 = "\<Q> (NFA_rename_states (the (rm v1)) (\<lambda>q. (a, q)))"
         let ?Q2 = "\<Q> (NFA_rename_states (the (rm v2)) (\<lambda>q. (b, q)))"
         from a_neq_b have c45: "?Q1 \<inter> ?Q2 = {}"
           unfolding NFA_rename_states_def
           by fastforce
-        from c4 c5 c45 efficient_NFA_concatenation___is_well_formed
+        from \<Sigma>_eq efficient_NFA_concatenation___is_well_formed 
+            [of "NFA_rename_states (the (rm v1)) (\<lambda>q. (a, q))"
+                "NFA_rename_states (the (rm v2)) (\<lambda>q. (b, q))", 
+             OF c4 c5 c45
+                ]
         have c6: "NFA (efficient_NFA_concatenation 
               (NFA_rename_states (the (rm v1)) (\<lambda>q. (a, q)))
               (NFA_rename_states (the (rm v2)) (\<lambda>q. (b, q))))"
-          by (simp add: efficient_NFA_concatenation___is_well_formed)
+          apply simp
+        using c2 by presburger
 
         from c6 NFA_isomorphic_wf_normalise_states 
         have c7: "NFA (NFA_normalise_states
@@ -721,7 +726,11 @@ qed
 qed
     from p11 p12 c7
     accept_NFA_product
-    show " \<forall>w. NFA_accept
+    show " \<Sigma> (NFA_product \<sigma>
+         (NFA_normalise_states
+           (efficient_NFA_concatenation (NFA_rename_states (the (rm v1)) (Pair a))
+             (NFA_rename_states (the (rm v2)) (Pair b))))) =
+    \<Sigma> (the (rm v)) \<and> (\<forall>w. NFA_accept
          (NFA_product \<sigma>
            (NFA_normalise_states
              (efficient_NFA_concatenation (NFA_rename_states (the (rm v1)) 
@@ -733,7 +742,8 @@ qed
              case x of
              (v1, v2) \<Rightarrow>
                \<exists>w1. NFA_accept (the (rm v1)) w1 \<and>
-                    (\<exists>w2. NFA_accept (the (rm v2)) w2 \<and> w = w1 @ w2)))"
+                    (\<exists>w2. NFA_accept (the (rm v2)) w2 \<and> w = w1 @ w2))))" 
+      apply (rule_tac conjI)
       apply (simp add: c7 p11)
     proof 
       fix w
@@ -891,11 +901,12 @@ qed
 }
 qed
 
-
 definition language_vars where "
   language_vars S rc rm da db = 
   FOREACHi
        (\<lambda> Si rmi. S \<subseteq> dom rmi \<and> dom rmi = dom rm \<and>
+                  (\<forall>v1 v2 v. (v1, v2) \<in> the (rc v) \<longrightarrow> 
+                          \<Sigma> (the (rmi v1)) = \<Sigma> (the (rmi v2))) \<and>
                   (\<forall> v. v \<in> dom(rmi) \<longrightarrow> NFA (the (rmi v))) \<and>
                   (\<forall> v \<in> Si. (the (rmi v)) = (the (rm v))) \<and> 
                   (\<forall> v. v \<notin> S  \<longrightarrow> (the (rmi v)) = (the (rm v))) \<and> 
@@ -923,9 +934,13 @@ lemma language_vars_correct:
       and finite_rc: "finite (dom rc) \<and> (\<forall> v \<in> S. v \<in> dom (rc) \<longrightarrow> finite (the (rc v)))" 
       and finite_rm: "S \<subseteq> dom rm" 
       and finite_S: "finite S"
+      and \<Sigma>_eq: "\<forall>v1 v2 v. (v1, v2) \<in> the (rc v) \<longrightarrow> 
+                          \<Sigma> (the (rm v1)) = \<Sigma> (the (rm v2))"
       and a_neq_b : "a \<noteq> b"
   shows "language_vars S rc rm a b \<le> 
          SPEC (\<lambda> rm1. dom rm1 = dom rm \<and> 
+                      (\<forall>v1 v2 v. (v1, v2) \<in> the (rc v) \<longrightarrow> 
+                          \<Sigma> (the (rm1 v1)) = \<Sigma> (the (rm1 v2))) \<and>
                       (\<forall> v. v \<notin> S  \<longrightarrow> the (rm1 v) = the (rm v)) \<and>
                       (\<forall> v \<in> S. \<forall> w. NFA (the (rm1 v)) \<and> 
                       ((NFA_accept (the (rm1 v)) w) \<longleftrightarrow>   
@@ -934,14 +949,14 @@ lemma language_vars_correct:
                       NFA_accept (the (rm v1)) w1 \<and> 
                       NFA_accept (the (rm v2)) w2 \<and> w = w1 @ w2)))))"
   unfolding language_vars_def
-  thm lang_var_correct
   apply (intro refine_vcg)
   apply (simp add: finite_S)
   apply simp
-   apply (simp add: finite_rm rm_v_OK)
+  apply (simp add: finite_rm rm_v_OK)
+  using \<Sigma>_eq apply presburger
   using lang_var_correct a_neq_b
   apply simp
-    defer
+  defer
 proof -
   {
     fix x it \<sigma>
@@ -949,6 +964,7 @@ proof -
            p2: "it \<subseteq> {v. v \<in> S}" and 
            p3: "S \<subseteq> dom \<sigma> \<and>
        dom \<sigma> = dom rm \<and>
+       (\<forall>v1 v2 v. (v1, v2) \<in> the (rc v) \<longrightarrow> \<Sigma> (the (\<sigma> v1)) = \<Sigma> (the (\<sigma> v2))) \<and>
        (\<forall>v. v \<in> dom \<sigma> \<longrightarrow> NFA (the (\<sigma> v))) \<and>
        (\<forall>v\<in>it. the (\<sigma> v) = the (rm v)) \<and>
        (\<forall>v. v \<notin> S \<longrightarrow> the (\<sigma> v) = the (rm v)) \<and>
@@ -965,6 +981,7 @@ proof -
     from this 
     show "S \<subseteq> dom \<sigma> \<and>
        dom \<sigma> = dom rm \<and>
+       (\<forall>v1 v2 v. (v1, v2) \<in> the (rc v) \<longrightarrow> \<Sigma> (the (\<sigma> v1)) = \<Sigma> (the (\<sigma> v2))) \<and>
        (\<forall>v. v \<in> dom \<sigma> \<longrightarrow> NFA (the (\<sigma> v))) \<and>
        (\<forall>v\<in>it - {x}. the (\<sigma> v) = the (rm v)) \<and>
        (\<forall>v. v \<notin> S \<longrightarrow> the (\<sigma> v) = the (rm v)) \<and>
@@ -1028,6 +1045,7 @@ proof -
     fix \<sigma>
     assume p1: "S \<subseteq> dom \<sigma> \<and>
          dom \<sigma> = dom rm \<and>
+         (\<forall>v1 v2 v. (v1, v2) \<in> the (rc v) \<longrightarrow> \<Sigma> (the (\<sigma> v1)) = \<Sigma> (the (\<sigma> v2))) \<and>
          (\<forall>v. v \<in> dom \<sigma> \<longrightarrow> NFA (the (\<sigma> v))) \<and>
          (\<forall>v\<in>{}. the (\<sigma> v) = the (rm v)) \<and>
          (\<forall>v. v \<notin> S \<longrightarrow> the (\<sigma> v) = the (rm v)) \<and>
@@ -1041,6 +1059,7 @@ proof -
                            NFA_accept (the (\<sigma> v1)) w1 \<and>
                            NFA_accept (the (\<sigma> v2)) w2 \<and> w = w1 @ w2)))))"
     from this show "dom \<sigma> = dom rm \<and>
+         (\<forall>v1 v2 v. (v1, v2) \<in> the (rc v) \<longrightarrow> \<Sigma> (the (\<sigma> v1)) = \<Sigma> (the (\<sigma> v2))) \<and>
          (\<forall>v. v \<notin> S \<longrightarrow> the (\<sigma> v) = the (rm v)) \<and>
          (\<forall>v\<in>S. \<forall>w. NFA (the (\<sigma> v)) \<and>
                      NFA_accept (the (\<sigma> v)) w =
@@ -1054,10 +1073,13 @@ proof -
        apply simp
       apply (rule_tac conjI)+
        apply simp
+      apply (rule_tac conjI)+
+      apply simp
     proof 
       fix v
       assume p11: "S \<subseteq> dom \<sigma> \<and>
          dom \<sigma> = dom rm \<and>
+         (\<forall>v1 v2 v. (v1, v2) \<in> the (rc v) \<longrightarrow> \<Sigma> (the (\<sigma> v1)) = \<Sigma> (the (\<sigma> v2))) \<and>
          (\<forall>v. v \<in> dom \<sigma> \<longrightarrow> NFA (the (\<sigma> v))) \<and>
          (\<forall>v\<in>{}. the (\<sigma> v) = the (rm v)) \<and>
          (\<forall>v. v \<notin> S \<longrightarrow> the (\<sigma> v) = the (rm v)) \<and>
@@ -1115,6 +1137,7 @@ proof -
        it \<subseteq> S \<Longrightarrow>
        S \<subseteq> dom \<sigma> \<and>
        dom \<sigma> = dom rm \<and>
+       (\<forall>v1 v2. (\<exists>v. (v1, v2) \<in> the (rc v)) \<longrightarrow> \<Sigma> (the (\<sigma> v1)) = \<Sigma> (the (\<sigma> v2))) \<and>
        (\<forall>v. v \<in> dom \<sigma> \<longrightarrow> NFA (the (\<sigma> v))) \<and>
        (\<forall>v\<in>it. the (\<sigma> v) = the (rm v)) \<and>
        (\<forall>v. v \<notin> S \<longrightarrow> the (\<sigma> v) = the (rm v)) \<and>
@@ -1136,6 +1159,7 @@ proof -
            NFA (the (rm v)) \<Longrightarrow>
            finite RC \<Longrightarrow>
            a \<noteq> b \<Longrightarrow>
+           \<forall>v1 v2. (v1, v2) \<in> RC \<longrightarrow> \<Sigma> (the (rm v1)) = \<Sigma> (the (rm v2)) \<Longrightarrow>
            lang_var v RC rm a b
            \<le> SPEC (\<lambda>\<A>. NFA \<A> \<and>
                         (\<forall>w. NFA_accept \<A> w =
@@ -1152,6 +1176,9 @@ proof -
                     \<subseteq> {rmi.
                         S \<subseteq> dom rmi \<and>
                         dom rmi = dom rm \<and>
+                        (\<forall>v1 v2.
+                            (\<exists>v. (v1, v2) \<in> the (rc v)) \<longrightarrow>
+                            \<Sigma> (the (rmi v1)) = \<Sigma> (the (rmi v2))) \<and>
                         (\<forall>v. v \<in> dom rmi \<longrightarrow> NFA (the (rmi v))) \<and>
                         (\<forall>v\<in>it - {x}. the (rmi v) = the (rm v)) \<and>
                         (\<forall>v. v \<notin> S \<longrightarrow> the (rmi v) = the (rm v)) \<and>
@@ -1168,6 +1195,7 @@ proof -
          p2 : "it \<subseteq> S" and
          p3 : "S \<subseteq> dom \<sigma> \<and>
     dom \<sigma> = dom rm \<and>
+    (\<forall>v1 v2. (\<exists>v. (v1, v2) \<in> the (rc v)) \<longrightarrow> \<Sigma> (the (\<sigma> v1)) = \<Sigma> (the (\<sigma> v2))) \<and>
     (\<forall>v. v \<in> dom \<sigma> \<longrightarrow> NFA (the (\<sigma> v))) \<and>
     (\<forall>v\<in>it. the (\<sigma> v) = the (rm v)) \<and>
     (\<forall>v. v \<notin> S \<longrightarrow> the (\<sigma> v) = the (rm v)) \<and>
@@ -1189,6 +1217,7 @@ proof -
         NFA (the (rm v)) \<Longrightarrow>
         finite RC \<Longrightarrow>
         a \<noteq> b \<Longrightarrow>
+         \<forall>v1 v2. (v1, v2) \<in> RC \<longrightarrow> \<Sigma> (the (rm v1)) = \<Sigma> (the (rm v2)) \<Longrightarrow>
         lang_var v RC rm a b
         \<le> SPEC (\<lambda>\<A>. NFA \<A> \<and>
                      (\<forall>w. NFA_accept \<A> w =
@@ -1211,8 +1240,9 @@ w = w1 @ w2))))))"
   have con2: "NFA (the (\<sigma> x))"
     by (meson p3 subsetD x_in_S)
   note lang_var_correct' = lang_var_correct[OF con1 con2 finite_RC a_neq_b]
-  from lang_var_correct' 
-  have lang_var': "lang_var x (the (rc x)) \<sigma> a b
+  from lang_var_correct' \<Sigma>_eq
+  have lang_var': " 
+  lang_var x (the (rc x)) \<sigma> a b
   \<le> SPEC (\<lambda>\<A>. \<forall>w. NFA \<A> \<and>
                    NFA_accept \<A> w =
                    (NFA_accept (the (\<sigma> x)) w \<and>
@@ -1220,7 +1250,7 @@ w = w1 @ w2))))))"
                         \<exists>w1 w2.
                            NFA_accept (the (\<sigma> v1)) w1 \<and>
                            NFA_accept (the (\<sigma> v2)) w2 \<and> w = w1 @ w2)))"
-    by auto
+    by (metis (mono_tags, lifting) acyc p3 p31' x_in_S)
   from p3 have "\<forall> v. v \<notin> S \<longrightarrow> the (\<sigma> v) = the (rm v)" by auto
       from this have "\<forall> v. v \<notin> S \<longrightarrow> 
               (\<forall> w. NFA_accept (the (\<sigma> v)) w = NFA_accept (the (rm v)) w)"
@@ -1240,6 +1270,9 @@ w = w1 @ w2))))))"
                  \<subseteq> {rmi.
                      S \<subseteq> dom rmi \<and>
                      dom rmi = dom rm \<and>
+                     (\<forall>v1 v2.
+                         (\<exists>v. (v1, v2) \<in> the (rc v)) \<longrightarrow>
+                         \<Sigma> (the (rmi v1)) = \<Sigma> (the (rmi v2))) \<and>
                      (\<forall>v. v \<in> dom rmi \<longrightarrow> NFA (the (rmi v))) \<and>
                      (\<forall>v\<in>it - {x}. the (rmi v) = the (rm v)) \<and>
                      (\<forall>v. v \<notin> S \<longrightarrow> the (rmi v) = the (rm v)) \<and>
@@ -1267,6 +1300,9 @@ NFA_accept (the (rmi v2)) w2 \<and> w = w1 @ w2))))))})"
                     \<subseteq> {rmi.
                         S \<subseteq> dom rmi \<and>
                         dom rmi = dom rm \<and>
+                        (\<forall>v1 v2.
+                            (\<exists>v. (v1, v2) \<in> the (rc v)) \<longrightarrow>
+                            \<Sigma> (the (rmi v1)) = \<Sigma> (the (rmi v2))) \<and>
                         (\<forall>v. v \<in> dom rmi \<longrightarrow> NFA (the (rmi v))) \<and>
                         (\<forall>v\<in>it - {x}. the (rmi v) = the (rm v)) \<and>
                         (\<forall>v. v \<notin> S \<longrightarrow> the (rmi v) = the (rm v)) \<and>
@@ -1290,6 +1326,8 @@ NFA_accept (the (rmi v2)) w2 \<and> w = w1 @ w2))))))})"
     \<subseteq> {rmi.
         S \<subseteq> dom rmi \<and>
         dom rmi = dom rm \<and>
+        (\<forall>v1 v2.
+            (\<exists>v. (v1, v2) \<in> the (rc v)) \<longrightarrow> \<Sigma> (the (rmi v1)) = \<Sigma> (the (rmi v2))) \<and>
         (\<forall>v. v \<in> dom rmi \<longrightarrow> NFA (the (rmi v))) \<and>
         (\<forall>v\<in>it - {x}. the (rmi v) = the (rm v)) \<and>
         (\<forall>v. v \<notin> S \<longrightarrow> the (rmi v) = the (rm v)) \<and>
@@ -1504,7 +1542,6 @@ NFA_accept (the (rmi v2)) w2 \<and> w = w1 @ w2))))))})"
       apply (rule_tac conjI)
       apply (simp add: ccc1 ccc2)
        proof
-         thm rc_xc_OK2 ccc1 ccc2 cccc1
          fix w
          show "NFA_accept (the (xb xc)) w =
          (NFA_accept (the (rm xc)) w \<and> (xc \<in> dom rc \<longrightarrow>
@@ -1568,6 +1605,8 @@ qed
                  xb x = Some xa\<close> option.exhaust)        
     from this z3 z5 show "S \<subseteq> dom xb \<and>
           dom xb = dom rm \<and>
+          (\<forall>v1 v2.
+              (\<exists>v. (v1, v2) \<in> the (rc v)) \<longrightarrow> \<Sigma> (the (xb v1)) = \<Sigma> (the (xb v2))) \<and>
           (\<forall>v. v \<in> dom xb \<longrightarrow> NFA (the (xb v))) \<and>
           (\<forall>v\<in>it - {x}. the (xb v) = the (rm v)) \<and>
           (\<forall>v. v \<notin> S \<longrightarrow> the (xb v) = the (rm v)) \<and>
@@ -1584,6 +1623,7 @@ qed
     apply (rule_tac conjI)
     using \<open>dom \<sigma> = dom xb\<close> p3 apply auto[1]
     apply (rule_tac conjI)
+    
     apply simp
     apply (rule_tac conjI)
     apply (metis (no_types, lifting) DiffD1 Diff_insert_absorb \<open>(\<forall>v'. v' \<noteq> x \<longrightarrow> (\<forall>a'. (\<sigma> v' = Some a') = (xb v' = Some a'))) \<and> xb x = Some xa\<close> domD mk_disjoint_insert p3 subset_eq)
@@ -1598,6 +1638,9 @@ qed qed qed
                  \<subseteq> {rmi.
                      S \<subseteq> dom rmi \<and>
                      dom rmi = dom rm \<and>
+                     (\<forall>v1 v2.
+                         (\<exists>v. (v1, v2) \<in> the (rc v)) \<longrightarrow>
+                         \<Sigma> (the (rmi v1)) = \<Sigma> (the (rmi v2))) \<and>
                      (\<forall>v. v \<in> dom rmi \<longrightarrow> NFA (the (rmi v))) \<and>
                      (\<forall>v\<in>it - {x}. the (rmi v) = the (rm v)) \<and>
                      (\<forall>v. v \<notin> S \<longrightarrow> the (rmi v) = the (rm v)) \<and>
@@ -1609,6 +1652,7 @@ qed qed qed
                                    \<exists>w1. NFA_accept (the (rmi v1)) w1 \<and>
                                         (\<exists>w2.
 NFA_accept (the (rmi v2)) w2 \<and> w = w1 @ w2))))))})"
+    
     using order_trans by blast
 qed}qed
 
@@ -1624,6 +1668,9 @@ definition Forward_Analysis where
                   dom rm1 = S \<and> 
                   closureR R rc \<and>
                   (\<forall> v. v \<in> dom rm1 \<longrightarrow> NFA (the (rm1 v))) \<and>
+                  (\<forall> v v1 v2. v \<in> dom rc \<and> 
+                             (v1, v2) \<in> (the (rc v)) \<longrightarrow> 
+                              \<Sigma>(the (rm1 v1)) = \<Sigma>(the (rm1 v2))) \<and>
                   (\<forall> v \<in> S1. (the (rm1 v)) = (the (rm v))) \<and>  
                   (\<forall> x \<in> S - S1. NFA (the (rm1 x)) \<and> (\<forall> w.
                   (NFA_accept (the (rm1 x)) w \<longleftrightarrow>
@@ -1684,6 +1731,8 @@ lemma Forward_analysis_correct:
       and rm_OK: "S = dom rm"
       and S_ok: "\<exists> l. S = \<Union> (set l) \<and> acyclic rc l"
       and finite_S: "finite S"
+      and \<Sigma>_eq: " \<forall>v1 v2 v. (v1, v2) \<in> the (rc v) \<longrightarrow> 
+                    \<Sigma> (the (rm v1)) = \<Sigma> (the (rm v2))"
       and a_neq_b : "a \<noteq> b"
   shows "Forward_Analysis S rc rm a b \<le> 
          SPEC (\<lambda> (S', rm1, R'). 
@@ -1702,7 +1751,7 @@ lemma Forward_analysis_correct:
   apply (refine_vcg)
   defer
   apply simp
-  apply simp  
+  apply simp
   using rc_OK 
   apply (simp add: rc_OK)
   apply (simp add: rm_OK)
@@ -1711,6 +1760,7 @@ lemma Forward_analysis_correct:
   apply (simp add: closureR_def)
   apply (insert rm_v_OK)[1]
   apply simp
+  using \<Sigma>_eq apply blast
   apply (insert rm_v_OK)[1]
   apply simp
   apply (insert closureR_def)[1]
@@ -1741,6 +1791,9 @@ proof -
        dom rm1 = S \<and>
        closureR R rc \<and>
        (\<forall>v. v \<in> dom rm1 \<longrightarrow> NFA (the (rm1 v))) \<and>
+       (\<forall>v v1 v2.
+           v \<in> dom rc \<and> (v1, v2) \<in> the (rc v) \<longrightarrow>
+           \<Sigma> (the (rm1 v1)) = \<Sigma> (the (rm1 v2))) \<and>
        (\<forall>v\<in>S'. the (rm1 v) = the (rm v)) \<and>
        (\<forall>x\<in>S - S'.
            NFA (the (rm1 x)) \<and>
@@ -1767,6 +1820,9 @@ proof -
        dom rm1 = S \<and>
        (\<forall>v v1 v2. v \<in> R \<longrightarrow> v \<in> dom rc \<longrightarrow> (v1, v2) \<in> the (rc v) \<longrightarrow> v1 \<in> R \<and> v2 \<in> R) \<and>
        (\<forall>v. v \<in> dom rm1 \<longrightarrow> NFA (the (rm1 v))) \<and>
+       (\<forall>v v1 v2.
+      v \<in> dom rc \<and> (v1, v2) \<in> the (rc v) \<longrightarrow>
+      \<Sigma> (the (rm1 v1)) = \<Sigma> (the (rm1 v2))) \<and>
        (\<forall>v\<in>S'. the (rm1 v) = the (rm v)) \<and>
        (\<forall>x\<in>S - S'.
            NFA (the (rm1 x)) \<and>
@@ -1803,7 +1859,7 @@ proof -
                    v \<in> S \<and> rc v \<noteq> None \<and>  
                   (v1, v2) \<in> the (rc v) \<longrightarrow> v1 \<in> R \<and> v2 \<in> R))"
      using S_sub_rc by blast
-  from this  have 
+  from this have
     "SPEC (\<lambda>S. S \<subseteq> S' \<and>
                S \<noteq> {} \<and>
                (\<forall>v v1 v2.
@@ -1819,6 +1875,9 @@ proof -
                                        dom rm1 = S' \<union> R \<and>
                                        closureR Ra rc \<and>
                                        (\<forall>v. v \<in> dom rm1 \<longrightarrow> NFA (the (rm1 v))) \<and>
+                                        (\<forall>v v1 v2.
+           v \<in> dom rc \<and> (v1, v2) \<in> the (rc v) \<longrightarrow>
+           \<Sigma> (the (rm1 v1)) = \<Sigma> (the (rm1 v2))) \<and>
                                        (\<forall>v\<in>S1. the (rm1 v) = the (rm v)) \<and>
                                        (\<forall>x\<in>S' \<union> R - S1.
                                            NFA (the (rm1 x)) \<and>
@@ -1848,6 +1907,9 @@ proof -
                           dom rm1 = S' \<union> R \<and>
                           closureR Ra rc \<and>
                           (\<forall>v. v \<in> dom rm1 \<longrightarrow> NFA (the (rm1 v))) \<and>
+ (\<forall>v v1 v2.
+           v \<in> dom rc \<and> (v1, v2) \<in> the (rc v) \<longrightarrow>
+           \<Sigma> (the (rm1 v1)) = \<Sigma> (the (rm1 v2))) \<and>
                           (\<forall>v\<in>S1. the (rm1 v) = the (rm v)) \<and>
                           (\<forall>x\<in>S' \<union> R - S1.
                               NFA (the (rm1 x)) \<and>
@@ -1877,6 +1939,9 @@ proof -
                      dom rm1 = S' \<union> R \<and>
                      closureR Ra rc \<and>
                      (\<forall>v. v \<in> dom rm1 \<longrightarrow> NFA (the (rm1 v))) \<and>
+ (\<forall>v v1 v2.
+           v \<in> dom rc \<and> (v1, v2) \<in> the (rc v) \<longrightarrow>
+           \<Sigma> (the (rm1 v1)) = \<Sigma> (the (rm1 v2))) \<and>
                      (\<forall>v\<in>S1. the (rm1 v) = the (rm v)) \<and>
                      (\<forall>x\<in>S' \<union> R - S1.
                          NFA (the (rm1 x)) \<and>
@@ -1933,7 +1998,8 @@ proof -
          v1 \<in> dom rm1 \<and> v2 \<in> dom rm1 \<and> NFA (the (rm1 v1)) \<and> NFA (the (rm1 v2))" 
         by (meson domD subset_iff t4)
       note language_vars_correct' = 
-           language_vars_correct[of t rc rm1 a b, OF t1' t2' t3 t4 t5 t6 a_neq_b]
+           language_vars_correct[of t rc rm1 a b, 
+           OF t1' t2' t3 t4 t5 t6 _ a_neq_b ]
       from this 
       show "language_vars t rc rm1 a b \<bind> (\<lambda>rm'. RETURN (S' - t, rm', R \<union> t))
     \<le> SPEC (\<lambda>s'. (case s' of
@@ -1944,6 +2010,9 @@ proof -
                      dom rm1 = S' \<union> R \<and>
                      closureR Ra rc \<and>
                      (\<forall>v. v \<in> dom rm1 \<longrightarrow> NFA (the (rm1 v))) \<and>
+ (\<forall>v v1 v2.
+           v \<in> dom rc \<and> (v1, v2) \<in> the (rc v) \<longrightarrow>
+           \<Sigma> (the (rm1 v1)) = \<Sigma> (the (rm1 v2))) \<and>
                      (\<forall>v\<in>S1. the (rm1 v) = the (rm v)) \<and>
                      (\<forall>x\<in>S' \<union> R - S1.
                          NFA (the (rm1 x)) \<and>
@@ -1979,6 +2048,9 @@ proof -
                                     dom rm1 = S' \<union> R \<and>
                                     closureR Ra rc \<and>
                                     (\<forall>v. v \<in> dom rm1 \<longrightarrow> NFA (the (rm1 v))) \<and>
+                                    (\<forall>v v1 v2.
+                                        v \<in> dom rc \<and> (v1, v2) \<in> the (rc v) \<longrightarrow>
+                                        \<Sigma> (the (rm1 v1)) = \<Sigma> (the (rm1 v2))) \<and>
                                     (\<forall>v\<in>S1. the (rm1 v) = the (rm v)) \<and>
                                     (\<forall>x\<in>S' \<union> R - S1.
                                         NFA (the (rm1 x)) \<and>
@@ -2008,10 +2080,10 @@ NFA_accept (the (rm1 x)) w =
           apply (rule conjI)
           using p1 
           apply (metis Un_iff domD p31)
-          defer
           apply (rule conjI)
           apply (metis t3)
-          apply (rule conjI)  
+          apply (rule conjI) 
+          sledgehammer
           using p0 apply blast
           apply (rule conjI)
         proof 
@@ -2219,8 +2291,9 @@ NFA_accept (the (rm1 x)) w =
          unfolding finite_fwr_def finite_psubset_def
          by blast 
      }
-     qed 
-     from this show "language_vars t rc rm1 a b
+   qed 
+     from this language_vars_correct' \<Sigma>_eq t2'
+     show "language_vars t rc rm1 a b
     \<le> SPEC (\<lambda>rm'. RETURN (S' - t, rm', R \<union> t)
                    \<le> SPEC (\<lambda>s'. (case s' of
                                   (S1, rm1, Ra) \<Rightarrow>
@@ -2230,6 +2303,9 @@ NFA_accept (the (rm1 x)) w =
                                     dom rm1 = S' \<union> R \<and>
                                     closureR Ra rc \<and>
                                     (\<forall>v. v \<in> dom rm1 \<longrightarrow> NFA (the (rm1 v))) \<and>
+ (\<forall>v v1 v2.
+           v \<in> dom rc \<and> (v1, v2) \<in> the (rc v) \<longrightarrow>
+           \<Sigma> (the (rm1 v1)) = \<Sigma> (the (rm1 v2))) \<and>
                                     (\<forall>v\<in>S1. the (rm1 v) = the (rm v)) \<and>
                                     (\<forall>x\<in>S' \<union> R - S1.
                                         NFA (the (rm1 x)) \<and>
@@ -2243,7 +2319,7 @@ NFA_accept (the (rm1 x)) w =
         \<exists>w1. NFA_accept (the (rm1 v1)) w1 \<and>
              (\<exists>w2. NFA_accept (the (rm1 v2)) w2 \<and> w = w1 @ w2))))))) \<and>
                                  (s', S', rm1, R) \<in> finite_fwr))"
-       using SPEC_trans language_vars_correct' by blast
+       using SPEC_trans \<Sigma>_eq language_vars_correct'  by auto
    qed qed qed qed
   
    from this compute_ready_set_correct  domrc
@@ -2258,6 +2334,8 @@ NFA_accept (the (rm1 x)) w =
                                        dom rm1 = S' \<union> R \<and>
                                        closureR Ra rc \<and>
                                        (\<forall>v. v \<in> dom rm1 \<longrightarrow> NFA (the (rm1 v))) \<and>
+(\<forall>v v1 v2.
+ v \<in> dom rc \<and> (v1, v2) \<in> the (rc v) \<longrightarrow> \<Sigma> (the (rm1 v1)) = \<Sigma> (the (rm1 v2))) \<and>
                                        (\<forall>v\<in>S1. the (rm1 v) = the (rm v)) \<and>
                                        (\<forall>x\<in>S' \<union> R - S1.
                                            NFA (the (rm1 x)) \<and>

@@ -6,7 +6,6 @@ theory NFA_interval_Spec
 imports Main 
   "../NFA_set_interval" 
   "Collections.Collections"
-  "../DFA" 
   "../Epsilon_elim"
 
 begin
@@ -21,7 +20,7 @@ type_synonym ('q,'a,'nfa) nfa_\<alpha> = "'nfa \<Rightarrow> ('q, 'a) NFA_rec"
   text \<open>construct nfa from lists \<close>
 
   type_synonym ('q,'a,'nfa) nfa_from_list = 
-    "('q list \<times> 'a list \<times> ('q \<times> 'a list \<times> 'q) list \<times> 'q list \<times> 'q list) \<Rightarrow> 'nfa"
+    "('q list \<times> ('q \<times> 'a list \<times> 'q) list \<times> 'q list \<times> 'q list) \<Rightarrow> 'nfa"
 
   locale nfa_from_list = nfa +
     constrains \<alpha> :: "('q,'a,'nfa) nfa_\<alpha>"
@@ -32,21 +31,18 @@ type_synonym ('q,'a,'nfa) nfa_\<alpha> = "'nfa \<Rightarrow> ('q, 'a) NFA_rec"
   begin
     lemma nfa_from_list_correct___isomorphic :
       "invar (from_list l)"
-      "(\<forall>(q, \<sigma>, q')\<in>set (fst (snd (snd l))). set \<sigma> \<subseteq> set (fst (snd l))) \<longrightarrow>
-        NFA_isomorphic_wf (\<alpha> (from_list l)) (NFA_construct l)"
+      "NFA_isomorphic_wf (\<alpha> (from_list l)) (NFA_construct l)"
       by (simp_all add: nfa_from_list_correct NFA_isomorphic_wf_def NFA_isomorphic_refl
                       NFA_construct___is_well_formed)
   end
 
   type_synonym ('q,'a,'nfa) nfa_from_list_interval = 
-    "('q list \<times> ('a \<times> 'a) list \<times> ('q \<times> ('a \<times> 'a) list \<times> 'q) list 
+    "('q list \<times> ('q \<times> ('a \<times> 'a) list \<times> 'q) list 
       \<times> 'q list \<times> 'q list) \<Rightarrow> 'nfa"
-
-  thm NFA_construct_interval___is_well_formed
 
   locale nfa_from_list_interval = nfa +
     constrains \<alpha> :: "('q,'a::linorder,'nfa) nfa_\<alpha>"
-    fixes wf :: "('q list \<times> ('a \<times> 'a) list \<times> ('q \<times> ('a \<times> 'a) list \<times> 'q) list 
+    fixes wf :: "('q list \<times>  ('q \<times> ('a \<times> 'a) list \<times> 'q) list 
       \<times> 'q list \<times> 'q list) \<Rightarrow> bool"
     fixes from_interval :: "('q,'a,'nfa) nfa_from_list_interval"
     assumes nfa_from_list_interval_correct:
@@ -55,8 +51,7 @@ type_synonym ('q,'a,'nfa) nfa_\<alpha> = "'nfa \<Rightarrow> ('q, 'a) NFA_rec"
   begin
     lemma nfa_from_list_interval_correct___isomorphic :
       "wf l \<Longrightarrow> invar (from_interval l)"
-      "wf l \<Longrightarrow> (\<forall> (q,d,q') \<in> set (fst (snd (snd l))). finite (semIs d)) \<longrightarrow>
-       (\<forall> (q, \<sigma>, q') \<in> set (fst (snd (snd l))). semIs \<sigma> \<subseteq> semIs (fst (snd l))) \<longrightarrow>
+      "wf l \<Longrightarrow> (\<forall> (q,d,q') \<in> set (fst (snd l)). finite (semIs d))  \<longrightarrow>
          NFA_isomorphic_wf (\<alpha> (from_interval l)) (NFA_construct_interval l)"
       apply auto
       by (simp_all add: nfa_from_list_interval_correct 
@@ -66,7 +61,7 @@ type_synonym ('q,'a,'nfa) nfa_\<alpha> = "'nfa \<Rightarrow> ('q, 'a) NFA_rec"
   end
 
   type_synonym ('q,'a,'nfa) nfa_to_list = 
-    "'nfa \<Rightarrow> ('q list \<times> 'a list \<times> ('q \<times> 'a list \<times> 'q) list \<times> 'q list \<times> 'q list)"
+    "'nfa \<Rightarrow> ('q list \<times> ('q \<times> 'a list \<times> 'q) list \<times> 'q list \<times> 'q list)"
   locale nfa_to_list = nfa +
     constrains \<alpha> :: "('q,'a,'nfa) nfa_\<alpha>"
     fixes to_list :: "('q,'a,'nfa) nfa_to_list"
@@ -74,9 +69,7 @@ type_synonym ('q,'a,'nfa) nfa_\<alpha> = "'nfa \<Rightarrow> ('q, 'a) NFA_rec"
       "invar n \<Longrightarrow> NFA_construct (to_list n) = \<alpha> n"
   begin
     lemma to_list_correct___isomorphic :
-      "invar n \<Longrightarrow>  
-        (\<forall>(q, \<sigma>, q')\<in>set (fst (snd (snd (to_list n)))). 
-                            set \<sigma> \<subseteq> set (fst (snd (to_list n)))) \<Longrightarrow>
+      "invar n \<Longrightarrow> 
       NFA_isomorphic_wf (\<alpha> n) (NFA_construct (to_list n))"
     using to_list_correct[of n]
     apply (simp add: NFA_isomorphic_wf_def NFA_isomorphic_refl)
@@ -248,7 +241,7 @@ end
 
 
   type_synonym ('q2,'i,'a,'\<sigma>,'nfa) nfa_construct = 
-    "('q2 \<Rightarrow> 'i) \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> 'q2 list \<Rightarrow>  ('q2 \<Rightarrow> bool) \<Rightarrow> 
+    "('q2 \<Rightarrow> 'i) \<Rightarrow> 'q2 list \<Rightarrow>  ('q2 \<Rightarrow> bool) \<Rightarrow> 
      ('q2 \<Rightarrow> (('a \<times> 'a) list \<times>'q2,'\<sigma>) set_iterator) \<Rightarrow> 'nfa"
 
   locale nfa_construct_no_enc = nfa \<alpha> invar + set s_\<alpha> s_invar 
@@ -261,14 +254,13 @@ end
          distinct I; 
          set I = \<I> \<A>;
          finite D;
-         \<Sigma> \<A> = semIs Sig;
          \<forall> (q, a, q') \<in> D. canonicalIs a;
          {(q, semIs a, q') | q a q'. (q, a, q') \<in> D} = (\<Delta> \<A>); 
          \<And>q. q \<in> \<Q> \<A> \<Longrightarrow> FP q \<longleftrightarrow> q \<in> \<F> \<A>;
          \<And>q. q \<in> \<Q> \<A> \<Longrightarrow> set_iterator (D_it q) 
               {(a, q'). (q, a, q') \<in> D}\<rbrakk> \<Longrightarrow> 
-         (invar (construct f Sig I FP D_it) \<and>
-         NFA_isomorphic_wf (\<alpha> (construct f Sig I FP D_it)) 
+         (invar (construct f I FP D_it) \<and>
+         NFA_isomorphic_wf (\<alpha> (construct f I FP D_it)) 
          (NFA_remove_unreachable_states \<A>))"
 
 
@@ -276,7 +268,7 @@ end
 
 
   type_synonym ('q2,'i,'a,'\<sigma>,'nfa) nfa_construct_prod = 
-    "('q2 \<Rightarrow> 'i) \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> 'q2 list  \<Rightarrow> ('q2 \<Rightarrow> bool) \<Rightarrow> 
+    "('q2 \<Rightarrow> 'i) \<Rightarrow> 'q2 list  \<Rightarrow> ('q2 \<Rightarrow> bool) \<Rightarrow> 
      ('q2 \<Rightarrow> ((('a \<times> 'a) list \<times> ('a \<times> 'a) list) \<times>'q2,'\<sigma>) set_iterator) \<Rightarrow> 'nfa"
 
     locale nfa_construct_no_enc_prod = nfa \<alpha> invar + set s_\<alpha> s_invar 
@@ -289,7 +281,6 @@ end
          distinct I; 
          set I = \<I> \<A>;
          finite D;
-         (\<Sigma> \<A>) = semIs Sig;
          (\<forall>q a b q'.
          ((q, (a, b), q') \<in> {(q, a, q'). (q, a, q') \<in> D}) 
                     \<longrightarrow> canonicalIs a \<and> canonicalIs b);
@@ -297,8 +288,8 @@ end
          \<And>q. q \<in> \<Q> \<A> \<Longrightarrow> FP q \<longleftrightarrow> q \<in> \<F> \<A>;
          \<And>q. set_iterator (D_it q) 
               {(a, q'). (q, a, q') \<in> D}\<rbrakk> \<Longrightarrow> 
-         (invar (construct f Sig I FP D_it) \<and>
-         NFA_isomorphic_wf (\<alpha> (construct f Sig I FP D_it)) 
+         (invar (construct f  I FP D_it) \<and>
+         NFA_isomorphic_wf (\<alpha> (construct f I FP D_it)) 
          (NFA_remove_unreachable_states \<A>))"
 
   locale nfa_construct = nfa \<alpha> invar + set s_\<alpha> s_invar 
@@ -312,7 +303,6 @@ end
          \<And>q. q2_invar q \<Longrightarrow> q2_\<alpha> q \<in> \<Q> \<A> \<Longrightarrow> ff q = (f (q2_\<alpha> q));
          distinct (map q2_\<alpha> I);
          finite (\<Delta> \<A>);
-         \<Sigma> \<A> = semIs Sig;
          \<And>q.  \<forall> (a, q') \<in> (DS q). canonicalIs a ;
          \<And>q.  q2_invar q \<Longrightarrow> q2_\<alpha> q \<in> \<Q> \<A> \<Longrightarrow> inj_on q2_\<alpha> {q'| a q'. (a, q') \<in> (DS q)} ;
          \<And>q. q \<in> set I \<Longrightarrow> q2_invar q; q2_\<alpha> ` (set I) = \<I> \<A>;
@@ -326,9 +316,9 @@ end
                (\<forall>a q'. (a, q') \<in> (DS q) \<longrightarrow> (\<forall>q''. (a, q'') \<in> (DS q) 
                 \<longrightarrow> (q2_\<alpha> q' = q2_\<alpha> q'') = (q' = q'')))
             \<rbrakk> \<Longrightarrow>
-         (invar (construct ff Sig I FP D_it) \<and>
+         (invar (construct ff I FP D_it) \<and>
           NFA_isomorphic_wf 
-          (\<alpha> (construct ff Sig I FP D_it)) 
+          (\<alpha> (construct ff I FP D_it)) 
           (NFA_remove_unreachable_states \<A>))"
 
   locale nfa_construct_prod = nfa \<alpha> invar + set s_\<alpha> s_invar 
@@ -342,7 +332,6 @@ end
          \<And>q. q2_invar q \<Longrightarrow> q2_\<alpha> q \<in> \<Q> \<A> \<Longrightarrow> ff q = (f (q2_\<alpha> q));
          distinct (map q2_\<alpha> I);
          finite D;
-         (\<Sigma> \<A>) = semIs Sig;
          finite (\<Delta> \<A>);
          \<And>q a b q'. ((a,b), q') \<in> DS q \<longrightarrow> canonicalIs a \<and> canonicalIs b;
          {(q,  (fst a) \<inter>  (snd a), q') | q a q'. (q,a,q') \<in> D} = (\<Delta> \<A>);
@@ -358,9 +347,9 @@ end
                (\<forall>a q'. (a, q') \<in> (DS q) \<longrightarrow> (\<forall>q''. (a, q'') \<in> (DS q) 
                 \<longrightarrow> (q2_\<alpha> q' = q2_\<alpha> q'') = (q' = q'')))
             \<rbrakk> \<Longrightarrow>
-         (invar (construct ff Sig I FP D_it) \<and>
+         (invar (construct ff I FP D_it) \<and>
           NFA_isomorphic_wf 
-          (\<alpha> (construct ff Sig I FP D_it)) 
+          (\<alpha> (construct ff I FP D_it)) 
           (NFA_remove_unreachable_states \<A>))"
 
 
@@ -378,8 +367,7 @@ end
                (\<forall>f. inj_on f (NFA_set_interval.NFA_rec.\<Q> \<A>) \<longrightarrow>
                     (\<forall>ff. (\<forall>q. q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> ff q = f q) \<longrightarrow>
                           (\<forall>I. distinct I \<longrightarrow>
-                               finite (NFA_set_interval.NFA_rec.\<Delta> \<A>) \<longrightarrow>
-                               (\<forall>Sig. NFA_set_interval.NFA_rec.\<Sigma> \<A> = semIs Sig \<longrightarrow>
+                               finite (NFA_rec.\<Delta> \<A>) \<longrightarrow>
                                       (\<forall>DS. (\<forall>q.
    \<forall>x\<in>DS q. case x of (a, q') \<Rightarrow> canonicalIs a) \<longrightarrow>
                                             set I = NFA_set_interval.NFA_rec.\<I> \<A> \<longrightarrow>
@@ -391,15 +379,14 @@ end
             set_iterator (D_it q) (DS q) \<and>
             {(a, q'). (q, a, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A>} =
             (\<lambda>x. case x of (a, x) \<Rightarrow> (semIs a, x)) ` DS q) \<longrightarrow>
-       invar (construct ff Sig I FP D_it) \<and>
-       NFA_set_interval.NFA_isomorphic_wf (\<alpha> (construct ff Sig I FP D_it))
-        (NFA_set_interval.NFA_remove_unreachable_states \<A>)))))))))"
+       invar (construct ff I FP D_it) \<and>
+       NFA_set_interval.NFA_isomorphic_wf (\<alpha> (construct ff I FP D_it))
+        (NFA_set_interval.NFA_remove_unreachable_states \<A>))))))))"
     show "NFA_set_interval.NFA \<A> \<longrightarrow>
          (\<forall>f. inj_on f (NFA_set_interval.NFA_rec.\<Q> \<A>) \<longrightarrow>
               (\<forall>I. distinct I \<longrightarrow>
                    set I = NFA_set_interval.NFA_rec.\<I> \<A> \<longrightarrow>
                    (\<forall>D. finite D \<longrightarrow>
-                        (\<forall>Sig. NFA_set_interval.NFA_rec.\<Sigma> \<A> = semIs Sig \<longrightarrow>
                                (\<forall>(q, a, q')\<in>D. canonicalIs a) \<longrightarrow>
                                {(q, semIs a, q') |q a q'. (q, a, q') \<in> D} =
                                NFA_set_interval.NFA_rec.\<Delta> \<A> \<longrightarrow>
@@ -408,28 +395,27 @@ end
                                      (\<forall>D_it.
                                          (\<forall>q.
 q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
-                                         invar (construct f Sig I FP D_it) \<and>
+                                         invar (construct f I FP D_it) \<and>
                                          NFA_set_interval.NFA_isomorphic_wf
-                                          (\<alpha> (construct f Sig I FP D_it))
+                                          (\<alpha> (construct f I FP D_it))
                                           (NFA_set_interval.NFA_remove_unreachable_states
-                                            \<A>)))))))"
+                                            \<A>))))))"
       apply (rule impI allI)+
     proof -
-      fix f I D Sig FP D_it 
+      fix f I D FP D_it 
       show "NFA_set_interval.NFA \<A> \<Longrightarrow>
        inj_on f (NFA_set_interval.NFA_rec.\<Q> \<A>) \<Longrightarrow>
        distinct I \<Longrightarrow>
        set I = NFA_set_interval.NFA_rec.\<I> \<A> \<Longrightarrow>
        finite D \<Longrightarrow>
-       NFA_set_interval.NFA_rec.\<Sigma> \<A> = semIs Sig \<Longrightarrow>
        \<forall>(q, a, q')\<in>D. canonicalIs a \<Longrightarrow>
        {(q, semIs a, q') |q a q'. (q, a, q') \<in> D} = NFA_set_interval.NFA_rec.\<Delta> \<A> \<Longrightarrow>
        \<forall>q. q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow>
            FP q = (q \<in> NFA_set_interval.NFA_rec.\<F> \<A>) \<Longrightarrow>
        \<forall>q. q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow>
            set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D} \<Longrightarrow>
-       invar (construct f Sig I FP D_it) \<and>
-       NFA_set_interval.NFA_isomorphic_wf (\<alpha> (construct f Sig I FP D_it))
+       invar (construct f I FP D_it) \<and>
+       NFA_set_interval.NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
         (NFA_set_interval.NFA_remove_unreachable_states \<A>)"
       proof -
       assume p2: "NFA \<A>" and
@@ -440,15 +426,13 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
              p7: "{(q, semIs a, q') |q a q'. (q, a, q') \<in> D} = NFA_set_interval.NFA_rec.\<Delta> \<A>" and
              p8: "\<forall>q. q \<in> \<Q> \<A> \<longrightarrow> FP q = (q \<in> \<F> \<A>)" and
              p9: "\<forall>q. q \<in> \<Q> \<A> \<longrightarrow> set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}" and
-             p10: "\<forall>(q, a, q')\<in>D. canonicalIs a" and
-             pi1: "\<Sigma> \<A> = semIs Sig"
+             p10: "\<forall>(q, a, q')\<in>D. canonicalIs a"
 
       from this p1
       have "(\<forall>f. inj_on f (NFA_set_interval.NFA_rec.\<Q> \<A>) \<longrightarrow>
                (\<forall>ff. (\<forall>q. q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> ff q = f q) \<longrightarrow>
                      (\<forall>I. distinct I \<longrightarrow>
                           finite (NFA_set_interval.NFA_rec.\<Delta> \<A>) \<longrightarrow>
-                          (\<forall>Sig. NFA_set_interval.NFA_rec.\<Sigma> \<A> = semIs Sig \<longrightarrow>
                                  (\<forall>DS. (\<forall>q. \<forall>x\<in>DS q.
   case x of (a, q') \<Rightarrow> canonicalIs a) \<longrightarrow>
                                        set I = NFA_set_interval.NFA_rec.\<I> \<A> \<longrightarrow>
@@ -459,16 +443,15 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
          set_iterator (D_it q) (DS q) \<and>
          {(a, q'). (q, a, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A>} =
          (\<lambda>x. case x of (a, x) \<Rightarrow> (semIs a, x)) ` DS q) \<longrightarrow>
-    invar (construct ff Sig I FP D_it) \<and>
-    NFA_set_interval.NFA_isomorphic_wf (\<alpha> (construct ff Sig I FP D_it))
-     (NFA_set_interval.NFA_remove_unreachable_states \<A>))))))))"
+    invar (construct ff I FP D_it) \<and>
+    NFA_set_interval.NFA_isomorphic_wf (\<alpha> (construct ff I FP D_it))
+     (NFA_set_interval.NFA_remove_unreachable_states \<A>)))))))"
         by simp
       from p1 p2 p3 p4 p5 p6 p7 p8 p9 have "
         inj_on f (\<Q> \<A>) \<longrightarrow>
                     (\<forall>ff. (\<forall>q. q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> ff q = f q) \<longrightarrow>
                      (\<forall>I. distinct I \<longrightarrow>
                           finite (NFA_set_interval.NFA_rec.\<Delta> \<A>) \<longrightarrow>
-                          (\<forall>Sig. NFA_set_interval.NFA_rec.\<Sigma> \<A> = semIs Sig \<longrightarrow>
                                  (\<forall>DS. (\<forall>q. \<forall>x\<in>DS q.
   case x of (a, q') \<Rightarrow> canonicalIs a) \<longrightarrow>
                                        set I = NFA_set_interval.NFA_rec.\<I> \<A> \<longrightarrow>
@@ -479,16 +462,15 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
          set_iterator (D_it q) (DS q) \<and>
          {(a, q'). (q, a, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A>} =
          (\<lambda>x. case x of (a, x) \<Rightarrow> (semIs a, x)) ` DS q) \<longrightarrow>
-    invar (construct ff Sig I FP D_it) \<and>
-    NFA_set_interval.NFA_isomorphic_wf (\<alpha> (construct ff Sig I FP D_it))
-     (NFA_set_interval.NFA_remove_unreachable_states \<A>)))))))"
+    invar (construct ff I FP D_it) \<and>
+    NFA_set_interval.NFA_isomorphic_wf (\<alpha> (construct ff I FP D_it))
+     (NFA_set_interval.NFA_remove_unreachable_states \<A>))))))"
         by simp
 
      from p1 p2 p3 p4 p5 p6 p7 p8 p9 have "
         (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow> f q = f q) \<longrightarrow>
                           (\<forall>I. distinct I \<longrightarrow>
                           finite (\<Delta> \<A>) \<longrightarrow>
-                          (\<forall>Sig. NFA_set_interval.NFA_rec.\<Sigma> \<A> = semIs Sig \<longrightarrow>
                                  (\<forall>DS. (\<forall>q. \<forall>x\<in>DS q.
   case x of (a, q') \<Rightarrow> canonicalIs a) \<longrightarrow>
                                      set I = \<I> \<A> \<longrightarrow>
@@ -497,9 +479,9 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
    (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
         set_iterator (D_it q) (DS q) \<and>
         {(a, q'). (q, a, q') \<in> \<Delta> \<A>} = (\<lambda>x. case x of (a, x) \<Rightarrow> (semIs a, x)) ` DS q) \<longrightarrow>
-   invar (construct f Sig I FP D_it) \<and>
-   NFA_isomorphic_wf (\<alpha> (construct f Sig I FP D_it))
-    (NFA_remove_unreachable_states \<A>))))))"
+   invar (construct f  I FP D_it) \<and>
+   NFA_isomorphic_wf (\<alpha> (construct f  I FP D_it))
+    (NFA_remove_unreachable_states \<A>)))))"
         by simp
   from p6 p7 have finiteA: "finite (\<Delta> \<A>)"
     apply (subgoal_tac "{(q, semIs a, q') |q a q'. (q, a, q') \<in> D} = 
@@ -528,7 +510,7 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
     qed qed
     
     
-    from p1 p2 p3 p4 p5 p6 p7 p8 p9 pi1 finiteA this have 
+    from p1 p2 p3 p4 p5 p6 p7 p8 p9  finiteA this have 
           cc1: "
                                  (\<And> DS. (\<forall>q. \<forall>x\<in>DS q.
   case x of (a, q') \<Rightarrow> canonicalIs a) \<longrightarrow>
@@ -538,8 +520,8 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
    (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
         set_iterator (D_it q) (DS q) \<and>
         {(a, q'). (q, a, q') \<in> \<Delta> \<A>} = (\<lambda>x. case x of (a, x) \<Rightarrow> (semIs a, x)) ` DS q) \<longrightarrow>
-   invar (construct f Sig I FP D_it) \<and>
-   NFA_isomorphic_wf (\<alpha> (construct f Sig I FP D_it))
+   invar (construct f I FP D_it) \<and>
+   NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
     (NFA_remove_unreachable_states \<A>))))"
     by simp
   from p10 
@@ -555,20 +537,20 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
         set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D} \<and>
         {(a, q'). (q, a, q') \<in> \<Delta> \<A>} = (\<lambda>x. case x of (a, x) \<Rightarrow> 
           (semIs a, x)) ` {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
-   invar (construct f Sig I FP D_it) \<and>
-   NFA_isomorphic_wf (\<alpha> (construct f Sig I FP D_it))
+   invar (construct f I FP D_it) \<and>
+   NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
     (NFA_remove_unreachable_states \<A>)))"
     by simp
 
-  from p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 pi1 this have "
+  from p1 p2 p3 p4 p5 p6 p7 p8 p9 p10  this have "
                   (\<forall>FP. (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow> FP q = (q \<in> \<F> \<A>)) \<longrightarrow>
                     (\<forall>D_it.
    (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
         set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D} \<and>
         {(a, q'). (q, a, q') \<in> \<Delta> \<A>} = (\<lambda>x. case x of (a, x) \<Rightarrow> 
           (semIs a, x)) ` {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
-   invar (construct f Sig I FP D_it) \<and>
-   NFA_isomorphic_wf (\<alpha> (construct f Sig I FP D_it))
+   invar (construct f I FP D_it) \<and>
+   NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
     (NFA_remove_unreachable_states \<A>)))"
     by simp
 
@@ -578,8 +560,8 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
         set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D} \<and>
         {(a, q'). (q, a, q') \<in> \<Delta> \<A>} = (\<lambda>x. case x of (a, x) \<Rightarrow> 
           (semIs a, x)) ` {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
-   invar (construct f Sig I FP D_it) \<and>
-   NFA_isomorphic_wf (\<alpha> (construct f Sig I FP D_it))
+   invar (construct f I FP D_it) \<and>
+   NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
     (NFA_remove_unreachable_states \<A>))"
         by simp
 
@@ -588,8 +570,8 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
         set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D} \<and>
         {(a, q'). (q, a, q') \<in> \<Delta> \<A>} = (\<lambda>x. case x of (a, x) \<Rightarrow> 
           (semIs a, x)) ` {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
-   invar (construct f Sig I FP D_it) \<and>
-   NFA_isomorphic_wf (\<alpha> (construct f Sig I FP D_it))
+   invar (construct f I FP D_it) \<and>
+   NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
     (NFA_remove_unreachable_states \<A>)"
         by simp
       from  p6 p7 p9
@@ -630,8 +612,8 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
           }
         qed qed
         from this cc1
-  show "invar (construct f Sig I FP D_it) \<and>
-    NFA_set_interval.NFA_isomorphic_wf (\<alpha> (construct f Sig I FP D_it))
+  show "invar (construct f I FP D_it) \<and>
+    NFA_set_interval.NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
      (NFA_set_interval.NFA_remove_unreachable_states \<A>)"
     by simp
 qed qed qed
@@ -650,8 +632,7 @@ qed qed qed
                (\<forall>f. inj_on f (NFA_set_interval.NFA_rec.\<Q> \<A>) \<longrightarrow>
                     (\<forall>ff. (\<forall>q. q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> ff q = f q) \<longrightarrow>
                           (\<forall>I. distinct I \<longrightarrow>
-                               (\<forall>D. finite D \<longrightarrow>
-                                    (\<forall>Sig. NFA_set_interval.NFA_rec.\<Sigma> \<A> = semIs Sig \<longrightarrow>
+                               (\<forall>D. finite D \<longrightarrow> 
                                            finite (NFA_set_interval.NFA_rec.\<Delta> \<A>) \<longrightarrow>
                                            (\<forall>DS.
   (\<forall>q a b. (\<exists>q'. ((a, b), q') \<in> DS q) \<longrightarrow> canonicalIs a \<and> canonicalIs b) \<longrightarrow>
@@ -664,15 +645,14 @@ qed qed qed
                  set_iterator (D_it q) (DS q) \<and>
                  {(a, q'). (q, a, q') \<in> D} =
                  (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) ` DS q) \<longrightarrow>
-            invar (construct ff Sig I FP D_it) \<and>
-            NFA_set_interval.NFA_isomorphic_wf (\<alpha> (construct ff Sig I FP D_it))
-             (NFA_set_interval.NFA_remove_unreachable_states \<A>))))))))))"
+            invar (construct ff I FP D_it) \<and>
+            NFA_set_interval.NFA_isomorphic_wf (\<alpha> (construct ff I FP D_it))
+             (NFA_set_interval.NFA_remove_unreachable_states \<A>)))))))))"
     show "NFA \<A> \<longrightarrow>
          (\<forall>f. inj_on f (NFA_set_interval.NFA_rec.\<Q> \<A>) \<longrightarrow>
               (\<forall>I. distinct I \<longrightarrow>
                    set I = NFA_set_interval.NFA_rec.\<I> \<A> \<longrightarrow>
                    (\<forall>D. finite D \<longrightarrow>
-                        (\<forall>Sig. NFA_set_interval.NFA_rec.\<Sigma> \<A> = semIs Sig \<longrightarrow>
                                (\<forall>q a b.
                                    (\<exists>q'. (q, (a, b), q') \<in> D) \<longrightarrow>
                                    canonicalIs a \<and> canonicalIs b) \<longrightarrow>
@@ -684,11 +664,11 @@ qed qed qed
                                      (\<forall>D_it.
                                          (\<forall>q.
 set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
-                                         invar (construct f Sig I FP D_it) \<and>
+                                         invar (construct f I FP D_it) \<and>
                                          NFA_set_interval.NFA_isomorphic_wf
-                                          (\<alpha> (construct f Sig I FP D_it))
+                                          (\<alpha> (construct f I FP D_it))
                                           (NFA_set_interval.NFA_remove_unreachable_states
-                                            \<A>)))))))"
+                                            \<A>))))))"
       apply (rule impI allI)+
     proof -
       fix f I D Sig FP D_it
@@ -697,15 +677,14 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
        distinct I \<Longrightarrow>
        set I = NFA_set_interval.NFA_rec.\<I> \<A> \<Longrightarrow>
        finite D \<Longrightarrow>
-       NFA_set_interval.NFA_rec.\<Sigma> \<A> = semIs Sig \<Longrightarrow>
        \<forall>q a b. (\<exists>q'. (q, (a, b), q') \<in> D) \<longrightarrow> canonicalIs a \<and> canonicalIs b \<Longrightarrow>
        {(q, semIs a \<inter> semIs b, q') |q a b q'. (q, (a, b), q') \<in> D} =
        NFA_set_interval.NFA_rec.\<Delta> \<A> \<Longrightarrow>
        \<forall>q. q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow>
            FP q = (q \<in> NFA_set_interval.NFA_rec.\<F> \<A>) \<Longrightarrow>
        \<forall>q. set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D} \<Longrightarrow>
-       invar (construct f Sig I FP D_it) \<and>
-       NFA_set_interval.NFA_isomorphic_wf (\<alpha> (construct f Sig I FP D_it))
+       invar (construct f I FP D_it) \<and>
+       NFA_set_interval.NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
         (NFA_set_interval.NFA_remove_unreachable_states \<A>)"
       proof -     
      assume p2: "NFA \<A>" 
@@ -719,8 +698,7 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
     NFA_set_interval.NFA_rec.\<Delta> \<A>" and
              p8: "\<forall>q. q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow>
         FP q = (q \<in> NFA_set_interval.NFA_rec.\<F> \<A>)" and
-             p9: "\<forall>q. set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}"  and
-             p10: "\<Sigma> \<A> = semIs Sig"
+             p9: "\<forall>q. set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}" 
       from this p1
       have " (\<forall>f. inj_on f (\<Q> \<A>) \<longrightarrow>
                     (\<forall>ff. (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow> ff q = f q) \<longrightarrow>
@@ -740,11 +718,11 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
            set_iterator (D_it q) (DS q) \<and>
            {(a, q'). (q, a, q') \<in> D} =
            (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) ` DS q) \<longrightarrow>
-      invar (construct ff Sig I FP D_it) \<and>
-      NFA_isomorphic_wf (\<alpha> (construct ff Sig I FP D_it))
+      invar (construct ff I FP D_it) \<and>
+      NFA_isomorphic_wf (\<alpha> (construct ff I FP D_it))
        (NFA_remove_unreachable_states \<A>))))))))"
         by simp
-      from p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 have "
+      from p1 p2 p3 p4 p5 p6 p7 p8 p9 have "
                     (\<forall>ff. (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow> ff q = f q) \<longrightarrow>
                           (\<forall>I. distinct I \<longrightarrow>
                                (\<forall>D. finite D \<longrightarrow>
@@ -763,12 +741,12 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
            set_iterator (D_it q) (DS q) \<and>
            {(a, q'). (q, a, q') \<in> D} =
            (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) ` DS q) \<longrightarrow>
-      invar (construct ff Sig I FP D_it) \<and>
-      NFA_isomorphic_wf (\<alpha> (construct ff Sig I FP D_it))
+      invar (construct ff I FP D_it) \<and>
+      NFA_isomorphic_wf (\<alpha> (construct ff I FP D_it))
        (NFA_remove_unreachable_states \<A>)))))))"
         by simp
 
-     from p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 have "
+     from p1 p2 p3 p4 p5 p6 p7 p8 p9 have "
                           (\<forall>I. distinct I \<longrightarrow>
                                (\<forall>D. finite D \<longrightarrow>
                                     finite (\<Delta> \<A>) \<longrightarrow>
@@ -786,12 +764,12 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
            set_iterator (D_it q) (DS q) \<and>
            {(a, q'). (q, a, q') \<in> D} =
            (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) ` DS q) \<longrightarrow>
-      invar (construct f Sig I FP D_it) \<and>
-      NFA_isomorphic_wf (\<alpha> (construct f Sig I FP D_it))
+      invar (construct f  I FP D_it) \<and>
+      NFA_isomorphic_wf (\<alpha> (construct f  I FP D_it))
        (NFA_remove_unreachable_states \<A>))))))"
        by simp
 
-   from p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 have "
+   from p1 p2 p3 p4 p5 p6 p7 p8 p9 have "
                                (\<forall>D. finite D \<longrightarrow>
                                     finite (\<Delta> \<A>) \<longrightarrow>
                                     (\<forall>DS. (\<forall>q a b.
@@ -808,8 +786,8 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
            set_iterator (D_it q) (DS q) \<and>
            {(a, q'). (q, a, q') \<in> D} =
            (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) ` DS q) \<longrightarrow>
-      invar (construct f Sig I FP D_it) \<and>
-      NFA_isomorphic_wf (\<alpha> (construct f Sig I FP D_it))
+      invar (construct f I FP D_it) \<and>
+      NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
        (NFA_remove_unreachable_states \<A>)))))"
      by simp
 
@@ -838,7 +816,7 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
        by force
    qed
 
-   from p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 this have pz1: "
+   from p1 p2 p3 p4 p5 p6 p7 p8 p9 this have pz1: "
                                     finite (\<Delta> \<A>) \<longrightarrow>
                                     (\<forall>DS. (\<forall>q a b.
                                 (\<exists>q'. ((a, b), q') \<in> DS q) \<longrightarrow>
@@ -854,8 +832,8 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
            set_iterator (D_it q) (DS q) \<and>
            {(a, q'). (q, a, q') \<in> ?D} =
            (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) ` DS q) \<longrightarrow>
-      invar (construct f Sig I FP D_it) \<and>
-      NFA_isomorphic_wf (\<alpha> (construct f Sig I FP D_it))
+      invar (construct f I FP D_it) \<and>
+      NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
        (NFA_remove_unreachable_states \<A>))))"
        by simp
   
@@ -880,7 +858,7 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
       using image_iff by fastforce
   qed
     
-  from p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 finiteA this pz1 have "
+  from p1 p2 p3 p4 p5 p6 p7 p8 p9 finiteA this pz1 have "
   (\<forall>DS. (\<forall>q a b.
    (\<exists>q'. ((a, b), q') \<in> DS q) \<longrightarrow> canonicalIs a \<and> canonicalIs b) \<longrightarrow>
                                           {(q, a \<inter> b, q') |q a b q'.
@@ -894,8 +872,8 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
            set_iterator (D_it q) (DS q) \<and>
            {(a, q'). (q, a, q') \<in> ?D} =
            (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) ` DS q) \<longrightarrow>
-      invar (construct f Sig I FP D_it) \<and>
-      NFA_isomorphic_wf (\<alpha> (construct f Sig I FP D_it))
+      invar (construct f I FP D_it) \<and>
+      NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
        (NFA_remove_unreachable_states \<A>))))"
     by simp
 
@@ -913,12 +891,12 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
            {(a, q'). (q, a, q') \<in> ?D} =
            (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) 
             ` DS q) \<longrightarrow>
-      invar (construct f Sig I FP D_it) \<and>
-      NFA_isomorphic_wf (\<alpha> (construct f Sig I FP D_it))
+      invar (construct f I FP D_it) \<and>
+      NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
        (NFA_remove_unreachable_states \<A>))))"
     by simp
   
-  from p1 p2 p3 p4 p5 p6 p7 p8 p9  p10 p11 yu1[of "\<lambda> q.{(a, q'). (q, a, q') \<in> D}"]
+  from p1 p2 p3 p4 p5 p6 p7 p8 p9 p11 yu1[of "\<lambda> q.{(a, q'). (q, a, q') \<in> D}"]
   have "(\<forall>q a b.
   (\<exists>q'. ((a, b), q') \<in> {(a, q'). (q, a, q') \<in> D}) \<longrightarrow> canonicalIs a \<and> canonicalIs b) \<longrightarrow>
                                           {(q, a \<inter> b, q') |q a b q'.
@@ -933,12 +911,12 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
            {(a, q'). (q, a, q') \<in> ?D} =
            (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) 
             ` {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
-      invar (construct f Sig I FP D_it) \<and>
-      NFA_isomorphic_wf (\<alpha> (construct f Sig I FP D_it))
+      invar (construct f I FP D_it) \<and>
+      NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
        (NFA_remove_unreachable_states \<A>)))"
     by simp
 
-  from p1 p2 p3 p4 p5 p6 p7 p8 p9 p10  p11 this have ck1: "
+  from p1 p2 p3 p4 p5 p6 p7 p8 p9  p11 this have ck1: "
                   {(q, a \<inter> b, q') |q a b q'.
                                            (q, (a, b), q') \<in> ?D} =
                                           \<Delta> \<A> \<longrightarrow>
@@ -951,8 +929,8 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
            {(a, q'). (q, a, q') \<in> ?D} =
            (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) 
             ` {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
-      invar (construct f Sig I FP D_it) \<and>
-      NFA_isomorphic_wf (\<alpha> (construct f Sig I FP D_it))
+      invar (construct f I FP D_it) \<and>
+      NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
        (NFA_remove_unreachable_states \<A>)))"
     by simp
   from  p7 have "{(q, a \<inter> b, q') |q a b q'.
@@ -974,7 +952,7 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
           (\<exists>aa. ab = semIs aa \<and> (\<exists>bb. ba = semIs bb \<and> (a, (aa, bb), b) \<in> D))"
     by (metis (no_types) Pair_inject)
 qed
- from p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11 this ck1 have "
+ from p1 p2 p3 p4 p5 p6 p7 p8 p9 p11 this ck1 have "
    set I = \<I> \<A> \<longrightarrow> (\<forall>FP.
   (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow> FP q = (q \<in> \<F> \<A>)) \<longrightarrow>
   (\<forall>D_it.
@@ -983,12 +961,12 @@ qed
            {(a, q'). (q, a, q') \<in> ?D} =
            (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) 
             ` {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
-      invar (construct f Sig I FP D_it) \<and>
-      NFA_isomorphic_wf (\<alpha> (construct f Sig I FP D_it))
+      invar (construct f I FP D_it) \<and>
+      NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
        (NFA_remove_unreachable_states \<A>)))"
    by simp
 
-from p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11 this have "
+from p1 p2 p3 p4 p5 p6 p7 p8 p9 p11 this have "
     (\<forall>FP.
   (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow> FP q = (q \<in> \<F> \<A>)) \<longrightarrow>
   (\<forall>D_it.
@@ -997,35 +975,35 @@ from p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11 this have "
            {(a, q'). (q, a, q') \<in> ?D} =
            (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) 
             ` {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
-      invar (construct f Sig I FP D_it) \<and>
-      NFA_isomorphic_wf (\<alpha> (construct f Sig I FP D_it))
+      invar (construct f I FP D_it) \<and>
+      NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
        (NFA_remove_unreachable_states \<A>)))"
     by simp
 
-from p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11 this have "
+from p1 p2 p3 p4 p5 p6 p7 p8 p9 p11 this have "
   (\<forall>D_it.
       (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
            set_iterator (D_it q) ({(a, q'). (q, a, q') \<in> D}) \<and>
            {(a, q'). (q, a, q') \<in> ?D} =
            (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) 
             ` {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
-      invar (construct f Sig I FP D_it) \<and>
-      NFA_isomorphic_wf (\<alpha> (construct f Sig I FP D_it))
+      invar (construct f I FP D_it) \<and>
+      NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
        (NFA_remove_unreachable_states \<A>))"
     by simp
 
-from p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11 this have suc1: "
+from p1 p2 p3 p4 p5 p6 p7 p8 p9 p11 this have suc1: "
       (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
            set_iterator (D_it q) ({(a, q'). (q, a, q') \<in> D}) \<and>
            {(a, q'). (q, a, q') \<in> ?D} =
            (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) 
             ` {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
-      invar (construct f Sig I FP D_it) \<and>
-      NFA_isomorphic_wf (\<alpha> (construct f Sig I FP D_it))
+      invar (construct f I FP D_it) \<and>
+      NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
        (NFA_remove_unreachable_states \<A>)"
   by simp
 
-from p2 p3 p4 p5 p6 p7 p8 p9 p10 p11
+from p2 p3 p4 p5 p6 p7 p8 p9 p11
   have "(\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
          set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D} \<and>
          {(a, q').
@@ -1046,9 +1024,9 @@ from p2 p3 p4 p5 p6 p7 p8 p9 p10 p11
   qed
     
 
-  from p2 p3 p4 p5 p6 p7 p8 p9 p10 p11 this suc1
-  show "invar (construct f Sig I FP D_it) \<and>
-    NFA_isomorphic_wf (\<alpha> (construct f Sig I FP D_it)) (NFA_remove_unreachable_states \<A>)"
+  from p2 p3 p4 p5 p6 p7 p8 p9 p11 this suc1
+  show "invar (construct f I FP D_it) \<and>
+    NFA_isomorphic_wf (\<alpha> (construct f I FP D_it)) (NFA_remove_unreachable_states \<A>)"
     by simp
 qed qed qed
 
@@ -1147,6 +1125,7 @@ locale nfa_bool_comb_gen = nfa \<alpha>1 invar1 +
     done
 end
 
+(* dfa_construct is not necessary at the moment.
 locale dfa_construct = nfa \<alpha> invar + set s_\<alpha> s_invar 
     for \<alpha> invar 
     and s_\<alpha> :: "'a_set \<Rightarrow> 'a::linorder set" and s_invar + 
@@ -1170,7 +1149,7 @@ locale dfa_construct = nfa \<alpha> invar + set s_\<alpha> s_invar
             \<rbrakk> \<Longrightarrow> 
          (invar (construct ff Sig I FP D_it) \<and>
           NFA_isomorphic_wf (\<alpha> (construct ff Sig I FP D_it)) (NFA_remove_unreachable_states \<A>))"
-
+*)
 
 locale nfa_concat = nfa \<alpha>1 invar1 + nfa \<alpha>2 invar2 + nfa \<alpha>3 invar3   
     for \<alpha>1 :: "('q,'a::linorder,'nfa) nfa_\<alpha>" and invar1 and
@@ -1180,30 +1159,26 @@ locale nfa_concat = nfa \<alpha>1 invar1 + nfa \<alpha>2 invar2 + nfa \<alpha>3 
   assumes nfa_concat_correct_aux:
       "invar1 n1 \<Longrightarrow> invar2 n2 \<Longrightarrow> 
        \<Q> (\<alpha>1 n1) \<inter> \<Q> (\<alpha>2 n2) = {} \<Longrightarrow>
-       \<Sigma> (\<alpha>1 n1) = \<Sigma> (\<alpha>2 n2) \<Longrightarrow>
        invar3 (concate n1 n2) \<and>
        NFA_isomorphic_wf (\<alpha>3 (concate n1 n2)) 
          (efficient_NFA_concatenation (\<alpha>1 n1) (\<alpha>2 n2))"
   begin
     lemma nfa_concat_correct:
       "invar1 n1 \<Longrightarrow> invar2 n2 \<Longrightarrow> \<Q> (\<alpha>1 n1) \<inter> \<Q> (\<alpha>2 n2) = {} \<Longrightarrow> 
-            \<Sigma> (\<alpha>1 n1) = \<Sigma> (\<alpha>2 n2) \<Longrightarrow> invar3 (concate n1 n2)"
+             invar3 (concate n1 n2)"
       "invar1 n1 \<Longrightarrow> invar2 n2 \<Longrightarrow> \<Q> (\<alpha>1 n1) \<inter> \<Q> (\<alpha>2 n2) = {} \<Longrightarrow> 
-            \<Sigma> (\<alpha>1 n1) = \<Sigma> (\<alpha>2 n2) \<Longrightarrow>
                                      NFA_isomorphic_wf (\<alpha>3 (concate n1 n2)) 
                                      (efficient_NFA_concatenation (\<alpha>1 n1) (\<alpha>2 n2))"
       using nfa_concat_correct_aux by (simp_all)
 
     lemma nfa_concat_correct___isomorphic:
       "invar1 n1 \<Longrightarrow> invar2 n2 \<Longrightarrow>  \<Q> (\<alpha>1 n1) \<inter> \<Q> (\<alpha>2 n2) = {} \<Longrightarrow> 
-        \<Sigma> (\<alpha>1 n1) = \<Sigma> (\<alpha>2 n2)  \<Longrightarrow>
         invar3 (concate n1 n2)"
       "invar1 n1 \<Longrightarrow> invar2 n2 \<Longrightarrow> 
        NFA_isomorphic_wf (\<alpha>1 n1) \<A>1 \<Longrightarrow> 
        NFA_isomorphic_wf (\<alpha>2 n2) \<A>2 \<Longrightarrow> 
       \<Q> (\<alpha>1 n1) \<inter> \<Q> (\<alpha>2 n2) = {} \<Longrightarrow>
       \<Q> \<A>1 \<inter> \<Q> \<A>2 = {} \<Longrightarrow>
-      \<Sigma> (\<alpha>1 n1) = \<Sigma> (\<alpha>2 n2) \<Longrightarrow>
        NFA_isomorphic_wf (\<alpha>3 (concate n1 n2)) 
         (efficient_NFA_concatenation \<A>1 \<A>2)"
 
@@ -1226,7 +1201,6 @@ locale nfa_concat_rename = nfa \<alpha>1 invar1 + nfa \<alpha>2 invar2 + nfa \<a
       "invar1 n1 \<Longrightarrow> invar2 n2 \<Longrightarrow> 
        inj_on f1 (\<Q> (\<alpha>1 n1)) \<Longrightarrow> 
        inj_on f2 (\<Q> (\<alpha>2 n2)) \<Longrightarrow>
-       \<Sigma> (\<alpha>1 n1) = \<Sigma> (\<alpha>2 n2) \<Longrightarrow>
        f1 ` (\<Q> (\<alpha>1 n1)) \<inter> f2 `(\<Q> (\<alpha>2 n2)) = {} \<Longrightarrow>
        invar3 (concate f1 f2 n1 n2) \<and>
        NFA_isomorphic_wf (\<alpha>3 (concate f1 f2 n1 n2)) 
@@ -1234,13 +1208,11 @@ locale nfa_concat_rename = nfa \<alpha>1 invar1 + nfa \<alpha>2 invar2 + nfa \<a
   begin
     lemma nfa_rename_concat_correct:
       "invar1 n1 \<Longrightarrow> invar2 n2 \<Longrightarrow> inj_on f1 (\<Q> (\<alpha>1 n1)) \<Longrightarrow> 
-       \<Sigma> (\<alpha>1 n1) = \<Sigma> (\<alpha>2 n2) \<Longrightarrow>
        f1 ` (\<Q> (\<alpha>1 n1)) \<inter> f2 ` (\<Q> (\<alpha>2 n2)) = {} \<Longrightarrow>
        inj_on f2 (\<Q> (\<alpha>2 n2)) \<Longrightarrow> invar3 (concate f1 f2 n1 n2)"
       "invar1 n1 \<Longrightarrow> invar2 n2 \<Longrightarrow> 
        inj_on f1 (\<Q> (\<alpha>1 n1)) \<Longrightarrow> 
        inj_on f2 (\<Q> (\<alpha>2 n2)) \<Longrightarrow>
-       \<Sigma> (\<alpha>1 n1) = \<Sigma> (\<alpha>2 n2) \<Longrightarrow>
        f1 ` (\<Q> (\<alpha>1 n1)) \<inter> f2 ` (\<Q> (\<alpha>2 n2)) = {} \<Longrightarrow>
        NFA_isomorphic_wf (\<alpha>3 (concate f1 f2 n1 n2)) 
                (efficient_NFA_rename_concatenation f1 f2 (\<alpha>1 n1) (\<alpha>2 n2))"
@@ -1252,13 +1224,12 @@ locale nfa_concat_rename = nfa \<alpha>1 invar1 + nfa \<alpha>2 invar2 + nfa \<a
       "invar1 n1 \<Longrightarrow> invar2 n2 \<Longrightarrow> inj_on f1 (\<Q> (\<alpha>1 n1)) \<Longrightarrow> 
        inj_on f2 (\<Q> (\<alpha>2 n2)) \<Longrightarrow> 
        f1 ` (\<Q> (\<alpha>1 n1)) \<inter> f2 ` (\<Q> (\<alpha>2 n2)) = {} \<Longrightarrow>
-       \<Sigma> (\<alpha>1 n1) = \<Sigma> (\<alpha>2 n2) \<Longrightarrow> invar3 (concate f1 f2 n1 n2)"
+       invar3 (concate f1 f2 n1 n2)"
       "invar1 n1 \<Longrightarrow> invar2 n2 \<Longrightarrow> 
        inj_on f1 (\<Q> (\<alpha>1 n1)) \<Longrightarrow> 
        inj_on f2 (\<Q> (\<alpha>2 n2)) \<Longrightarrow>
        NFA_isomorphic_wf (\<alpha>1 n1) \<A>1 \<Longrightarrow> 
        NFA_isomorphic_wf (\<alpha>2 n2) \<A>2 \<Longrightarrow> 
-       \<Sigma> (\<alpha>1 n1) = \<Sigma> (\<alpha>2 n2) \<Longrightarrow>
        inj_on f1' (\<Q> \<A>1) \<Longrightarrow> 
        inj_on f2' (\<Q> \<A>2) \<Longrightarrow>
       f1 ` \<Q> (\<alpha>1 n1) \<inter> f2 ` \<Q> (\<alpha>2 n2) = {} \<Longrightarrow>
@@ -1278,19 +1249,17 @@ locale nfa_concat_rename = nfa \<alpha>1 invar1 + nfa \<alpha>2 invar2 + nfa \<a
          and emp': "f1' ` \<Q> \<A>1 \<inter> f2' ` \<Q> \<A>2 = {} "
          and iso1: "NFA_isomorphic_wf (\<alpha>1 n1) \<A>1"
          and iso2: "NFA_isomorphic_wf (\<alpha>2 n2) \<A>2"
-         and eq\<Sigma>: "\<Sigma> (\<alpha>1 n1) = \<Sigma> (\<alpha>2 n2)"
          and inj1': "inj_on f1' (\<Q> \<A>1)"
          and inj2': "inj_on f2' (\<Q> \<A>2)"
          and p1: "(invar1 n1 \<Longrightarrow> invar2 n2 \<Longrightarrow>
                   inj_on f1 (\<Q> (\<alpha>1 n1)) \<Longrightarrow>
-                   inj_on f2 (\<Q> (\<alpha>2 n2)) \<Longrightarrow> \<Sigma> (\<alpha>1 n1) = \<Sigma> (\<alpha>2 n2) \<Longrightarrow>
+                   inj_on f2 (\<Q> (\<alpha>2 n2)) \<Longrightarrow>
      f1 ` \<Q> (\<alpha>1 n1) \<inter> f2 ` \<Q> (\<alpha>2 n2) = {} \<Longrightarrow>
      NFA_isomorphic_wf (\<alpha>3 (concate f1 f2 n1 n2))
       (efficient_NFA_rename_concatenation f1 f2 (\<alpha>1 n1) (\<alpha>2 n2)))"
 
         and p2: "(NFA_isomorphic_wf (\<alpha>1 n1) \<A>1 \<Longrightarrow>
      NFA_isomorphic_wf (\<alpha>2 n2) \<A>2 \<Longrightarrow>
-     \<Sigma> (\<alpha>1 n1) = \<Sigma> (\<alpha>2 n2) \<Longrightarrow>
      inj_on f1 (\<Q> (\<alpha>1 n1)) \<Longrightarrow>
      inj_on f2 (\<Q> (\<alpha>2 n2)) \<Longrightarrow>
      inj_on f1' (\<Q> \<A>1) \<Longrightarrow>
@@ -1300,22 +1269,8 @@ locale nfa_concat_rename = nfa \<alpha>1 invar1 + nfa \<alpha>2 invar2 + nfa \<a
      NFA_isomorphic_wf (efficient_NFA_rename_concatenation f1 f2 (\<alpha>1 n1) (\<alpha>2 n2))
       (efficient_NFA_rename_concatenation f1' f2' \<A>1 \<A>2))"
 
-      from eq\<Sigma> iso1 NFA_isomorphic_wf_def[of "(\<alpha>1 n1)" \<A>1]
-           NFA_isomorphic_def[of "(\<alpha>1 n1)" \<A>1]
-           NFA_rename_states_def[of "(\<alpha>1 n1)" ]
-      have eq\<Sigma>1: "\<Sigma> (\<alpha>1 n1) = \<Sigma> \<A>1"
-        by auto
-
-      from eq\<Sigma> iso2 NFA_isomorphic_wf_def[of "(\<alpha>2 n2)" \<A>2]
-           NFA_isomorphic_def[of "(\<alpha>2 n2)" \<A>2]
-           NFA_rename_states_def[of "(\<alpha>2 n2)" ]
-      have eq\<Sigma>2: "\<Sigma> (\<alpha>2 n2) = \<Sigma> \<A>2"
-        by auto
-      from eq\<Sigma>1 eq\<Sigma>2  eq\<Sigma>
-      have eq\<Sigma>': "\<Sigma> (\<alpha>1 n1) = \<Sigma> (\<alpha>2 n2)" by auto
-
-      from p1[OF invar1 invar2 inj1 inj2 eq\<Sigma>' emp]
-           p2[OF iso1 iso2 eq\<Sigma>' inj1 inj2 inj1' inj2' emp emp']
+      from p1[OF invar1 invar2 inj1 inj2  emp]
+           p2[OF iso1 iso2  inj1 inj2 inj1' inj2' emp emp']
       show "NFA_isomorphic_wf (\<alpha>3 (concate f1 f2 n1 n2)) 
       (efficient_NFA_rename_concatenation f1' f2' \<A>1 \<A>2)" 
         using NFA_isomorphic_wf_trans
@@ -1391,10 +1346,8 @@ locale nfa_concat_same = nfa_concat \<alpha> invar \<alpha> invar \<alpha> invar
   begin
     lemma nfa_concate_correct___same:
       "invar n1 \<Longrightarrow> invar n2 \<Longrightarrow> \<Q> (\<alpha> n1) \<inter> \<Q> (\<alpha> n2) = {} \<Longrightarrow>
-       \<Sigma> (\<alpha> n1) = \<Sigma> (\<alpha> n2) \<Longrightarrow>
        invar (concate n1 n2)"
       "invar n1 \<Longrightarrow> invar n2 \<Longrightarrow> \<Q> (\<alpha> n1) \<inter> \<Q> (\<alpha> n2) = {} \<Longrightarrow>
-        \<Sigma> (\<alpha> n1) = \<Sigma> (\<alpha> n2) \<Longrightarrow>
                 NFA_isomorphic_wf (\<alpha> (concate n1 n2))
                 (NFA_concate (\<alpha> n1) (\<alpha> n2))"
        using nfa_concat_correct [of n1 n2] nfa_axioms[unfolded nfa_def]
@@ -1403,25 +1356,24 @@ locale nfa_concat_same = nfa_concat \<alpha> invar \<alpha> invar \<alpha> invar
 
     lemma nfa_concate_correct___same_isomorphic:
       "invar n1 \<Longrightarrow> invar n2 \<Longrightarrow> \<Q> (\<alpha> n1) \<inter> \<Q> (\<alpha> n2) = {} \<Longrightarrow>
-          \<Sigma> (\<alpha> n1) = \<Sigma> (\<alpha> n2) \<Longrightarrow>
           invar (concate n1 n2)"
       "invar n1 \<Longrightarrow> invar n2 \<Longrightarrow> 
        NFA_isomorphic_wf (\<alpha> n1) \<A>1 \<Longrightarrow> 
        NFA_isomorphic_wf (\<alpha> n2) \<A>2 \<Longrightarrow> 
        \<Q> (\<alpha> n1) \<inter> \<Q> (\<alpha> n2) = {} \<Longrightarrow>
        \<Q> \<A>1 \<inter> \<Q> \<A>2 = {} \<Longrightarrow>
-       \<Sigma> (\<alpha> n1) = \<Sigma> (\<alpha> n2) \<Longrightarrow>
        NFA_isomorphic_wf (\<alpha> (concate n1 n2)) (NFA_concate \<A>1 \<A>2)"
       apply (simp add: nfa_concat_correct)
       apply (insert nfa_concat_correct___isomorphic(2)[of n1 n2 \<A>1 \<A>2] 
              nfa_axioms[unfolded nfa_def]
               NFA_concate___isomorphic_wf [of \<A>1 \<A>2])
       apply (simp add: NFA_isomorphic_wf_refl)
-      apply (metis NFA_isomorphic_wf_trans NFA_isomorphic_eq\<Sigma>
+      apply (metis NFA_isomorphic_wf_trans 
                    NFA_isomorphic_wf_alt_def)
     done
 end
 
+(* Complement operation is not necessary at the moment.
 locale nfa_complement = nfa \<alpha> invar   
     for \<alpha> :: "('q,'a,'nfa) nfa_\<alpha>" and invar +
     fixes complement :: "'nfa \<Rightarrow> 'nfa"
@@ -1439,6 +1391,7 @@ locale nfa_complement = nfa \<alpha> invar
       apply (simp)
     done
 end
+*)
 
 locale nfa_union = nfa \<alpha>1 invar1 + nfa \<alpha>2 invar2 + nfa \<alpha>3 invar3   
     for \<alpha>1 :: "('q,'a::linorder,'nfa) nfa_\<alpha>" and invar1 and
@@ -1448,7 +1401,6 @@ locale nfa_union = nfa \<alpha>1 invar1 + nfa \<alpha>2 invar2 + nfa \<alpha>3 i
   assumes nfa_union_concat_correct_aux:
       "invar1 n1 \<Longrightarrow> invar2 n2 \<Longrightarrow> 
        (\<Q> (\<alpha>1 n1)) \<inter> (\<Q> (\<alpha>2 n2)) = {} \<Longrightarrow>
-       (\<Sigma> (\<alpha>1 n1)) = (\<Sigma> (\<alpha>2 n2)) \<Longrightarrow>
        NFA_isomorphic_wf (\<alpha>3 (union n1 n2)) 
          (NFA_union  (\<alpha>1 n1) (\<alpha>2 n2))"
 begin end
@@ -1466,7 +1418,6 @@ locale nfa_concat_rename_same = nfa_concat_rename \<alpha> invar \<alpha> invar 
        invar (concate f1 f2 n1 n2)"
       "invar n1 \<Longrightarrow> invar n2 \<Longrightarrow> \<Q> (\<alpha> n1) \<inter> \<Q> (\<alpha> n2) = {} \<Longrightarrow>
        inj_on f1 (\<Q> (\<alpha> n1)) \<Longrightarrow> inj_on f2 (\<Q> (\<alpha> n2)) \<Longrightarrow>
-       \<Sigma> (\<alpha> n1) = \<Sigma> (\<alpha> n2) \<Longrightarrow>
        (f1 ` \<Q> (\<alpha> n1) \<inter> f2 ` \<Q> (\<alpha> n2) = {}) \<Longrightarrow>
                 NFA_isomorphic_wf (\<alpha> (concate f1 f2 n1 n2))
               (NFA_concate (\<alpha> n1) (\<alpha> n2))"
@@ -1482,7 +1433,6 @@ locale nfa_concat_rename_same = nfa_concat_rename \<alpha> invar \<alpha> invar 
           and p6 : "f1 ` \<Q> (\<alpha> n1) \<inter> f2 ` \<Q> (\<alpha> n2) = {}"
           and p7 : "NFA_isomorphic_wf (\<alpha> (concate f1 f2 n1 n2)) 
                     (efficient_NFA_rename_concatenation f1 f2 (\<alpha> n1) (\<alpha> n2))"
-          and p8: "\<Sigma> (\<alpha> n1) = \<Sigma> (\<alpha> n2)"
        from p1 
        have c1: "NFA (\<alpha> n1)"
          by (simp add: \<open>\<forall>n. invar n \<longrightarrow> NFA (\<alpha> n)\<close>)
@@ -1492,11 +1442,11 @@ locale nfa_concat_rename_same = nfa_concat_rename \<alpha> invar \<alpha> invar 
          by (simp add: \<open>\<forall>n. invar n \<longrightarrow> NFA (\<alpha> n)\<close>)
   
        from NFA_concate_rename___isomorphic_wf [of "\<alpha> n1" "\<alpha> n2"]
-            c1 c2 p3 p4 p5 p6 p8
+            c1 c2 p3 p4 p5 p6
        have c1: "NFA_isomorphic_wf (efficient_NFA_rename_concatenation f1 f2 (\<alpha> n1) (\<alpha> n2))
      (NFA_concate (\<alpha> n1) (\<alpha> n2))"
          by auto
-       from  nfa_rename_concat_correct(2)[of n1 n2] c1 c2 p1 p2 p3 p4 p5 p6 p8
+       from  nfa_rename_concat_correct(2)[of n1 n2] c1 c2 p1 p2 p3 p4 p5 p6
        have "NFA_isomorphic_wf (\<alpha> (concate f1 f2 n1 n2))
              (efficient_NFA_rename_concatenation f1 f2 (\<alpha> n1) (\<alpha> n2))"
          by auto
@@ -1537,16 +1487,13 @@ locale nfa_concat_rename_same = nfa_concat_rename \<alpha> invar \<alpha> invar 
           and p8 : "NFA_isomorphic_wf (\<alpha> n1) \<A>1"
           and p9 : "NFA_isomorphic_wf (\<alpha> n2) \<A>2"
           and p10: "\<Q> \<A>1 \<inter> \<Q> \<A>2 = {}"
-          and p11: "\<Sigma> (\<alpha> n1) = \<Sigma> (\<alpha> n2)"
       from p10
       have p10': "inj_on id (\<Q> \<A>1) \<and> inj_on id (\<Q> \<A>2) \<and> id ` \<Q> \<A>1 \<inter> id ` \<Q> \<A>2 = {} "
         by fastforce
 
-      from p8 p9 p11 NFA_isomorphic_eq\<Sigma>
-      have p11': "\<Sigma> (\<A>1) = \<Sigma> (\<A>2)" by auto
 
       from p10' nfa_rename_concat_correct___isomorphic(2)
-                [of n1 n2 \<A>1 \<A>2 id id, OF p1 p2 p4 p5 p8 p9 p11 _ _ p6]
+                [of n1 n2 \<A>1 \<A>2 id id, OF p1 p2 p4 p5 p8 p9  _ _ p6]
       have c1: "NFA_isomorphic_wf (\<alpha> (concate f1 f2 n1 n2))
             (efficient_NFA_rename_concatenation id id \<A>1 \<A>2)"
         by auto
@@ -1557,7 +1504,7 @@ locale nfa_concat_rename_same = nfa_concat_rename \<alpha> invar \<alpha> invar 
       have c3: "NFA \<A>2"
         by (meson NFA_isomorphic_wf_D(2) p9)
 
-      from p3 p4 p5 p6 p8 p9 p10 p11'
+      from p3 p4 p5 p6 p8 p9 p10 
            NFA_concate_rename___isomorphic_wf [of \<A>1 \<A>2 id id, OF c2 c3]
       have c4: "NFA_isomorphic_wf (efficient_NFA_rename_concatenation id id \<A>1 \<A>2) 
            (NFA_concate \<A>1 \<A>2)"
@@ -1572,6 +1519,7 @@ locale nfa_concat_rename_same = nfa_concat_rename \<alpha> invar \<alpha> invar 
 
 end
 
+(* deterministic is not necessary at the moment
  locale nfa_determinise = n1: nfa \<alpha>1 invar1 + n2: nfa \<alpha>2 invar2    
     for \<alpha>1 :: "('q1::{NFA_states},'a::linorder,'nfa1) nfa_\<alpha>" and invar1 and
         \<alpha>2 :: "('q2,'a,'nfa2) nfa_\<alpha>" and invar2  and
@@ -1647,7 +1595,7 @@ end
       apply fastforce
     done
   end
-
+*)
   
 
  
@@ -1711,7 +1659,7 @@ type_synonym ('q,'a,'nfa_e) nfa_ep_\<alpha> = "'nfa_e \<Rightarrow> ('q, 'a) NFA
   record ('q,'a,'nfa) nfa_ops =
     nfa_op_\<alpha> :: "('q::{NFA_states},'a,'nfa) nfa_\<alpha>"
     nfa_op_invar :: "'nfa \<Rightarrow> bool"
-    nfa_op_interval_wf :: "('q list \<times> ('a \<times> 'a) list \<times> ('q \<times> ('a \<times> 'a) list \<times> 'q) list 
+    nfa_op_interval_wf :: "('q list \<times> ('q \<times> ('a \<times> 'a) list \<times> 'q) list 
       \<times> 'q list \<times> 'q list) \<Rightarrow> bool"
     nfa_op_nfa_from_list_interval :: "('q,'a::linorder,'nfa) nfa_from_list_interval"
     nfa_op_bool_comb :: "(bool \<Rightarrow> bool \<Rightarrow> bool) \<Rightarrow> 'nfa \<Rightarrow> 'nfa \<Rightarrow> 'nfa"

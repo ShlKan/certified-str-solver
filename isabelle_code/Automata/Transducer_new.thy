@@ -1,7 +1,7 @@
 
 theory Transducer_new
 
-imports Main NFA_set Epsilon_elim
+imports Main Epsilon_elim
 
 begin
 
@@ -15,7 +15,6 @@ type_synonym ('q, 'a, 'b) LTTS =
 
 record ('q, 'a, 'b) NFT =
   \<Q>T :: "'q set"           (* "The set of states" *)
-  \<Sigma>T :: "'a set"           (* alphabet *)
   \<Delta>T :: " ('q, 'a, 'b) LTTS"   (* "The transition relation" *)
   \<I>T :: "'q set"            (* "The set of initial states *)
   \<F>T :: "'q set"           (* "The set of final states *)
@@ -24,7 +23,7 @@ record ('q, 'a, 'b) NFT =
 locale NFT_wf =  
   fixes \<T> :: "('q, 'a, 'b) NFT" 
   assumes \<Delta>_consistent: "\<And>q \<sigma> q' f. (q, (\<sigma>, f), q') \<in> \<Delta>T \<T> 
-                \<Longrightarrow> (q \<in> \<Q>T \<T>) \<and> (\<sigma> \<noteq> None \<longrightarrow> the \<sigma> \<subseteq> \<Sigma>T \<T>) \<and> (q' \<in> \<Q>T \<T>)"
+                \<Longrightarrow> (q \<in> \<Q>T \<T>) \<and> (q' \<in> \<Q>T \<T>)"
       and \<I>_consistent: "\<I>T \<T> \<subseteq> \<Q>T \<T>"
       and \<F>_consistent: "\<F>T \<T> \<subseteq> \<Q>T \<T>"
       and finite_\<Q>: "finite (\<Q>T \<T>)"
@@ -104,7 +103,6 @@ definition productT :: "('q, 'a, 'b) NFT \<Rightarrow> ('q, 'a) NFA_rec \<Righta
                          ('q \<times> 'q, 'a) NFAe_rec" where
   "productT \<T> \<A> F = \<lparr> 
       \<Q>e = \<Q>T \<T> \<times> \<Q> \<A>,
-      \<Sigma>e = \<Sigma>T \<T>,
       \<Delta>e = {((p,p'), the (((\<M> \<T>) f) None), (q,p')) 
               | p p' q f. p' \<in> \<Q> \<A> \<and>
                    ((p, (None, f), q) \<in> \<Delta>T \<T> \<and> (\<exists> So. ((\<M> \<T>) f) None = Some So))}
@@ -208,7 +206,7 @@ proof
            q = (q1, q1') \<and> q' = (q2, q2') \<Longrightarrow>
            \<exists>\<pi>. [] = outputE \<pi> \<and>
                LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) q1 \<pi> q2 \<and>
-               LTS_is_reachable (NFA_set_interval.NFA_rec.\<Delta> \<A>) q1' (inputE \<pi>)
+               LTS_is_reachable (NFA_rec.\<Delta> \<A>) q1' (inputE \<pi>)
                 q2'"
              and p1: " a # l \<noteq> [] \<and>
        epsilon_reach (a # l) (\<Delta>e' (productT \<T> \<A> F)) \<and>
@@ -2180,11 +2178,10 @@ lemma prods_correct:
 definition productT_imp where
   "productT_imp \<T> \<A> F fe = do {
     Q \<leftarrow> prods (\<Q>T \<T>) (\<Q> \<A>);
-    S \<leftarrow> RETURN (\<Sigma>T \<T>);
     (D1, D2) \<leftarrow> trans_comp (\<M> \<T>) F fe  (\<Delta>T \<T>) (\<Delta> \<A>) (\<Q> \<A>);
     I \<leftarrow> prods (\<I>T \<T>) (\<I> \<A>);
     F \<leftarrow> prods (\<F>T \<T>) (\<F> \<A>);
-    RETURN \<lparr> \<Q>e = Q, \<Sigma>e = S, \<Delta>e = D1, \<Delta>e' = D2, \<I>e = I, \<F>e = F\<rparr>
+    RETURN \<lparr> \<Q>e = Q, \<Delta>e = D1, \<Delta>e' = D2, \<I>e = I, \<F>e = F\<rparr>
   }"
 
 
@@ -2204,26 +2201,25 @@ lemma productT_imp_correct:
 proof -
   thm prods_correct[OF finite_TQ finite_Q]
 
-  have c1: "SPEC (\<lambda>Q. Q = \<Q>T \<T> \<times> NFA_set_interval.NFA_rec.\<Q> \<A>) \<le>
-            SPEC (\<lambda>Q. RETURN (\<Sigma>T \<T>) \<bind>
-                 (\<lambda>S. trans_comp (\<M> \<T>) F fe (\<Delta>T \<T>) (NFA_set_interval.NFA_rec.\<Delta> \<A>)
-                       (NFA_set_interval.NFA_rec.\<Q> \<A>) \<bind>
+  have c1: "SPEC (\<lambda>Q. Q = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>) \<le>
+            SPEC (\<lambda>Q. trans_comp (\<M> \<T>) F fe (\<Delta>T \<T>) (NFA_rec.\<Delta> \<A>)
+                       (NFA_rec.\<Q> \<A>) \<bind>
                       (\<lambda>(D1, D2).
-                          prods (\<I>T \<T>) (NFA_set_interval.NFA_rec.\<I> \<A>) \<bind>
-                          (\<lambda>I. prods (\<F>T \<T>) (NFA_set_interval.NFA_rec.\<F> \<A>) \<bind>
+                          prods (\<I>T \<T>) (NFA_rec.\<I> \<A>) \<bind>
+                          (\<lambda>I. prods (\<F>T \<T>) (NFA_rec.\<F> \<A>) \<bind>
                                (\<lambda>F. RETURN
-                                     \<lparr>\<Q>e = Q, \<Sigma>e = S, \<Delta>e = D1, \<Delta>e' = D2, \<I>e = I,
-                                        \<F>e = F\<rparr>))))
+                                     \<lparr>\<Q>e = Q, \<Delta>e = D1, \<Delta>e' = D2, \<I>e = I,
+                                        \<F>e = F\<rparr>)))
                  \<le> SPEC (\<lambda>A. A = productT \<T> \<A> F))"
     apply simp
   proof -
-    have "trans_comp (\<M> \<T>) F fe (\<Delta>T \<T>) (NFA_set_interval.NFA_rec.\<Delta> \<A>)
-     (NFA_set_interval.NFA_rec.\<Q> \<A>) \<bind>
+    have "trans_comp (\<M> \<T>) F fe (\<Delta>T \<T>) (NFA_rec.\<Delta> \<A>)
+     (NFA_rec.\<Q> \<A>) \<bind>
     (\<lambda>(D1, D2).
-        prods (\<I>T \<T>) (NFA_set_interval.NFA_rec.\<I> \<A>) \<bind>
-        (\<lambda>I. prods (\<F>T \<T>) (NFA_set_interval.NFA_rec.\<F> \<A>) \<bind>
+        prods (\<I>T \<T>) (NFA_rec.\<I> \<A>) \<bind>
+        (\<lambda>I. prods (\<F>T \<T>) (NFA_rec.\<F> \<A>) \<bind>
              (\<lambda>F. RETURN
-                   \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_set_interval.NFA_rec.\<Q> \<A>, \<Sigma>e = \<Sigma>T \<T>, \<Delta>e = D1,
+                   \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>, \<Delta>e = D1,
                       \<Delta>e' = D2, \<I>e = I, \<F>e = F\<rparr>)))
     \<le> SPEC (\<lambda> A. A = productT \<T> \<A> F)"
       apply refine_vcg
@@ -2232,121 +2228,121 @@ proof -
       have "SPEC (\<lambda>(Dn1, Dn2).
             Dn1 =
             {((p, p'), the ((\<M> \<T>) f None), q, p') |p p' q f.
-             p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+             p' \<in> NFA_rec.\<Q> \<A> \<and>
              (p, (None, f), q) \<in> \<Delta>T \<T> \<and> (\<exists>So. (\<M> \<T>) f None = Some So)} \<union>
             {((p, p'), the (F ((\<M> \<T>) f) (\<sigma>1 \<inter> \<sigma>2)), q, q') |p p' \<sigma>1 \<sigma>2 q q' f.
              (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-             (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+             (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
              \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>So. F ((\<M> \<T>) f) (\<sigma>1 \<inter> \<sigma>2) = Some So)} \<and>
             Dn2 =
             {uu.
              \<exists>p p' q f.
                 uu = ((p, p'), q, p') \<and>
-                p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                p' \<in> NFA_rec.\<Q> \<A> \<and>
                 (p, (None, f), q) \<in> \<Delta>T \<T> \<and> (\<M> \<T>) f None = None} \<union>
             {uu.
              \<exists>p p' \<sigma>1 \<sigma>2 q q' f.
                 uu = ((p, p'), q, q') \<and>
                 (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                 \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. (\<M> \<T>) f (Some x) = None)}) \<le> 
             SPEC (\<lambda>x. (case x of
                   (D1, D2) \<Rightarrow>
-                    prods (\<I>T \<T>) (NFA_set_interval.NFA_rec.\<I> \<A>) \<bind>
-                    (\<lambda>I. prods (\<F>T \<T>) (NFA_set_interval.NFA_rec.\<F> \<A>) \<bind>
+                    prods (\<I>T \<T>) (NFA_rec.\<I> \<A>) \<bind>
+                    (\<lambda>I. prods (\<F>T \<T>) (NFA_rec.\<F> \<A>) \<bind>
                          (\<lambda>F. RETURN
-                               \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_set_interval.NFA_rec.\<Q> \<A>, \<Sigma>e = \<Sigma>T \<T>,
+                               \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>,
                                   \<Delta>e = D1, \<Delta>e' = D2, \<I>e = I, \<F>e = F\<rparr>)))
                  \<le> SPEC (\<lambda>A. A = productT \<T> \<A> F))"
         apply simp
         unfolding productT_def
         apply simp
       proof -
-        have "prods (\<I>T \<T>) (NFA_set_interval.NFA_rec.\<I> \<A>) \<bind>
-    (\<lambda>I. prods (\<F>T \<T>) (NFA_set_interval.NFA_rec.\<F> \<A>) \<bind>
+        have "prods (\<I>T \<T>) (NFA_rec.\<I> \<A>) \<bind>
+    (\<lambda>I. prods (\<F>T \<T>) (NFA_rec.\<F> \<A>) \<bind>
          (\<lambda>Fa. RETURN
-                \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_set_interval.NFA_rec.\<Q> \<A>, \<Sigma>e = \<Sigma>T \<T>,
+                \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>, 
                    \<Delta>e = {((p, p'), the (\<M> \<T> f None), q, p') |p p' q f.
-                          p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                          p' \<in> NFA_rec.\<Q> \<A> \<and>
                           (p, (None, f), q) \<in> \<Delta>T \<T> \<and> (\<exists>So. \<M> \<T> f None = Some So)} \<union>
                          {((p, p'), the (F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2)), q, q') |p p' \<sigma>1 \<sigma>2 q
                           q' f.
                           (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                          (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                          (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                           \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>So. F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2) = Some So)},
                    \<Delta>e' =
                      {((p, p'), q, p') |p p' q.
-                      p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                      p' \<in> NFA_rec.\<Q> \<A> \<and>
                       (\<exists>f. (p, (None, f), q) \<in> \<Delta>T \<T> \<and> \<M> \<T> f None = None)} \<union>
                      {uu.
                       \<exists>p p' \<sigma>1 \<sigma>2 q q'.
                          uu = ((p, p'), q, q') \<and>
                          (\<exists>f. (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                              (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                              (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                               \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. \<M> \<T> f (Some x) = None))},
                    \<I>e = I, \<F>e = Fa\<rparr>))
-    \<le> SPEC (\<lambda> A. A = \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_set_interval.NFA_rec.\<Q> \<A>, \<Sigma>e = \<Sigma>T \<T>,
+    \<le> SPEC (\<lambda> A. A = \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>, 
                \<Delta>e = {((p, p'), the (\<M> \<T> f None), q, p') |p p' q f.
-                      p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                      p' \<in> NFA_rec.\<Q> \<A> \<and>
                       (p, (None, f), q) \<in> \<Delta>T \<T> \<and> (\<exists>So. \<M> \<T> f None = Some So)} \<union>
                      {((p, p'), the (F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2)), q, q') |p p' \<sigma>1 \<sigma>2 q q' f.
                       (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                      (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                      (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                       \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>So. F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2) = Some So)},
                \<Delta>e' =
                  {((p, p'), q, p') |p p' q.
-                  p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                  p' \<in> NFA_rec.\<Q> \<A> \<and>
                   (\<exists>f. (p, (None, f), q) \<in> \<Delta>T \<T> \<and> \<M> \<T> f None = None)} \<union>
                  {uu.
                   \<exists>p p' \<sigma>1 \<sigma>2 q q'.
                      uu = ((p, p'), q, q') \<and>
                      (\<exists>f. (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                          (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                          (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                           \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. \<M> \<T> f (Some x) = None))},
-               \<I>e = \<I>T \<T> \<times> NFA_set_interval.NFA_rec.\<I> \<A>,
-               \<F>e = \<F>T \<T> \<times> NFA_set_interval.NFA_rec.\<F> \<A>\<rparr>)"
+               \<I>e = \<I>T \<T> \<times> NFA_rec.\<I> \<A>,
+               \<F>e = \<F>T \<T> \<times> NFA_rec.\<F> \<A>\<rparr>)"
           apply (refine_vcg)
         proof -
-          have "SPEC (\<lambda>Q. Q = \<I>T \<T> \<times> NFA_set_interval.NFA_rec.\<I> \<A>) \<le>
-                SPEC (\<lambda>I. prods (\<F>T \<T>) (NFA_set_interval.NFA_rec.\<F> \<A>) \<bind>
+          have "SPEC (\<lambda>Q. Q = \<I>T \<T> \<times> NFA_rec.\<I> \<A>) \<le>
+                SPEC (\<lambda>I. prods (\<F>T \<T>) (NFA_rec.\<F> \<A>) \<bind>
                  (\<lambda>Fa. RETURN
-                        \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_set_interval.NFA_rec.\<Q> \<A>, \<Sigma>e = \<Sigma>T \<T>,
+                        \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>, 
                            \<Delta>e = {((p, p'), the (\<M> \<T> f None), q, p') |p p' q f.
-                                  p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                                  p' \<in> NFA_rec.\<Q> \<A> \<and>
                                   (p, (None, f), q) \<in> \<Delta>T \<T> \<and>
                                   (\<exists>So. \<M> \<T> f None = Some So)} \<union>
                                  {((p, p'), the (F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2)), q, q') |p p'
                                   \<sigma>1 \<sigma>2 q q' f.
                                   (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                                  (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                                  (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                                   \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and>
                                   (\<exists>So. F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2) = Some So)},
                            \<Delta>e' =
                              {((p, p'), q, p') |p p' q.
-                              p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                              p' \<in> NFA_rec.\<Q> \<A> \<and>
                               (\<exists>f. (p, (None, f), q) \<in> \<Delta>T \<T> \<and> \<M> \<T> f None = None)} \<union>
                              {uu.
                               \<exists>p p' \<sigma>1 \<sigma>2 q q'.
                                  uu = ((p, p'), q, q') \<and>
                                  (\<exists>f. (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                                      (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                                      (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                                       \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and>
                                       (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. \<M> \<T> f (Some x) = None))},
                            \<I>e = I, \<F>e = Fa\<rparr>)
-                 \<le> SPEC (\<lambda>A. A = \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_set_interval.NFA_rec.\<Q> \<A>,
-                                     \<Sigma>e = \<Sigma>T \<T>,
+                 \<le> SPEC (\<lambda>A. A = \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>,
+                                    
                                      \<Delta>e = {((p, p'), the (\<M> \<T> f None), q, p') |p p' q
-f. p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+f. p' \<in> NFA_rec.\<Q> \<A> \<and>
    (p, (None, f), q) \<in> \<Delta>T \<T> \<and> (\<exists>So. \<M> \<T> f None = Some So)} \<union>
                                            {((p, p'), the (F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2)), q,
  q') |
 p p' \<sigma>1 \<sigma>2 q q' f.
 (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-(p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+(p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
 \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>So. F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2) = Some So)},
                                      \<Delta>e' =
                                        {((p, p'), q, p') |p p' q.
-                                        p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                                        p' \<in> NFA_rec.\<Q> \<A> \<and>
                                         (\<exists>f.
 (p, (None, f), q) \<in> \<Delta>T \<T> \<and> \<M> \<T> f None = None)} \<union>
                                        {uu.
@@ -2354,241 +2350,241 @@ p p' \<sigma>1 \<sigma>2 q q' f.
                                            uu = ((p, p'), q, q') \<and>
                                            (\<exists>f.
    (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-   (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+   (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
    \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. \<M> \<T> f (Some x) = None))},
-                                     \<I>e = \<I>T \<T> \<times> NFA_set_interval.NFA_rec.\<I> \<A>,
-                                     \<F>e = \<F>T \<T> \<times> NFA_set_interval.NFA_rec.\<F> \<A>\<rparr>))"
+                                     \<I>e = \<I>T \<T> \<times> NFA_rec.\<I> \<A>,
+                                     \<F>e = \<F>T \<T> \<times> NFA_rec.\<F> \<A>\<rparr>))"
             apply simp
           proof -
-            have "prods (\<F>T \<T>) (NFA_set_interval.NFA_rec.\<F> \<A>) \<bind>
+            have "prods (\<F>T \<T>) (NFA_rec.\<F> \<A>) \<bind>
     (\<lambda>Fa. RETURN
-           \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_set_interval.NFA_rec.\<Q> \<A>, \<Sigma>e = \<Sigma>T \<T>,
+           \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>, 
               \<Delta>e = {((p, p'), the (\<M> \<T> f None), q, p') |p p' q f.
-                     p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                     p' \<in> NFA_rec.\<Q> \<A> \<and>
                      (p, (None, f), q) \<in> \<Delta>T \<T> \<and> (\<exists>So. \<M> \<T> f None = Some So)} \<union>
                     {((p, p'), the (F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2)), q, q') |p p' \<sigma>1 \<sigma>2 q q' f.
                      (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                     (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                     (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                      \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>So. F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2) = Some So)},
               \<Delta>e' =
                 {((p, p'), q, p') |p p' q.
-                 p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                 p' \<in> NFA_rec.\<Q> \<A> \<and>
                  (\<exists>f. (p, (None, f), q) \<in> \<Delta>T \<T> \<and> \<M> \<T> f None = None)} \<union>
                 {uu.
                  \<exists>p p' \<sigma>1 \<sigma>2 q q'.
                     uu = ((p, p'), q, q') \<and>
                     (\<exists>f. (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                         (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                         (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                          \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. \<M> \<T> f (Some x) = None))},
-              \<I>e = \<I>T \<T> \<times> NFA_set_interval.NFA_rec.\<I> \<A>, \<F>e = Fa\<rparr>)
-    \<le> SPEC (\<lambda> A. A = \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_set_interval.NFA_rec.\<Q> \<A>, \<Sigma>e = \<Sigma>T \<T>,
+              \<I>e = \<I>T \<T> \<times> NFA_rec.\<I> \<A>, \<F>e = Fa\<rparr>)
+    \<le> SPEC (\<lambda> A. A = \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>, 
                \<Delta>e = {((p, p'), the (\<M> \<T> f None), q, p') |p p' q f.
-                      p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                      p' \<in> NFA_rec.\<Q> \<A> \<and>
                       (p, (None, f), q) \<in> \<Delta>T \<T> \<and> (\<exists>So. \<M> \<T> f None = Some So)} \<union>
                      {((p, p'), the (F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2)), q, q') |p p' \<sigma>1 \<sigma>2 q q' f.
                       (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                      (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                      (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                       \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>So. F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2) = Some So)},
                \<Delta>e' =
                  {((p, p'), q, p') |p p' q.
-                  p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                  p' \<in> NFA_rec.\<Q> \<A> \<and>
                   (\<exists>f. (p, (None, f), q) \<in> \<Delta>T \<T> \<and> \<M> \<T> f None = None)} \<union>
                  {uu.
                   \<exists>p p' \<sigma>1 \<sigma>2 q q'.
                      uu = ((p, p'), q, q') \<and>
                      (\<exists>f. (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                          (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                          (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                           \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. \<M> \<T> f (Some x) = None))},
-               \<I>e = \<I>T \<T> \<times> NFA_set_interval.NFA_rec.\<I> \<A>,
-               \<F>e = \<F>T \<T> \<times> NFA_set_interval.NFA_rec.\<F> \<A>\<rparr>)"
+               \<I>e = \<I>T \<T> \<times> NFA_rec.\<I> \<A>,
+               \<F>e = \<F>T \<T> \<times> NFA_rec.\<F> \<A>\<rparr>)"
               apply refine_vcg
             proof -
-              have "SPEC (\<lambda>Q. Q = \<F>T \<T> \<times> NFA_set_interval.NFA_rec.\<F> \<A>) \<le> 
+              have "SPEC (\<lambda>Q. Q = \<F>T \<T> \<times> NFA_rec.\<F> \<A>) \<le> 
                     SPEC (\<lambda>Fa. RETURN
-                   \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_set_interval.NFA_rec.\<Q> \<A>, \<Sigma>e = \<Sigma>T \<T>,
+                   \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>,
                       \<Delta>e = {((p, p'), the (\<M> \<T> f None), q, p') |p p' q f.
-                             p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                             p' \<in> NFA_rec.\<Q> \<A> \<and>
                              (p, (None, f), q) \<in> \<Delta>T \<T> \<and>
                              (\<exists>So. \<M> \<T> f None = Some So)} \<union>
                             {((p, p'), the (F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2)), q, q') |p p' \<sigma>1 \<sigma>2
                              q q' f.
                              (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                             (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                             (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                              \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>So. F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2) = Some So)},
                       \<Delta>e' =
                         {((p, p'), q, p') |p p' q.
-                         p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                         p' \<in> NFA_rec.\<Q> \<A> \<and>
                          (\<exists>f. (p, (None, f), q) \<in> \<Delta>T \<T> \<and> \<M> \<T> f None = None)} \<union>
                         {uu.
                          \<exists>p p' \<sigma>1 \<sigma>2 q q'.
                             uu = ((p, p'), q, q') \<and>
                             (\<exists>f. (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                                 (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                                 (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                                  \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and>
                                  (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. \<M> \<T> f (Some x) = None))},
-                      \<I>e = \<I>T \<T> \<times> NFA_set_interval.NFA_rec.\<I> \<A>, \<F>e = Fa\<rparr>
-                  \<le> SPEC (\<lambda>A. A = \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_set_interval.NFA_rec.\<Q> \<A>,
-                                      \<Sigma>e = \<Sigma>T \<T>,
+                      \<I>e = \<I>T \<T> \<times> NFA_rec.\<I> \<A>, \<F>e = Fa\<rparr>
+                  \<le> SPEC (\<lambda>A. A = \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>,
+                                     
                                       \<Delta>e = {((p, p'), the (\<M> \<T> f None), q, p') |p p'
  q f.
- p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+ p' \<in> NFA_rec.\<Q> \<A> \<and>
  (p, (None, f), q) \<in> \<Delta>T \<T> \<and> (\<exists>So. \<M> \<T> f None = Some So)} \<union>
 {((p, p'), the (F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2)), q, q') |p p' \<sigma>1 \<sigma>2 q q' f.
  (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
- (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+ (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
  \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>So. F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2) = Some So)},
                                       \<Delta>e' =
                                         {((p, p'), q, p') |p p' q.
-                                         p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                                         p' \<in> NFA_rec.\<Q> \<A> \<and>
                                          (\<exists>f.
  (p, (None, f), q) \<in> \<Delta>T \<T> \<and> \<M> \<T> f None = None)} \<union>
                                         {uu.
                                          \<exists>p p' \<sigma>1 \<sigma>2 q q'.
 uu = ((p, p'), q, q') \<and>
 (\<exists>f. (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-     (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+     (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
      \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. \<M> \<T> f (Some x) = None))},
-                                      \<I>e = \<I>T \<T> \<times> NFA_set_interval.NFA_rec.\<I> \<A>,
-                                      \<F>e = \<F>T \<T> \<times> NFA_set_interval.NFA_rec.\<F> \<A>\<rparr>))"
+                                      \<I>e = \<I>T \<T> \<times> NFA_rec.\<I> \<A>,
+                                      \<F>e = \<F>T \<T> \<times> NFA_rec.\<F> \<A>\<rparr>))"
                 by simp
               from this
-              show "prods (\<F>T \<T>) (NFA_set_interval.NFA_rec.\<F> \<A>)
+              show "prods (\<F>T \<T>) (NFA_rec.\<F> \<A>)
     \<le> SPEC (\<lambda>Fa. RETURN
-                   \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_set_interval.NFA_rec.\<Q> \<A>, \<Sigma>e = \<Sigma>T \<T>,
+                   \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>,
                       \<Delta>e = {((p, p'), the (\<M> \<T> f None), q, p') |p p' q f.
-                             p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                             p' \<in> NFA_rec.\<Q> \<A> \<and>
                              (p, (None, f), q) \<in> \<Delta>T \<T> \<and>
                              (\<exists>So. \<M> \<T> f None = Some So)} \<union>
                             {((p, p'), the (F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2)), q, q') |p p' \<sigma>1 \<sigma>2
                              q q' f.
                              (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                             (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                             (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                              \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>So. F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2) = Some So)},
                       \<Delta>e' =
                         {((p, p'), q, p') |p p' q.
-                         p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                         p' \<in> NFA_rec.\<Q> \<A> \<and>
                          (\<exists>f. (p, (None, f), q) \<in> \<Delta>T \<T> \<and> \<M> \<T> f None = None)} \<union>
                         {uu.
                          \<exists>p p' \<sigma>1 \<sigma>2 q q'.
                             uu = ((p, p'), q, q') \<and>
                             (\<exists>f. (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                                 (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                                 (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                                  \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and>
                                  (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. \<M> \<T> f (Some x) = None))},
-                      \<I>e = \<I>T \<T> \<times> NFA_set_interval.NFA_rec.\<I> \<A>, \<F>e = Fa\<rparr>
-                  \<le> SPEC (\<lambda>A. A = \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_set_interval.NFA_rec.\<Q> \<A>,
-                                      \<Sigma>e = \<Sigma>T \<T>,
+                      \<I>e = \<I>T \<T> \<times> NFA_rec.\<I> \<A>, \<F>e = Fa\<rparr>
+                  \<le> SPEC (\<lambda>A. A = \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>,
+                                     
                                       \<Delta>e = {((p, p'), the (\<M> \<T> f None), q, p') |p p'
  q f.
- p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+ p' \<in> NFA_rec.\<Q> \<A> \<and>
  (p, (None, f), q) \<in> \<Delta>T \<T> \<and> (\<exists>So. \<M> \<T> f None = Some So)} \<union>
 {((p, p'), the (F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2)), q, q') |p p' \<sigma>1 \<sigma>2 q q' f.
  (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
- (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+ (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
  \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>So. F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2) = Some So)},
                                       \<Delta>e' =
                                         {((p, p'), q, p') |p p' q.
-                                         p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                                         p' \<in> NFA_rec.\<Q> \<A> \<and>
                                          (\<exists>f.
  (p, (None, f), q) \<in> \<Delta>T \<T> \<and> \<M> \<T> f None = None)} \<union>
                                         {uu.
                                          \<exists>p p' \<sigma>1 \<sigma>2 q q'.
 uu = ((p, p'), q, q') \<and>
 (\<exists>f. (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-     (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+     (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
      \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. \<M> \<T> f (Some x) = None))},
-                                      \<I>e = \<I>T \<T> \<times> NFA_set_interval.NFA_rec.\<I> \<A>,
-                                      \<F>e = \<F>T \<T> \<times> NFA_set_interval.NFA_rec.\<F> \<A>\<rparr>))"
+                                      \<I>e = \<I>T \<T> \<times> NFA_rec.\<I> \<A>,
+                                      \<F>e = \<F>T \<T> \<times> NFA_rec.\<F> \<A>\<rparr>))"
                 apply (simp)
                 using prods_correct[OF finite_TF finite_F]
                 by force
             qed
 
             from this
-            show "prods (\<F>T \<T>) (NFA_set_interval.NFA_rec.\<F> \<A>) \<bind>
+            show "prods (\<F>T \<T>) (NFA_rec.\<F> \<A>) \<bind>
     (\<lambda>Fa. RETURN
-           \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_set_interval.NFA_rec.\<Q> \<A>, \<Sigma>e = \<Sigma>T \<T>,
+           \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>,
               \<Delta>e = {((p, p'), the (\<M> \<T> f None), q, p') |p p' q f.
-                     p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                     p' \<in> NFA_rec.\<Q> \<A> \<and>
                      (p, (None, f), q) \<in> \<Delta>T \<T> \<and> (\<exists>So. \<M> \<T> f None = Some So)} \<union>
                     {((p, p'), the (F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2)), q, q') |p p' \<sigma>1 \<sigma>2 q q' f.
                      (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                     (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                     (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                      \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>So. F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2) = Some So)},
               \<Delta>e' =
                 {((p, p'), q, p') |p p' q.
-                 p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                 p' \<in> NFA_rec.\<Q> \<A> \<and>
                  (\<exists>f. (p, (None, f), q) \<in> \<Delta>T \<T> \<and> \<M> \<T> f None = None)} \<union>
                 {uu.
                  \<exists>p p' \<sigma>1 \<sigma>2 q q'.
                     uu = ((p, p'), q, q') \<and>
                     (\<exists>f. (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                         (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                         (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                          \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. \<M> \<T> f (Some x) = None))},
-              \<I>e = \<I>T \<T> \<times> NFA_set_interval.NFA_rec.\<I> \<A>, \<F>e = Fa\<rparr>)
-    \<le> RES {\<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_set_interval.NFA_rec.\<Q> \<A>, \<Sigma>e = \<Sigma>T \<T>,
+              \<I>e = \<I>T \<T> \<times> NFA_rec.\<I> \<A>, \<F>e = Fa\<rparr>)
+    \<le> RES {\<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>,
                \<Delta>e = {((p, p'), the (\<M> \<T> f None), q, p') |p p' q f.
-                      p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                      p' \<in> NFA_rec.\<Q> \<A> \<and>
                       (p, (None, f), q) \<in> \<Delta>T \<T> \<and> (\<exists>So. \<M> \<T> f None = Some So)} \<union>
                      {((p, p'), the (F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2)), q, q') |p p' \<sigma>1 \<sigma>2 q q' f.
                       (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                      (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                      (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                       \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>So. F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2) = Some So)},
                \<Delta>e' =
                  {((p, p'), q, p') |p p' q.
-                  p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                  p' \<in> NFA_rec.\<Q> \<A> \<and>
                   (\<exists>f. (p, (None, f), q) \<in> \<Delta>T \<T> \<and> \<M> \<T> f None = None)} \<union>
                  {uu.
                   \<exists>p p' \<sigma>1 \<sigma>2 q q'.
                      uu = ((p, p'), q, q') \<and>
                      (\<exists>f. (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                          (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                          (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                           \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. \<M> \<T> f (Some x) = None))},
-               \<I>e = \<I>T \<T> \<times> NFA_set_interval.NFA_rec.\<I> \<A>,
-               \<F>e = \<F>T \<T> \<times> NFA_set_interval.NFA_rec.\<F> \<A>\<rparr>}"
+               \<I>e = \<I>T \<T> \<times> NFA_rec.\<I> \<A>,
+               \<F>e = \<F>T \<T> \<times> NFA_rec.\<F> \<A>\<rparr>}"
               by auto
           qed
           from this prods_correct[OF finite_TI finite_I]
-          show "prods (\<I>T \<T>) (NFA_set_interval.NFA_rec.\<I> \<A>)
-    \<le> SPEC (\<lambda>I. prods (\<F>T \<T>) (NFA_set_interval.NFA_rec.\<F> \<A>) \<bind>
+          show "prods (\<I>T \<T>) (NFA_rec.\<I> \<A>)
+    \<le> SPEC (\<lambda>I. prods (\<F>T \<T>) (NFA_rec.\<F> \<A>) \<bind>
                  (\<lambda>Fa. RETURN
-                        \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_set_interval.NFA_rec.\<Q> \<A>, \<Sigma>e = \<Sigma>T \<T>,
+                        \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>,
                            \<Delta>e = {((p, p'), the (\<M> \<T> f None), q, p') |p p' q f.
-                                  p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                                  p' \<in> NFA_rec.\<Q> \<A> \<and>
                                   (p, (None, f), q) \<in> \<Delta>T \<T> \<and>
                                   (\<exists>So. \<M> \<T> f None = Some So)} \<union>
                                  {((p, p'), the (F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2)), q, q') |p p'
                                   \<sigma>1 \<sigma>2 q q' f.
                                   (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                                  (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                                  (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                                   \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and>
                                   (\<exists>So. F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2) = Some So)},
                            \<Delta>e' =
                              {((p, p'), q, p') |p p' q.
-                              p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                              p' \<in> NFA_rec.\<Q> \<A> \<and>
                               (\<exists>f. (p, (None, f), q) \<in> \<Delta>T \<T> \<and> \<M> \<T> f None = None)} \<union>
                              {uu.
                               \<exists>p p' \<sigma>1 \<sigma>2 q q'.
                                  uu = ((p, p'), q, q') \<and>
                                  (\<exists>f. (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                                      (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                                      (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                                       \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and>
                                       (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. \<M> \<T> f (Some x) = None))},
                            \<I>e = I, \<F>e = Fa\<rparr>)
-                 \<le> SPEC (\<lambda>A. A = \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_set_interval.NFA_rec.\<Q> \<A>,
-                                     \<Sigma>e = \<Sigma>T \<T>,
+                 \<le> SPEC (\<lambda>A. A = \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>,
+                                    
                                      \<Delta>e = {((p, p'), the (\<M> \<T> f None), q, p') |p p' q
-f. p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+f. p' \<in> NFA_rec.\<Q> \<A> \<and>
    (p, (None, f), q) \<in> \<Delta>T \<T> \<and> (\<exists>So. \<M> \<T> f None = Some So)} \<union>
                                            {((p, p'), the (F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2)), q,
  q') |
 p p' \<sigma>1 \<sigma>2 q q' f.
 (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-(p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+(p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
 \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>So. F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2) = Some So)},
                                      \<Delta>e' =
                                        {((p, p'), q, p') |p p' q.
-                                        p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                                        p' \<in> NFA_rec.\<Q> \<A> \<and>
                                         (\<exists>f.
 (p, (None, f), q) \<in> \<Delta>T \<T> \<and> \<M> \<T> f None = None)} \<union>
                                        {uu.
@@ -2596,155 +2592,153 @@ p p' \<sigma>1 \<sigma>2 q q' f.
                                            uu = ((p, p'), q, q') \<and>
                                            (\<exists>f.
    (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-   (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+   (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
    \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. \<M> \<T> f (Some x) = None))},
-                                     \<I>e = \<I>T \<T> \<times> NFA_set_interval.NFA_rec.\<I> \<A>,
-                                     \<F>e = \<F>T \<T> \<times> NFA_set_interval.NFA_rec.\<F> \<A>\<rparr>))"
+                                     \<I>e = \<I>T \<T> \<times> NFA_rec.\<I> \<A>,
+                                     \<F>e = \<F>T \<T> \<times> NFA_rec.\<F> \<A>\<rparr>))"
             using SPEC_trans by force
         qed
         from this
-        have "prods (\<I>T \<T>) (NFA_set_interval.NFA_rec.\<I> \<A>) \<bind>
-    (\<lambda>I. prods (\<F>T \<T>) (NFA_set_interval.NFA_rec.\<F> \<A>) \<bind>
+        have "prods (\<I>T \<T>) (NFA_rec.\<I> \<A>) \<bind>
+    (\<lambda>I. prods (\<F>T \<T>) (NFA_rec.\<F> \<A>) \<bind>
          (\<lambda>Fa. RETURN
-                \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_set_interval.NFA_rec.\<Q> \<A>, \<Sigma>e = \<Sigma>T \<T>,
+                \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>,
                    \<Delta>e = {((p, p'), the (\<M> \<T> f None), q, p') |p p' q f.
-                          p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                          p' \<in> NFA_rec.\<Q> \<A> \<and>
                           (p, (None, f), q) \<in> \<Delta>T \<T> \<and> (\<exists>So. \<M> \<T> f None = Some So)} \<union>
                          {((p, p'), the (F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2)), q, q') |p p' \<sigma>1 \<sigma>2 q
                           q' f.
                           (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                          (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                          (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                           \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>So. F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2) = Some So)},
                    \<Delta>e' =
                      {((p, p'), q, p') |p p' q.
-                      p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                      p' \<in> NFA_rec.\<Q> \<A> \<and>
                       (\<exists>f. (p, (None, f), q) \<in> \<Delta>T \<T> \<and> \<M> \<T> f None = None)} \<union>
                      {uu.
                       \<exists>p p' \<sigma>1 \<sigma>2 q q'.
                          uu = ((p, p'), q, q') \<and>
                          (\<exists>f. (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                              (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                              (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                               \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. \<M> \<T> f (Some x) = None))},
                    \<I>e = I, \<F>e = Fa\<rparr>))
-    \<le> RES {\<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_set_interval.NFA_rec.\<Q> \<A>, \<Sigma>e = \<Sigma>T \<T>,
+    \<le> RES {\<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>,
                \<Delta>e = {((p, p'), the (\<M> \<T> f None), q, p') |p p' q f.
-                      p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                      p' \<in> NFA_rec.\<Q> \<A> \<and>
                       (p, (None, f), q) \<in> \<Delta>T \<T> \<and> (\<exists>So. \<M> \<T> f None = Some So)} \<union>
                      {((p, p'), the (F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2)), q, q') |p p' \<sigma>1 \<sigma>2 q q' f.
                       (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                      (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                      (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                       \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>So. F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2) = Some So)},
                \<Delta>e' =
                  {((p, p'), q, p') |p p' q.
-                  p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                  p' \<in> NFA_rec.\<Q> \<A> \<and>
                   (\<exists>f. (p, (None, f), q) \<in> \<Delta>T \<T> \<and> \<M> \<T> f None = None)} \<union>
                  {uu.
                   \<exists>p p' \<sigma>1 \<sigma>2 q q'.
                      uu = ((p, p'), q, q') \<and>
                      (\<exists>f. (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                          (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                          (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                           \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. \<M> \<T> f (Some x) = None))},
-               \<I>e = \<I>T \<T> \<times> NFA_set_interval.NFA_rec.\<I> \<A>,
-               \<F>e = \<F>T \<T> \<times> NFA_set_interval.NFA_rec.\<F> \<A>\<rparr>}"
+               \<I>e = \<I>T \<T> \<times> NFA_rec.\<I> \<A>,
+               \<F>e = \<F>T \<T> \<times> NFA_rec.\<F> \<A>\<rparr>}"
           by auto
         from this
-        show "prods (\<I>T \<T>) (NFA_set_interval.NFA_rec.\<I> \<A>) \<bind>
-    (\<lambda>I. prods (\<F>T \<T>) (NFA_set_interval.NFA_rec.\<F> \<A>) \<bind>
+        show "prods (\<I>T \<T>) (NFA_rec.\<I> \<A>) \<bind>
+    (\<lambda>I. prods (\<F>T \<T>) (NFA_rec.\<F> \<A>) \<bind>
          (\<lambda>Fa. RETURN
-                \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_set_interval.NFA_rec.\<Q> \<A>, \<Sigma>e = \<Sigma>T \<T>,
+                \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>,
                    \<Delta>e = {((p, p'), the (\<M> \<T> f None), q, p') |p p' q f.
-                          p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                          p' \<in> NFA_rec.\<Q> \<A> \<and>
                           (p, (None, f), q) \<in> \<Delta>T \<T> \<and> (\<exists>So. \<M> \<T> f None = Some So)} \<union>
                          {((p, p'), the (F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2)), q, q') |p p' \<sigma>1 \<sigma>2 q
                           q' f.
                           (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                          (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                          (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                           \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>So. F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2) = Some So)},
                    \<Delta>e' =
                      {((p, p'), q, p') |p p' q.
-                      p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                      p' \<in> NFA_rec.\<Q> \<A> \<and>
                       (\<exists>f. (p, (None, f), q) \<in> \<Delta>T \<T> \<and> \<M> \<T> f None = None)} \<union>
                      {uu.
                       \<exists>p p' \<sigma>1 \<sigma>2 q q'.
                          uu = ((p, p'), q, q') \<and>
                          (\<exists>f. (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                              (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                              (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                               \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. \<M> \<T> f (Some x) = None))},
                    \<I>e = I, \<F>e = Fa\<rparr>))
-    \<le> RES {\<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_set_interval.NFA_rec.\<Q> \<A>, \<Sigma>e = \<Sigma>T \<T>,
+    \<le> RES {\<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>,
                \<Delta>e = {((p, p'), the (\<M> \<T> f None), q, p') |p p' q f.
-                      p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                      p' \<in> NFA_rec.\<Q> \<A> \<and>
                       (p, (None, f), q) \<in> \<Delta>T \<T> \<and> (\<exists>So. \<M> \<T> f None = Some So)} \<union>
                      {((p, p'), the (F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2)), q, q') |p p' \<sigma>1 \<sigma>2 q q' f.
                       (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                      (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                      (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                       \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>So. F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2) = Some So)},
                \<Delta>e' =
                  {((p, p'), q, p') |p p' q.
-                  p' \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<and>
+                  p' \<in> NFA_rec.\<Q> \<A> \<and>
                   (\<exists>f. (p, (None, f), q) \<in> \<Delta>T \<T> \<and> \<M> \<T> f None = None)} \<union>
                  {uu.
                   \<exists>p p' \<sigma>1 \<sigma>2 q q'.
                      uu = ((p, p'), q, q') \<and>
                      (\<exists>f. (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                          (p', \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A> \<and>
+                          (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
                           \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. \<M> \<T> f (Some x) = None))},
-               \<I>e = \<I>T \<T> \<times> NFA_set_interval.NFA_rec.\<I> \<A>,
-               \<F>e = \<F>T \<T> \<times> NFA_set_interval.NFA_rec.\<F> \<A>\<rparr>}"
+               \<I>e = \<I>T \<T> \<times> NFA_rec.\<I> \<A>,
+               \<F>e = \<F>T \<T> \<times> NFA_rec.\<F> \<A>\<rparr>}"
           by auto
       qed
 
       from this trans_comp_correct[of  "\<Delta>T \<T>" "\<Delta> \<A>" "\<Q> \<A>" fe "\<M> \<T>" F, 
                          OF finite_TT finite_TA finite_Q fe_ok]
-      show "trans_comp (\<M> \<T>) F fe (\<Delta>T \<T>) (NFA_set_interval.NFA_rec.\<Delta> \<A>)
-     (NFA_set_interval.NFA_rec.\<Q> \<A>)
+      show "trans_comp (\<M> \<T>) F fe (\<Delta>T \<T>) (NFA_rec.\<Delta> \<A>)
+     (NFA_rec.\<Q> \<A>)
     \<le> SPEC (\<lambda>x. (case x of
                   (D1, D2) \<Rightarrow>
-                    prods (\<I>T \<T>) (NFA_set_interval.NFA_rec.\<I> \<A>) \<bind>
-                    (\<lambda>I. prods (\<F>T \<T>) (NFA_set_interval.NFA_rec.\<F> \<A>) \<bind>
+                    prods (\<I>T \<T>) (NFA_rec.\<I> \<A>) \<bind>
+                    (\<lambda>I. prods (\<F>T \<T>) (NFA_rec.\<F> \<A>) \<bind>
                          (\<lambda>F. RETURN
-                               \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_set_interval.NFA_rec.\<Q> \<A>, \<Sigma>e = \<Sigma>T \<T>,
+                               \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>, 
                                   \<Delta>e = D1, \<Delta>e' = D2, \<I>e = I, \<F>e = F\<rparr>)))
                  \<le> SPEC (\<lambda>A. A = productT \<T> \<A> F))"
         using SPEC_trans 
         by force
     qed
     from this
-    show "trans_comp (\<M> \<T>) F fe (\<Delta>T \<T>) (NFA_set_interval.NFA_rec.\<Delta> \<A>)
-     (NFA_set_interval.NFA_rec.\<Q> \<A>) \<bind>
+    show "trans_comp (\<M> \<T>) F fe (\<Delta>T \<T>) (NFA_rec.\<Delta> \<A>)
+     (NFA_rec.\<Q> \<A>) \<bind>
     (\<lambda>(D1, D2).
-        prods (\<I>T \<T>) (NFA_set_interval.NFA_rec.\<I> \<A>) \<bind>
-        (\<lambda>I. prods (\<F>T \<T>) (NFA_set_interval.NFA_rec.\<F> \<A>) \<bind>
+        prods (\<I>T \<T>) (NFA_rec.\<I> \<A>) \<bind>
+        (\<lambda>I. prods (\<F>T \<T>) (NFA_rec.\<F> \<A>) \<bind>
              (\<lambda>F. RETURN
-                   \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_set_interval.NFA_rec.\<Q> \<A>, \<Sigma>e = \<Sigma>T \<T>, \<Delta>e = D1,
+                   \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>, \<Delta>e = D1,
                       \<Delta>e' = D2, \<I>e = I, \<F>e = F\<rparr>)))
     \<le> RES {productT \<T> \<A> F}"
       by auto
   qed
   from this prods_correct[OF finite_TQ finite_Q]
-  have "prods (\<Q>T \<T>) (NFA_set_interval.NFA_rec.\<Q> \<A>)
-    \<le> SPEC (\<lambda>Q. RETURN (\<Sigma>T \<T>) \<bind>
-                 (\<lambda>S. trans_comp (\<M> \<T>) F fe (\<Delta>T \<T>) (NFA_set_interval.NFA_rec.\<Delta> \<A>)
-                       (NFA_set_interval.NFA_rec.\<Q> \<A>) \<bind>
+  have "prods (\<Q>T \<T>) (NFA_rec.\<Q> \<A>)
+    \<le> SPEC (\<lambda>Q.  trans_comp (\<M> \<T>) F fe (\<Delta>T \<T>) (NFA_rec.\<Delta> \<A>)
+                       (NFA_rec.\<Q> \<A>) \<bind>
                       (\<lambda>(D1, D2).
-                          prods (\<I>T \<T>) (NFA_set_interval.NFA_rec.\<I> \<A>) \<bind>
-                          (\<lambda>I. prods (\<F>T \<T>) (NFA_set_interval.NFA_rec.\<F> \<A>) \<bind>
+                          prods (\<I>T \<T>) (NFA_rec.\<I> \<A>) \<bind>
+                          (\<lambda>I. prods (\<F>T \<T>) (NFA_rec.\<F> \<A>) \<bind>
                                (\<lambda>F. RETURN
-                                     \<lparr>\<Q>e = Q, \<Sigma>e = S, \<Delta>e = D1, \<Delta>e' = D2, \<I>e = I,
-                                        \<F>e = F\<rparr>))))
+                                     \<lparr>\<Q>e = Q, \<Delta>e = D1, \<Delta>e' = D2, \<I>e = I,
+                                        \<F>e = F\<rparr>)))
                  \<le> SPEC (\<lambda>A. A = productT \<T> \<A> F))"
     using SPEC_trans by force
   from this
-  show "prods (\<Q>T \<T>) (NFA_set_interval.NFA_rec.\<Q> \<A>)
-    \<le> SPEC (\<lambda>Q. RETURN (\<Sigma>T \<T>) \<bind>
-                 (\<lambda>S. trans_comp (\<M> \<T>) F fe (\<Delta>T \<T>) (NFA_set_interval.NFA_rec.\<Delta> \<A>)
-                       (NFA_set_interval.NFA_rec.\<Q> \<A>) \<bind>
+  show "prods (\<Q>T \<T>) (NFA_rec.\<Q> \<A>)
+    \<le> SPEC (\<lambda>Q. trans_comp (\<M> \<T>) F fe (\<Delta>T \<T>) (NFA_rec.\<Delta> \<A>)
+                       (NFA_rec.\<Q> \<A>) \<bind>
                       (\<lambda>(D1, D2).
-                          prods (\<I>T \<T>) (NFA_set_interval.NFA_rec.\<I> \<A>) \<bind>
-                          (\<lambda>I. prods (\<F>T \<T>) (NFA_set_interval.NFA_rec.\<F> \<A>) \<bind>
+                          prods (\<I>T \<T>) (NFA_rec.\<I> \<A>) \<bind>
+                          (\<lambda>I. prods (\<F>T \<T>) (NFA_rec.\<F> \<A>) \<bind>
                                (\<lambda>F. RETURN
-                                     \<lparr>\<Q>e = Q, \<Sigma>e = S, \<Delta>e = D1, \<Delta>e' = D2, \<I>e = I,
-                                        \<F>e = F\<rparr>))))
+                                     \<lparr>\<Q>e = Q,\<Delta>e = D1, \<Delta>e' = D2, \<I>e = I,
+                                        \<F>e = F\<rparr>)))
                  \<le> SPEC (\<lambda>A. A = productT \<T> \<A> F))"
     by auto
 qed

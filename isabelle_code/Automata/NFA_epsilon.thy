@@ -151,7 +151,6 @@ qed
 
 record ('q,'a) NFAe_rec =
   \<Q>e :: "'q set"           (* The set of states *)
-  \<Sigma>e :: "'a set"           (* alphabet *)
   \<Delta>e :: "('q,'a) LTS"      (* The transition relation *)
   \<Delta>e' :: "('q * 'q) set"   (* epsilon transition *)
   \<I>e :: "'q set"            (* The set of initial states *)

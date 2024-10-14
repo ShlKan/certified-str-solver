@@ -947,9 +947,6 @@ definition LTS_is_weak_deterministic :: "('q, 'a) LTS \<Rightarrow> bool" where
       (\<forall>q \<sigma>1 \<sigma>2 q1' q2'. ((q, \<sigma>1, q1') \<in> \<Delta> \<and> 
                           (q, \<sigma>2, q2') \<in> \<Delta>) \<and> (q1' \<noteq> q2') \<longrightarrow> \<sigma>1 \<inter> \<sigma>2 = {}))"
 
-definition LTS_is_deterministic :: "'q set \<Rightarrow> 'a set \<Rightarrow> ('q, 'a) LTS \<Rightarrow> bool" where
-  "LTS_is_deterministic \<Q> \<Sigma> \<Delta> \<equiv> (LTS_is_weak_deterministic \<Delta> \<and> 
-                                   (\<forall>q\<in>\<Q>. \<forall> a \<in> \<Sigma>. (\<exists> q' \<sigma>. (q, \<sigma>, q') \<in> \<Delta> \<and> a \<in> \<sigma>)))"
 
 
 type_synonym ('q,'a) DLTS = "'q * 'a set \<Rightarrow> 'q option"
