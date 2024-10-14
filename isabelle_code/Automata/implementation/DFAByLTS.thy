@@ -17,13 +17,13 @@ locale automaton_by_lts_interval_syntax =
   lt: StdSetDefs lt_ops   (* Set operations on labels *) +
   d: StdCommonLTSDefs d_ops elemIs  (* An LTS *) 
   for s_ops::"('q::{NFA_states},'q_set,_) set_ops_scheme"
-  and l_ops::"('a::linorder,'a_set ,_) set_ops_scheme"
+  and l_ops::"('a:: linorder,'a_set ,_) set_ops_scheme"
   and lt_ops::"(('a \<times> 'a) list, 'ai_set ,_) set_ops_scheme"
   and d_ops::"('q, ('a \<times> 'a) list,'a,'d,_) common_lts_ops_scheme" 
 
 
 locale automaton_by_lts_interval_defs = automaton_by_lts_interval_syntax
-      s_ops l_ops lt_ops d_ops +
+      s_ops l_ops lt_ops d_ops + 
   s: StdSet s_ops (* Set operations on states *) +
   l: StdSet l_ops (* Set operations on labels *) +
   lt: StdSet lt_ops   (* Set operations on labels *) +
@@ -32,7 +32,7 @@ locale automaton_by_lts_interval_defs = automaton_by_lts_interval_syntax
   and l_ops::"('a :: linorder,'a_set ,_) set_ops_scheme"
   and lt_ops::"(('a \<times> 'a) list, 'ai_set ,_) set_ops_scheme"
   and d_ops::"('q,('a \<times> 'a) list,'a,'d,_) common_lts_ops_scheme" 
-   
+
 
 locale nfa_by_lts_interval_defs = automaton_by_lts_interval_defs s_ops l_ops lt_ops d_ops + 
   s: StdSet s_ops (* Set operations on states *) +
@@ -66,10 +66,10 @@ locale nfa_dfa_by_lts_interval_defs =
   dd_nfa: StdLTS dd_nfa_ops elemIs (* An LTS *)
   for s_ops::"('q::{NFA_states},'q_set,_) set_ops_scheme"
   and ss_ops::"('q \<times> 'q,'qq_set,_) set_ops_scheme"
-  and l_ops::"('a ::linorder, 'a_set ,_) set_ops_scheme"
-  and lt_ops::"(('a \<times> 'a) list, 'ai_set ,_) set_ops_scheme"
-  and d_nfa_ops::"('q,('a \<times> 'a) list,'a,'d_nfa,_) lts_ops_scheme"
-  and dd_nfa_ops::"('q \<times> 'q,('a \<times> 'a) list,'a,'dd_nfa,_) lts_ops_scheme"
+  and l_ops::"('a::linorder, 'a_set ,_) set_ops_scheme"
+  and lt_ops::"(('a::linorder \<times> 'a) list, 'ai_set ,_) set_ops_scheme"
+  and d_nfa_ops::"('q,('a::linorder \<times> 'a) list,'a,'d_nfa,_) lts_ops_scheme"
+  and dd_nfa_ops::"('q \<times> 'q,('a::linorder \<times> 'a) list,'a,'dd_nfa,_) lts_ops_scheme"
 
 
 sublocale nfa_dfa_by_lts_interval_defs < 
@@ -81,72 +81,56 @@ sublocale nfa_dfa_by_lts_interval_defs <
 context automaton_by_lts_interval_syntax
 begin
 
-definition nfa_states :: "'q_set \<times> ('a \<times> 'a) list \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
+definition nfa_states :: "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
   "nfa_states A = fst A"
-lemma [simp]: "nfa_states (Q, Sig, D, I, F) = Q" by (simp add: nfa_states_def)
-
-definition nfa_alphabet :: "'q_set \<times> ('a \<times> 'a) list \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> ('a \<times> 'a) list" where
-  "nfa_alphabet A = fst (snd A)"
-lemma [simp]: "nfa_alphabet (Q, Sig, D, I, F) = Sig" by (simp add: nfa_alphabet_def)
-
-fun nfa_tranlabel :: "('q \<times> ('a \<times> 'a) list \<times> 'q) list \<Rightarrow> 'ai_set" where
-    "nfa_tranlabel [] = lt.empty ()"
-  | "nfa_tranlabel (a # l) = lt.ins (fst (snd a)) (nfa_tranlabel l)"
+lemma [simp]: "nfa_states (Q, D, I, F) = Q" by (simp add: nfa_states_def)
 
 
 fun interval_to_set :: "'q \<times> ('a \<times> 'a) list \<times> 'q \<Rightarrow> 'q \<times> 'a set \<times> 'q"  where
     "interval_to_set (q, s, q') = (q, semIs s, q')"
 
 definition nfa_trans :: 
-        "'q_set \<times> ('a \<times> 'a) list \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'd" where
-  "nfa_trans A = (fst (snd (snd A)))"
-lemma [simp]: "nfa_trans (Q, Sig, D, I, F) = D" by (simp add: nfa_trans_def)
-
-definition nfa_labels:: "'q_set \<times> ('a \<times> 'a) list \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'ai_set" where
-    "nfa_labels A = nfa_tranlabel (d.to_list (nfa_trans A))"
+        "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'd" where
+  "nfa_trans A = (fst (snd A))"
+lemma [simp]: "nfa_trans (Q, D, I, F) = D" by (simp add: nfa_trans_def)
 
 
     
 
 
-definition nfa_initial :: "'q_set \<times> ('a \<times> 'a) list \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
-  "nfa_initial A = fst (snd (snd (snd  A)))"
-lemma [simp]: "nfa_initial (Q, Sig, D, I, F) = I" by (simp add: nfa_initial_def)
+definition nfa_initial :: "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
+  "nfa_initial A = fst (snd (snd  A))"
+lemma [simp]: "nfa_initial (Q, D, I, F) = I" by (simp add: nfa_initial_def)
 
-definition nfa_accepting :: "'q_set \<times> ('a \<times> 'a) list\<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
-  "nfa_accepting A = snd (snd (snd (snd  A)))"
-lemma [simp]: "nfa_accepting (Q, Sig, D, I, F) = F" by (simp add: nfa_accepting_def)
+definition nfa_accepting :: "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
+  "nfa_accepting A = snd (snd (snd  A))"
+lemma [simp]: "nfa_accepting (Q, D, I, F) = F" by (simp add: nfa_accepting_def)
 
 
 (***********)
 
-definition nfa_statep :: "'qq_set \<times> ('a \<times> 'a) list \<times> 'dd_nfa \<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qq_set" where
+definition nfa_statep :: "'qq_set \<times> 'dd_nfa \<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qq_set" where
   "nfa_statep A = fst A"
-lemma [simp]: "nfa_statep (Q, Sig, D, I, F) = Q" by (simp add: nfa_statep_def)
-
-definition nfa_alphap :: "'qq_set \<times> ('a \<times> 'a) list 
-                            \<times> 'dd_nfa \<times> 'qq_set \<times> 'qq_set \<Rightarrow> ('a \<times> 'a) list" where
-  "nfa_alphap A = fst (snd A)"
-lemma [simp]: "nfa_alphap (Q, Sig, D, I, F) = Sig" by (simp add: nfa_alphap_def)
+lemma [simp]: "nfa_statep (Q, D, I, F) = Q" by (simp add: nfa_statep_def)
 
 definition nfa_transp :: 
-        "'qq_set \<times> ('a \<times> 'a) list \<times> 'dd_nfa \<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'dd_nfa" where
-  "nfa_transp A = (fst (snd (snd A)))"
-lemma [simp]: "nfa_transp (Q, Sig, D, I, F) = D" by (simp add: nfa_transp_def)
+        "'qq_set \<times> 'dd_nfa \<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'dd_nfa" where
+  "nfa_transp A = (fst (snd A))"
+lemma [simp]: "nfa_transp (Q, D, I, F) = D" by (simp add: nfa_transp_def)
 
-definition nfa_initialp :: "'qq_set \<times> ('a \<times> 'a) list \<times> 'dd_nfa \<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qq_set" where
-  "nfa_initialp A = fst (snd (snd (snd  A)))"
-lemma [simp]: "nfa_initialp (Q, Sig, D, I, F) = I" by (simp add: nfa_initialp_def)
+definition nfa_initialp :: "'qq_set \<times> 'dd_nfa \<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qq_set" where
+  "nfa_initialp A = fst (snd (snd  A))"
+lemma [simp]: "nfa_initialp (Q, D, I, F) = I" by (simp add: nfa_initialp_def)
 
-definition nfa_acceptingp :: "'qq_set \<times> ('a \<times> 'a) list \<times> 'dd_nfa \<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qq_set" where
-  "nfa_acceptingp A = snd (snd (snd (snd  A)))"
-lemma [simp]: "nfa_acceptingp (Q, Sig, D, I, F) = F" by (simp add: nfa_acceptingp_def)
+definition nfa_acceptingp :: "'qq_set \<times> 'dd_nfa \<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qq_set" where
+  "nfa_acceptingp A = snd (snd (snd  A))"
+lemma [simp]: "nfa_acceptingp (Q, D, I, F) = F" by (simp add: nfa_acceptingp_def)
 
 lemmas nfa_selectors_def = nfa_accepting_def nfa_states_def 
        nfa_trans_def nfa_initial_def
 
 
-definition nfa_invar :: "'q_set \<times> ('a \<times> 'a) list \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> bool" where
+definition nfa_invar :: "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> bool" where
   "nfa_invar A =
    (s.invar (nfa_states A) \<and> 
     d.invar (nfa_trans A) \<and>
@@ -154,11 +138,10 @@ definition nfa_invar :: "'q_set \<times> ('a \<times> 'a) list \<times> 'd \<tim
     s.invar (nfa_accepting A))"
 
 
-definition nfa_\<alpha> :: "'q_set \<times> ('a \<times> 'a) list \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> ('q, 'a) NFA_rec" 
+definition nfa_\<alpha> :: "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> ('q, 'a) NFA_rec" 
   where
   "nfa_\<alpha> A =
-   \<lparr> \<Q> = s.\<alpha> (nfa_states A),   
-     \<Sigma> = semIs (nfa_alphabet A),
+   \<lparr> \<Q> = s.\<alpha> (nfa_states A), 
      \<Delta> = interval_to_set ` (d.\<alpha> (nfa_trans A)),
      \<I> = s.\<alpha> (nfa_initial A), 
      \<F> = s.\<alpha> (nfa_accepting A) \<rparr>"
@@ -166,15 +149,11 @@ definition nfa_\<alpha> :: "'q_set \<times> ('a \<times> 'a) list \<times> 'd \<
 definition nfa_to_set :: "'q_set \<Rightarrow> 'q set" where
    "nfa_to_set s = s.\<alpha> s"
 
-definition nfa_invar_NFA :: "'q_set \<times> ('a \<times> 'a) list \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> bool" where
-  "nfa_invar_NFA A \<equiv> (nfa_invar A \<and> NFA (nfa_\<alpha> A) \<and> canonicalIs  (nfa_alphabet A))"
+definition nfa_invar_NFA :: "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> bool" where
+  "nfa_invar_NFA A \<equiv> (nfa_invar A \<and> NFA (nfa_\<alpha> A))"
 
-definition nfa_invar_NFA' :: "'q_set \<times> ('a \<times> 'a) list \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> bool" where
+definition nfa_invar_NFA' :: "'q_set \<times>  'd \<times> 'q_set \<times> 'q_set \<Rightarrow> bool" where
   "nfa_invar_NFA' A \<equiv> (nfa_invar A \<and> NFA (nfa_\<alpha> A))"
-
-definition nfa_invar_DFA :: "'q_set \<times> ('a \<times> 'a) list \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> bool" where
-  "nfa_invar_DFA A \<equiv> (nfa_invar A \<and> weak_DFA (nfa_\<alpha> A))"
-
 
 
 end
@@ -185,11 +164,6 @@ begin
 lemma nfa_by_map_correct [simp]:
     "nfa nfa_\<alpha> nfa_invar_NFA"
     unfolding nfa_def nfa_invar_NFA_def
-    by simp
-
-lemma dfa_by_map_correct [simp]:
-    "nfa nfa_\<alpha> nfa_invar_DFA"
-    unfolding nfa_def nfa_invar_DFA_def
     by simp
 
 
@@ -209,13 +183,9 @@ context automaton_by_lts_interval_defs
 begin
 
 fun rename_states_gen_impl where
-  "rename_states_gen_impl im im2 (Q, Sig, D, I, F) = (\<lambda> f.
-   (im f Q, Sig, im2 (\<lambda>qaq. (f (fst qaq), fst (snd qaq), f (snd (snd qaq)))) D,
+  "rename_states_gen_impl im im2 (Q, D, I, F) = (\<lambda> f.
+   (im f Q, im2 (\<lambda>qaq. (f (fst qaq), fst (snd qaq), f (snd (snd qaq)))) D,
     im f I, im f F))"
-
-
-thm nfa_rename_states.intro
-
 
 
 lemma rename_states_impl_correct :
@@ -235,7 +205,7 @@ proof (intro nfa_rename_states.intro
     by (intro nfa_by_lts_defs___sublocale wf_target)
   fix n f
   assume invar: "nfa_invar_NFA n"
-  obtain QL SigL DL IL FL where n_eq[simp]: "n = (QL, SigL, DL, IL, FL)" 
+  obtain QL DL IL FL where n_eq[simp]: "n = (QL, DL, IL, FL)" 
         by (cases n, blast)
 
   interpret s': StdSet s_ops' using wf_target 
@@ -261,19 +231,8 @@ proof (intro nfa_rename_states.intro
                      automaton_by_lts_interval_syntax.nfa_\<alpha>_def
                      automaton_by_lts_interval_syntax.nfa_selectors_def
                       NFA_rename_states_def 
-                     im.image_correct im2.lts_image_correct 
-                     rename_states_gen_impl.simps
-                     semI_def)
-    apply (subgoal_tac "automaton_by_lts_interval_syntax.nfa_alphabet
-              (im f QL, SigL, im2 (\<lambda>qaq. (f (fst qaq), fst (snd qaq), f (snd (snd qaq)))) DL,
-               im f IL, im f FL) = SigL")
-     defer
-    using automaton_by_lts_interval_syntax.nfa_alphabet_def
-          [of "(im f QL, SigL, im2 (\<lambda>qaq. (f (fst qaq), fst (snd qaq), f (snd (snd qaq)))) DL, im f IL,
-      im f FL)"]
-    apply fastforce
-    apply (simp add: semIs_def 
-                          interval_to_set.simps)
+                     im.image_correct im2.lts_image_correct)
+    apply (simp add: semIs_def)
     thm automaton_by_lts_interval_syntax.nfa_\<alpha>_def
     apply (simp add: image_iff)
     apply (simp add: set_eq_iff)
@@ -303,22 +262,15 @@ proof (intro nfa_rename_states.intro
        "?nfa_invar_NFA' (rename_states_gen_impl im im2 n f)"
     unfolding automaton_by_lts_interval_syntax.nfa_invar_NFA_def
     using NFA_rename_states___is_well_formed[OF wf, of f]
-    apply (simp_all add: NFA_remove_states___is_well_formed)
-    using nfa_alphabet_def[of n] automaton_by_lts_interval_syntax.nfa_alphabet_def
-         [of "(im f QL, SigL, im2 (\<lambda>qaq. (f (fst qaq), fst (snd qaq), f (snd (snd qaq)))) DL,
-        im f IL, im f FL)"]
-          invar n_eq nfa_invar_NFA_def[of n]
-    apply simp
-    by auto
+    by (simp_all add: NFA_remove_states___is_well_formed)
 qed
 
 
 
 
 fun nfa_destruct where
-   "nfa_destruct (Q, Sig, D, I, F) =
+   "nfa_destruct (Q, D, I, F) =
     (s.to_list Q,
-     Sig,
      d.to_collect_list D,
      s.to_list I,
      s.to_list F)"
@@ -328,25 +280,20 @@ declare nfa_destruct.simps [simp del]
 subsection \<open> Constructing Automata \<close>
 
 definition nfa_construct_interval_aux ::
-  "'q_set \<times> ('a \<times> 'a) list \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q \<times> ('a \<times> 'a) list \<times> 'q \<Rightarrow> 
-   'q_set \<times> ('a \<times> 'a) list \<times> 'd \<times> 'q_set \<times> 'q_set" where 
-   "nfa_construct_interval_aux = (\<lambda>(Q, Sig, D, I, F) (q1, l, q2).
-    (s.ins q1 (s.ins q2 Q), Sig, 
-     d.add q1 (intersectIs l Sig) q2 D,
+  "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q \<times> ('a \<times> 'a) list \<times> 'q \<Rightarrow> 
+   'q_set \<times> 'd \<times> 'q_set \<times> 'q_set" where 
+   "nfa_construct_interval_aux = (\<lambda>(Q, D, I, F) (q1, l, q2).
+    (s.ins q1 (s.ins q2 Q), 
+     d.add q1 l q2 D,
      I, F))"
 
 
-definition wf_IA :: "'q list \<times> ('a ::linorder \<times> 'a) list \<times>
-                     ('q \<times> ('a \<times> 'a) list \<times> 'q) list \<times> 'q list \<times> 'q list \<Rightarrow> bool" where
-  "wf_IA ll = (canonicalIs (fst (snd ll)) \<and>
-              (\<forall> (q, l , q') \<in> set (fst (snd (snd ll))). canonicalIs l))"
-
-definition wf_\<Sigma>  where
-   "wf_\<Sigma> ll = (canonicalIs (fst (snd ll)))"
+definition wf_IA :: "'q list \<times> ('q \<times> ('a :: linorder \<times> 'a) list \<times> 'q) list \<times> 'q list \<times> 'q list \<Rightarrow> bool" where
+  "wf_IA ll = (\<forall> (q, l , q') \<in> set (fst (snd ll)). canonicalIs l)"
 
 lemma nfa_construct_interval_aux_correct :
 fixes q1 q2
-assumes invar: "nfa_invar A \<and> wf_\<Sigma> A"
+assumes invar: "nfa_invar A"
     and d_add_OK: 
         "lts_add d.\<alpha> d.invar d.add"
     and l_cano: "canonicalIs l"
@@ -354,8 +301,8 @@ shows "nfa_invar (nfa_construct_interval_aux A (q1, l, q2))"
       "nfa_\<alpha> (nfa_construct_interval_aux A (q1, l, q2)) =
               construct_NFA_interval_aux (nfa_\<alpha> A) (q1, l, q2)"
 proof -
-  obtain QL SigL DL IL FL 
-    where A_eq[simp]: "A = (QL, SigL, DL, IL, FL)" by (cases A, blast)
+  obtain QL DL IL FL 
+    where A_eq[simp]: "A = (QL, DL, IL, FL)" by (cases A, blast)
 
   from this invar nfa_invar_NFA_def nfa_invar_def
   have invarDL: "d.invar DL"
@@ -372,120 +319,53 @@ proof -
       then show ?thesis
         by (auto simp add: lts_add.lts_add_correct[OF add_OK invard] invar)
     qed
-
-    from  invar A_eq wf_\<Sigma>_def[of A]
-         nfa_invar_NFA_def[of A] nfa_alphabet_def[of A]
-    have "canonicalIs SigL"
-      by auto
-
-    from Interval.intersectIs_correct[of l SigL] this l_cano
-    have lsiglinter: "semIs (intersectIs l SigL) = semIs l \<inter> semIs SigL" by auto
-      
-      
+         
 
     from DL_OK invar d_add_OK
     show "nfa_\<alpha> (nfa_construct_interval_aux A (q1, l, q2)) = 
                 construct_NFA_interval_aux (nfa_\<alpha> A) (q1, l, q2)"
        "nfa_invar (nfa_construct_interval_aux A (q1, l, q2))"
-      apply (simp_all add: nfa_construct_interval_aux_def 
+      by (simp_all add: nfa_construct_interval_aux_def 
                         nfa_\<alpha>_def s.correct nfa_invar_NFA_def nfa_invar_def)
-      apply (simp add: lts_add.lts_add_correct(2)
-                        Interval.intersectIs_correct lsiglinter)
-      by (simp add: lts_add.lts_add_correct(1))
-qed
+  qed
 
 
 fun nfa_construct_interval  where
-   "nfa_construct_interval (QL, SigL, DL, IL, FL) =
+   "nfa_construct_interval (QL, DL, IL, FL) =
     foldl nfa_construct_interval_aux 
      (s.from_list (QL @ IL @ FL),
-      SigL,
       d.empty,
       s.from_list IL,
       s.from_list FL) DL"
 declare nfa_construct_interval.simps [simp del]
 
-thm nfa_construct_interval_aux_def
-
-lemma nfa_construct_interval_aux_\<Sigma>: 
-    "nfa_alphabet (nfa_construct_interval_aux (QL, SigL, DL, IL, FL) qlq) = SigL"
-  unfolding nfa_construct_interval_aux_def nfa_alphabet_def
-  using split
-  apply simp
-proof -
-  obtain q l q' where qlq'_def: "qlq = (q, l, q')"  
-    using interval_to_set.cases by blast
-  from this
-  show "fst (snd (case qlq of
-              (q1, l, q2) \<Rightarrow>
-                (s.ins q1 (s.ins q2 QL), SigL, d.add q1 (intersectIs l SigL) q2 DL, IL,
-                 FL))) =
-    SigL"
-    using split by simp
-qed
-
-lemma nfa_construct_interval_\<Sigma>: 
-    "nfa_alphabet (nfa_construct_interval (QL, SigL, DL, IL, FL)) = SigL"
-  unfolding nfa_construct_interval.simps
-  apply (induction DL)
-  apply simp
-  using foldl_Cons
-proof -
-  fix a DL
-  have c1: "\<And> A D. nfa_alphabet
-        (foldl nfa_construct_interval_aux
-          A
-          D) =
-        (fst (snd A))"
-  proof -
-    fix A D
-    show "nfa_alphabet (foldl nfa_construct_interval_aux A D) = fst (snd A)"
-      apply (induction D arbitrary: A)
-      using nfa_alphabet_def
-      apply simp
-      using foldl_Cons
-      apply simp
-      using nfa_alphabet_def nfa_construct_interval_aux_\<Sigma> by auto
-  qed
-  from this [of 
-        "(s.from_list (QL @ IL @ FL), SigL, d.empty, 
-         s.from_list IL, s.from_list FL)" "a # DL"]
-  show "nfa_alphabet
-        (foldl nfa_construct_interval_aux
-          (s.from_list (QL @ IL @ FL), SigL, d.empty, s.from_list IL, s.from_list FL)
-          (a # DL)) =
-       SigL"
-    by simp
-qed
-
 lemma nfa_construct_correct_gen :
-  fixes ll :: "'q list \<times> ('a ::linorder \<times> 'a) list \<times>
-                 ('q \<times> ('a \<times> 'a) list \<times> 'q) list \<times> 'q list \<times> 'q list"
+  fixes ll :: "'q list \<times> ('q \<times> ('a::linorder \<times> 'a) list \<times> 'q) list \<times> 'q list \<times> 'q list"
   assumes d_add_OK: "lts_add d.\<alpha> d.invar d.add"
       and wf_ll: "wf_IA ll"
   shows "nfa_invar (nfa_construct_interval ll)"
       "nfa_\<alpha> (nfa_construct_interval ll) = NFA_construct_interval ll" 
 proof -
-  obtain QL SigL DL IL FL where l_eq[simp]: 
-      "ll = (QL, SigL, DL, IL, FL)" by (cases ll, blast)
+  obtain QL DL IL FL where l_eq[simp]: 
+      "ll = (QL, DL, IL, FL)" by (cases ll, blast)
   let ?A = 
-      "(s.from_list (QL @ IL @ FL), SigL, d.empty, s.from_list IL, 
+      "(s.from_list (QL @ IL @ FL), d.empty, s.from_list IL, 
         s.from_list FL)"
 
-  have A_invar: "nfa_invar ?A \<and> wf_\<Sigma> ?A" 
+  have A_invar: "nfa_invar ?A" 
     unfolding nfa_invar_NFA_def nfa_invar_def
     using wf_ll wf_IA_def[of ll] l_eq
-    by (simp add: s.correct l.correct d.correct_common wf_\<Sigma>_def)
+    by (simp add: s.correct l.correct d.correct_common )
 
   from wf_ll wf_IA_def[of ll] l_eq
   have wf_DL: "\<forall> (q, i, q') \<in> set DL.  canonicalIs i"
     by auto
   
-   have A_\<alpha>: "nfa_\<alpha> ?A = \<lparr>\<Q> = set (QL @ IL @ FL), \<Sigma> = semIs SigL, 
+   have A_\<alpha>: "nfa_\<alpha> ?A = \<lparr>\<Q> = set (QL @ IL @ FL),
                           \<Delta> = {}, \<I> = set IL, \<F> = set FL\<rparr>"
     by (simp add: nfa_\<alpha>_def s.correct d.correct_common l.correct)
   { fix A DL'
-    have " nfa_invar A \<and> wf_\<Sigma> A \<Longrightarrow> set DL' \<subseteq> set DL \<Longrightarrow>
+    have " nfa_invar A \<Longrightarrow> set DL' \<subseteq> set DL \<Longrightarrow>
         (lts_add d.\<alpha> d.invar d.add) \<Longrightarrow>
         nfa_invar (foldl nfa_construct_interval_aux A DL') \<and>
         nfa_\<alpha> (foldl nfa_construct_interval_aux A DL') =
@@ -505,19 +385,14 @@ proof -
       from set_DL'_subset wf_DL qlq_eq
       have canonical_l: "canonicalIs l"
         by auto
-      obtain QA \<Sigma>A IA FA \<Delta>A where
-      A_eq: "A = (QA, \<Sigma>A, IA, FA, \<Delta>A)"
+      obtain QA IA FA \<Delta>A where
+      A_eq: "A = (QA, IA, FA, \<Delta>A)"
         using nfa_destruct.cases by blast
-      from invar_A nfa_construct_interval_aux_def wf_\<Sigma>_def[of A]
-           wf_\<Sigma>_def[of "nfa_construct_interval_aux A qlq"] A_eq
-      have wf\<Sigma>': "wf_\<Sigma> (nfa_construct_interval_aux A qlq)"
-        by simp
-        
 
         note aux_correct = nfa_construct_interval_aux_correct
           [of  A  l q1  q2, OF invar_A d_add_OK canonical_l] 
    
-      from this ind_hyp [of ?A'] set_DL'_subset aux_correct d_add_OK wf\<Sigma>'
+      from this ind_hyp [of ?A'] set_DL'_subset aux_correct d_add_OK
       show ?case
         by auto
        
@@ -540,11 +415,8 @@ proof -
    show ?thesis
      apply (intro nfa_from_list_interval.intro nfa_by_map_correct 
                   nfa_from_list_interval_axioms.intro)
-      apply (simp_all add: nfa_invar_NFA_def nfa_construct_interval_\<Sigma>
+     by (simp_all add: nfa_invar_NFA_def
                            NFA_construct_interval___is_well_formed)
-     using nfa_construct_interval_\<Sigma> wf_IA_def
-     apply auto[1]    
-   done
 qed
 
 lemma (in nfa_by_lts_interval_defs) nfa_construct_interval_correct' :
@@ -556,10 +428,8 @@ proof -
    show ?thesis
      apply (intro nfa_from_list_interval.intro nfa_by_map_correct 
                   nfa_from_list_interval_axioms.intro)
-      apply (simp_all add: nfa_invar_NFA'_def nfa_construct_interval_\<Sigma>
+     by (simp_all add: nfa_invar_NFA'_def 
                            NFA_construct_interval___is_well_formed)
-     using nfa_construct_interval_\<Sigma> wf_IA_def
-   done
 qed
 
 
@@ -1005,7 +875,7 @@ assumes f_inj_on: "inj_on f S"
     and DS_OK: "(DS q, {(a, q'). (q2_\<alpha> q, a, q') \<in> D}) \<in> 
           NFA_construct_reachable_impl_step_rel"
     and weak_invar: "NFA_construct_reachable_abstract_impl_weak_invar 
-                     Sig I FP D (rm, \<A>)"
+                     I FP D (rm, \<A>)"
 shows "NFA_construct_reachable_impl_step_interval DS qm0 n D0 q \<le> 
   \<Down> (rprod (build_rel state_map_\<alpha> state_map_invar) (rprod (build_rel 
            (\<lambda> d. interval_to_set ` d.\<alpha> d) d.invar) 
@@ -1250,7 +1120,7 @@ qed
 
 
 definition NFA_construct_reachable_interval_impl where
-  "NFA_construct_reachable_interval_impl Sig S I FP DS  =
+  "NFA_construct_reachable_interval_impl S I FP DS  =
    do {
      let ((qm, n), Is) = NFA_construct_reachable_init_interval_impl I;
      (((qm, n), \<A>), _) \<leftarrow> WORKLISTT (\<lambda>_. True)
@@ -1263,17 +1133,14 @@ definition NFA_construct_reachable_interval_impl where
              ((qm', n'), DD', N) \<leftarrow> 
              NFA_construct_reachable_impl_step_interval DS qm n (nfa_trans AA) q;
              RETURN (((qm', n'), 
-                 (s.ins_dj (the (qm.lookup (ff q) qm)) (nfa_states AA), (nfa_alphabet AA),
+                 (s.ins_dj (the (qm.lookup (ff q) qm)) (nfa_states AA),
                    DD', nfa_initial AA, 
                   (if (FP q) then (s.ins_dj (the (qm.lookup (ff q) qm))) 
                     (nfa_accepting AA) else (nfa_accepting AA)))), N)
            }
-        ) (((qm, n), (s.empty (), Sig, d.empty, Is, s.empty ())), I);
+        ) (((qm, n), (s.empty (), d.empty, Is, s.empty ())), I);
      RETURN \<A>
    }"
-
-term nfa_construct_interval
-
 
 
 lemma NFA_construct_reachable_impl_correct :
@@ -1283,7 +1150,6 @@ defines "R \<equiv> build_rel nfa_\<alpha> nfa_invar"
 defines "R' \<equiv> build_rel state_map_\<alpha> state_map_invar"
 defines "S \<equiv> accessible (LTS_forget_labels D) (set I)"
 assumes f_inj_on: "inj_on f S"
-    and Sig_cons: "Sig = semIs SigI"
     and ff_OK: "\<And>q. q2_invar q \<Longrightarrow> q2_\<alpha> q \<in> S \<Longrightarrow> ff q = f (q2_\<alpha> q)" 
     and d_add_OK:
           "lts_add d.\<alpha> d.invar d.add"
@@ -1296,8 +1162,8 @@ assumes f_inj_on: "inj_on f S"
        (DS q, {(a, q'). (q2_\<alpha> q, a, q') \<in> D}) 
         \<in> NFA_construct_reachable_impl_step_rel"
     and FFP_OK: "\<And>q. q2_invar q \<Longrightarrow> q2_\<alpha> q \<in> S \<Longrightarrow> FFP q \<longleftrightarrow> FP (q2_\<alpha> q)"
-shows "NFA_construct_reachable_interval_impl SigI S II FFP DS \<le>
-   \<Down> R (NFA_construct_reachable_abstract2_impl Sig I FP D)"
+shows "NFA_construct_reachable_interval_impl S II FFP DS \<le>
+   \<Down> R (NFA_construct_reachable_abstract2_impl I FP D)"
 unfolding NFA_construct_reachable_interval_impl_def 
           NFA_construct_reachable_abstract2_impl_def 
           WORKLISTT_def
@@ -1319,7 +1185,7 @@ apply (refine_rcg)
   apply (simp del: br_def)
   (* goal solved *)
   apply (simp add: br_def R'_def R_def nfa_invar_def 
-          s.correct d.correct_common  nfa_\<alpha>_def Sig_cons)
+          s.correct d.correct_common  nfa_\<alpha>_def)
   (* goal solved *)
   defer
   apply simp
@@ -1370,18 +1236,17 @@ apply (refine_rcg)
   using DS_OK apply blast
   apply (clarify, simp add: br_def DS_OK R'_def)
   apply (clarify, simp add: br_def DS_OK R'_def)
-  apply (clarify, simp add: br_def nfa_invar_def DS_OK R'_def)
-  apply (rename_tac x1b x2a x2b q' \<A> qm n Qs i DD Is Fs x2g qm' n' D' x2j r)
+   apply (clarify, simp add: br_def nfa_invar_def DS_OK R'_def)
+  apply (rename_tac x1b x2a x2b q' \<A> qm n Qs DD Is Fs x2g qm' n' D' x2j r)
   defer
-  apply (rename_tac x1b x2a x2b q qm n Qs i DD Is Fs r)
-using [[goals_limit = 6]]
+  apply (rename_tac x1b x2a x2b q qm n Qs DD Is Fs r)
 proof -
   
   fix \<A> rm q qm n Qs i DD Is Fs r
   {
    assume rm_q: "state_map_\<alpha> (qm, n) (q2_\<alpha> q) = Some r" and
          in_R': "state_map_invar (qm, n)" and
-         in_R: "nfa_invar (Qs, i, DD, Is, Fs)" and
+         in_R: "nfa_invar (Qs,  DD, Is, Fs)" and
          invar_q: "q2_invar q" and
          q_in: "q2_\<alpha> q \<in> accessible (LTS_forget_labels D) (q2_\<alpha> ` set II)"
 
@@ -1392,35 +1257,35 @@ proof -
     by (simp add: state_map_invar_def state_map_\<alpha>_def qm.correct br_def)
 
   with in_R show "s.memb (the (qm.lookup (ff q) qm)) Qs = 
-                (r \<in> \<Q> (nfa_\<alpha> (Qs, i, DD, Is, Fs)))"
+                (r \<in> \<Q> (nfa_\<alpha> (Qs, DD, Is, Fs)))"
     unfolding R_def 
     by (simp add: nfa_invar_def s.correct nfa_\<alpha>_def)
 }
   {
-  fix x1b x2a x2b q' \<A> qm n Qs i DD Is Fs x2g qm' n' D' x2j r
+  fix x1b x2a x2b q' \<A> qm n Qs DD Is Fs x2g qm' n' D' x2j r
   assume r_nin_Q: "r \<notin> \<Q> \<A>" and 
        rm_q': "state_map_\<alpha> (qm, n) (q2_\<alpha> q') = Some r" and
        weak_invar: "NFA_construct_reachable_abstract_impl_weak_invar 
-             Sig I FP D
+             I FP D
          (state_map_\<alpha> (qm, n), \<A>)" and
        invar_qm_n: "
        state_map_invar (qm', n')" and
        p1: "d.invar D'" and
-       in_R: "((Qs, i, DD, Is, Fs), \<A>) \<in> R" and
+       in_R: "((Qs, DD, Is, Fs), \<A>) \<in> R" and
        p2: "state_map_invar (qm, n)" and
        invar_q': "q2_invar q'" and 
        q'_in_S: "q2_\<alpha> q' \<in> S" and
-       A_cons: "NFA_construct_reachable_abstract_impl_weak_invar Sig I FP D 
+       A_cons: "NFA_construct_reachable_abstract_impl_weak_invar I FP D 
         (state_map_\<alpha> (qm, n), \<A>)"
 
-  from A_cons NFA_construct_reachable_abstract_impl_weak_invar_def[of Sig I FP D]
+  from A_cons NFA_construct_reachable_abstract_impl_weak_invar_def[of I FP D]
   have "(\<lambda>(rm, \<A>).
        \<exists>s. NFA_construct_reachable_map_OK (accessible (LTS_forget_labels D) (set I)) Map.empty
             (s \<union> set I \<union> {q'. \<exists>a q. q \<in> s \<and> (q, a, q') \<in> D \<and> a \<noteq> {}}) rm \<and>
            s \<subseteq> accessible (LTS_forget_labels D) (set I) \<and>
            \<A> =
            NFA_rename_states
-            \<lparr>\<Q> = s, \<Sigma> = Sig, \<Delta> = {qsq \<in> D. fst qsq \<in> s \<and> fst (snd qsq) \<noteq> {}}, \<I> = set I,
+            \<lparr>\<Q> = s, \<Delta> = {qsq \<in> D. fst qsq \<in> s \<and> fst (snd qsq) \<noteq> {}}, \<I> = set I,
                \<F> = {q \<in> s. FP q}\<rparr>
             (the \<circ> rm)) (state_map_\<alpha> (qm, n), \<A>)" 
     by (simp add: NFA_construct_reachable_abstract_impl_weak_invar_def)
@@ -1428,18 +1293,10 @@ proof -
   obtain s where
   s_def: "\<A> =
            NFA_rename_states
-            \<lparr>\<Q> = s, \<Sigma> = Sig, \<Delta> = {qsq \<in> D. fst qsq \<in> s \<and> fst (snd qsq) \<noteq> {}}, \<I> = set I,
+            \<lparr>\<Q> = s, \<Delta> = {qsq \<in> D. fst qsq \<in> s \<and> fst (snd qsq) \<noteq> {}}, \<I> = set I,
                \<F> = {q \<in> s. FP q}\<rparr>
             (the \<circ> (state_map_\<alpha> (qm, n)))" 
     by auto
-  from this NFA_rename_states_def[of \<A>]
-  have "\<Sigma> \<A> = Sig" 
-    by auto
-  from this in_R R_def br_def
-  have bgedsig: "semIs i = Sig"
-    apply simp
-    unfolding br_def nfa_\<alpha>_def
-    by simp
 
   from this rm_q' invar_qm_n ff_OK[OF invar_q' q'_in_S] 
       have qm_f_q': "qm.lookup (ff q') qm = Some r"
@@ -1456,72 +1313,72 @@ proof -
   with in_R have r_nin_Fs: "r \<notin> s.\<alpha> Fs" 
       by (simp add: R_def br_def nfa_\<alpha>_def)
 
-  from in_R FFP_OK[OF invar_q' q'_in_S] bgedsig
-  have "((s.ins_dj (the (qm.lookup (ff q') qm)) Qs, i, D', Is,
+  from in_R FFP_OK[OF invar_q' q'_in_S] 
+  have "((s.ins_dj (the (qm.lookup (ff q') qm)) Qs,  D', Is,
          if FFP q' then s.ins_dj (the (qm.lookup (ff q') qm)) 
           (snd (snd (snd ((Qs, DD, Is, Fs))))) else 
-           (snd (snd (snd ((Qs,  DD, Is, Fs)))))),
-        \<lparr>\<Q> = insert r (\<Q> \<A>), \<Sigma> = Sig, \<Delta> = interval_to_set ` d.\<alpha> D', \<I> = \<I> \<A>, 
+           (snd (snd (snd ((Qs, DD, Is, Fs)))))),
+        \<lparr>\<Q> = insert r (\<Q> \<A>), \<Delta> = interval_to_set ` d.\<alpha> D', \<I> = \<I> \<A>, 
            \<F> = if FP (q2_\<alpha> q') then insert 
            (the (state_map_\<alpha> (qm, n) (q2_\<alpha> q'))) (\<F> \<A>) else \<F> \<A>\<rparr>)
        \<in> R" 
     by (simp add: rm_q' qm_f_q' R_def nfa_\<alpha>_def p1
-                nfa_invar_def invar_qm_n s.correct r_nin_Qs r_nin_Fs br_def Sig_cons)
+                nfa_invar_def invar_qm_n s.correct r_nin_Qs r_nin_Fs br_def)
     
-  from this bgedsig 
+  from this  
   show "(FFP q' \<longrightarrow>
         (FP (q2_\<alpha> q') \<longrightarrow>
-         ((s.ins_dj (the (qm.lookup (ff q') qm)) Qs, i, D', Is,
+         ((s.ins_dj (the (qm.lookup (ff q') qm)) Qs,  D', Is,
            s.ins_dj (the (qm.lookup (ff q') qm)) Fs),
-          \<lparr>\<Q> = insert r (\<Q> \<A>), \<Sigma> = Sig, \<Delta> = interval_to_set ` d.\<alpha> D', \<I> = \<I> \<A>,
+          \<lparr>\<Q> = insert r (\<Q> \<A>), \<Delta> = interval_to_set ` d.\<alpha> D', \<I> = \<I> \<A>,
              \<F> = insert r (\<F> \<A>)\<rparr>)
          \<in> R) \<and>
         (\<not> FP (q2_\<alpha> q') \<longrightarrow>
-         ((s.ins_dj (the (qm.lookup (ff q') qm)) Qs, i, D', Is,
+         ((s.ins_dj (the (qm.lookup (ff q') qm)) Qs,  D', Is,
            s.ins_dj (the (qm.lookup (ff q') qm)) Fs),
-          \<lparr>\<Q> = insert r (\<Q> \<A>), \<Sigma> = Sig, \<Delta> = interval_to_set ` d.\<alpha> D', \<I> = \<I> \<A>, \<F> = \<F> \<A>\<rparr>)
+          \<lparr>\<Q> = insert r (\<Q> \<A>), \<Delta> = interval_to_set ` d.\<alpha> D', \<I> = \<I> \<A>, \<F> = \<F> \<A>\<rparr>)
          \<in> R)) \<and>
        (\<not> FFP q' \<longrightarrow>
         (FP (q2_\<alpha> q') \<longrightarrow>
-         ((s.ins_dj (the (qm.lookup (ff q') qm)) Qs, i, D', Is, Fs),
-          \<lparr>\<Q> = insert r (\<Q> \<A>), \<Sigma> = Sig, \<Delta> = interval_to_set ` d.\<alpha> D', \<I> = \<I> \<A>,
+         ((s.ins_dj (the (qm.lookup (ff q') qm)) Qs,  D', Is, Fs),
+          \<lparr>\<Q> = insert r (\<Q> \<A>), \<Delta> = interval_to_set ` d.\<alpha> D', \<I> = \<I> \<A>,
              \<F> = insert r (\<F> \<A>)\<rparr>)
          \<in> R) \<and>
         (\<not> FP (q2_\<alpha> q') \<longrightarrow>
-         ((s.ins_dj (the (qm.lookup (ff q') qm)) Qs, i, D', Is, Fs),
-          \<lparr>\<Q> = insert r (\<Q> \<A>), \<Sigma> = Sig, \<Delta> = interval_to_set ` d.\<alpha> D', \<I> = \<I> \<A>, \<F> = \<F> \<A>\<rparr>)
+         ((s.ins_dj (the (qm.lookup (ff q') qm)) Qs, D', Is, Fs),
+          \<lparr>\<Q> = insert r (\<Q> \<A>),  \<Delta> = interval_to_set ` d.\<alpha> D', \<I> = \<I> \<A>, \<F> = \<F> \<A>\<rparr>)
          \<in> R))"
     using rm_q' by auto
 }
 qed
 
 lemma NFA_construct_reachable_interval_impl_alt_def :
-  "NFA_construct_reachable_interval_impl Sig S I FP DS =
+  "NFA_construct_reachable_interval_impl S I FP DS =
    do {
      let ((qm, n), Is) = NFA_construct_reachable_init_interval_impl I;
      ((_, \<A>), _) \<leftarrow> WORKLISTT (\<lambda>_. True)
-      (\<lambda>((qm, n), (Qs, Sig, DD, Is, Fs)) q. do { 
+      (\<lambda>((qm, n), (Qs, DD, Is, Fs)) q. do { 
          let r = the (qm.lookup (ff q) qm);
          if (s.memb r Qs) then
-           (RETURN (((qm, n), (Qs, Sig, DD, Is, Fs)), []))
+           (RETURN (((qm, n), (Qs,  DD, Is, Fs)), []))
          else                    
            do {
              ASSERT (q2_invar q \<and> q2_\<alpha> q \<in> S);
              ((qm', n'), DD', N) \<leftarrow> NFA_construct_reachable_impl_step_interval 
                           DS qm n DD q;
              RETURN (((qm', n'), 
-                 (s.ins_dj r Qs, Sig, 
+                 (s.ins_dj r Qs,  
                   DD', Is, 
                   (if (FP q) then (s.ins_dj r Fs) else Fs))), N)
            }
          }
-        ) (((qm, n), (s.empty (), Sig, d.empty, Is, s.empty ())), I);
+        ) (((qm, n), (s.empty (), d.empty, Is, s.empty ())), I);
      RETURN \<A>
    }"
   unfolding NFA_construct_reachable_interval_impl_def
   apply (simp add: split_def)
   apply (unfold nfa_selectors_def fst_conv snd_conv prod.collapse)
-  using nfa_alphabet_def by presburger
+  by presburger
 
 
 
@@ -1531,7 +1388,7 @@ fixes D_it :: "'q2_rep \<Rightarrow> ((('a \<times> 'a) list \<times> 'q2_rep),
 assumes D_it_OK[rule_format, refine_transfer]: 
          "\<forall>q. q2_invar q \<longrightarrow> q2_\<alpha> q \<in> S \<longrightarrow> set_iterator (D_it q) 
           {p. p \<in> DS q}"
-shows "RETURN ?f \<le> NFA_construct_reachable_interval_impl Sig S I FP DS"
+shows "RETURN ?f \<le> NFA_construct_reachable_interval_impl S I FP DS"
 
  unfolding NFA_construct_reachable_interval_impl_alt_def nempI_correct
     WORKLISTT_def NFA_construct_reachable_impl_step_interval_def
@@ -1543,15 +1400,15 @@ done
 definition (in automaton_by_lts_interval_defs) 
 NFA_construct_reachable_interval_impl_code where
 "NFA_construct_reachable_interval_impl_code 
- qm_ops (ff::'q2_rep \<Rightarrow> 'i) Sig I FP D_it =
+ qm_ops (ff::'q2_rep \<Rightarrow> 'i) I FP D_it =
 (let ((qm, n), Is) = foldl (\<lambda>((qm, n), Is) q. 
          ((map_op_update_dj qm_ops (ff q) (states_enumerate n) qm, Suc n),
              s.ins_dj (states_enumerate n) Is))
                 ((map_op_empty qm_ops (), 0), s.empty()) I;
      ((_, AA), _) = worklist (\<lambda>_. True)
-        (\<lambda>((qm, n), Qs, Sig, DD, Is, Fs) (q::'q2_rep).
+        (\<lambda>((qm, n), Qs, DD, Is, Fs) (q::'q2_rep).
             let r = the (map_op_lookup qm_ops (ff q) qm)
-            in if set_op_memb s_ops r Qs then (((qm, n), Qs, Sig, DD, Is, Fs), [])
+            in if set_op_memb s_ops r Qs then (((qm, n), Qs, DD, Is, Fs), [])
                else let ((qm', n'), DD', N) = D_it q (\<lambda>_::(('m \<times> nat) \<times> 'd \<times> 'q2_rep list). True)
                            (\<lambda>(a, q') ((qm::'m, n::nat), DD'::'d, N::'q2_rep list).
                               if (nemptyIs a) then
@@ -1563,9 +1420,9 @@ NFA_construct_reachable_interval_impl_code where
                                in ((qm', n'), clts_op_add d_ops r a r' DD', q' # N)
                               else ((qm, n), DD', N))
                            ((qm, n), DD, [])
-                    in (((qm', n'), set_op_ins_dj s_ops r Qs, Sig, DD', Is, 
+                    in (((qm', n'), set_op_ins_dj s_ops r Qs, DD', Is, 
                     if FP q then set_op_ins_dj s_ops r Fs else Fs), N))
-        (((qm, n), set_op_empty s_ops (), Sig,
+        (((qm, n), set_op_empty s_ops (),
    clts_op_empty d_ops, Is, set_op_empty s_ops ()), I)
  in AA)"
 
@@ -1575,12 +1432,12 @@ fixes D_it :: "'q2_rep \<Rightarrow> ((('a\<times>'a) list \<times> 'q2_rep),
                      ('m \<times> nat) \<times> 'd \<times> 'q2_rep list) set_iterator"
 assumes D_it_OK: "\<forall> q. q2_invar q \<longrightarrow> q2_\<alpha> q \<in> S \<longrightarrow> 
                          set_iterator (D_it q) {p. p \<in> DS q}"
-shows "RETURN (NFA_construct_reachable_interval_impl_code qm_ops ff Sig I FP D_it) \<le> 
-               NFA_construct_reachable_interval_impl Sig S I FP DS"
+shows "RETURN (NFA_construct_reachable_interval_impl_code qm_ops ff I FP D_it) \<le> 
+               NFA_construct_reachable_interval_impl S I FP DS"
 proof -
   have rule: 
-   "\<And>f1 f2. \<lbrakk>RETURN f1 \<le> NFA_construct_reachable_interval_impl Sig S I FP DS; f1 = f2\<rbrakk> \<Longrightarrow>
-              RETURN f2 \<le> NFA_construct_reachable_interval_impl Sig S I FP DS" by simp
+   "\<And>f1 f2. \<lbrakk>RETURN f1 \<le> NFA_construct_reachable_interval_impl S I FP DS; f1 = f2\<rbrakk> \<Longrightarrow>
+              RETURN f2 \<le> NFA_construct_reachable_interval_impl S I FP DS" by simp
   
   note aux_thm = NFA_construct_reachable_interval_impl_code_aux[OF D_it_OK, of I FP]
 
@@ -1597,11 +1454,10 @@ qed
 lemma NFA_construct_reachable_interval_impl_code_correct_full: 
 fixes D_it :: "'q2_rep \<Rightarrow> ((('a \<times> 'a) list \<times> 'q2_rep),('m \<times> nat) 
         \<times> 'd \<times> 'q2_rep list) set_iterator"
-fixes II D DS Sig SigI
+fixes II D DS
 defines "S \<equiv> accessible (LTS_forget_labels D) (set (map q2_\<alpha> II))"
 assumes f_inj_on: "inj_on f S"
     and ff_OK: "\<And>q. q2_invar q \<Longrightarrow> q2_\<alpha> q \<in> S \<Longrightarrow> ff q = f (q2_\<alpha> q)" 
-    and sigsigi: "Sig = semIs SigI"
     and d_add_OK: 
           "lts_add d.\<alpha> d.invar d.add"
     and dist_I: "distinct (map q2_\<alpha> II)"
@@ -1615,9 +1471,9 @@ assumes f_inj_on: "inj_on f S"
              ((DS q), {(a, q'). (q2_\<alpha> q, a, q') \<in> D }) \<in> 
             NFA_construct_reachable_impl_step_rel))"
     and FFP_OK: "\<And>q. q2_invar q \<Longrightarrow> q2_\<alpha> q \<in> S \<Longrightarrow> FFP q \<longleftrightarrow> FP (q2_\<alpha> q)"
-shows "NFA_isomorphic (NFA_construct_reachable Sig (set (map q2_\<alpha> II)) FP D)
-    (nfa_\<alpha> (NFA_construct_reachable_interval_impl_code qm_ops ff SigI II FFP D_it)) \<and>
-    nfa_invar (NFA_construct_reachable_interval_impl_code qm_ops ff SigI II FFP D_it)"
+shows "NFA_isomorphic (NFA_construct_reachable (set (map q2_\<alpha> II)) FP D)
+    (nfa_\<alpha> (NFA_construct_reachable_interval_impl_code qm_ops ff II FFP D_it)) \<and>
+    nfa_invar (NFA_construct_reachable_interval_impl_code qm_ops ff II FFP D_it)"
 proof - 
 
   have fin_Ds: "(\<And>q. finite {(a, q'). (q, a, q') \<in> D \<and> a \<noteq> {}})"
@@ -1639,22 +1495,21 @@ proof -
       "set_iterator (D_it q) {p. p \<in> DS q}"
       using set_iterator_intro by blast
     qed 
-    thm NFA_construct_reachable_impl_correct[OF _ sigsigi]
   note NFA_construct_reachable_interval_impl_code_correct [OF D_it_OK'']
   also have "NFA_construct_reachable_interval_impl 
-             SigI S II FFP DS \<le> \<Down> (build_rel nfa_\<alpha> nfa_invar)
-     (NFA_construct_reachable_abstract2_impl Sig (map q2_\<alpha> II) FP D)"
+             S II FFP DS \<le> \<Down> (build_rel nfa_\<alpha> nfa_invar)
+     (NFA_construct_reachable_abstract2_impl (map q2_\<alpha> II) FP D)"
     using NFA_construct_reachable_impl_correct 
-        [OF f_inj_on[unfolded S_def] sigsigi ff_OK[unfolded S_def] d_add_OK
+        [OF f_inj_on[unfolded S_def] ff_OK[unfolded S_def] d_add_OK
           dist_I invar_I, of DS FFP FP] FFP_OK S_def 
     apply (auto simp add: FFP_OK D_it_OK DS_OK0 DS_OK1)
     using DS_OK0 DS_OK1 by force
       also note NFA_construct_reachable_abstract2_impl_correct
   also note NFA_construct_reachable_abstract_impl_correct
   finally have "RETURN (NFA_construct_reachable_interval_impl_code 
-            qm_ops ff SigI II FFP D_it) \<le> \<Down> (build_rel nfa_\<alpha> nfa_invar)
+            qm_ops ff II FFP D_it) \<le> \<Down> (build_rel nfa_\<alpha> nfa_invar)
      (SPEC (NFA_isomorphic (NFA_construct_reachable 
-        Sig (set (map q2_\<alpha> II)) FP D)))"
+        (set (map q2_\<alpha> II)) FP D)))"
     using S_def fin_S fin_D
     by (simp add: S_def[symmetric] fin_S fin_Ds)
     
@@ -1665,7 +1520,7 @@ qed
 lemma NFA_construct_reachable_interval_impl_code_correct___remove_unreachable: 
 fixes D_it :: "'q2_rep \<Rightarrow> ((('a \<times> 'a) list \<times> 'q2_rep) , ('m \<times> nat) \<times> 'd \<times> 'q2_rep list) 
       set_iterator"
-fixes II D DS Sig
+fixes II D DS
 assumes d_add_OK: 
   (* "\<forall>q a q' q''. (q, a, q') \<in> \<Delta> \<A> \<and> (q, a, q'') \<in> \<Delta> \<A> \<and> q'' \<noteq> q' \<longrightarrow> *)
           "lts_add d.\<alpha> d.invar d.add"
@@ -1683,14 +1538,13 @@ assumes d_add_OK:
                     \<in> NFA_construct_reachable_impl_step_rel"
     and FP_OK: "\<And>q. q2_invar q \<Longrightarrow> q2_\<alpha> q \<in> \<Q> \<A> \<Longrightarrow> FP q \<longleftrightarrow> (q2_\<alpha> q) \<in> \<F> \<A>"
     and wf_\<A>: "NFA \<A>"
-    and sig_\<Sigma>: "\<Sigma> \<A> = semIs Sig"
-  shows "nfa_invar (NFA_construct_reachable_interval_impl_code qm_ops ff Sig II FP D_it) \<and>
-         NFA (nfa_\<alpha> (NFA_construct_reachable_interval_impl_code qm_ops ff Sig II FP D_it)) \<and>
+  shows "nfa_invar (NFA_construct_reachable_interval_impl_code qm_ops ff II FP D_it) \<and>
+         NFA (nfa_\<alpha> (NFA_construct_reachable_interval_impl_code qm_ops ff II FP D_it)) \<and>
          NFA_isomorphic_wf (nfa_\<alpha> (NFA_construct_reachable_interval_impl_code 
-                                qm_ops ff Sig II FP D_it))
+                                qm_ops ff II FP D_it))
                          (NFA_remove_unreachable_states \<A>)"
 proof -
- find_theorems name: "is_reachable_from_initial_subset"
+  find_theorems name: "is_reachable_from_initial_subset"
   interpret NFA \<A> by fact
   let ?S = "accessible (LTS_forget_labels (\<Delta> \<A>)) (set (map q2_\<alpha> II))"
   from LTS_is_reachable_from_initial_finite I_OK have fin_S: "finite ?S" by simp
@@ -1714,30 +1568,30 @@ proof -
   let ?I = "map q2_\<alpha> II"
   thm NFA_construct_reachable_interval_impl_code_correct_full
   from NFA_construct_reachable_interval_impl_code_correct_full 
-        [OF f_inj_on' ff_OK sig_\<Sigma> d_add_OK dist_I invar_I
+        [OF f_inj_on' ff_OK d_add_OK dist_I invar_I
          fin_S, where ?FP = ?FP and ?D_it=D_it and selP=selP, 
          OF _ _ _ fin_D DS_OK0 DS_OK1 D_it_OK FP_OK] 
          S_subset 
   have step1:
-    "NFA_isomorphic (NFA_construct_reachable (\<Sigma> \<A>) (set ?I) ?FP (\<Delta> \<A>))
-      (nfa_\<alpha> (NFA_construct_reachable_interval_impl_code qm_ops ff Sig II FP D_it))"
-    "nfa_invar (NFA_construct_reachable_interval_impl_code qm_ops ff Sig II FP D_it)" 
+    "NFA_isomorphic (NFA_construct_reachable (set ?I) ?FP (\<Delta> \<A>))
+      (nfa_\<alpha> (NFA_construct_reachable_interval_impl_code qm_ops ff II FP D_it))"
+    "nfa_invar (NFA_construct_reachable_interval_impl_code qm_ops ff II FP D_it)" 
       by (simp_all add: subset_iff)
  
   from NFA.NFA_remove_unreachable_states_implementation 
             [OF wf_\<A> I_OK, of "?FP" "\<Delta> \<A>"]
-  have step2: "NFA_construct_reachable (\<Sigma> \<A>) (set ?I)
+  have step2: "NFA_construct_reachable (set ?I)
            ?FP (\<Delta> \<A>) = NFA_remove_unreachable_states \<A>" 
     by simp
  
   from step1(1) step2 NFA_remove_unreachable_states___is_well_formed [OF wf_\<A>] have 
     step3: "NFA_isomorphic_wf (NFA_remove_unreachable_states \<A>) 
                        (nfa_\<alpha> (NFA_construct_reachable_interval_impl_code 
-                        qm_ops ff Sig II FP D_it))"
+                        qm_ops ff II FP D_it))"
     by (simp add: NFA_isomorphic_wf_def)
 
   from step3 have step4: "NFA (nfa_\<alpha> 
-        (NFA_construct_reachable_interval_impl_code qm_ops ff Sig II FP D_it))"
+        (NFA_construct_reachable_interval_impl_code qm_ops ff II FP D_it))"
     unfolding NFA_isomorphic_wf_alt_def by simp
 
   from step3 step1(2) step4 show ?thesis
@@ -1829,7 +1683,7 @@ qed
     
 
 lemma NFA_construct_reachable_impl_step_prod_correct :
-  fixes D II Sig
+  fixes D II
 fixes q :: "'q2_rep"
 defines "I \<equiv> map q2_\<alpha> II"
 defines "S \<equiv> accessible (LTS_forget_labels 
@@ -1851,7 +1705,7 @@ assumes f_inj_on: "inj_on f S"
                  {(a, q'). (q2_\<alpha> q, a, q') \<in> D}) \<in> 
           NFA_construct_reachable_impl_step_prod_rel"
     and weak_invar: "NFA_construct_reachable_abstract_impl_weak_invar 
-                     Sig I FP {(q,a1 \<inter> a2, q')|q a1 a2 q'. (q, (a1,a2),q') \<in> D} 
+                     I FP {(q,a1 \<inter> a2, q')|q a1 a2 q'. (q, (a1,a2),q') \<in> D} 
                      (rm, \<A>)"
 shows "NFA_construct_reachable_interval_impl_step_prod DS qm0 n D0 q \<le> 
   \<Down> (rprod (build_rel state_map_\<alpha> state_map_invar) 
@@ -2160,12 +2014,10 @@ proof -
            aa (q2_\<alpha> q') = qm.lookup (ff q'') qm"
       by auto
   }
- 
- 
 qed
 
 definition NFA_construct_reachable_prod_interval_impl where
-  "NFA_construct_reachable_prod_interval_impl Sig S I FP DS  =
+  "NFA_construct_reachable_prod_interval_impl S I FP DS  =
    do {
      let ((qm, n), Is) = NFA_construct_reachable_init_interval_impl I;
      (((qm, n), \<A>), _) \<leftarrow> WORKLISTT (\<lambda>_. True)
@@ -2179,26 +2031,25 @@ definition NFA_construct_reachable_prod_interval_impl where
              NFA_construct_reachable_interval_impl_step_prod 
                     DS qm n (nfa_trans AA) q;
              RETURN (((qm', n'), 
-                 (s.ins_dj (the (qm.lookup (ff q) qm)) (nfa_states AA), (nfa_alphabet AA),
+                 (s.ins_dj (the (qm.lookup (ff q) qm)) (nfa_states AA),
                   DD', nfa_initial AA, 
                   (if (FP q) then (s.ins_dj (the (qm.lookup (ff q) qm))) 
                     (nfa_accepting AA) else (nfa_accepting AA)))), N)
            }
-        ) (((qm, n), (s.empty (), Sig, d.empty, Is, s.empty ())), I);
+        ) (((qm, n), (s.empty (), d.empty, Is, s.empty ())), I);
      RETURN \<A>
    }"
 
 
 
 lemma NFA_construct_reachable_prod_interval_impl_correct :
-fixes D II Sig SigI
+fixes D II
 defines "I \<equiv> map q2_\<alpha> II"
 defines "R \<equiv> build_rel nfa_\<alpha> nfa_invar"
 defines "R' \<equiv> build_rel state_map_\<alpha> state_map_invar"
 defines "S \<equiv> accessible (LTS_forget_labels 
           {(q,a1 \<inter> a2, q')|q a1 a2 q'. (q, (a1,a2),q') \<in> D}) (set I)"
 assumes f_inj_on: "inj_on f S"
-    and sigsigi: "Sig = semIs SigI"
     and ff_OK: "\<And>q. q2_invar q \<Longrightarrow> q2_\<alpha> q \<in> S \<Longrightarrow> ff q = f (q2_\<alpha> q)" 
     and d_add_OK: 
           "lts_add d.\<alpha> d.invar d.add"
@@ -2210,8 +2061,8 @@ assumes f_inj_on: "inj_on f S"
        (DS q, {(a, q'). (q2_\<alpha> q, a, q') \<in> D}) 
         \<in> NFA_construct_reachable_impl_step_prod_rel"
     and FFP_OK: "\<And>q. q2_invar q \<Longrightarrow> q2_\<alpha> q \<in> S \<Longrightarrow> FFP q \<longleftrightarrow> FP (q2_\<alpha> q)"
-shows "NFA_construct_reachable_prod_interval_impl SigI S II FFP DS \<le>
-   \<Down> R (NFA_construct_reachable_abstract2_prod_impl Sig I FP D)"
+shows "NFA_construct_reachable_prod_interval_impl S II FFP DS \<le>
+   \<Down> R (NFA_construct_reachable_abstract2_prod_impl I FP D)"
 
 unfolding NFA_construct_reachable_prod_interval_impl_def 
           NFA_construct_reachable_abstract2_prod_impl_def 
@@ -2235,7 +2086,7 @@ apply (refine_rcg)
   (* goal solved *)
   apply (simp add: br_def R'_def R_def nfa_invar_def 
           s.correct d.correct_common nfa_\<alpha>_def)
-  using sigsigi apply simp
+  apply simp
   (* goal solved *)
   defer
   apply simp
@@ -2291,18 +2142,18 @@ apply (refine_rcg)
   apply (simp add: br_def nfa_invar_def DS_OK DS_OK1 nfa_\<alpha>_def)
   apply (clarify, simp  add:  R'_def )
   apply (simp add: br_def)
-  apply (rename_tac x1b x2a x2b q' e' \<A> qm n Qs As DD Is Fs 
+  apply (rename_tac x1b x2a x2b q' e' \<A> qm n Qs DD Is Fs 
             bga qm' n'  D' bja r)
   defer
-  apply (rename_tac x1b x2a x2b q qm n Qs As DD Is Fs r)
+  apply (rename_tac x1b x2a x2b q qm n Qs DD Is Fs r)
 using [[goals_limit = 6]]
 proof -
   
   {
-    fix q qm n Qs As DD Is Fs r
+    fix q qm n Qs DD Is Fs r
    assume rm_q: "state_map_\<alpha> (qm, n) (q2_\<alpha> q) = Some r" and
          in_R': "state_map_invar (qm, n)" and
-         in_R: "nfa_invar (Qs, As, DD, Is, Fs)" and
+         in_R: "nfa_invar (Qs,  DD, Is, Fs)" and
          invar_q: "q2_invar q" and
          q_in: "q2_\<alpha> q \<in> accessible (LTS_forget_labels 
                 {(q, a1 \<inter> a2, q') |q a1 a2 q'. (q, (a1, a2), q') \<in> D}
@@ -2315,24 +2166,24 @@ proof -
     by (simp add: state_map_invar_def state_map_\<alpha>_def qm.correct br_def)
 
   with in_R show "s.memb (the (qm.lookup (ff q) qm)) 
-                Qs = (r \<in> \<Q> (nfa_\<alpha> (Qs, As, DD, Is, Fs)))"
+                Qs = (r \<in> \<Q> (nfa_\<alpha> (Qs, DD, Is, Fs)))"
     unfolding R_def by (simp add: nfa_invar_def s.correct nfa_\<alpha>_def)
 }
 
   {
-  fix x1b x2a x2b q' e' \<A> qm n Qs As DD Is Fs bga qm' n' D' bja r
+  fix x1b x2a x2b q' e' \<A> qm n Qs DD Is Fs bga qm' n' D' bja r
     assume r_nin_Q: "r \<notin> \<Q> \<A>" and 
        rm_q': "state_map_\<alpha> (qm, n) (q2_\<alpha> q') = Some r" and
        weak_invar: "NFA_construct_reachable_abstract_impl_weak_invar 
-             Sig I FP {(q, a1 \<inter> a2, q') |q a1 a2 q'. (q, (a1, a2), q') \<in> D}
+              I FP {(q, a1 \<inter> a2, q') |q a1 a2 q'. (q, (a1, a2), q') \<in> D}
          (state_map_\<alpha> (qm, n), \<A>)" and
        invar_qm_n: " state_map_invar (qm', n') \<and>
        d.invar D' \<and> list_all2 (\<lambda>x x'. x' = q2_\<alpha> x \<and> q2_invar x) bja bga" and
-       in_R_R_\<A>: "state_map_invar (qm, n) \<and> ((Qs, As, DD, Is, Fs), \<A>) \<in> R" and
+       in_R_R_\<A>: "state_map_invar (qm, n) \<and> ((Qs, DD, Is, Fs), \<A>) \<in> R" and
        invar_q': "q2_invar q'" and 
        q'_in_S: "q2_\<alpha> q' \<in> S"
 
-    from weak_invar NFA_construct_reachable_abstract_impl_weak_invar_def[of Sig I FP 
+    from weak_invar NFA_construct_reachable_abstract_impl_weak_invar_def[of I FP 
         "{(q, a1 \<inter> a2, q') |q a1 a2 q'. (q, (a1, a2), q') \<in> D}"]
     have "(\<lambda>(rm, \<A>).
        \<exists>s. NFA_construct_reachable_map_OK
@@ -2348,7 +2199,7 @@ proof -
                  (set I) \<and>
            \<A> =
            NFA_rename_states
-            \<lparr>\<Q> = s, \<Sigma> = Sig,
+            \<lparr>\<Q> = s, 
                \<Delta> = {qsq \<in> {(q, a1 \<inter> a2, q') |q a1 a2 q'. (q, (a1, a2), q') \<in> D}.
                      fst qsq \<in> s \<and> fst (snd qsq) \<noteq> {}},
                \<I> = set I, \<F> = {q \<in> s. FP q}\<rparr>
@@ -2357,20 +2208,13 @@ proof -
     from this obtain s where
     s_def: "\<A> =
         NFA_rename_states
-         \<lparr>\<Q> = s, \<Sigma> = Sig,
+         \<lparr>\<Q> = s, 
             \<Delta> = {qsq \<in> {(q, a1 \<inter> a2, q') |q a1 a2 q'. (q, (a1, a2), q') \<in> D}.
                   fst qsq \<in> s \<and> fst (snd qsq) \<noteq> {}},
             \<I> = set I, \<F> = {q \<in> s. FP q}\<rparr> (the \<circ> (state_map_\<alpha> (qm, n)))"
       by auto
-    from this
-    have \<Sigma>Sig: "\<Sigma> \<A> = Sig" by auto
 
-  from in_R_R_\<A> R_def br_def[of nfa_\<alpha> nfa_invar]
-  have semIA: "semIs As = \<Sigma> \<A>"
-    apply simp
-    using nfa_\<alpha>_def[of "(Qs, As, DD, Is, Fs)"]
-    by simp
-
+ 
   from rm_q'  ff_OK[OF invar_q' q'_in_S] 
       have qm_f_q': "qm.lookup (ff q') qm = Some r"
      unfolding state_map_\<alpha>_def state_map_invar_def 
@@ -2387,69 +2231,69 @@ proof -
     by (simp add: R_def br_def nfa_\<alpha>_def)
 
   from in_R_R_\<A> FFP_OK[OF invar_q' q'_in_S]
-  have "((s.ins_dj (the (qm.lookup (ff q') qm)) Qs, As, D', Is,
+  have "((s.ins_dj (the (qm.lookup (ff q') qm)) Qs, D', Is,
          if FFP q' then s.ins_dj (the (qm.lookup (ff q') qm)) 
           (snd (snd (snd ((Qs, DD, Is, Fs))))) else 
            (snd (snd (snd ((Qs, DD, Is, Fs)))))),
-        \<lparr>\<Q> = insert r (\<Q> \<A>), \<Sigma> = Sig, \<Delta> = (interval_to_set ` (d.\<alpha> D')), \<I> = \<I> \<A>,
+        \<lparr>\<Q> = insert r (\<Q> \<A>), \<Delta> = (interval_to_set ` (d.\<alpha> D')), \<I> = \<I> \<A>,
            \<F> = if FP (q2_\<alpha> q') then insert 
            (the (state_map_\<alpha> (qm, n) (q2_\<alpha> q'))) (\<F> \<A>) else \<F> \<A>\<rparr>)
        \<in> R" 
     by (simp add: rm_q' qm_f_q' R_def nfa_\<alpha>_def 
-                nfa_invar_def invar_qm_n s.correct r_nin_Qs r_nin_Fs br_def \<Sigma>Sig semIA)
+                nfa_invar_def invar_qm_n s.correct r_nin_Qs r_nin_Fs br_def)
   from this show "(FFP q' \<longrightarrow>
         (FP (q2_\<alpha> q') \<longrightarrow>
-         ((s.ins_dj (the (qm.lookup (ff q') qm)) Qs, As, D', Is,
+         ((s.ins_dj (the (qm.lookup (ff q') qm)) Qs,  D', Is,
            s.ins_dj (the (qm.lookup (ff q') qm)) Fs),
-          \<lparr>\<Q> = insert r (\<Q> \<A>), \<Sigma> = Sig, \<Delta> = interval_to_set ` d.\<alpha> D', \<I> = \<I> \<A>,
+          \<lparr>\<Q> = insert r (\<Q> \<A>),  \<Delta> = interval_to_set ` d.\<alpha> D', \<I> = \<I> \<A>,
              \<F> = insert r (\<F> \<A>)\<rparr>)
          \<in> R) \<and>
         (\<not> FP (q2_\<alpha> q') \<longrightarrow>
-         ((s.ins_dj (the (qm.lookup (ff q') qm)) Qs, As, D', Is,
+         ((s.ins_dj (the (qm.lookup (ff q') qm)) Qs, D', Is,
            s.ins_dj (the (qm.lookup (ff q') qm)) Fs),
-          \<lparr>\<Q> = insert r (\<Q> \<A>), \<Sigma> = Sig, \<Delta> = interval_to_set ` d.\<alpha> D', \<I> = \<I> \<A>, \<F> = \<F> \<A>\<rparr>)
+          \<lparr>\<Q> = insert r (\<Q> \<A>),  \<Delta> = interval_to_set ` d.\<alpha> D', \<I> = \<I> \<A>, \<F> = \<F> \<A>\<rparr>)
          \<in> R)) \<and>
        (\<not> FFP q' \<longrightarrow>
         (FP (q2_\<alpha> q') \<longrightarrow>
-         ((s.ins_dj (the (qm.lookup (ff q') qm)) Qs, As, D', Is, Fs),
-          \<lparr>\<Q> = insert r (\<Q> \<A>), \<Sigma> = Sig, \<Delta> = interval_to_set ` d.\<alpha> D', \<I> = \<I> \<A>,
+         ((s.ins_dj (the (qm.lookup (ff q') qm)) Qs, D', Is, Fs),
+          \<lparr>\<Q> = insert r (\<Q> \<A>),  \<Delta> = interval_to_set ` d.\<alpha> D', \<I> = \<I> \<A>,
              \<F> = insert r (\<F> \<A>)\<rparr>)
          \<in> R) \<and>
         (\<not> FP (q2_\<alpha> q') \<longrightarrow>
-         ((s.ins_dj (the (qm.lookup (ff q') qm)) Qs, As, D', Is, Fs),
-          \<lparr>\<Q> = insert r (\<Q> \<A>), \<Sigma> = Sig, \<Delta> = interval_to_set ` d.\<alpha> D', \<I> = \<I> \<A>, \<F> = \<F> \<A>\<rparr>)
+         ((s.ins_dj (the (qm.lookup (ff q') qm)) Qs,  D', Is, Fs),
+          \<lparr>\<Q> = insert r (\<Q> \<A>),  \<Delta> = interval_to_set ` d.\<alpha> D', \<I> = \<I> \<A>, \<F> = \<F> \<A>\<rparr>)
          \<in> R))"
     using rm_q' by auto
 }
 qed
 
 lemma NFA_construct_reachable_prod_impl_alt_def :
-  "NFA_construct_reachable_prod_interval_impl Sig S I FP DS =
+  "NFA_construct_reachable_prod_interval_impl S I FP DS =
    do {
      let ((qm, n), Is) = NFA_construct_reachable_init_interval_impl I;
      ((_, \<A>), _) \<leftarrow> WORKLISTT (\<lambda>_. True)
-      (\<lambda>((qm, n), (Qs, Sig, DD, Is, Fs)) q. do { 
+      (\<lambda>((qm, n), (Qs,  DD, Is, Fs)) q. do { 
          let r = the (qm.lookup (ff q) qm);
          if (s.memb r Qs) then
-           (RETURN (((qm, n), (Qs, Sig, DD, Is, Fs)), []))
+           (RETURN (((qm, n), (Qs, DD, Is, Fs)), []))
          else                    
            do {
              ASSERT (q2_invar q \<and> q2_\<alpha> q \<in> S);
              ((qm', n'), DD', N) \<leftarrow> 
                 NFA_construct_reachable_interval_impl_step_prod DS qm n DD q;
              RETURN (((qm', n'), 
-                 (s.ins_dj r Qs, Sig,
+                 (s.ins_dj r Qs, 
                    DD', Is, 
                   (if (FP q) then (s.ins_dj r Fs) else Fs))), N)
            }
          }
-        ) (((qm, n), (s.empty (), Sig, d.empty, Is, s.empty ())), I);
+        ) (((qm, n), (s.empty (), d.empty, Is, s.empty ())), I);
      RETURN \<A>
    }"
 unfolding NFA_construct_reachable_prod_interval_impl_def
 apply (simp add: split_def)
-apply (unfold nfa_selectors_def fst_conv snd_conv prod.collapse)
-using nfa_alphabet_def by presburger
+  apply (unfold nfa_selectors_def fst_conv snd_conv prod.collapse)
+  by presburger
 
 
 
@@ -2458,7 +2302,7 @@ fixes D_it :: "'q2_rep \<Rightarrow> (((('a \<times> 'a) list \<times> ('a \<tim
                      ('m \<times> nat) \<times> 'd \<times> 'q2_rep list) set_iterator"
 assumes D_it_OK[rule_format, refine_transfer]: 
          "\<forall>q. q2_invar q \<longrightarrow> q2_\<alpha> q \<in> S \<longrightarrow> set_iterator (D_it q) {p. p \<in> DS q}"
-shows "RETURN ?f \<le> NFA_construct_reachable_prod_interval_impl Sig S I FP DS"
+shows "RETURN ?f \<le> NFA_construct_reachable_prod_interval_impl S I FP DS"
  unfolding NFA_construct_reachable_prod_impl_alt_def nempI_inter_correct
     WORKLISTT_def NFA_construct_reachable_interval_impl_step_prod_def
   apply (unfold split_def snd_conv fst_conv prod.collapse)
@@ -2468,15 +2312,15 @@ done
 
 definition (in automaton_by_lts_interval_defs) 
   NFA_construct_reachable_prod_interval_impl_code where
-"NFA_construct_reachable_prod_interval_impl_code qm_ops  (ff::'q2_rep \<Rightarrow> 'i) Sig I FP D_it =
+"NFA_construct_reachable_prod_interval_impl_code qm_ops  (ff::'q2_rep \<Rightarrow> 'i) I FP D_it =
 (let ((qm, n), Is) = foldl (\<lambda>((qm, n), Is) q. 
          ((map_op_update_dj qm_ops (ff q) (states_enumerate n) qm, Suc n),
              s.ins_dj (states_enumerate n) Is))
                 ((map_op_empty qm_ops (), 0), s.empty()) I;
      ((_, AA), _) = worklist (\<lambda>_. True)
-        (\<lambda>((qm, n), Qs, Sig, DD, Is, Fs) (q::'q2_rep).
+        (\<lambda>((qm, n), Qs,  DD, Is, Fs) (q::'q2_rep).
             let r = the (map_op_lookup qm_ops (ff q) qm)
-            in if set_op_memb s_ops r Qs then (((qm, n), Qs, Sig, DD, Is, Fs), [])
+            in if set_op_memb s_ops r Qs then (((qm, n), Qs,  DD, Is, Fs), [])
                else let ((qm', n'), DD', N) = D_it q (\<lambda>_::(('m \<times> nat) \<times> 'd \<times> 'q2_rep list). True)
                 (\<lambda>(a, q') ((qm::'m, n::nat), DD'::'d, N::'q2_rep list).
                    if (nemptyIs (intersectIs (fst a) (snd a))) then
@@ -2488,9 +2332,9 @@ definition (in automaton_by_lts_interval_defs)
                                in ((qm', n'), clts_op_add d_ops r 
               (intersectIs (fst a) (snd a)) r' DD', q' # N) else ((qm, n), DD', N))
                            ((qm, n), DD, [])
-              in (((qm', n'), set_op_ins_dj s_ops r Qs, Sig, DD', Is, 
+              in (((qm', n'), set_op_ins_dj s_ops r Qs, DD', Is, 
               if FP q then set_op_ins_dj s_ops r Fs else Fs), N))
-        (((qm, n), set_op_empty s_ops (), Sig,
+        (((qm, n), set_op_empty s_ops (),
    clts_op_empty d_ops, Is, set_op_empty s_ops ()), I)
  in AA)"
 
@@ -2500,13 +2344,13 @@ fixes D_it :: "'q2_rep \<Rightarrow> (((('a \<times> 'a) list \<times> ('a \<tim
                      ('m \<times> nat) \<times> 'd \<times> 'q2_rep list) set_iterator"
 assumes D_it_OK: "\<forall> q. q2_invar q \<longrightarrow> q2_\<alpha> q \<in> S \<longrightarrow> 
                   set_iterator (D_it q) {p. p \<in> DS q}"
-shows "RETURN (NFA_construct_reachable_prod_interval_impl_code qm_ops ff Sig I FP D_it) 
+shows "RETURN (NFA_construct_reachable_prod_interval_impl_code qm_ops ff I FP D_it) 
               \<le> 
-               NFA_construct_reachable_prod_interval_impl Sig S I FP DS"
+               NFA_construct_reachable_prod_interval_impl S I FP DS"
 proof -
   have rule: 
-   "\<And>f1 f2. \<lbrakk>RETURN f1 \<le> NFA_construct_reachable_prod_interval_impl Sig S I FP DS; f1 = f2\<rbrakk> \<Longrightarrow>
-              RETURN f2 \<le> NFA_construct_reachable_prod_interval_impl Sig S I FP DS" by simp
+   "\<And>f1 f2. \<lbrakk>RETURN f1 \<le> NFA_construct_reachable_prod_interval_impl S I FP DS; f1 = f2\<rbrakk> \<Longrightarrow>
+              RETURN f2 \<le> NFA_construct_reachable_prod_interval_impl S I FP DS" by simp
   
   note aux_thm = NFA_construct_reachable_prod_impl_code_aux[OF D_it_OK, of I FP ]
 
@@ -2528,7 +2372,6 @@ defines "S \<equiv> accessible (LTS_forget_labels
              {(q, a1 \<inter> a2, q') |q a1 a2 q'. (q, (a1, a2), q') \<in> D})
              (set (map q2_\<alpha> II))"
 assumes f_inj_on: "inj_on f S"
-    and sigsigi: "Sig = semIs SigI"
     and ff_OK: "\<And>q. q2_invar q \<Longrightarrow> q2_\<alpha> q \<in> S \<Longrightarrow> ff q = f (q2_\<alpha> q)" 
     and d_add_OK: 
           (* "\<forall>q a q' q''. (q, a, q') \<in> D \<and> (q, a, q'') \<in> D \<and> q'' \<noteq> q' \<longrightarrow> *)
@@ -2545,11 +2388,11 @@ assumes f_inj_on: "inj_on f S"
             NFA_construct_reachable_impl_step_prod_rel))"
     and FFP_OK: "\<And>q. q2_invar q \<Longrightarrow> q2_\<alpha> q \<in> S \<Longrightarrow> FFP q \<longleftrightarrow> FP (q2_\<alpha> q)"
   shows "NFA_isomorphic 
-    (NFA_construct_reachable Sig (set (map q2_\<alpha> II))  FP 
+    (NFA_construct_reachable (set (map q2_\<alpha> II))  FP 
                                {(q, a1 \<inter> a2, q') |q a1 a2 q'. (q, (a1, a2), q') \<in> D})
-    (nfa_\<alpha> (NFA_construct_reachable_prod_interval_impl_code qm_ops ff SigI II FFP D_it)) 
+    (nfa_\<alpha> (NFA_construct_reachable_prod_interval_impl_code qm_ops ff II FFP D_it)) 
       \<and>
-       nfa_invar (NFA_construct_reachable_prod_interval_impl_code qm_ops ff SigI II FFP D_it)"
+       nfa_invar (NFA_construct_reachable_prod_interval_impl_code qm_ops ff II FFP D_it)"
 proof - 
   have fin_Ds: "(\<And>q. finite {(a, q'). (q, a, q') \<in> D \<and> fst a \<inter> snd a \<noteq> {}})"
   proof -
@@ -2575,18 +2418,18 @@ proof -
        
   note NFA_construct_reachable_prod_interval_impl_code_correct [OF D_it_OK'']
   also 
-  have "NFA_construct_reachable_prod_interval_impl SigI S II FFP DS \<le> \<Down> (build_rel nfa_\<alpha> nfa_invar)
-     (NFA_construct_reachable_abstract2_prod_impl Sig (map q2_\<alpha> II) FP D)"
+  have "NFA_construct_reachable_prod_interval_impl S II FFP DS \<le> \<Down> (build_rel nfa_\<alpha> nfa_invar)
+     (NFA_construct_reachable_abstract2_prod_impl (map q2_\<alpha> II) FP D)"
     using NFA_construct_reachable_prod_interval_impl_correct 
-        [OF f_inj_on[unfolded S_def] sigsigi ff_OK[unfolded S_def]  d_add_OK
+        [OF f_inj_on[unfolded S_def]  ff_OK[unfolded S_def]  d_add_OK
           dist_I invar_I, of DS FFP FP] FFP_OK S_def 
     by (auto simp add: FFP_OK D_it_OK DS_OK1)
   also note NFA_construct_reachable_abstract2_impl_prod_correct
   also note NFA_construct_reachable_abstract_impl_prod_correct
   finally have 
-    "RETURN (NFA_construct_reachable_prod_interval_impl_code qm_ops ff SigI II FFP D_it) 
+    "RETURN (NFA_construct_reachable_prod_interval_impl_code qm_ops ff II FFP D_it) 
       \<le> \<Down> (build_rel nfa_\<alpha> nfa_invar)
-     (SPEC (NFA_isomorphic (NFA_construct_reachable Sig
+     (SPEC (NFA_isomorphic (NFA_construct_reachable 
        (set (map q2_\<alpha> II))  FP 
         {(q, a1 \<inter> a2, q') |q a1 a2 q'. (q, (a1, a2), q') \<in> D})))"
     using S_def fin_S fin_D
@@ -2618,14 +2461,13 @@ assumes d_add_OK:
                     \<in> NFA_construct_reachable_impl_step_prod_rel"
     and FP_OK: "\<And>q. q2_invar q \<Longrightarrow> q2_\<alpha> q \<in> \<Q> \<A> \<Longrightarrow> FP q \<longleftrightarrow> (q2_\<alpha> q) \<in> \<F> \<A>"
     and wf_\<A>: "NFA \<A>"
-    and sig\<Sigma>: "\<Sigma> \<A> = semIs SigI"
   shows "nfa_invar
-          (NFA_construct_reachable_prod_interval_impl_code qm_ops ff SigI II FP D_it) \<and>
+          (NFA_construct_reachable_prod_interval_impl_code qm_ops ff II FP D_it) \<and>
          (NFA
          (nfa_\<alpha>
-        (NFA_construct_reachable_prod_interval_impl_code qm_ops ff SigI II FP D_it))) \<and>
+        (NFA_construct_reachable_prod_interval_impl_code qm_ops ff II FP D_it))) \<and>
            NFA_isomorphic_wf (nfa_\<alpha> (NFA_construct_reachable_prod_interval_impl_code 
-                                    qm_ops ff SigI II FP D_it))
+                                    qm_ops ff II FP D_it))
                          (NFA_remove_unreachable_states \<A>)"
 proof -
  find_theorems name: "is_reachable_from_initial_subset"
@@ -2676,29 +2518,29 @@ proof -
   let ?I = "map q2_\<alpha> II"
 
   from NFA_construct_reachable_prod_impl_code_correct_full 
-        [OF f_inj_on'' sig\<Sigma> ff_OK d_add_OK dist_I invar_I
+        [OF f_inj_on'' ff_OK d_add_OK dist_I invar_I
            fin_S', where ?FP = ?FP and ?D_it=D_it and 
            selP=selP, OF _ _ _ finite_D' DS_OK1 D_it_OK FP_OK] 
        S_subset 
   have step1:
-    "NFA_isomorphic (NFA_construct_reachable (\<Sigma> \<A>) (set ?I) ?FP (\<Delta> \<A>))
-      (nfa_\<alpha> (NFA_construct_reachable_prod_interval_impl_code qm_ops ff SigI II FP D_it))"
-    "nfa_invar (NFA_construct_reachable_prod_interval_impl_code qm_ops ff SigI II FP D_it)" 
+    "NFA_isomorphic (NFA_construct_reachable (set ?I) ?FP (\<Delta> \<A>))
+      (nfa_\<alpha> (NFA_construct_reachable_prod_interval_impl_code qm_ops ff II FP D_it))"
+    "nfa_invar (NFA_construct_reachable_prod_interval_impl_code qm_ops ff II FP D_it)" 
     by (simp_all add: subset_iff D_\<A>_ok)
    
  
   from NFA.NFA_remove_unreachable_states_implementation [OF wf_\<A> I_OK , of "?FP" "\<Delta> \<A>"]
-  have step2: "NFA_construct_reachable (\<Sigma> \<A>) (set ?I)  ?FP (\<Delta> \<A>) = 
+  have step2: "NFA_construct_reachable  (set ?I)  ?FP (\<Delta> \<A>) = 
           NFA_remove_unreachable_states \<A>" by simp
  
   from step1(1) step2 NFA_remove_unreachable_states___is_well_formed [OF wf_\<A>] have 
     step3: "NFA_isomorphic_wf (NFA_remove_unreachable_states \<A>) 
                        (nfa_\<alpha> (NFA_construct_reachable_prod_interval_impl_code 
-                                qm_ops ff SigI II  FP D_it))"
+                                qm_ops ff II  FP D_it))"
     by (simp add: NFA_isomorphic_wf_def)
 
   from step3 have step4: "NFA (nfa_\<alpha> 
-        (NFA_construct_reachable_prod_interval_impl_code qm_ops ff SigI II FP D_it))"
+        (NFA_construct_reachable_prod_interval_impl_code qm_ops ff II FP D_it))"
     unfolding NFA_isomorphic_wf_alt_def by simp
 
   from step3 step1(2) step4 show ?thesis
@@ -2724,11 +2566,10 @@ proof (intro nfa_construct_prod.intro nfa_by_map_correct
   fix \<A>:: "('q2, 'a) NFA_rec" and f :: "'q2 \<Rightarrow> 'i" and ff I A FP D_it selP
   fix D_it :: "'q2_rep \<Rightarrow> (((('a \<times> 'a) list \<times> ('a \<times> 'a) list ) \<times> 'q2_rep), 
       ('m \<times> nat) \<times> 'd \<times> 'q2_rep list) set_iterator"
-  fix D Sig DS
+  fix D DS
   assume wf_\<A>: "NFA \<A>" 
      and D_\<A>_ok: "{(q, (fst a) \<inter>  (snd a), q')| q a q'. (q, a, q') \<in> D} = (\<Delta> \<A>)"
      and finite_D: "finite D"
-     and sig\<Sigma>: "\<Sigma> \<A> = semIs Sig"
      and finite_\<Delta>: "finite (\<Delta> \<A>)"
      and f_inj_on: "inj_on f (\<Q> \<A>)"
      and f_OK: "\<And>q. q2_invar q \<Longrightarrow> q2_\<alpha> q \<in> (\<Q> \<A>) \<Longrightarrow> ff q = f (q2_\<alpha> q)" 
@@ -2763,24 +2604,23 @@ proof (intro nfa_construct_prod.intro nfa_by_map_correct
   note correct = 
       reach.NFA_construct_reachable_prod_impl_code_correct___remove_unreachable
   [OF _ f_inj_on D_\<A>_ok' finite_D finite_\<Delta> f_OK dist_I invar_I _ DS_OK1 _  _ wf_\<A>, 
-    of D_it "(\<lambda> q. q)" "(\<lambda>_ _. True)" FP Sig] 
+    of D_it "(\<lambda> q. q)" "(\<lambda>_ _. True)" FP] 
 
-  have " nfa_invar (NFA_construct_reachable_prod_interval_impl_code qm_ops ff Sig I FP D_it) \<and>
+  have " nfa_invar (NFA_construct_reachable_prod_interval_impl_code qm_ops ff I FP D_it) \<and>
   NFA_set_interval.NFA
-   (nfa_\<alpha> (NFA_construct_reachable_prod_interval_impl_code qm_ops ff Sig I FP D_it)) \<and>
+   (nfa_\<alpha> (NFA_construct_reachable_prod_interval_impl_code qm_ops ff I FP D_it)) \<and>
   NFA_set_interval.NFA_isomorphic_wf
-   (nfa_\<alpha> (NFA_construct_reachable_prod_interval_impl_code qm_ops ff Sig I FP D_it))
+   (nfa_\<alpha> (NFA_construct_reachable_prod_interval_impl_code qm_ops ff I FP D_it))
    (NFA_set_interval.NFA_remove_unreachable_states \<A>)"
 apply (rule_tac correct)
           apply (simp_all add: I_OK d_OK FP_OK 
             reach.NFA_construct_reachable_impl_step_prod_rel_def)
     apply (insert D_OK f_OK)
-     apply (simp add:  set_iterator_def br_def sig\<Sigma>)
-    using sig\<Sigma> by simp
+    by (simp add:  set_iterator_def br_def)
   from this
-  show "nfa_invar_NFA' (NFA_construct_reachable_prod_interval_impl_code qm_ops ff Sig I FP D_it) \<and>
+  show "nfa_invar_NFA' (NFA_construct_reachable_prod_interval_impl_code qm_ops ff I FP D_it) \<and>
        NFA_isomorphic_wf (nfa_\<alpha> (NFA_construct_reachable_prod_interval_impl_code 
-            qm_ops ff Sig I FP D_it))
+            qm_ops ff I FP D_it))
         (NFA_remove_unreachable_states \<A>)"
     unfolding nfa_invar_NFA'_def
     by simp
@@ -2810,12 +2650,11 @@ proof (intro nfa_construct.intro nfa_by_map_correct nfa_construct_axioms.intro)
   fix \<A>:: "('q2, 'a) NFA_rec" and f :: "'q2 \<Rightarrow> 'i" and ff I FP D_it selP
   fix D_it :: "'q2_rep \<Rightarrow> ((('a \<times> 'a) list \<times> 'q2_rep), 
       ('m \<times> nat) \<times> 'd \<times> 'q2_rep list) set_iterator"
-  fix DS Sig
+  fix DS
   assume wf_\<A>: "NFA \<A>" 
      and f_inj_on: "inj_on f (\<Q> \<A>)"
      and f_OK: "\<And>q. q2_invar q \<Longrightarrow> q2_\<alpha> q \<in> (\<Q> \<A>) \<Longrightarrow> ff q = f (q2_\<alpha> q)" 
      and finite_\<Delta> : "finite (\<Delta> \<A>)"
-     and sig\<Sigma>: "\<Sigma> \<A> = semIs Sig"
      and dist_I: "distinct (map q2_\<alpha> I)"
      and invar_I: "\<And>q. q \<in> set I \<Longrightarrow> q2_invar q"
      and I_OK: "q2_\<alpha> ` set I = \<I> \<A>"
@@ -2846,31 +2685,30 @@ proof (intro nfa_construct.intro nfa_by_map_correct nfa_construct_axioms.intro)
   note correct = reach.NFA_construct_reachable_interval_impl_code_correct___remove_unreachable
     [of \<A> I DS, OF _ f_inj_on f_OK dist_I invar_I _  
                   finite_\<Delta> DS_OK0 DS_OK1  _ _ wf_\<A>, 
-     of D_it  "(\<lambda>_ _. True)" FP Sig]
+     of D_it  "(\<lambda>_ _. True)" FP]
   from this 
-  have "nfa_invar (NFA_construct_reachable_interval_impl_code qm_ops ff Sig I FP D_it) \<and>
+  have "nfa_invar (NFA_construct_reachable_interval_impl_code qm_ops ff I FP D_it) \<and>
   NFA_set_interval.NFA
-   (nfa_\<alpha> (NFA_construct_reachable_interval_impl_code qm_ops ff Sig I FP D_it)) \<and>
+   (nfa_\<alpha> (NFA_construct_reachable_interval_impl_code qm_ops ff I FP D_it)) \<and>
   NFA_set_interval.NFA_isomorphic_wf
-   (nfa_\<alpha> (NFA_construct_reachable_interval_impl_code qm_ops ff Sig I FP D_it))
+   (nfa_\<alpha> (NFA_construct_reachable_interval_impl_code qm_ops ff I FP D_it))
    (NFA_set_interval.NFA_remove_unreachable_states \<A>)"
     apply (rule_tac correct)
           apply (simp_all add: I_OK d_OK FP_OK 
             reach.NFA_construct_reachable_impl_step_rel_def)
     apply (insert D_OK f_OK)
-    by (simp_all add:  set_iterator_def br_def sig\<Sigma>)
+    by (simp_all add:  set_iterator_def br_def)
     
   from this
-  show "nfa_invar_NFA' (NFA_construct_reachable_interval_impl_code qm_ops ff Sig I FP D_it) \<and>
+  show "nfa_invar_NFA' (NFA_construct_reachable_interval_impl_code qm_ops ff I FP D_it) \<and>
        NFA_isomorphic_wf
-        (nfa_\<alpha> (NFA_construct_reachable_interval_impl_code qm_ops ff Sig I FP D_it))
+        (nfa_\<alpha> (NFA_construct_reachable_interval_impl_code qm_ops ff I FP D_it))
         (NFA_remove_unreachable_states \<A>)"
     unfolding nfa_invar_NFA'_def
     by simp
-
 qed
 
-
+(* 
 lemma (in nfa_by_lts_interval_defs) DFA_construct_reachable_impl_code_correct :
   fixes qm_ops :: "('i, 'q::{NFA_states}, 'm, _) map_ops_scheme" 
     and q2_\<alpha> :: "'q2_rep \<Rightarrow> 'q2"
@@ -2949,7 +2787,7 @@ from wf_\<A> have wf_\<A>': "NFA \<A>" unfolding DFA_alt_def by simp
     apply (metis NFA_isomorphic_wf___weak_DFA wf_res)
   done
 qed
-
+*)
 
 lemma (in nfa_by_lts_interval_defs) NFA_construct_reachable_impl_code_correct_no_enc:
   assumes qm_OK: "StdMap qm_ops"
@@ -3028,8 +2866,8 @@ qed
 
 
 definition concat_impl_aux where
-"concat_impl_aux c_inter c_nempty s_inter const f it_1 it_2 it_3 Sig1 Sig2 I1 I2 I1' F1' I2' FP1 FP2 =
- (\<lambda> AA1 AA2. const f (s_inter (Sig1 AA1) ( Sig2 AA2)) 
+"concat_impl_aux c_inter c_nempty const f it_1 it_2 it_3 I1 I2 I1' F1' I2' FP1 FP2 =
+ (\<lambda> AA1 AA2. const f
     (if (c_nempty (c_inter (I1' AA1) (F1' AA1)))
     then (I1 AA1) @ (I2 AA2) else (I1 AA1))
     (\<lambda> q'.(FP2 AA2 q')) 
@@ -3044,8 +2882,6 @@ assumes const_OK: "nfa_construct_no_enc \<alpha>3 invar3 const"
     and I1_OK: "\<And>n1. invar1 n1 \<Longrightarrow> distinct (I1 n1) \<and> set (I1 n1) = \<I> (\<alpha>1 n1)"
     and I1'_F1'_OK: "\<And> n1. invar1 n1 \<Longrightarrow> 
                 c_nempty (c_inter (I1' n1) (F1' n1)) \<longleftrightarrow> (\<I> (\<alpha>1 n1) \<inter> \<F> (\<alpha>1 n1) \<noteq> {})"
-    and Sig12_sinter: "\<And> n1 n2. invar1 n1 \<and> invar2 n2 \<Longrightarrow>
-                           semIs (s_inter (Sig1 n1) (Sig2 n2)) = (\<Sigma> (\<alpha>1 n1))"
     and I2_OK: "\<And>n2. invar2 n2 \<Longrightarrow> distinct (I2 n2) \<and> set (I2 n2) = \<I> (\<alpha>2 n2)"
     and FP2_OK: "\<And>n2 q. invar2 n2 \<Longrightarrow> q \<in> \<Q> (\<alpha>2 n2) \<Longrightarrow> FP2 n2 q \<longleftrightarrow> (q \<in> \<F> (\<alpha>2 n2))"
     and FP21_OK: "\<And>n1 n2 q. invar1 n1 \<Longrightarrow> q \<in> \<Q> (\<alpha>1 n1) \<Longrightarrow> invar2 n2 \<Longrightarrow>
@@ -3090,8 +2926,8 @@ assumes const_OK: "nfa_construct_no_enc \<alpha>3 invar3 const"
              q' \<in> \<I> (\<alpha>2 n2)}}.
      canonicalIs a)"
 shows "nfa_concat \<alpha>1 invar1 \<alpha>2 invar2 \<alpha>3 invar3
-       (concat_impl_aux c_inter c_nempty s_inter
-           const f it_1 it_2 it_3 Sig1 Sig2 I1 I2 I1' F1' I2' FP1 FP2)"
+       (concat_impl_aux c_inter c_nempty
+           const f it_1 it_2 it_3 I1 I2 I1' F1' I2' FP1 FP2)"
 
 proof (intro nfa_concat.intro 
              nfa_1_OK nfa_2_OK 
@@ -3102,7 +2938,6 @@ proof (intro nfa_concat.intro
   fix n1 n2
   assume invar_1: "invar1 n1"
      and invar_2: "invar2 n2"
-     and eq\<Sigma>: "\<Sigma> (\<alpha>1 n1) = \<Sigma> (\<alpha>2 n2)"
      and Q1Q2_empty: "\<Q> (\<alpha>1 n1) \<inter> \<Q> (\<alpha>2 n2) = {}"
   let ?AA' = "NFA_concatenation (\<alpha>1 n1) (\<alpha>2 n2)"
 
@@ -3280,7 +3115,7 @@ proof (intro nfa_concat.intro
   have f_inj_on': "inj_on f (\<Q> ?AA')" using f_inj_on 
     by (simp add: NFA_concatenation_def)
 
-  from invar_1 invar_2 nfa_1_OK nfa_2_OK eq\<Sigma> have AA'_wf: "NFA ?AA'"
+  from invar_1 invar_2 nfa_1_OK nfa_2_OK have AA'_wf: "NFA ?AA'"
     apply (rule_tac NFA_concatenation___is_well_formed)
     apply (simp_all add: nfa_def Q1_Q2_empty)
     done
@@ -3572,26 +3407,16 @@ qed qed
              q' \<in> NFA_set_interval.NFA_rec.\<I> (\<alpha>2 n2)}}.
      canonicalIs a
   " by simp
-
-  from Sig12_sinter[of n1 n2] invar_1 invar_2
-  have "semIs (s_inter (Sig1 n1) (Sig2 n2)) = \<Sigma> (\<alpha>1 n1)" 
-      by auto
-  from this
-  have semI\<Sigma>: "\<Sigma> (NFA_concatenation (\<alpha>1 n1) (\<alpha>2 n2)) = 
-      semIs (s_inter (Sig1 n1) ( Sig2 n2))"
-    unfolding NFA_concatenation_def
-    by simp
-  thm inj_12''
  note construct_correct = 
         nfa_construct_no_enc.nfa_construct_no_enc_correct [OF const_OK 
-        AA'_wf f_inj_on' dist_II set_II finite_D semI\<Sigma> inj_12'' D_\<A> FP_OK, of  
+        AA'_wf f_inj_on' dist_II set_II finite_D inj_12'' D_\<A> FP_OK, of  
         "(tri_union_iterator (it_1 n1) (it_2 n2) (it_3 n1 (FP1 n1) (I2' n2)))" ]
   from construct_correct 
   show "invar3
-        (concat_impl_aux c_inter c_nempty s_inter const f it_1 it_2 it_3 Sig1 Sig2 I1 I2 I1' F1' I2'
+        (concat_impl_aux c_inter c_nempty const f it_1 it_2 it_3 I1 I2 I1' F1' I2'
           FP1 FP2 n1 n2) \<and>
        NFA_isomorphic_wf
-        (\<alpha>3 (concat_impl_aux c_inter c_nempty s_inter const f it_1 it_2 it_3 Sig1 Sig2 I1 I2 I1' F1'
+        (\<alpha>3 (concat_impl_aux c_inter c_nempty const f it_1 it_2 it_3 I1 I2 I1' F1'
                I2' FP1 FP2 n1 n2))
         (efficient_NFA_concatenation (\<alpha>1 n1) (\<alpha>2 n2))" 
     unfolding concat_impl_aux_def efficient_NFA_concatenation_def
@@ -3601,14 +3426,13 @@ qed
 
 definition concat_rename_impl_aux where
 "concat_rename_impl_aux 
- c_inter c_nempty s_inter const f it_1 it_2 it_3 Sig1 Sig2 I1 I2 I1' F1' I2' FP1 FP2 
+ c_inter c_nempty const f it_1 it_2 it_3 I1 I2 I1' F1' I2' FP1 FP2 
  rename1 rename2 f1 f2 =
  (\<lambda> A1 A2. 
     let AA1 = rename1 A1 f1 in
     let AA2 = rename2 A2 f2 in
-    concat_impl_aux c_inter c_nempty s_inter const f it_1 it_2 it_3 Sig1 Sig2 I1 I2 I1' 
+    concat_impl_aux c_inter c_nempty const f it_1 it_2 it_3 I1 I2 I1' 
     F1' I2' FP1 FP2 AA1 AA2)" 
-
 
 lemma concat_rename_impl_aux_correct:
   fixes \<alpha>1 :: "('q,'a::linorder,'nfa) nfa_\<alpha>"
@@ -3625,8 +3449,6 @@ assumes const_OK: "nfa_construct_no_enc \<alpha>3 invar3 const"
                                 \<Q> (\<alpha>2 (rename2 n2 f2)) = {}"
     and rename1_OK: "\<And> n. invar1' n \<longrightarrow> \<alpha>1 (rename1 n f1) = (NFA_rename_states (\<alpha>1' n) f1)"
     and rename2_OK: "\<And> n. invar2' n \<longrightarrow> \<alpha>2 (rename2 n f2) = (NFA_rename_states (\<alpha>2' n) f2)"
-    and Sig12_sinter: "\<And> n1 n2. invar1 n1 \<and> invar2 n2 \<Longrightarrow>
-                           semIs (s_inter (Sig1 n1) (Sig2 n2)) = \<Sigma> (\<alpha>1 n1)"
     and f_inj_on: "\<And>n1 n2. inj_on f (\<Q> (\<alpha>1 n1) \<union> \<Q> (\<alpha>2 n2))"
     and I1_OK: "\<And>n1. invar1 n1 \<Longrightarrow> distinct (I1 n1) \<and> set (I1 n1) = \<I> (\<alpha>1 n1)"
     and I1'_F1'_OK: "\<And> n1. invar1 n1 \<Longrightarrow> 
@@ -3675,20 +3497,20 @@ assumes const_OK: "nfa_construct_no_enc \<alpha>3 invar3 const"
              q' \<in> NFA_set_interval.NFA_rec.\<I> (\<alpha>2 n2)}}.
      canonicalIs a)"
 shows "nfa_concat_rename \<alpha>1' invar1' \<alpha>2' invar2' \<alpha>3 invar3
-    (concat_rename_impl_aux c_inter c_nempty s_inter
-     const f it_1 it_2 it_3 Sig1 Sig2 I1 I2 I1' F1' I2' FP1 FP2 rename1 rename2) f1 f2"
+    (concat_rename_impl_aux c_inter c_nempty
+     const f it_1 it_2 it_3 I1 I2 I1' F1' I2' FP1 FP2 rename1 rename2) f1 f2"
 proof -
   have invar1': "(\<And>n1. invar1 n1 \<Longrightarrow> invar1 n1)"
     by auto
   thm concat_impl_aux_correct
   note th1 =  concat_impl_aux_correct
       [of \<alpha>3 invar3 const \<alpha>1 invar1 \<alpha>2 invar2 f I1 c_nempty c_inter
-          I1' F1' s_inter Sig1 Sig2 I2 FP2 it_1 it_2 it_3  FP1 I2',  
+          I1' F1' I2 FP2 it_1 it_2 it_3  FP1 I2',  
       OF const_OK ]  const_OK nfa_1_OK' nfa_2_OK' f_inj_on
   from th1 I1_OK I1'_F1'_OK I2_OK FP2_OK FP21_OK 
-       \<alpha>1_\<Delta> \<alpha>2_\<Delta> it_1_OK it_2_OK it_12_OK inj_12 invar1' Sig12_sinter
+       \<alpha>1_\<Delta> \<alpha>2_\<Delta> it_1_OK it_2_OK it_12_OK inj_12 invar1' 
   have c1:"nfa_concat \<alpha>1 invar1 \<alpha>2 invar2 \<alpha>3 invar3
-     (concat_impl_aux c_inter c_nempty s_inter const f it_1 it_2 it_3 Sig1 Sig2 I1 
+     (concat_impl_aux c_inter c_nempty const f it_1 it_2 it_3 I1 
                       I2 I1' F1' I2' FP1 FP2)"
     by force
   from this show ?thesis
@@ -3703,12 +3525,11 @@ proof -
         invar1 n1 \<longrightarrow>
         invar2 n2 \<longrightarrow>
         \<Q> (\<alpha>1 n1) \<inter> \<Q> (\<alpha>2 n2) = {} \<longrightarrow>
-        \<Sigma> (\<alpha>1 n1) = \<Sigma> (\<alpha>2 n2) \<longrightarrow>
         invar3
-         (concat_impl_aux c_inter c_nempty s_inter const f it_1 it_2 it_3 Sig1 Sig2 I1 I2
+         (concat_impl_aux c_inter c_nempty const f it_1 it_2 it_3 I1 I2
            I1' F1' I2' FP1 FP2 n1 n2) \<and>
         NFA_isomorphic_wf
-         (\<alpha>3 (concat_impl_aux c_inter c_nempty s_inter const f it_1 it_2 it_3 Sig1 Sig2 I1
+         (\<alpha>3 (concat_impl_aux c_inter c_nempty const f it_1 it_2 it_3 I1
                 I2 I1' F1' I2' FP1 FP2 n1 n2))
          (efficient_NFA_concatenation (\<alpha>1 n1) (\<alpha>2 n2)))"
     show "(nfa \<alpha>1' invar1' \<and> nfa \<alpha>2' invar2') \<and>
@@ -3718,14 +3539,12 @@ proof -
         invar2' n2 \<longrightarrow>
         inj_on f1 (\<Q> (\<alpha>1' n1)) \<longrightarrow>
         inj_on f2 (\<Q> (\<alpha>2' n2)) \<longrightarrow>
-        \<Sigma> (\<alpha>1' n1) = \<Sigma> (\<alpha>2' n2) \<longrightarrow>
         f1 ` \<Q> (\<alpha>1' n1) \<inter> f2 ` \<Q> (\<alpha>2' n2) = {} \<longrightarrow>
         invar3
-         (concat_rename_impl_aux c_inter c_nempty s_inter const f it_1 it_2 it_3 Sig1 Sig2
+         (concat_rename_impl_aux c_inter c_nempty const f it_1 it_2 it_3
            I1 I2 I1' F1' I2' FP1 FP2 rename1 rename2 f1 f2 n1 n2) \<and>
         NFA_isomorphic_wf
-         (\<alpha>3 (concat_rename_impl_aux c_inter c_nempty s_inter const f it_1 it_2 it_3 Sig1
-                Sig2 I1 I2 I1' F1' I2' FP1 FP2 rename1 rename2 f1 f2 n1 n2))
+         (\<alpha>3 (concat_rename_impl_aux c_inter c_nempty const f it_1 it_2 it_3 I1 I2 I1' F1' I2' FP1 FP2 rename1 rename2 f1 f2 n1 n2))
          (efficient_NFA_rename_concatenation f1 f2 (\<alpha>1' n1) (\<alpha>2' n2)))"
       apply (rule conjI)
       using nfa_1_OK nfa_2_OK apply simp
@@ -3739,7 +3558,6 @@ proof -
          and p4: "inj_on f1 (\<Q> (\<alpha>1' n1))"
          and p5: "inj_on f2 (\<Q> (\<alpha>2' n2))"
          and p6: "f1 ` \<Q> (\<alpha>1' n1) \<inter> f2 ` \<Q> (\<alpha>2' n2) = {}"
-         and p7: "\<Sigma> (\<alpha>1' n1) = \<Sigma> (\<alpha>2' n2)"
       let ?n1 = "rename1 n1 f1"
       let ?n2 = "rename2 n2 f2"
       from p2 nfa_1_OK'
@@ -3752,25 +3570,22 @@ proof -
       have
       c3: "\<Q> (\<alpha>1 ?n1) \<inter> \<Q> (\<alpha>2 ?n2) = {}"
         by auto
-      from p7 
-      have p7': "\<Sigma> (\<alpha>1 ?n1) = \<Sigma> (\<alpha>2 ?n2)" 
-        by (simp add: p2 p3 rename1_OK rename2_OK)
-      from c1 c2 c3 p1 p7'
+      from c1 c2 c3 p1
       have "invar3
-         (concat_impl_aux c_inter c_nempty s_inter const f it_1 it_2 it_3 Sig1 Sig2 I1 I2 I1' F1' I2' FP1
+         (concat_impl_aux c_inter c_nempty const f it_1 it_2 it_3 I1 I2 I1' F1' I2' FP1
            FP2 ?n1 ?n2) \<and>
         NFA_isomorphic_wf
-         (\<alpha>3 (concat_impl_aux c_inter c_nempty s_inter const f it_1 it_2 it_3 Sig1 Sig2 I1 I2 I1' F1' I2'
+         (\<alpha>3 (concat_impl_aux c_inter c_nempty const f it_1 it_2 it_3 I1 I2 I1' F1' I2'
                 FP1 FP2 ?n1 ?n2))
          (efficient_NFA_concatenation (\<alpha>1 ?n1) (\<alpha>2 ?n2))"
         by auto
 
       from this 
       show "invar3
-        (concat_rename_impl_aux c_inter c_nempty s_inter const f it_1 it_2 it_3 Sig1 Sig2 I1 I2 I1'
+        (concat_rename_impl_aux c_inter c_nempty const f it_1 it_2 it_3 I1 I2 I1'
           F1' I2' FP1 FP2 rename1 rename2 f1 f2 n1 n2) \<and>
        NFA_isomorphic_wf
-        (\<alpha>3 (concat_rename_impl_aux c_inter c_nempty s_inter const f it_1 it_2 it_3 Sig1 Sig2 I1 I2
+        (\<alpha>3 (concat_rename_impl_aux c_inter c_nempty const f it_1 it_2 it_3 I1 I2
                I1' F1' I2' FP1 FP2 rename1 rename2 f1 f2 n1 n2))
         (efficient_NFA_rename_concatenation f1 f2 (\<alpha>1' n1) (\<alpha>2' n2))"
         apply (rule_tac conjI)
@@ -3869,13 +3684,13 @@ text \<open> AA1: an automaton
          A: \<Sigma>  \<close> 
 
 definition bool_comb_impl_aux where
-"bool_comb_impl_aux s_inter const f it_1 it_2 Sig1 Sig2 I I' FP FP' =
- (\<lambda> bc AA1 AA2. const f (s_inter (Sig1 AA1) (Sig2 AA2)) (List.product (I AA1) (I' AA2))
+"bool_comb_impl_aux const f it_1 it_2 I I' FP FP' =
+ (\<lambda> bc AA1 AA2. const f (List.product (I AA1) (I' AA2))
   (\<lambda>(q1', q2'). bc (FP AA1 q1') (FP' AA2 q2')) 
     (product_iterator (it_1 AA1) (it_2 AA2)))"
 
 definition nfa_normal where
-"nfa_normal const f I Sig FP it = (\<lambda> bc A. const f (Sig A) (I A) (\<lambda> q. FP q) it)"
+"nfa_normal const f I FP it = (\<lambda> bc A. const f (I A) (\<lambda> q. FP q) it)"
 
 
 
@@ -3886,8 +3701,6 @@ assumes const_OK: "nfa_construct_no_enc_prod \<alpha>3 invar3 const"
     and nfa_1_OK: "nfa \<alpha>1 invar1"
     and nfa_2_OK: "nfa \<alpha>2 invar2"
     and f_inj_on: "\<And>n1 n2. inj_on f (\<Q> (\<alpha>1 n1) \<times> \<Q> (\<alpha>2 n2))"
-    and sig12_inter: "\<And> n1 n2. invar1 n1 \<and> invar2 n2 \<Longrightarrow>
-                           semIs (s_inter (Sig1 n1) (Sig2 n2)) = (\<Sigma> (\<alpha>1 n1) \<inter> \<Sigma> (\<alpha>2 n2))"
     and I1_OK: "\<And>n1. invar1 n1 \<Longrightarrow> distinct (I1 n1) \<and> set (I1 n1) = \<I> (\<alpha>1 n1)" 
     and I2_OK: "\<And>n2. invar2 n2 \<Longrightarrow> distinct (I2 n2) \<and> set (I2 n2) = \<I> (\<alpha>2 n2)"
     and FP1_OK: "\<And>n1 q. invar1 n1 \<Longrightarrow> q \<in> \<Q> (\<alpha>1 n1) \<Longrightarrow> FP1 n1 q \<longleftrightarrow> (q \<in> \<F> (\<alpha>1 n1))"
@@ -3920,7 +3733,7 @@ assumes const_OK: "nfa_construct_no_enc_prod \<alpha>3 invar3 const"
      canonicalIs a \<and> canonicalIs b"
 
 shows "nfa_bool_comb \<alpha>1 invar1 \<alpha>2 invar2 \<alpha>3 invar3
-       (bool_comb_impl_aux s_inter const f it_1 it_2 Sig1 Sig2 I1 I2 FP1 FP2)"
+       (bool_comb_impl_aux const f it_1 it_2 I1 I2 FP1 FP2)"
 proof (intro nfa_bool_comb.intro 
              nfa_1_OK nfa_2_OK 
              nfa_bool_comb_axioms.intro)
@@ -4124,20 +3937,15 @@ proof (intro nfa_bool_comb.intro
         (\<lambda>_ _. True)"
       by simp
   qed 
-  from sig12_inter[of n1 n2] invar_1 invar_2
-  have sig12_inter': "\<Sigma> (bool_comb_NFA bc (\<alpha>1 n1) (\<alpha>2 n2)) = 
-                        semIs (s_inter (Sig1 n1) (Sig2 n2))"
-    unfolding bool_comb_NFA_def
-    by simp
   
   note sem_OK' = sem_OK[of D1 n1 D2 n2, OF \<alpha>1_\<Delta>_eq \<alpha>2_\<Delta>_eq invar_1 invar_2]
   thm nfa_construct_no_enc_prod.nfa_construct_no_enc_correct 
  note construct_correct = 
         nfa_construct_no_enc_prod.nfa_construct_no_enc_correct [OF const_OK
-    AA'_wf f_inj_on' dist_II set_II finite_D sig12_inter'  sem_OK' D_\<A>, OF FP_OK D_it_OK]
-  thus "invar3 (bool_comb_impl_aux s_inter const f it_1 it_2 Sig1 Sig2 I1 I2 FP1 FP2 bc n1 n2) \<and>
+    AA'_wf f_inj_on' dist_II set_II finite_D  sem_OK' D_\<A>, OF FP_OK D_it_OK]
+  thus "invar3 (bool_comb_impl_aux const f it_1 it_2 I1 I2 FP1 FP2 bc n1 n2) \<and>
        NFA_isomorphic_wf
-        (\<alpha>3 (bool_comb_impl_aux s_inter const f it_1 it_2 Sig1 Sig2 I1 I2 FP1 FP2 bc n1 n2))
+        (\<alpha>3 (bool_comb_impl_aux const f it_1 it_2 I1 I2 FP1 FP2 bc n1 n2))
         (efficient_bool_comb_NFA bc (\<alpha>1 n1) (\<alpha>2 n2))" 
     apply (simp_all add: bool_comb_impl_aux_def efficient_bool_comb_NFA_def)
     done
@@ -4160,7 +3968,7 @@ schematic_goal rename_states_code:
 
 fun nfa_construct_reachable where
   "nfa_construct_reachable qm_ops it A = 
-   nfa.NFA_construct_reachable_interval_impl_code qm_ops id (nfa.nfa_alphabet)
+   nfa.NFA_construct_reachable_interval_impl_code qm_ops id
    (s.to_list (nfa.nfa_initial A))
    (\<lambda> q. s.memb q (nfa.nfa_accepting A)) (it (nfa.nfa_trans A))
   "
@@ -4168,17 +3976,16 @@ fun nfa_construct_reachable where
 schematic_goal nfa_construct_reachable_code :
   "nfa_construct_reachable qm_ops it (Q2, D2, I2, F2) = ?XXX1"
 unfolding nfa_construct_reachable.simps 
-            nfa.nfa_selectors_def  snd_conv fst_conv nfa.nfa_alphabet_def
+            nfa.nfa_selectors_def  snd_conv fst_conv
             nfa.NFA_construct_reachable_interval_impl_code_def 
  by (rule refl)+
 
   fun bool_comb_gen_impl where
     "bool_comb_gen_impl qm_ops it_1_nfa it_2_nfa
        A' bc =
-        (bool_comb_impl_aux intersectIs
+        (bool_comb_impl_aux
          (nfa.NFA_construct_reachable_prod_interval_impl_code qm_ops) id 
           (\<lambda>A. it_1_nfa (nfa.nfa_trans A)) (\<lambda>A. it_2_nfa (nfa.nfa_trans A))
-           (nfa.nfa_alphabet) (nfa.nfa_alphabet)
            (\<lambda>A. (s.to_list (nfa.nfa_initial A))) 
             (\<lambda>A. (s.to_list (nfa.nfa_initial A))) 
              (\<lambda>A q. s.memb q (nfa.nfa_accepting A)) 
@@ -4190,7 +3997,6 @@ schematic_goal bool_comb_gen_impl_code :
     bc (Q1, D1, I1, F1) (Q2, D2, I2, F2) = ?XXX1"
   unfolding bool_comb_gen_impl.simps 
             bool_comb_impl_aux_def product_iterator_alt_def
-            nfa.nfa_alphabet_def
             nfa.nfa_selectors_def  snd_conv fst_conv
             nfa.NFA_construct_reachable_prod_interval_impl_code_def 
  by (rule refl)+
@@ -4210,11 +4016,10 @@ schematic_goal bool_comb_impl_code :
 definition (in nfa_dfa_by_lts_interval_defs) nfa_dfa_invar where
      "nfa_dfa_invar n = (nfa.nfa_invar_NFA' n)"
 
-definition (in nfa_dfa_by_lts_interval_defs) nfa_dfa_invar' where
-     "nfa_dfa_invar' n = ((nfa.nfa_invar_NFA' n) \<and> DFA (nfa.nfa_\<alpha> n))"
 
 definition (in nfa_dfa_by_lts_interval_defs) nfa_dfa_\<alpha> where
      "nfa_dfa_\<alpha> n = (nfa.nfa_\<alpha> n)"
+
 
 lemma automaton_by_lts_correct :
   "nfa nfa_dfa_\<alpha> nfa_dfa_invar"
@@ -4223,20 +4028,18 @@ lemma automaton_by_lts_correct :
             nfa.nfa_invar_NFA'_def
   by simp
 
+(*
 lemma automaton_by_lts_correct1 :
   "nfa nfa_dfa_\<alpha> nfa.nfa_invar_DFA"
   unfolding nfa_dfa_\<alpha>_def nfa_dfa_invar_def nfa_def
             nfa.nfa_invar_NFA'_def nfa.nfa_invar_DFA_def
   by simp
-
+*)
 
 lemma bool_comb_gen_impl_correct :
 assumes qm_ops_OK: "StdMap qm_ops"
     and it_1_nfa_OK: "lts_succ_label_it d_nfa.\<alpha> d_nfa.invar it_1_nfa"
     and it_2_nfa_OK: "lts_succ_it d_nfa.\<alpha> d_nfa.invar it_2_nfa" 
-    and sig12_inter: "\<And> n1 n2. nfa.nfa_invar_NFA' n1 \<and> nfa.nfa_invar_NFA' n2 \<Longrightarrow>
-                           canonicalIs (nfa.nfa_alphabet n1) \<and>
-                           canonicalIs (nfa.nfa_alphabet n2)"
     and \<Delta>_\<A>1: "\<And> n1. nfa.nfa_invar_NFA' n1 \<Longrightarrow> 
           \<exists>D1. {(q, semIs a, q')| q a q'. (q, a, q') \<in> D1} = \<Delta> (nfa.nfa_\<alpha> n1) \<and>
                finite D1"
@@ -4314,11 +4117,11 @@ proof (intro nfa_bool_comb_same.intro
         apply (insert \<Delta>_\<A>1 \<Delta>_\<A>2 \<Delta>_it_ok1 \<Delta>_it_ok2 sem_OK)
         apply (simp)
         defer
-        using sig12_inter intersectIs_correct
+        using intersectIs_correct
         by (simp_all add: 
-              nfa.nfa_trans_def nfa.nfa_alphabet_def
+              nfa.nfa_trans_def
               set_iterator_def nfa.nfa_\<alpha>_def nfa.nfa_initial_def
-              s.correct nfa.nfa_invar_NFA'_def sig12_inter
+              s.correct nfa.nfa_invar_NFA'_def
               nfa.nfa_invar_def sem_OK intersectIs_correct)
        
 qed
@@ -4329,9 +4132,6 @@ lemma bool_comb_impl_correct :
   assumes qm_ops_OK: "StdMap qm_ops"
     and it_1_nfa_OK: "lts_succ_label_it d_nfa.\<alpha> d_nfa.invar it_1_nfa"
     and it_2_nfa_OK: "lts_succ_it d_nfa.\<alpha> d_nfa.invar it_2_nfa"
-    and sig12_inter: "\<And> n1 n2. nfa.nfa_invar_NFA' n1 \<and> nfa.nfa_invar_NFA' n2 \<Longrightarrow>
-                           canonicalIs (nfa.nfa_alphabet n1) \<and>
-                           canonicalIs (nfa.nfa_alphabet n2)"
     and \<Delta>_\<A>1: "\<And> n1. nfa.nfa_invar_NFA' n1 \<Longrightarrow> 
           \<exists>D1. {(q, semIs a, q')| q a q'. (q, a, q') \<in> D1} = \<Delta> (nfa.nfa_\<alpha> n1) \<and>
                finite D1"
@@ -4393,18 +4193,17 @@ qed
 
 subsection \<open> concatenation implementation \<close>
 
-
+term concat_impl_aux
 
 fun nfa_concat_gen_impl where
     "nfa_concat_gen_impl qm_ops it_1_nfa it_2_nfa it_3_nfa
        A' =
         (concat_impl_aux 
         (s.inter)
-        (\<lambda> x. \<not> (s.isEmpty x)) (\<lambda> x y. x)
+        (\<lambda> x. \<not> (s.isEmpty x)) 
          (nfa.NFA_construct_reachable_interval_impl_code qm_ops) id         
           (\<lambda>A. it_1_nfa (nfa.nfa_trans A)) (\<lambda>A. it_2_nfa (nfa.nfa_trans A))
            (\<lambda>A B C. it_3_nfa (nfa.nfa_trans A) B C) 
-            (nfa.nfa_alphabet) (nfa.nfa_alphabet)
             (\<lambda>A. (s.to_list (nfa.nfa_initial A))) 
              (\<lambda>A. (s.to_list (nfa.nfa_initial A)))
               (\<lambda>A. ((nfa.nfa_initial A))) 
@@ -4419,7 +4218,7 @@ schematic_goal nfa_concat_gen_impl_code :
   (Q1, D1, I1, F1) (Q2, D2, I2, F2) = ?XXX1"
   unfolding nfa_concat_gen_impl.simps 
             concat_impl_aux_def tri_union_iterator_def
-            nfa.nfa_selectors_def  snd_conv fst_conv nfa.nfa_alphabet_def
+            nfa.nfa_selectors_def  snd_conv fst_conv 
             nfa.NFA_construct_reachable_interval_impl_code_def 
  by (rule refl)+
 
@@ -4442,9 +4241,6 @@ assumes qm_ops_OK: "StdMap qm_ops"
     and it_1_nfa_OK: "lts_succ_label_it d_nfa.\<alpha> d_nfa.invar it_1_nfa"
     and it_2_nfa_OK: "lts_succ_label_it d_nfa.\<alpha> d_nfa.invar it_2_nfa" 
     and it_3_nfa_OK: "lts_connect_it d_nfa.\<alpha> d_nfa.invar s.\<alpha> s.invar it_3_nfa"
-    and \<Sigma>eq:  "\<And>n.
-       nfa.nfa_invar_NFA' n \<Longrightarrow>
-       semIs (nfa.nfa_alphabet n) = \<Sigma> (nfa.nfa_\<alpha> n)"
     and \<Delta>_\<A>1: "\<And> n1. nfa.nfa_invar_NFA' n1 \<Longrightarrow> 
           \<exists>D1. {(q, semIs a, q')| q a q'. (q, a, q') \<in> D1} = \<Delta> (nfa.nfa_\<alpha> n1) \<and>
                finite D1"
@@ -4503,11 +4299,6 @@ proof (intro nfa_concat_same.intro
   fix n1 n2
   assume invar_1: "nfa_dfa_invar n1"
      and invar_2: "nfa_dfa_invar n2"
-     and eq\<Sigma>: "\<Sigma> (nfa_dfa_\<alpha> n1) = \<Sigma> (nfa_dfa_\<alpha> n2)"
-
-  from this
-  have semIeq: "semIs (nfa.nfa_alphabet n1) = semIs (nfa.nfa_alphabet n2)"
-    by (simp add: \<Sigma>eq nfa_dfa_\<alpha>_def nfa_dfa_invar_def)
 
   note const_nfa_OK = 
       nfa.NFA_construct_reachable_impl_code_correct_no_enc [OF qm_ops_OK]
@@ -4536,8 +4327,8 @@ proof (intro nfa_concat_same.intro
       show ?thesis 
         apply (simp add: nfa_dfa_invar_def  nfa_dfa_\<alpha>_def)
         apply (rule_tac correct_nfa'')
-        apply (simp_all add: \<Sigma>eq semIeq)
-        apply (insert \<Delta>_\<A>1 \<Delta>_\<A>2 \<Delta>_it_ok1 \<Delta>_it_ok2 \<Delta>_it_ok3 Q1Q2_empty semIeq inj_12)  
+        apply (simp_all)
+        apply (insert \<Delta>_\<A>1 \<Delta>_\<A>2 \<Delta>_it_ok1 \<Delta>_it_ok2 \<Delta>_it_ok3 Q1Q2_empty  inj_12)  
         apply auto
         apply (simp_all add: 
               nfa.nfa_trans_def 
@@ -4555,92 +4346,36 @@ proof (intro nfa_concat_same.intro
           from p1 this show "False"
             by blast
         }
-        {
-        fix q a aa ab b ac ad ae ba D1 af bc ag bb
-        assume 
-           p2: "{(q, semIs a, q') |q a q'. (q, a, q') \<in> D1} =
-       nfa.interval_to_set ` d_nfa.\<alpha> ab" and
-           p3: "finite D1" and
-           p4: " s.invar a \<and>
-       d_nfa.invar ab \<and>
-       s.invar ac \<and>
-       s.invar b \<and>
-       NFA_set_interval.NFA
-        \<lparr>NFA_set_interval.NFA_rec.\<Q> = s.\<alpha> a, \<Sigma> = semIs aa,
-           \<Delta> = nfa.interval_to_set ` d_nfa.\<alpha> ab, \<I> = s.\<alpha> ac, \<F> = s.\<alpha> b\<rparr>" and
-        p5: "s.invar ad \<and>
-       d_nfa.invar af \<and>
-       s.invar ag \<and>
-       s.invar ba \<and>
-       NFA_set_interval.NFA
-        \<lparr>NFA_set_interval.NFA_rec.\<Q> = s.\<alpha> ad, \<Sigma> = semIs ae,
-           \<Delta> = nfa.interval_to_set ` d_nfa.\<alpha> af, \<I> = s.\<alpha> ag, \<F> = s.\<alpha> ba\<rparr>" and
-           p1: "(\<And>D1 a aa ab ac b ad ae af ag ba q.
-           {(q, semIs a, q') |q a q'. (q, a, q') \<in> D1} =
-           nfa.interval_to_set ` d_nfa.\<alpha> ab \<Longrightarrow>
-           finite D1 \<Longrightarrow>
-           s.invar a \<and>
-           d_nfa.invar ab \<and>
-           s.invar ac \<and>
-           s.invar b \<and>
-           NFA_set_interval.NFA
-            \<lparr>NFA_set_interval.NFA_rec.\<Q> = s.\<alpha> a, \<Sigma> = semIs aa,
-               \<Delta> = nfa.interval_to_set ` d_nfa.\<alpha> ab, \<I> = s.\<alpha> ac, \<F> = s.\<alpha> b\<rparr> \<Longrightarrow>
-           s.invar ad \<and>
-           d_nfa.invar af \<and>
-           s.invar ag \<and>
-           s.invar ba \<and>
-           NFA_set_interval.NFA
-            \<lparr>NFA_set_interval.NFA_rec.\<Q> = s.\<alpha> ad, \<Sigma> = semIs ae,
-               \<Delta> = nfa.interval_to_set ` d_nfa.\<alpha> af, \<I> = s.\<alpha> ag, \<F> = s.\<alpha> ba\<rparr> \<Longrightarrow>
-           set_iterator_genord (it_3_nfa ab b ag q)
-            {(a, q'). \<exists>q''. (q, a, q'') \<in> D1 \<and> q'' \<in> s.\<alpha> b \<and> q' \<in> s.\<alpha> ag}
-            (\<lambda>_ _. True))"   
-        from p1[OF p2 p3 p4 p5, of q] 
-        have "set_iterator_genord (it_3_nfa ab b ag q)
-   {(a, q'). \<exists>q''. (q, a, q'') \<in> D1 \<and> q'' \<in> s.\<alpha> b \<and> q' \<in> s.\<alpha> ag} (\<lambda>_ _. True)" by auto
-        from this show "set_iterator_genord (it_3_nfa ab b ag q)
-        {uu. \<exists>a q'' q'. uu = (a, q') \<and> (q, a, q'') \<in> D1 \<and> q'' \<in> s.\<alpha> b \<and> q' \<in> s.\<alpha> ag}
-        (\<lambda>_ _. True)"
-         apply (subgoal_tac "{uu.
-         \<exists>a  q'' q'.
-            uu = (a, q') \<and> (q, a, q'') \<in> D1 \<and> q'' \<in> s.\<alpha> b \<and> q' \<in> s.\<alpha> ag} = 
-          {(a, q'). \<exists>q''. (q, a, q'') \<in> D1 \<and> q'' \<in> s.\<alpha> b \<and> q' \<in> s.\<alpha> ag}")
-           apply simp
-          by fastforce
-      }
-      {
+ {
         fix a aa ab ac b ad ae af ag ba q
         assume p1: "s.invar a \<and>
        d_nfa.invar ab \<and>
        s.invar ac \<and>
        s.invar b \<and>
        NFA_set_interval.NFA
-        \<lparr>NFA_set_interval.NFA_rec.\<Q> = s.\<alpha> a, \<Sigma> = semIs aa,
+        \<lparr>NFA_set_interval.NFA_rec.\<Q> = s.\<alpha> a, 
            \<Delta> = nfa.interval_to_set ` d_nfa.\<alpha> ab, \<I> = s.\<alpha> ac, \<F> = s.\<alpha> b\<rparr>"
            and p2: "s.invar ad \<and>
        d_nfa.invar af \<and>
        s.invar ag \<and>
        s.invar ba \<and>
        NFA_set_interval.NFA
-        \<lparr>NFA_set_interval.NFA_rec.\<Q> = s.\<alpha> ad, \<Sigma> = semIs ae,
+        \<lparr>NFA_set_interval.NFA_rec.\<Q> = s.\<alpha> ad,
            \<Delta> = nfa.interval_to_set ` d_nfa.\<alpha> af, \<I> = s.\<alpha> ag, \<F> = s.\<alpha> ba\<rparr>"
-          and p3: "(\<And>a aa ab ac b ad ae af ag ba.
+          and p3: "(\<And>a aa ab b ac ad ae ba.
            s.invar a \<and>
-           d_nfa.invar ab \<and>
-           s.invar ac \<and>
+           d_nfa.invar aa \<and>
+           s.invar ab \<and>
            s.invar b \<and>
-           NFA_set_interval.NFA
-            \<lparr>NFA_set_interval.NFA_rec.\<Q> = s.\<alpha> a, \<Sigma> = semIs aa,
-               \<Delta> = nfa.interval_to_set ` d_nfa.\<alpha> ab, \<I> = s.\<alpha> ac, \<F> = s.\<alpha> b\<rparr> \<Longrightarrow>
-           s.invar ad \<and>
-           d_nfa.invar af \<and>
-           s.invar ag \<and>
+           NFA \<lparr>\<Q> = s.\<alpha> a, \<Delta> = nfa.interval_to_set ` d_nfa.\<alpha> aa, \<I> = s.\<alpha> ab,
+                  \<F> = s.\<alpha> b\<rparr> \<Longrightarrow>
+           s.invar ac \<and>
+           d_nfa.invar ad \<and>
+           s.invar ae \<and>
            s.invar ba \<and>
-           NFA_set_interval.NFA
-            \<lparr>NFA_set_interval.NFA_rec.\<Q> = s.\<alpha> ad, \<Sigma> = semIs ae,
-               \<Delta> = nfa.interval_to_set ` d_nfa.\<alpha> af, \<I> = s.\<alpha> ag, \<F> = s.\<alpha> ba\<rparr> \<Longrightarrow>
-           s.\<alpha> a \<inter> s.\<alpha> ad = {})"
+           NFA \<lparr>\<Q> = s.\<alpha> ac, \<Delta> = nfa.interval_to_set ` d_nfa.\<alpha> ad, \<I> = s.\<alpha> ae,
+                  \<F> = s.\<alpha> ba\<rparr> \<Longrightarrow>
+           s.\<alpha> a \<inter> s.\<alpha> ac = {})"
            and p4: "q \<in> s.\<alpha> ba" 
            and p5: "q \<in> s.\<alpha> a"
         from p2 have con1: "s.\<alpha> ba \<subseteq> s.\<alpha> ad"  
@@ -4654,6 +4389,59 @@ proof (intro nfa_concat_same.intro
         from this p5 have "q \<notin> s.\<alpha> ba" by auto
         from this p4 show False by auto 
       }
+        {
+        fix q a aa ab b ac ad ae ba D1 af bc ag bb
+        assume 
+           p2: "{(q, semIs a, q') |q a q'. (q, a, q') \<in> D1} =
+       nfa.interval_to_set ` d_nfa.\<alpha> ab" and
+           p3: "finite D1" and
+           p4: " s.invar a \<and>
+       d_nfa.invar ab \<and>
+       s.invar ac \<and>
+       s.invar b \<and>
+       NFA_set_interval.NFA
+        \<lparr>NFA_set_interval.NFA_rec.\<Q> = s.\<alpha> a, 
+           \<Delta> = nfa.interval_to_set ` d_nfa.\<alpha> ab, \<I> = s.\<alpha> ac, \<F> = s.\<alpha> b\<rparr>" and
+        p5: "s.invar ad \<and>
+       d_nfa.invar af \<and>
+       s.invar ag \<and>
+       s.invar ba \<and>
+       NFA_set_interval.NFA
+        \<lparr>NFA_set_interval.NFA_rec.\<Q> = s.\<alpha> ad, 
+           \<Delta> = nfa.interval_to_set ` d_nfa.\<alpha> af, \<I> = s.\<alpha> ag, \<F> = s.\<alpha> ba\<rparr>" and
+           p1: "\<And>D1 a aa ab b ac ad ae ba q.
+           {(q, semIs a, q') |q a q'. (q, a, q') \<in> D1} =
+           nfa.interval_to_set ` d_nfa.\<alpha> aa \<Longrightarrow>
+           finite D1 \<Longrightarrow>
+           s.invar a \<and>
+           d_nfa.invar aa \<and>
+           s.invar ab \<and>
+           s.invar b \<and>
+           NFA \<lparr>\<Q> = s.\<alpha> a, \<Delta> = nfa.interval_to_set ` d_nfa.\<alpha> aa, \<I> = s.\<alpha> ab,
+                  \<F> = s.\<alpha> b\<rparr> \<Longrightarrow>
+           s.invar ac \<and>
+           d_nfa.invar ad \<and>
+           s.invar ae \<and>
+           s.invar ba \<and>
+           NFA \<lparr>\<Q> = s.\<alpha> ac, \<Delta> = nfa.interval_to_set ` d_nfa.\<alpha> ad, \<I> = s.\<alpha> ae,
+                  \<F> = s.\<alpha> ba\<rparr> \<Longrightarrow>
+           set_iterator_genord (it_3_nfa aa b ae q)
+            {(a, q'). \<exists>q''. (q, a, q'') \<in> D1 \<and> q'' \<in> s.\<alpha> b \<and> q' \<in> s.\<alpha> ae}
+            (\<lambda>_ _. True)"   
+        from p1[OF p2 p3 p4 p5, of q] 
+        have "set_iterator_genord (it_3_nfa ab b ag q)
+   {(a, q'). \<exists>q''. (q, a, q'') \<in> D1 \<and> q'' \<in> s.\<alpha> b \<and> q' \<in> s.\<alpha> ag} (\<lambda>_ _. True)" by auto
+        from this show "set_iterator_genord (it_3_nfa ab b ag q)
+        {uu. \<exists>a q'' q'. uu = (a, q') \<and> (q, a, q'') \<in> D1 \<and> q'' \<in> s.\<alpha> b \<and> q' \<in> s.\<alpha> ag}
+        (\<lambda>_ _. True)"
+         apply (subgoal_tac "{uu.
+         \<exists>a  q'' q'.
+            uu = (a, q') \<and> (q, a, q'') \<in> D1 \<and> q'' \<in> s.\<alpha> b \<and> q' \<in> s.\<alpha> ag} = 
+          {(a, q'). \<exists>q''. (q, a, q'') \<in> D1 \<and> q'' \<in> s.\<alpha> b \<and> q' \<in> s.\<alpha> ag}")
+           apply simp
+          by fastforce
+      }
+     
     qed 
   qed 
 qed 
@@ -4665,9 +4453,6 @@ assumes qm_ops_OK: "StdMap qm_ops"
     and it_1_nfa_OK: "lts_succ_label_it d_nfa.\<alpha> d_nfa.invar it_1_nfa"
     and it_2_nfa_OK: "lts_succ_label_it d_nfa.\<alpha> d_nfa.invar it_2_nfa"
     and it_3_nfa_OK: "lts_connect_it d_nfa.\<alpha> d_nfa.invar s.\<alpha> s.invar it_3_nfa"
-    and \<Sigma>eq:  "\<And>n.
-       nfa.nfa_invar_NFA' n \<Longrightarrow>
-       semIs (nfa.nfa_alphabet n) = \<Sigma> (nfa.nfa_\<alpha> n)"
     and \<Delta>_\<A>1: "\<And> n1. nfa.nfa_invar_NFA' n1 \<Longrightarrow> 
           \<exists>D1. {(q, semIs a, q')| q a q'. (q, a, q') \<in> D1} = \<Delta> (nfa.nfa_\<alpha> n1) \<and>
                finite D1"
@@ -4726,8 +4511,7 @@ proof (intro nfa_concat_same.intro
   assume invar_1: "nfa_dfa_invar n1"
      and invar_2: "nfa_dfa_invar n2"
      and inter_emp: "\<Q> (nfa_dfa_\<alpha> n1) \<inter> \<Q> (nfa_dfa_\<alpha> n2) = {}"
-     and eq\<Sigma>': "\<Sigma> (nfa_dfa_\<alpha> n1) = \<Sigma> (nfa_dfa_\<alpha> n2)"
-    
+   
 
   from nfa_concat_gen_impl_correct [OF assms]
   have "nfa_concat_same nfa_dfa_\<alpha> nfa_dfa_invar
@@ -4736,7 +4520,7 @@ proof (intro nfa_concat_same.intro
   note gen_correct = nfa_concat.nfa_concat_correct_aux 
       [OF this[unfolded nfa_concat_same_def],
     OF invar_1 invar_2]
- from gen_correct inter_emp  eq\<Sigma>'
+ from gen_correct inter_emp
   show "nfa_dfa_invar (nfa_concat_impl qm_ops it_1_nfa it_2_nfa it_3_nfa n1 n2) \<and>
        NFA_isomorphic_wf
         (nfa_dfa_\<alpha> (nfa_concat_impl qm_ops it_1_nfa it_2_nfa it_3_nfa n1 n2))
@@ -4749,15 +4533,14 @@ qed
 fun nfa_concat_rename_impl where
     "nfa_concat_rename_impl qm_ops it_1_nfa it_2_nfa it_3_nfa
       im1 im2 f1 f2 
-        (A1::'q_set \<times> ('a \<times> 'a) list\<times> 'd_nfa \<times> 'q_set \<times> 'q_set) A2 =
+        (A1::'q_set \<times> 'd_nfa \<times> 'q_set \<times> 'q_set) A2 =
         (concat_rename_impl_aux 
         (ss.inter)
-        (\<lambda> x. \<not> (ss.isEmpty x)) (\<lambda> x y. x)
+        (\<lambda> x. \<not> (ss.isEmpty x))
          (nfa.NFA_construct_reachable_interval_impl_code qm_ops) id 
           (\<lambda>A. it_1_nfa (nfa.nfa_transp A)) 
           (\<lambda>A. it_2_nfa (nfa.nfa_transp A))
            (\<lambda>A B C. it_3_nfa (nfa.nfa_transp A) B C)
-           (nfa.nfa_alphap) (nfa.nfa_alphap)
             (\<lambda>A. (ss.to_list (nfa.nfa_initialp A))) 
              (\<lambda>A. (ss.to_list (nfa.nfa_initialp A)))
               (\<lambda>A. ((nfa.nfa_initialp A))) 
@@ -4784,16 +4567,15 @@ schematic_goal nfa_concat_impl_rename_code:
 fun interval_to_set  where
     "interval_to_set (q, s, q') = (q, semIs s, q')"
 
-definition nfa_\<alpha>p :: "'qq_set \<times> ('a \<times> 'a) list \<times> 'dd_nfa \<times> 'qq_set \<times> 'qq_set \<Rightarrow> ('q\<times>'q, 'a) NFA_rec" 
+definition nfa_\<alpha>p :: "'qq_set \<times> 'dd_nfa \<times> 'qq_set \<times> 'qq_set \<Rightarrow> ('q\<times>'q, 'a) NFA_rec" 
   where
   "nfa_\<alpha>p A =
    \<lparr> \<Q> = ss.\<alpha> (nfa.nfa_statep A), 
-     \<Sigma> = semIs (nfa.nfa_alphap A),
      \<Delta> = interval_to_set ` (dd_nfa.\<alpha> (nfa.nfa_transp A)),
      \<I> = ss.\<alpha> (nfa.nfa_initialp A), 
      \<F> = ss.\<alpha> (nfa.nfa_acceptingp A) \<rparr>"
 
-definition nfa_invarp :: "'qq_set \<times> ('a \<times> 'a) list \<times> 'dd_nfa \<times> 
+definition nfa_invarp :: "'qq_set \<times>  'dd_nfa \<times> 
                           'qq_set \<times> 'qq_set \<Rightarrow> bool" where
   "nfa_invarp A =
    (ss.invar (nfa.nfa_statep A) \<and>
@@ -4832,7 +4614,7 @@ proof (intro nfa_rename_states.intro
   }
   fix n f
   assume invar: " nfa.nfa_invar_NFA n"
-  obtain QL SigL DL IL FL where n_eq[simp]: "n = (QL, SigL, DL, IL, FL)" 
+  obtain QL DL IL FL where n_eq[simp]: "n = (QL, DL, IL, FL)" 
         by (cases n, blast)
 
 
@@ -4872,7 +4654,6 @@ interpret im2: lts_image d_nfa.\<alpha> d_nfa.invar dd_nfa.\<alpha> dd_nfa.invar
     apply (auto)
     apply fastforce
     apply fastforce
-      apply fastforce
     defer
   proof -
     {
@@ -4936,7 +4717,7 @@ proof (intro nfa_rename_states.intro
   }
   fix n f
   assume invar: " nfa.nfa_invar_NFA' n"
-  obtain QL SigL DL IL FL where n_eq[simp]: "n = (QL, SigL, DL, IL, FL)" 
+  obtain QL DL IL FL where n_eq[simp]: "n = (QL, DL, IL, FL)" 
         by (cases n, blast)
 
 
@@ -4968,15 +4749,13 @@ interpret im2: lts_image d_nfa.\<alpha> d_nfa.invar dd_nfa.\<alpha> dd_nfa.invar
                      nfa_invarp_def nfa_\<alpha>p_def
                      semI_def wf NFA_def prod.inject
                      interval_to_set.simps)
-    apply (simp add: semI_def 
-                          interval_to_set.simps)
+    apply (simp add: semI_def)
     
     apply (simp add: image_iff)
     apply (simp add: set_eq_iff)    
     apply (auto)
     apply fastforce
     apply fastforce
-      apply fastforce
     defer
   proof -
     {
@@ -5034,9 +4813,6 @@ lemma nfa_concat_rename_impl_correct :
     and it_1_nfa_OK: "lts_succ_label_it dd_nfa.\<alpha> dd_nfa.invar it_1_nfa"
     and it_2_nfa_OK: "lts_succ_label_it dd_nfa.\<alpha> dd_nfa.invar it_2_nfa"
     and it_3_nfa_OK: "lts_connect_it dd_nfa.\<alpha> dd_nfa.invar ss.\<alpha> ss.invar it_3_nfa"
-    and \<Sigma>eq:  "\<And>n.
-       nfa.nfa_invar_NFA n \<Longrightarrow>
-       semIs (nfa.nfa_alphabet n) = \<Sigma> (nfa.nfa_\<alpha> n)"
     and \<Delta>_\<A>1: "\<And> n1. nfa_invarp_NFA n1 \<Longrightarrow> 
           \<exists>D1. {(q, semIs a, q')| q a q'. (q, a, q') \<in> D1} = 
                 \<Delta> (nfa_\<alpha>p n1) \<and>
@@ -5103,7 +4879,6 @@ proof (intro nfa_concat_rename_same.intro
      and   inj_1: "inj_on f1 (\<Q> (nfa_dfa_\<alpha> n1))"
      and   inj_2: "inj_on f2 (\<Q> (nfa_dfa_\<alpha> n2))"
      and   empty: "f1 ` \<Q> (nfa_dfa_\<alpha> n1) \<inter> f2 ` \<Q> (nfa_dfa_\<alpha> n2) = {}"
-     and eq\<Sigma>': "\<Sigma> (nfa_dfa_\<alpha> n1) = \<Sigma> (nfa_dfa_\<alpha> n2)"
 
   note const_nfa_OK = 
       nfa.NFA_construct_reachable_impl_code_correct_no_enc [OF qm_ops_OK]
@@ -5198,11 +4973,11 @@ proof (intro nfa_concat_rename_same.intro
               nfa.nfa_transp_def 
               set_iterator_def (*nfa.nfa_\<alpha>_def*)
               s.correct nfa.nfa_invar_NFA'_def inj_12
-              nfa.nfa_invar_def c3 ss.correct \<Sigma>eq eq\<Sigma>')
-        using nfa.nfa_alphap_def nfa_\<alpha>p_def
+              nfa.nfa_invar_def c3 ss.correct)
+        using nfa_\<alpha>p_def
         apply simp
         using nfa_invarp_NFA_def ss.correct
-              nfa_\<alpha>p_def nfa_invarp_def \<Sigma>eq eq\<Sigma>'
+              nfa_\<alpha>p_def nfa_invarp_def
                      apply auto[4]
         defer
         using \<Delta>_\<A>1 \<Delta>_\<A>1 apply auto[2]     
@@ -5212,7 +4987,6 @@ proof (intro nfa_concat_rename_same.intro
 
         using inj_f2
         using inj_2 nfa_dfa_\<alpha>_def apply auto[1]
-        using eq\<Sigma>' nfa_dfa_\<alpha>_def apply simp
       proof -
         {
           fix n1a n2a q
@@ -5253,9 +5027,8 @@ proof (intro nfa_concat_rename_same.intro
         }   
         {
           fix q n1a D1
-          assume pb1: "{((a, b), semIs aa, ab, ba) 
-                        |a b aa ab ba. ((a, b), aa, ab, ba) \<in> D1} =
-                         NFA_rec.\<Delta> (nfa_\<alpha>p n1a)"
+          assume pb1: "{((a, b), semIs aa, ab, ba) |a b aa ab ba. ((a, b), aa, ab, ba) \<in> D1} =
+       \<Delta> (nfa_\<alpha>p n1a)"
              and pb2: "finite D1 "
              and pb3: "nfa_invarp_NFA n1a"
              and pb4: "(\<And>n1 n2. f1 ` \<Q> (nfa.nfa_\<alpha> n1) \<inter> f2 ` \<Q> (nfa.nfa_\<alpha> n2) = {})"
@@ -5268,7 +5041,7 @@ proof (intro nfa_concat_rename_same.intro
             by blast
 
           from this \<Delta>_it_ok1[OF pb1' pb2 pb3, of q] nfa.nfa_transp_def[of n1a]
-          show "set_iterator_genord (it_1_nfa (fst (snd (snd n1a))) q) {(a, q'). (q, a, q') \<in> D1}
+          show "set_iterator_genord (it_1_nfa (fst (snd n1a)) q) {(a, q'). (q, a, q') \<in> D1}
                (\<lambda>_ _. True)"
             by auto
         }
@@ -5289,7 +5062,7 @@ proof (intro nfa_concat_rename_same.intro
             by blast
 
           from this \<Delta>_it_ok2[OF pb1' pb2 pb3, of q] nfa.nfa_transp_def[of n2a]
-          show "set_iterator_genord (it_2_nfa (fst (snd (snd n2a))) q) 
+          show "set_iterator_genord (it_2_nfa (fst (snd n2a)) q) 
                 {(a, q'). (q, a, q') \<in> D2}
                (\<lambda>_ _. True)"
             by auto
@@ -5332,7 +5105,7 @@ proof (intro nfa_concat_rename_same.intro
 
           from this \<Delta>_it_ok3[OF pb1' pb2 pb3 pb5, of q] nfa.nfa_transp_def[of n1a]
           show "set_iterator_genord
-        (it_3_nfa (fst (snd (snd n1a))) (nfa.nfa_acceptingp n1a) 
+        (it_3_nfa (fst (snd n1a)) (nfa.nfa_acceptingp n1a) 
                   (nfa.nfa_initialp n2a) q)
         {uu.
          \<exists>a aa b ab ba.
@@ -5360,7 +5133,7 @@ definition nfa_construct_interval where
 
 
 schematic_goal nfa_construct_interval_code :
-     "nfa_construct_interval (QL, SigL, DL, IL, FL) = ?code_nfa"
+     "nfa_construct_interval (QL, DL, IL, FL) = ?code_nfa"
   unfolding nfa_construct_interval_def nfa.nfa_construct_interval.simps 
               nfa.nfa_construct_interval_aux_def split
     by (rule refl)+
@@ -5376,12 +5149,12 @@ lemma nfa_construct_interval_correct :
     by auto
 
 definition nfa_construct_reachable_interval where
-   "nfa_construct_reachable_interval qm_ops f Sig I FP D_it =
-    nfa.NFA_construct_reachable_interval_impl_code qm_ops f Sig I FP D_it"
+   "nfa_construct_reachable_interval qm_ops f I FP D_it =
+    nfa.NFA_construct_reachable_interval_impl_code qm_ops f I FP D_it"
 
 
 schematic_goal nfa_construct_reachable_interval_code :
-  "nfa_construct_reachable_interval qm_ops f Sig I FP D_it = ?code"
+  "nfa_construct_reachable_interval qm_ops f I FP D_it = ?code"
 unfolding nfa_construct_reachable_interval_def
           nfa.NFA_construct_reachable_interval_impl_code_def
   by (rule refl)
@@ -5399,8 +5172,8 @@ lemma nfa_construct_reachable_interval_correct :
                 automaton_by_lts_correct nfa_dfa_invar_def nfa_dfa_\<alpha>_def)
 
 definition nfa_construct_reachable_prod_interval where
-   "nfa_construct_reachable_prod_interval qm_ops f Sig I FP D_it =
-    nfa.NFA_construct_reachable_prod_interval_impl_code qm_ops f Sig I FP D_it"
+   "nfa_construct_reachable_prod_interval qm_ops f I FP D_it =
+    nfa.NFA_construct_reachable_prod_interval_impl_code qm_ops f I FP D_it"
 
 
 schematic_goal nfa_construct_reachable_prod_interval_code :
@@ -5429,7 +5202,7 @@ definition nfa_destruct where
 
 thm nfa.nfa_destruct.simps
 schematic_goal nfa_destruct_code :
-  "nfa_destruct (Q, Sig, D, I, F) = ?code"
+  "nfa_destruct (Q, D, I, F) = ?code"
   unfolding nfa_destruct_def 
   unfolding  nfa.nfa_destruct.simps
   by (rule refl)+
@@ -5563,6 +5336,7 @@ proof -
     by (smt IntD2 domIff inj_on_def option.inject prod.inject)
 qed
 
+(*
 definition determinise_impl_aux where
 "determinise_impl_aux const s_ops ff it_A it_D it_S I A FP =
  (\<lambda>AA. const (ff AA) (A AA) [I AA] 
@@ -6047,7 +5821,7 @@ proof (intro nfa_determinise.intro nfa_OK dfa_by_map_correct2 nfa_determinise_ax
   qed
 qed
 
-
+*)
 definition set_encode_rename :: "('a \<Rightarrow> nat) \<Rightarrow> 'a set \<Rightarrow> nat" where
   "set_encode_rename f S = set_encode (f ` S)"
 
@@ -6243,6 +6017,7 @@ qed
 context nfa_dfa_by_lts_interval_defs
 begin
 
+(*
 definition determinise_impl where
    "determinise_impl qm_ops m_ops 
           it_S it_S2 it_q it_A it_D_nfa  n =  
@@ -6286,13 +6061,13 @@ schematic_goal determinise_impl_code':
 
 term List.foldr
 term nfa.nfa_tranlabel
-
+*)
 (*
 fun nfa_tranlabel :: "('q \<times> ('a \<times> 'a) list \<times> 'q) list \<Rightarrow> 'ai_set" where
     "nfa_tranlabel [] = lt.empty ()"
   | "nfa_tranlabel (a # l) = lt.ins (fst (snd a)) (nfa_tranlabel l)"
 *)
-
+(*
 lemma nfa_tranlabel_code':
   shows "nfa.nfa_tranlabel ts = 
         (List.foldr (\<lambda> e si. lt.ins (fst (snd e)) si) ts (lt.empty ()))"
@@ -6527,7 +6302,8 @@ proof -
   qed
 qed
 
-
+*)
+(*
 lemma determinise_impl_correct :
 assumes it_S_OK: "set_iteratei  s.\<alpha> s.invar it_S"
     and it_S2_OK: "set_iteratei  s.\<alpha> s.invar it_S2"
@@ -6642,7 +6418,9 @@ proof (intro nfa_determinise.intro automaton_by_lts_correct1
   qed
 qed
 end
+*)
 
+(*
 subsection \<open> Complement \<close>
 context automaton_by_lts_interval_defs 
 begin
@@ -6681,7 +6459,9 @@ proof (intro nfa_complement.intro nfa_complement_axioms.intro)
 qed
 
 end
+*)
 
+(*
 context nfa_dfa_by_lts_interval_defs 
 begin
 
@@ -6709,6 +6489,9 @@ lemma complement_impl_correct :
 
 
 end
+
+*)
+end
 subsection \<open> union \<close>
 
 context nfa_dfa_by_lts_interval_defs 
@@ -6716,13 +6499,10 @@ begin
 definition nfa_union_imp where
   "nfa_union_imp n1 n2 =
           (s.union (nfa.nfa_states n1) (nfa.nfa_states n2),
-           nfa.nfa_alphabet n1,
            d_nfa.union (nfa.nfa_trans n1) (nfa.nfa_trans n2),
            s.union (nfa.nfa_initial n1) (nfa.nfa_initial n2),
            s.union (nfa.nfa_accepting n1) (nfa.nfa_accepting n2)
        )"
-
-thm rename_states_impl_correct'
 
 lemma union_rename_impl_aux_correct:
   shows "nfa_union nfa.nfa_\<alpha> nfa.nfa_invar_NFA nfa.nfa_\<alpha> nfa.nfa_invar_NFA
@@ -6741,8 +6521,7 @@ proof -
      and invarn2: "nfa.nfa_invar_NFA n2"
      and empty: "\<Q> (nfa.nfa_\<alpha> n1) \<inter>
                  \<Q> (nfa.nfa_\<alpha> n2) = {}"
-     and \<Sigma>eq: "\<Sigma> (nfa.nfa_\<alpha> n1) = \<Sigma> (nfa.nfa_\<alpha> n2)"
-
+ 
   from invarn1 nfa.nfa_invar_NFA_def[of n1] nfa.nfa_invar_def[of n1]
        invarn2 nfa.nfa_invar_NFA_def[of n2] nfa.nfa_invar_def[of n2]
        s.correct
@@ -6750,16 +6529,12 @@ proof -
             s.\<alpha> (nfa.nfa_states n1) \<union> s.\<alpha> (nfa.nfa_states n2)"
     by auto
 
-  obtain Q1 S1 D1 I1 F1 where n1_def: "n1 = (Q1, S1, D1, I1, F1)"
-    using prod_cases5 by blast
+  obtain Q1 D1 I1 F1 where n1_def: "n1 = (Q1, D1, I1, F1)"
+    using prod_cases4 by blast
 
-  obtain Q2 S2 D2 I2 F2 where n2_def: "n2 = (Q2, S2, D2, I2, F2)"
-    using prod_cases5 by blast
+  obtain Q2 D2 I2 F2 where n2_def: "n2 = (Q2, D2, I2, F2)"
+    using prod_cases4 by blast
 
-  from \<Sigma>eq nfa.nfa_alphabet_def n1_def n2_def nfa.nfa_\<alpha>_def
-  have c2: "semIs (nfa.nfa_alphabet n1) = 
-            semIs (nfa.nfa_alphabet n1) \<union> semIs (nfa.nfa_alphabet n2)"
-    by simp
 
   from invarn1 nfa.nfa_invar_NFA_def[of n1] nfa.nfa_invar_def[of n1]
        invarn2 nfa.nfa_invar_NFA_def[of n2] nfa.nfa_invar_def[of n2]
@@ -6790,14 +6565,12 @@ proof -
 
   have c6: "inj_on id (s.\<alpha> (nfa.nfa_states n1) \<union> s.\<alpha> (nfa.nfa_states n2)) \<and>
         \<lparr>NFA_set_interval.NFA_rec.\<Q> = s.\<alpha> (nfa.nfa_states n1) \<union> s.\<alpha> (nfa.nfa_states n2),
-           \<Sigma> = semIs (nfa.nfa_alphabet n1),
-           \<Delta> = nfa.interval_to_set ` d_nfa.\<alpha> (nfa.nfa_trans n1) \<union>
+          \<Delta> = nfa.interval_to_set ` d_nfa.\<alpha> (nfa.nfa_trans n1) \<union>
                 nfa.interval_to_set ` d_nfa.\<alpha> (nfa.nfa_trans n2),
            \<I> = s.\<alpha> (nfa.nfa_initial n1) \<union> s.\<alpha> (nfa.nfa_initial n2),
            \<F> = s.\<alpha> (nfa.nfa_accepting n1) \<union> s.\<alpha> (nfa.nfa_accepting n2)\<rparr> =
         NFA_set_interval.NFA_rename_states
          \<lparr>NFA_set_interval.NFA_rec.\<Q> = s.\<alpha> (nfa.nfa_states n1) \<union> s.\<alpha> (nfa.nfa_states n2),
-            \<Sigma> = semIs (nfa.nfa_alphabet n1),
             \<Delta> = nfa.interval_to_set ` d_nfa.\<alpha> (nfa.nfa_trans n1) \<union>
                  nfa.interval_to_set ` d_nfa.\<alpha> (nfa.nfa_trans n2),
             \<I> = s.\<alpha> (nfa.nfa_initial n1) \<union> s.\<alpha> (nfa.nfa_initial n2),
@@ -6809,7 +6582,7 @@ proof -
        NFA_def[of "nfa.nfa_\<alpha> n1"]  
   have t1: 
       "((\<forall>q \<sigma> q'. (q, \<sigma>, q') \<in> \<Delta> (nfa.nfa_\<alpha> n1) \<longrightarrow> 
-                q \<in> \<Q> (nfa.nfa_\<alpha> n1) \<and> \<sigma> \<subseteq> \<Sigma> (nfa.nfa_\<alpha> n1) \<and> q' \<in> \<Q> (nfa.nfa_\<alpha> n1)) \<and>
+                q \<in> \<Q> (nfa.nfa_\<alpha> n1) \<and> q' \<in> \<Q> (nfa.nfa_\<alpha> n1)) \<and>
         \<I> (nfa.nfa_\<alpha> n1) \<subseteq> \<Q> (nfa.nfa_\<alpha> n1)) \<and> 
         \<F> (nfa.nfa_\<alpha> n1) \<subseteq> \<Q> (nfa.nfa_\<alpha> n1) \<and>
         finite (\<Q> (nfa.nfa_\<alpha> n1))"
@@ -6820,7 +6593,7 @@ proof -
        NFA_def[of "nfa.nfa_\<alpha> n2"]  
   have t2: 
       "((\<forall>q \<sigma> q'. (q, \<sigma>, q') \<in> \<Delta> (nfa.nfa_\<alpha> n2) \<longrightarrow> 
-                q \<in> \<Q> (nfa.nfa_\<alpha> n2) \<and> \<sigma> \<subseteq> \<Sigma> (nfa.nfa_\<alpha> n2) \<and> q' \<in> \<Q> (nfa.nfa_\<alpha> n2)) \<and>
+                q \<in> \<Q> (nfa.nfa_\<alpha> n2) \<and>  q' \<in> \<Q> (nfa.nfa_\<alpha> n2)) \<and>
         \<I> (nfa.nfa_\<alpha> n2) \<subseteq> \<Q> (nfa.nfa_\<alpha> n2)) \<and> 
         \<F> (nfa.nfa_\<alpha> n2) \<subseteq> \<Q> (nfa.nfa_\<alpha> n2) \<and>
         finite (\<Q> (nfa.nfa_\<alpha> n2))"
@@ -6831,7 +6604,7 @@ proof -
     unfolding NFA_union_def 
               nfa_union_imp_def nfa.nfa_\<alpha>_def
     apply simp 
-    using c1 c2 c3 c4 c5
+    using c1 c3 c4 c5
     apply simp
     unfolding NFA_isomorphic_wf_def NFA_isomorphic_def
     apply (rule conjI)
@@ -6847,25 +6620,25 @@ qed
 schematic_goal nfa_union_imp_code:
     "nfa_union_imp n1 n2= ?code"
   unfolding nfa_union_imp_def nfa.nfa_states_def 
-            nfa.nfa_alphabet_def nfa.nfa_trans_def
+            nfa.nfa_trans_def
             nfa.nfa_initial_def nfa.nfa_accepting_def
   apply (rule refl)+
   done
 
 
 definition rename_nfa_states where
-  "rename_nfa_states im1 im2 (n:: 'q_set \<times> ('a \<times> 'a) list\<times> 'd_nfa \<times> 'q_set \<times> 'q_set) =
+  "rename_nfa_states im1 im2 (n:: 'q_set \<times>  'd_nfa \<times> 'q_set \<times> 'q_set) =
    nfa.rename_states_gen_impl im1 im2 n"
 
 lemma rename_nfa_states_alt:
-  "rename_nfa_states im im2 (Q, Sig, D, I, F)= (\<lambda> f.
-   (im f Q, Sig, im2 (\<lambda>qaq. (f (fst qaq), fst (snd qaq), f (snd (snd qaq)))) D,
+  "rename_nfa_states im im2 (Q, D, I, F)= (\<lambda> f.
+   (im f Q, im2 (\<lambda>qaq. (f (fst qaq), fst (snd qaq), f (snd (snd qaq)))) D,
     im f I, im f F))"
   unfolding rename_nfa_states_def
   by auto
 
 schematic_goal rename_nfa_states_code:
-  "rename_nfa_states im1 im2 (Q, S, D, I, F) = ?code"
+  "rename_nfa_states im1 im2 (Q, D, I, F) = ?code"
   unfolding rename_nfa_states_alt
   by (rule refl)
 
