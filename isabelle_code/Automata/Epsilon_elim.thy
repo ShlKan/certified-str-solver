@@ -1,6 +1,6 @@
 theory Epsilon_elim
 
-imports Main NFA_set NFA_epsilon
+imports Main NFA_set_interval NFA_epsilon
 
 begin
 

@@ -3,7 +3,7 @@ theory DFAByLTS
                                       
 imports "Collections.Collections" "HOL.Enum"
       "../../General/Accessible_Impl"
-  LTSSpec LTSGA NFA_interval_Spec LTS_Impl Interval "../DFA" 
+  LTSSpec LTSGA NFA_interval_Spec LTS_Impl Interval
   
 
 begin
