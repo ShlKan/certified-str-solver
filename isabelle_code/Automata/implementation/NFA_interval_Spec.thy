@@ -1664,9 +1664,9 @@ type_synonym ('q,'a,'nfa_e) nfa_ep_\<alpha> = "'nfa_e \<Rightarrow> ('q, 'a) NFA
     nfa_op_nfa_from_list_interval :: "('q,'a::linorder,'nfa) nfa_from_list_interval"
     nfa_op_bool_comb :: "(bool \<Rightarrow> bool \<Rightarrow> bool) \<Rightarrow> 'nfa \<Rightarrow> 'nfa \<Rightarrow> 'nfa"
     nfa_op_concate :: "'nfa \<Rightarrow> 'nfa \<Rightarrow> 'nfa"
-    nfa_op_determinise :: "'nfa \<Rightarrow> 'nfa"
+ (*   nfa_op_determinise :: "'nfa \<Rightarrow> 'nfa"
     nfa_op_complement :: "'nfa \<Rightarrow> 'nfa"
- (*   nfa_op_nfa_from_list :: "('q,'a,'nfa) nfa_from_list" *)
+    nfa_op_nfa_from_list :: "('q,'a,'nfa) nfa_from_list" *)
  (*
     nfa_op_dfa_from_list :: "('q,'a,'nfa) nfa_from_list"
     nfa_op_to_list :: "('q,'a,'nfa) nfa_to_list"

@@ -5,20 +5,18 @@ theory RBT_NFAImpl
 
 imports  "Collections.Collections" 
           RBT_LTSImpl interval 
-          DFAByLTS 
+          DFAByLTS Datatype_Order_Generator.Derive
 begin
 
-interpretation rs_nfa_defs: nfa_dfa_by_lts_interval_defs rs_ops rs_ops
-                            rs_ops rs_ops rs_lts_ops rs_lts_ops
+derive linorder "('a \<times> 'a) list"
 
 interpretation rs_nfa_defs: nfa_dfa_by_lts_interval_defs rs_ops
                             rs_ops rs_ops rs_ops rs_lts_ops rs_lts_ops
   by intro_locales
 
-thm rs.correct
 
 type_synonym ('a,'b) rs_nfa = 
-   "('a, unit) RBT.rbt \<times> ('b \<times> 'b) list \<times>
+   "('a, unit) RBT.rbt \<times> 
     ('a, (('b \<times> 'b) list, ('a, unit) RBT.rbt) RBT.rbt) RBT.rbt \<times>
     ('a, unit) RBT.rbt \<times> ('a, unit) RBT.rbt"
 
@@ -43,22 +41,22 @@ definition "rs_nfa_bool_comb \<equiv> rs_nfa_defs.bool_comb_impl rm_ops
 term rs_lts_succ_it 
 term rs_lts_succ_label_it
 
+(*
 definition "rs_nfa_determinise \<equiv> rs_nfa_defs.determinise_impl rm_ops rm_ops  
    rs_iteratei rs_iteratei rs_iteratei rs_iteratei rs_lts_succq_it" 
 
 definition "rs_nfa_complement \<equiv> rs_nfa_defs.complement_impl"
+*)
 
 definition "rs_nfa_union \<equiv> rs_nfa_defs.nfa_union_imp"
 
 definition "rs_nfa_qsize \<equiv> rs_nfa_defs.nfa_qsize"
 
 definition rs_nfa_rename :: "('a::linorder, unit) RBT.rbt \<times>
-     ('b::linorder \<times> 'b) list \<times>
-     ('a, (('b \<times> 'b) list, ('a, unit) RBT.rbt) RBT.rbt) RBT.rbt \<times>
+     ('a, (('b::linorder \<times> 'b) list, ('a, unit) RBT.rbt) RBT.rbt) RBT.rbt \<times>
      ('a, unit) RBT.rbt \<times> ('a, unit) RBT.rbt
      \<Rightarrow> ('a \<Rightarrow> ('d::linorder))
         \<Rightarrow> ('d, unit) RBT.rbt \<times>
-           ('b::linorder \<times> 'b) list \<times>
            ('d, (('b \<times> 'b) list, ('d, unit) RBT.rbt) RBT.rbt) RBT.rbt \<times>
            ('d, unit) RBT.rbt \<times> ('d, unit) RBT.rbt" where 
 "rs_nfa_rename \<equiv> rs_nfa_defs.rename_states_impl 
@@ -113,8 +111,8 @@ lemmas rs_nfa_defs =
   rs_nfa_construct_reachable_interval_def
   rs_nfa_bool_comb_gen_def
   rs_nfa_bool_comb_def
-  rs_nfa_determinise_def
-  rs_nfa_complement_def
+  (*rs_nfa_determinise_def
+  rs_nfa_complement_def *)
   rs_nfa_union_def
   rs_nfa_rename_def
   rs_nfa_qsize_def
@@ -199,10 +197,12 @@ lemmas rs_nfa_bool_comb_impl = rs_nfa_defs.bool_comb_impl_correct
     OF rm.StdMap_axioms rs_lts_succ_label_it_impl rs_lts_succ_it_impl, 
     folded rs_nfa_defs]
 
+(*
 lemmas rs_nfa_determinise_code [code] = rs_nfa_defs.determinise_impl_code 
   [of rm_ops rm_ops rs_iteratei rs_iteratei rs_iteratei rs_iteratei rs_lts_succq_it, folded rs_nfa_defs]
 
 lemmas rs_nfa_complement_code [code] = rs_nfa_defs.complement_impl_code[folded rs_nfa_defs]
+*)
 
 lemmas rs_nfa_rename_code [code] = 
       rs_nfa_defs.rename_nfa_states_code[folded rs_nfa_defs]
@@ -329,9 +329,7 @@ definition rs_nfa_ops ::
     nfa_op_interval_wf = rs_nfa_defs.nfa.wf_IA,
     nfa_op_nfa_from_list_interval = rs_nfa_construct_interval,
     nfa_op_bool_comb = rs_nfa_bool_comb,
-    nfa_op_concate = rs_nfa_concate,
-    nfa_op_determinise = rs_nfa_determinise,
-    nfa_op_complement = rs_nfa_complement
+    nfa_op_concate = rs_nfa_concate
  \<rparr>" 
 
 (*
@@ -362,8 +360,6 @@ lemma rs_nfa_ops_unfold[code_unfold] :
    "nfa_op_nfa_from_list_interval rs_nfa_ops = rs_nfa_construct_interval"
    "nfa_op_bool_comb rs_nfa_ops = rs_nfa_bool_comb"
    "nfa_op_concate rs_nfa_ops = rs_nfa_concate"
-   "nfa_op_determinise rs_nfa_ops = rs_nfa_determinise"
-   "nfa_op_complement rs_nfa_ops = rs_nfa_complement"
 (*  "nfa_op_dfa_from_list rs_nfa_ops = rs_dfa_construct"
    "nfa_op_to_list rs_nfa_ops = rs_nfa_destruct"
    "nfa_op_to_list_simple rs_nfa_ops = rs_nfa_destruct_simple"
