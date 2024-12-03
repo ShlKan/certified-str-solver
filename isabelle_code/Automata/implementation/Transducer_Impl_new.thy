@@ -765,82 +765,74 @@ proof -
   }
 qed
 
-definition nft_states :: "'q_set \<times> ('a \<times> 'a) list \<times> 'dt \<times> 'q_set \<times> 'q_set \<times> 
+definition nft_states :: "'q_set \<times> 'dt \<times> 'q_set \<times> 'q_set \<times> 
                                     ('b \<Rightarrow> ('a option \<Rightarrow> ('a \<times> 'a) list option)) \<Rightarrow> 'q_set" where
   "nft_states A = fst A"
-lemma [simp]: "nft_states (Q, Sig, D, I, F) = Q" by (simp add: nft_states_def)
+lemma [simp]: "nft_states (Q, D, I, F) = Q" by (simp add: nft_states_def)
 
-definition nft_alphabet :: "'q_set \<times> ('a \<times> 'a) list \<times> 'dt \<times> 'q_set \<times> 'q_set \<times> 
-                                    ('b \<Rightarrow> ('a option \<Rightarrow> ('a \<times> 'a) list option)) \<Rightarrow> ('a \<times> 'a) list" where
-  "nft_alphabet A = fst (snd A)"
-lemma [simp]: "nft_alphabet (Q, Sig, D, I, F) = Sig" by (simp add: nft_alphabet_def)
-
-definition nft_trans :: "'q_set \<times> ('a \<times> 'a) list \<times> 'dt \<times> 'q_set \<times> 'q_set \<times> 
+definition nft_trans :: "'q_set \<times> 'dt \<times> 'q_set \<times> 'q_set \<times> 
                                     ('b \<Rightarrow> ('a option \<Rightarrow> ('a \<times> 'a) list option)) \<Rightarrow> 'dt" where
-  "nft_trans A = (fst (snd (snd A)))"
-lemma [simp]: "nft_trans (Q, Sig, D, I, F) = D" by (simp add: nft_trans_def)
+  "nft_trans A = (fst (snd A))"
+lemma [simp]: "nft_trans (Q, D, I, F) = D" by (simp add: nft_trans_def)
 
-definition nft_initial :: "'q_set \<times> ('a \<times> 'a) list \<times> 'dt \<times> 'q_set \<times> 'q_set \<times> 
+definition nft_initial :: "'q_set \<times> 'dt \<times> 'q_set \<times> 'q_set \<times> 
                                     ('b \<Rightarrow> ('a option \<Rightarrow> ('a \<times> 'a) list option)) \<Rightarrow> 'q_set" where
-  "nft_initial A = fst (snd (snd (snd  A)))"
-lemma [simp]: "nft_initial (Q, Sig, D, I, F) = I" by (simp add: nft_initial_def)
+  "nft_initial A = fst (snd (snd  A))"
+lemma [simp]: "nft_initial (Q, D, I, F) = I" by (simp add: nft_initial_def)
 
-definition nft_accepting :: "'q_set \<times> ('a \<times> 'a) list \<times> 'dt \<times> 'q_set \<times> 'q_set \<times> 
+definition nft_accepting :: "'q_set \<times> 'dt \<times> 'q_set \<times> 'q_set \<times> 
                                     ('b \<Rightarrow> ('a option \<Rightarrow> ('a \<times> 'a) list option)) \<Rightarrow> 'q_set" where
-  "nft_accepting A = fst (snd (snd (snd (snd  A))))"
-lemma [simp]: "nft_accepting (Q, Sig, D, I, F, Fun) = F" by (simp add: nft_accepting_def)
+  "nft_accepting A = fst (snd (snd (snd A)))"
+lemma [simp]: "nft_accepting (Q, D, I, F, Fun) = F" by (simp add: nft_accepting_def)
 
-definition nft_tranfun :: "'q_set \<times> ('a \<times> 'a) list \<times> 'dt \<times> 'q_set \<times> 'q_set \<times> 
+definition nft_tranfun :: "'q_set \<times> 'dt \<times> 'q_set \<times> 'q_set \<times> 
                                     ('b \<Rightarrow> ('a option \<Rightarrow> ('a \<times> 'a) list option))\<Rightarrow> 
                                        ('b \<Rightarrow> ('a option \<Rightarrow> ('a \<times> 'a) list option))" where
-  "nft_tranfun A = snd( snd (snd (snd (snd  A))))"
-lemma [simp]: "nft_tranfun (Q, Sig, D, I, F, Fun) = Fun" 
+  "nft_tranfun A = snd (snd (snd (snd  A)))"
+lemma [simp]: "nft_tranfun (Q, D, I, F, Fun) = Fun" 
     by (simp add: nft_tranfun_def)
 
 
 definition productT_impl where
   "productT_impl \<T> \<A> F fe = do {
     Q \<leftarrow> prods_imp (nft_states \<T>) (nfa_states \<A>);
-    S \<leftarrow> RETURN (nft_alphabet \<T>);
     (D1, D2) \<leftarrow> trans_comp_imp (nft_tranfun \<T>) F fe (nft_trans \<T>) (nfa_trans \<A>) (nfa_states \<A>);
     I \<leftarrow> prods_imp (nft_initial \<T>) (nfa_initial \<A>);
     F \<leftarrow> prods_imp (nft_accepting \<T>) (nfa_accepting \<A>);
-    RETURN (Q,S,D1,D2,I, F)
+    RETURN (Q,D1,D2,I, F)
   }"
 
 
-definition nfae_states :: "'qq_set \<times> ('a \<times> 'a) list \<times> 'ddt \<times> 'qqqq_set\<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qq_set" where
+definition nfae_states :: "'qq_set \<times> 'ddt \<times> 'qqqq_set\<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qq_set" where
   "nfae_states A = fst A"
-lemma [simp]: "nfae_states (Q, Sig, D, D', I, F) = Q" by (simp add: nfae_states_def)
+lemma [simp]: "nfae_states (Q, D, D', I, F) = Q" by (simp add: nfae_states_def)
 
-definition nfae_alphabet :: "'qq_set \<times> ('a \<times> 'a) list \<times> 'ddt \<times> 'qqqq_set\<times> 'qq_set \<times> 'qq_set
-                               \<Rightarrow> ('a \<times> 'a) list" where
-  "nfae_alphabet A = fst (snd A)"
-lemma [simp]: "nfae_alphabet (Q, Sig, D, D', I, F) = Sig" by (simp add: nfae_alphabet_def)
 
 
 definition nfae_trans :: 
-        "'qq_set \<times> ('a \<times> 'a) list \<times> 'ddt \<times> 'qqqq_set\<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'ddt" where
-  "nfae_trans A = (fst (snd (snd A)))"
-lemma [simp]: "nfae_trans (Q, Sig, D, D', I, F) = D" by (simp add: nfae_trans_def)
+        "'qq_set \<times> 'ddt \<times> 'qqqq_set\<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'ddt" where
+  "nfae_trans A = (fst (snd A))"
+lemma [simp]: "nfae_trans (Q, D, D', I, F) = D"
+  by (simp add: nfae_trans_def)
 
 definition nfae_trans_ep :: 
-        "'qq_set \<times> ('a \<times> 'a) list \<times> 'ddt \<times> 'qqqq_set\<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qqqq_set" where
-  "nfae_trans_ep A = (fst (snd (snd (snd A))))"
-lemma [simp]: "nfae_trans_ep (Q, Sig, D, D', I, F) = D'" by (simp add: nfae_trans_ep_def)
+        "'qq_set \<times> 'ddt \<times> 'qqqq_set\<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qqqq_set" where
+  "nfae_trans_ep A = (fst (snd (snd A)))"
+lemma [simp]: "nfae_trans_ep (Q, D, D', I, F) = D'" 
+  using nfae_trans_ep_def by force
 
 definition nfae_initial :: 
-    "'qq_set \<times> ('a \<times> 'a) list \<times> 'ddt \<times> 'qqqq_set\<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qq_set" where
-  "nfae_initial A = fst (snd (snd (snd  (snd A))))"
-lemma [simp]: "nfae_initial (Q, Sig, D, D', I, F) = I" by (simp add: nfae_initial_def)
+    "'qq_set \<times> 'ddt \<times> 'qqqq_set\<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qq_set" where
+  "nfae_initial A = fst (snd (snd  (snd A)))"
+lemma [simp]: "nfae_initial (Q, D, D', I, F) = I" by (simp add: nfae_initial_def)
 
-definition nfae_accepting :: "'qq_set \<times> ('a \<times> 'a) list \<times> 'ddt \<times> 'qqqq_set\<times> 'qq_set \<times> 'qq_set 
+definition nfae_accepting :: "'qq_set \<times> 'ddt \<times> 'qqqq_set\<times> 'qq_set \<times> 'qq_set 
               \<Rightarrow> 'qq_set" where
-  "nfae_accepting A = snd (snd (snd (snd (snd A))))"
-lemma [simp]: "nfae_accepting (Q, Sig, D, D', I, F) = F" by (simp add: nfae_accepting_def)
+  "nfae_accepting A = snd (snd (snd (snd A)))"
+lemma [simp]: "nfae_accepting (Q, D, D', I, F) = F" by (simp add: nfae_accepting_def)
 
 
-definition nfae_invar :: "'qq_set \<times> ('a \<times> 'a) list \<times> 'ddt \<times> 'qqqq_set\<times> 'qq_set \<times> 'qq_set \<Rightarrow> bool" where
+definition nfae_invar :: "'qq_set \<times> 'ddt \<times> 'qqqq_set\<times> 'qq_set \<times> 'qq_set \<Rightarrow> bool" where
   "nfae_invar A =
    (ss.invar (nfae_states A) \<and> 
     ddt.invar (nfae_trans A) \<and>
@@ -852,12 +844,11 @@ fun interval_to_setq :: "('q \<times> 'q) \<times> ('a \<times> 'a) list \<times
                         ('q \<times> 'q) \<times> 'a set \<times> ('q \<times> 'q)"  where
     "interval_to_setq (q, s, q') = (q, semIs s, q')"
 
-definition nfae_\<alpha> :: "'qq_set \<times> ('a \<times> 'a) list \<times> 'ddt \<times> 'qqqq_set\<times> 'qq_set \<times> 'qq_set
+definition nfae_\<alpha> :: "'qq_set \<times> 'ddt \<times> 'qqqq_set\<times> 'qq_set \<times> 'qq_set
                            \<Rightarrow> ('q \<times> 'q, 'a) NFAe_rec" 
   where
   "nfae_\<alpha> A =
    \<lparr> \<Q>e = ss.\<alpha> (nfae_states A),   
-     \<Sigma>e = semIs (nfae_alphabet A),
      \<Delta>e = interval_to_setq ` (ddt.\<alpha> (nfae_trans A)),
      \<Delta>e' = ssd.\<alpha> (nfae_trans_ep A),
      \<I>e = ss.\<alpha> (nfae_initial A), 
@@ -866,7 +857,6 @@ definition nfae_\<alpha> :: "'qq_set \<times> ('a \<times> 'a) list \<times> 'dd
 lemma productT_impl_correct:
   assumes Tstate_ok: "\<Q>T \<T>' = s.\<alpha> (nft_states \<T>) \<and> s.invar (nft_states \<T>)"
       and Astate_ok: "\<Q> \<A>' = s.\<alpha> (nfa_states \<A>) \<and> s.invar (nfa_states \<A>)"
-      and alphabet_ok: "\<Sigma>T \<T>' = semIs (nft_alphabet \<T>) \<and> canonicalIs (nft_alphabet \<T>)"
       and tran_ok: "\<Delta>T \<T>' =
        (\<lambda>(q, (\<alpha>, f), q').
            (q, (if \<alpha> = None then None else Some (semIs (the \<alpha>)), f), q')) `
@@ -904,11 +894,6 @@ lemma productT_impl_correct:
   apply assumption
   using Tstate_ok Astate_ok prods_imp_correct
   apply fastforce  
-  apply (subgoal_tac "(nft_alphabet \<T>, \<Sigma>T \<T>') \<in> (br semIs (\<lambda> x. canonicalIs x))")
-  apply assumption
-  unfolding br_def
-  apply simp
-  using alphabet_ok apply simp
   apply (subgoal_tac "trans_comp_imp (nft_tranfun \<T>) F fe (nft_trans \<T>) (nfa_trans \<A>) (nfa_states \<A>)
        \<le> \<Down> (br Dddt\<alpha> Dddtinvar)
            (Transducer_new.trans_comp (\<M> \<T>') F' fe' (\<Delta>T \<T>')
@@ -962,25 +947,25 @@ assumes D_it1_OK [rule_format, refine_transfer]:
     and D_it2_OK [rule_format, refine_transfer]: 
          "set_iterator (D_it2 (fst \<A>))  {e. e \<in> s.\<alpha> (fst \<A>)}"
     and D_it3_OK [rule_format, refine_transfer]: 
-         "set_iterator (D_it3 ((fst (snd (snd \<T>))))) {t. t \<in> dt.\<alpha> ((fst (snd (snd \<T>))))}"
+         "set_iterator (D_it3 ((fst (snd \<T>)))) {t. t \<in> dt.\<alpha> ((fst (snd \<T>)))}"
     and D_it4_OK [rule_format, refine_transfer]: 
          "set_iterator (D_it4 (fst \<A>)) {e. e \<in> s.\<alpha> (fst \<A>)}"
     and D_it5_OK [rule_format, refine_transfer]: 
          "set_iterator (D_it5 (fst \<A>)) {e. e \<in> s.\<alpha> (fst \<A>)}"
     and D_it6_OK [rule_format, refine_transfer]: 
-         "set_iterator (D_it6 ((fst (snd (snd \<A>))))) {t. t \<in> d.\<alpha> ((fst (snd (snd \<A>))))}"
+         "set_iterator (D_it6 ((fst (snd \<A>)))) {t. t \<in> d.\<alpha> ((fst (snd \<A>)))}"
     and D_it7_OK [rule_format, refine_transfer]: 
-         "set_iterator (D_it7 (fst (snd (snd (snd  \<T>))))) 
-                        {e. e \<in> s.\<alpha> (fst (snd (snd (snd \<T>))))}"
+         "set_iterator (D_it7 (fst (snd (snd  \<T>)))) 
+                        {e. e \<in> s.\<alpha> (fst (snd (snd \<T>)))}"
     and D_it8_OK [rule_format, refine_transfer]: 
-         "set_iterator (D_it8 ((fst (snd (snd (snd \<A>)))))) 
-                        {e. e \<in> s.\<alpha> (fst (snd (snd (snd \<A>))))}"
+         "set_iterator (D_it8 ((fst (snd (snd \<A>))))) 
+                        {e. e \<in> s.\<alpha> (fst (snd (snd \<A>)))}"
     and D_it9_OK [rule_format, refine_transfer]: 
-         "set_iterator (D_it9 (fst (snd (snd (snd (snd \<T>))))))   
-                        {e. e \<in> s.\<alpha> (fst (snd (snd (snd (snd \<T>)))))}"
+         "set_iterator (D_it9 (fst (snd (snd (snd \<T>)))))  
+                        {e. e \<in> s.\<alpha> (fst (snd (snd (snd \<T>))))}"
     and D_it10_OK [rule_format, refine_transfer]: 
-         "set_iterator (D_it10 ((snd (snd (snd (snd \<A>)))))) 
-                    {e. e \<in> s.\<alpha> ((snd (snd (snd (snd \<A>)))))}"
+         "set_iterator (D_it10 (snd (snd (snd \<A>)))) 
+                    {e. e \<in> s.\<alpha> (snd (snd (snd \<A>)))}"
   shows "RETURN ?f \<le> productT_impl \<T> \<A> F fe"
   unfolding productT_impl_def
             prods_imp_def
@@ -992,8 +977,6 @@ assumes D_it1_OK [rule_format, refine_transfer]:
             nfa_states_def
             nft_trans_def
             nfa_trans_def
-            nft_alphabet_def
-            nfa_alphabet_def
             nft_initial_def
             nfa_initial_def
             nft_accepting_def
@@ -1013,57 +996,57 @@ definition productT_impl_code where
                          (ss.empty ()))
                     (ss.union \<sigma>))
             (ss.empty ());
-       xa = fst (snd \<T>);
-       xb = D_it3 (fst (snd (snd \<T>))) (\<lambda>_. True)
-             (\<lambda>xb \<sigma>.
-                 if fst (fst (snd xb)) = None
-                 then if snd (snd (snd (snd (snd \<T>)))) (snd (fst (snd xb))) None =
-                         None
-                      then let xc = D_it4 (fst \<A>) (\<lambda>_. True)
-                                     (\<lambda>xc. ssd.ins ((fst xb, xc), snd (snd xb), xc))
+       xa = D_it3 (fst (snd \<T>)) (\<lambda>_. True)
+             (\<lambda>xa \<sigma>.
+                 if fst (fst (snd xa)) = None
+                 then if snd (snd (snd (snd \<T>))) (snd (fst (snd xa))) None = None
+                      then let xb = D_it4 (fst \<A>) (\<lambda>_. True)
+                                     (\<lambda>xb. ssd.ins
+  ((fst xa, xb), snd (snd xa), xb))
                                      (ssd.empty ())
-                           in (fst \<sigma>, ssd.union (snd \<sigma>) xc)
-                      else let xc = D_it5 (fst \<A>) (\<lambda>_. True)
-                                     (\<lambda>xc. ddt.add (fst xb, xc)
-(the (snd (snd (snd (snd (snd \<T>)))) (snd (fst (snd xb))) None)) (snd (snd xb), xc))
+                           in (fst \<sigma>, ssd.union (snd \<sigma>) xb)
+                      else let xb = D_it5 (fst \<A>) (\<lambda>_. True)
+                                     (\<lambda>xb. ddt.add (fst xa, xb)
+  (the (snd (snd (snd (snd \<T>))) (snd (fst (snd xa))) None)) (snd (snd xa), xb))
                                      ddt.empty
-                           in (ddt.union (fst \<sigma>) xc, snd \<sigma>)
-                 else D_it6 (fst (snd (snd \<A>))) (\<lambda>_. True)
-                       (\<lambda>xc \<sigma>'.
+                           in (ddt.union (fst \<sigma>) xb, snd \<sigma>)
+                 else D_it6 (fst (snd \<A>)) (\<lambda>_. True)
+                       (\<lambda>xb \<sigma>'.
                            if nemptyIs
-                               (intersectIs (the (fst (fst (snd xb)))) (fst (snd xc)))
-                           then let xd = if F
- (snd (snd (snd (snd (snd \<T>)))) (snd (fst (snd xb))))
- (intersectIs (the (fst (fst (snd xb)))) (fst (snd xc))) \<noteq>
-None
-                                         then ddt.add (fst xb, fst xc)
-   (the (F (snd (snd (snd (snd (snd \<T>)))) (snd (fst (snd xb))))
-          (intersectIs (the (fst (fst (snd xb)))) (fst (snd xc)))))
-   (snd (snd xb), snd (snd xc)) (fst \<sigma>')
+                               (intersectIs (the (fst (fst (snd xa))))
+                                 (fst (snd xb)))
+                           then let xc = if F
+   (snd (snd (snd (snd \<T>))) (snd (fst (snd xa))))
+   (intersectIs (the (fst (fst (snd xa)))) (fst (snd xb))) \<noteq>
+  None
+                                         then ddt.add (fst xa, fst xb)
+     (the (F (snd (snd (snd (snd \<T>))) (snd (fst (snd xa))))
+            (intersectIs (the (fst (fst (snd xa)))) (fst (snd xb)))))
+     (snd (snd xa), snd (snd xb)) (fst \<sigma>')
                                          else fst \<sigma>'
                                 in Let (if fe
-(snd (snd (snd (snd (snd \<T>)))) (snd (fst (snd xb))))
-(intersectIs (the (fst (fst (snd xb)))) (fst (snd xc)))
+  (snd (snd (snd (snd \<T>))) (snd (fst (snd xa))))
+  (intersectIs (the (fst (fst (snd xa)))) (fst (snd xb)))
                                         then ssd.ins
-  ((fst xb, fst xc), snd (snd xb), snd (snd xc)) (snd \<sigma>')
+    ((fst xa, fst xb), snd (snd xa), snd (snd xb)) (snd \<sigma>')
                                         else snd \<sigma>')
-                                    (Pair xd)
+                                    (Pair xc)
                            else \<sigma>')
                        \<sigma>)
              (ddt.empty, ssd.empty ());
-       xc = D_it7 (fst (snd (snd (snd \<T>)))) (\<lambda>_. True)
-             (\<lambda>xc \<sigma>.
-                 Let (D_it8 (fst (snd (snd (snd \<A>)))) (\<lambda>_. True)
-                       (\<lambda>xd. ss.ins (xc, xd)) (ss.empty ()))
+       xb = D_it7 (fst (snd (snd \<T>))) (\<lambda>_. True)
+             (\<lambda>xb \<sigma>.
+                 Let (D_it8 (fst (snd (snd \<A>))) (\<lambda>_. True)
+                       (\<lambda>xc. ss.ins (xb, xc)) (ss.empty ()))
                   (ss.union \<sigma>))
              (ss.empty ());
-       xd = D_it9 (fst (snd (snd (snd (snd \<T>))))) (\<lambda>_. True)
-             (\<lambda>xd \<sigma>.
-                 Let (D_it10 (snd (snd (snd (snd \<A>)))) (\<lambda>_. True)
-                       (\<lambda>xe. ss.ins (xd, xe)) (ss.empty ()))
+       xc = D_it9 (fst (snd (snd (snd \<T>)))) (\<lambda>_. True)
+             (\<lambda>xc \<sigma>.
+                 Let (D_it10 (snd (snd (snd \<A>))) (\<lambda>_. True)
+                       (\<lambda>xd. ss.ins (xc, xd)) (ss.empty ()))
                   (ss.union \<sigma>))
              (ss.empty ())
-   in (x, xa, fst xb, snd xb, xc, xd))"
+   in (x, fst xa, snd xa, xb, xc))"
 
 schematic_goal productT_code :
   "productT_impl_code D_it1 D_it2 D_it3 D_it4 D_it5 D_it6 
@@ -1074,20 +1057,20 @@ schematic_goal productT_code :
 definition dt\<alpha> where "dt\<alpha> d = dt.\<alpha> d"
 
 definition nft_construct_interval_aux ::
-  "'q_set \<times> ('a \<times> 'a) list \<times> 'dt \<times> 'q_set \<times> 'q_set \<times> 
+  "'q_set \<times> 'dt \<times> 'q_set \<times> 'q_set \<times> 
                     ('b \<Rightarrow> 'a option \<Rightarrow> ('a \<times> 'a) list option) \<Rightarrow> 
    'q \<times> (('a \<times> 'a) list option \<times> 'b) \<times> 'q \<Rightarrow> 
-   'q_set \<times> ('a \<times> 'a) list \<times> 'dt \<times> 'q_set \<times> 'q_set \<times> ('b \<Rightarrow> 'a option \<Rightarrow> ('a \<times> 'a) list option)" where 
-   "nft_construct_interval_aux = (\<lambda>(Q, Sig, D, I, F, Fun) (q1, (l, f), q2).
-    (s.ins q1 (s.ins q2 Q), Sig, 
+   'q_set \<times>  'dt \<times> 'q_set \<times> 'q_set \<times> 
+   ('b \<Rightarrow> 'a option \<Rightarrow> ('a \<times> 'a) list option)" where 
+   "nft_construct_interval_aux = (\<lambda>(Q, D, I, F, Fun) (q1, (l, f), q2).
+    (s.ins q1 (s.ins q2 Q),
      dt.add q1 (l, f) q2 D,
      I, F, Fun))"
 
 fun nft_construct_interval  where
-   "nft_construct_interval (QL, SigL, DL, IL, FL, Fun) =
+   "nft_construct_interval (QL, DL, IL, FL, Fun) =
     foldl nft_construct_interval_aux 
      (s.from_list (QL @ IL @ FL),
-      SigL,
       dt.empty,
       s.from_list IL,
       s.from_list FL, Fun) DL"
@@ -1100,14 +1083,13 @@ schematic_goal nft_construct_interval_aux_code:
 
 
 schematic_goal nft_construct_interval_code:
-  "nft_construct_interval (QL, SigL, DL, IL, FL, Fun) = ?XXX1"
+  "nft_construct_interval (QL, DL, IL, FL, Fun) = ?XXX1"
   unfolding nft_construct_interval.simps
   by (rule refl)+
 
 fun nft_destruct where
    "nft_destruct (Q, Sig, D, I, F, tF) =
     (s.to_list Q,
-     Sig,
      dt.to_collect_list D,
      s.to_list I,
      s.to_list F,
@@ -1115,9 +1097,8 @@ fun nft_destruct where
 declare nft_destruct.simps [simp del]
 
 fun nfae_destruct where
-   "nfae_destruct (Q, Sig, D1, D2, I, F) =
+   "nfae_destruct (Q, D1, D2, I, F) =
     (ss.to_list Q,
-     Sig,
      ddt.to_collect_list D1,
      ssd.to_list D2,
      ss.to_list I,
@@ -1126,53 +1107,45 @@ fun nfae_destruct where
 declare nfae_destruct.simps [simp del]
 
 schematic_goal nfae_destruct_code: 
-  "nfae_destruct (Q, Sig, D1, D2, I, F) = ?XXX1"
+  "nfae_destruct (Q, D1, D2, I, F) = ?XXX1"
   unfolding nfae_destruct.simps
   by (rule refl)+
 
 schematic_goal nft_destruct_code:
-  "nft_destruct (Q, Sig, D, I, F, tF) = ?XXX1"
+  "nft_destruct (Q, D, I, F, tF) = ?XXX1"
   unfolding nft_destruct.simps
   by (rule refl)+
 
-term nfa_alphabet
-term NFA_construct_reachable_prod_interval_impl_code
-
 
 definition nfa_prod_states :: 
-   "'qq_set \<times> ('a \<times> 'a) list \<times> 'ddt \<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qq_set" where
+   "'qq_set \<times> 'ddt \<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qq_set" where
   "nfa_prod_states A = fst A"
-lemma [simp]: "nfa_prod_states (Q, Sig, D, I, F) = Q" 
+lemma [simp]: "nfa_prod_states (Q, D, I, F) = Q" 
     by (simp add: nfa_prod_states_def)
 
-definition nfa_prod_alphabet :: "'qq_set \<times> ('a \<times> 'a) list \<times> 'ddt \<times> 'qq_set \<times> 'qq_set
-                               \<Rightarrow> ('a \<times> 'a) list" where
-  "nfa_prod_alphabet A = fst (snd A)"
-lemma [simp]: "nfa_prod_alphabet (Q, Sig, D, I, F) = Sig" 
-        by (simp add: nfa_prod_alphabet_def)
 
 definition nfa_prod_trans :: 
-        "'qq_set \<times> ('a \<times> 'a) list \<times> 'ddt \<times>  'qq_set \<times> 'qq_set \<Rightarrow> 'ddt" where
-  "nfa_prod_trans A = (fst (snd (snd A)))"
-lemma [simp]: "nfa_prod_trans (Q, Sig, D,  I, F) = D" 
+        "'qq_set \<times> 'ddt \<times>  'qq_set \<times> 'qq_set \<Rightarrow> 'ddt" where
+  "nfa_prod_trans A = (fst (snd A))"
+lemma [simp]: "nfa_prod_trans (Q,  D,  I, F) = D" 
       by (simp add: nfa_prod_trans_def)
 
 definition nfa_prod_initial :: 
-    "'qq_set \<times> ('a \<times> 'a) list \<times> 'ddt \<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qq_set" where
-  "nfa_prod_initial A = fst (snd (snd (snd  A)))"
-lemma [simp]: "nfa_prod_initial (Q, Sig, D, I, F) = I" by (simp add: nfa_prod_initial_def)
+    "'qq_set \<times> 'ddt \<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qq_set" where
+  "nfa_prod_initial A = fst (snd (snd  A))"
+lemma [simp]: "nfa_prod_initial (Q, D, I, F) = I" by (simp add: nfa_prod_initial_def)
 
-definition nfa_prod_accepting :: "'qq_set \<times> ('a \<times> 'a) list \<times> 'ddt \<times> 'qq_set \<times> 'qq_set 
+definition nfa_prod_accepting :: "'qq_set \<times> 'ddt \<times> 'qq_set \<times> 'qq_set 
               \<Rightarrow> 'qq_set" where
-  "nfa_prod_accepting A = (snd (snd (snd (snd A))))"
-lemma [simp]: "nfa_prod_accepting (Q, Sig, D, I, F) = F" 
+  "nfa_prod_accepting A = (snd (snd (snd A)))"
+lemma [simp]: "nfa_prod_accepting (Q, D, I, F) = F" 
       by (simp add: nfa_prod_accepting_def)
 
 
 
 
 definition nfa_normal where
-"nfa_normal const f I Sig FP it = (\<lambda> A. const f (Sig A) (I A) (\<lambda> q. FP A q) (it A))"
+"nfa_normal const f I FP it = (\<lambda> A. const f (I A) (\<lambda> q. FP A q) (it A))"
 
 
 definition nfa_normal_impl where
@@ -1180,7 +1153,6 @@ definition nfa_normal_impl where
          nfa_normal 
           (NFA_construct_reachable_interval_impl_code qm_ops) id 
             (\<lambda>A. (ss.to_list (nfa_prod_initial A)))  
-              (nfa_prod_alphabet)
                 (\<lambda>A q. ss.memb q (nfa_prod_accepting A)) 
                    (\<lambda> A. it (nfa_prod_trans A))"
 
@@ -1189,7 +1161,6 @@ schematic_goal nfa_normal_code:
   "nfa_normal_impl qm_ops it = ?XXX"
   unfolding nfa_normal_impl_def
             nfa_normal_def
-            nfa_prod_alphabet_def
             nfa_prod_initial_def
             nfa_prod_accepting_def
             nfa_prod_trans_def
