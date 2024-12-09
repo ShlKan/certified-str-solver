@@ -71,11 +71,40 @@
 
 %TODO mandatory: add short abstract of the document
 \begin{abstract}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent convallis orci arcu, eu mollis dolor. Aliquam eleifend suscipit lacinia. Maecenas quam mi, porta ut lacinia sed, convallis ac dui. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse potenti. 
+Finite-State Automata (FA) and Finite-State Transducers (FT) are extensively utilized in programming languages and software engineering applications. For instance, regular expressions and their variations play a pivotal role in programming languages like JavaScript, Python, and others. Formalizing FAs and FTs in Coq, Isabelle/HOL, and other proof assistants are a popular topics. However, all these formalization are not practical in real-world applications. 
+One of the reasons the transition labels are only single characters in the alphabet, for instance $q\xrightarrow{a} q'$ is a transition and $a$ is a single character. For real-world applications, the alphabet an FA or FT may be enormous or even \emph{infinite}. This classic way of transition definition can yield transitions explosion. 
+
+A more practical way is to formalize symoblic FAs [1] and FTs [2], in which transition labels are symbolic and can be infinite. The work of [3] has done the work for FAs, but FTs 
+have not yet been formalized, which pose more challenges on proving the correctness of the formalization.
+
+In this paper, we aim to filling this gap. We gave a symbolic transducer formalization in Isabelle/HOL. The formalization is refinement-based and extensible with different symbolic representations of transition labels. In order to evaluate its effect and efficiency, we applied it to a  SMT string solver for modeling replacement operations in modern programming languages. The experimental results show the formalized symbolic transducer can efficient solver string constraints.
+
+
 \end{abstract}
 
 \section{Introduction}
 \label{sec:introduction}
+
+Automata and Transducers are crucial concepts in formal languages and have widely applications in programming languages and software engineering. For instance, [1] has shown the correspondence between  regular expressions in modern regular expressions and variants of FAs and FTs. Other industrial usage of FAs and FTs is AWS access control polices checking.
+
+
+Even though there various  formalization of FAs and FTs in Coq, Isabelle, and other proof assistants. They are mainly based on classic definitions of FAs and FTs.  There some drawbacks when come to practical applications. (1) transition labels are 
+non-symbolic and usually finite.
+A classic and normal definition of a transition is $q\xrightarrow{a}q'$, where $a$ is a character in an finite alphabet.  This simple way will yield transition explosions. 
+For instance, if the alphabet $\Sigma$ is of the size $10,000$, then a transition from $q$ to $q'$ that accept any characters in $\Sigma$ need to split into $10,000$ transitions. Automata product in this way will be very inefficient. Moreover, 
+The alphabet are usually finite. For practical applications, infinite alphabet are often necessary. For instance, if the alphabet is all integers. 
+
+
+Symblic FAs and FTs [2,3,4] are extensions of classic FAs and FTs that make their application more practical. The transition labels are represented by algebra. For instances, intervals ($'a'-'z'$), boolean algebras ($x \% 2 == 0$), or others. This symbolic way is more succinct and its support for infinite alphabet extend the expressive power of FAs and FTs.
+
+Formalizing FAs and FTs in Isabelle/HOL, Coq, and other proof assists are more challenging compare with formalizing classic ones. Moreover, how to make the formalization extensible is also an important point to think, because, symbolic FAs and FTs support different algebras symbolic representations. For new algebra representations, we do not want repeat some proof works.
+
+
+Fortunately, symblic FAs has been formalized in Isabelle/HOL [certistr] and experiments in [certistr] illustrates the efficiency and effective of symbolic FAs. Unfortunately FTs are not formalized yet.  FTs are more powerful and expressive than symbolic FAs. For instance, when FTs are support, replacement operation in modern programming languages, such as Javascript, python and others can be modelled as FTs. And CertiStr can be extended to support replacement operations.
+
+In this paper, we formalize symblic FTs based on symblic FAs. In order to solve the extensive problem, the formalization is refinement-based, in which at the abstraction level, transition labels are modeled as a general concept: sets. 
+
+
 
 
 
