@@ -65,6 +65,13 @@
 \ArticleNo{23}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\lstset{
+	basicstyle=\ttfamily,
+	keywordstyle=\color{blue}\bfseries,
+	keywords={definition,if,then,else, where, record, fun, lemma},
+	escapeinside={|}{|}
+}
+
 \begin{document}
 
 \maketitle
@@ -102,15 +109,52 @@ Formalizing FAs and FTs in Isabelle/HOL, Coq, and other proof assists are more c
 
 Fortunately, symblic FAs has been formalized in Isabelle/HOL [certistr] and experiments in [certistr] illustrates the efficiency and effective of symbolic FAs. Unfortunately FTs are not formalized yet.  FTs are more powerful and expressive than symbolic FAs. For instance, when FTs are support, replacement operation in modern programming languages, such as Javascript, python and others can be modelled as FTs. And CertiStr can be extended to support replacement operations.
 
-In this paper, we formalize symblic FTs based on symblic FAs. In order to solve the extensive problem, the formalization is refinement-based, in which at the abstraction level, transition labels are modeled as a general concept: sets. 
+In this paper, we formalize symblic FTs based on symblic FAs. In order to solve the potential extension problem of FTs to support additional transition label theories, the formalization is refinement-based, in which at the abstraction level, transition labels are modeled as a general concept: sets. We can project any theory to sets. \emph{extend this}.
+The most important operation that we formalized and proved is the application operation on an input language.  More precisely, given an FA $\mathcal{A}$ (to represent a regular language) as the input language and a FT $\mathcal{T}$, the application operation $\mathcal{F}~\mathcal{A}$ is the  of output languages of FT after receiving the input language 
+
+In the next refinement level, the states and transitions are stored in efficient data structure based on Isabelle/HOL refinement framework [2].
+For transition labels, we implemented an interval algebra, which are efficient for creating, checking, interaction.
+%
+In the future the refinement of transition label from sets to other algebras instead of intervals can be done easily by implementing the common interfaces with interval algebras.
+
+The paper is organized as follows. 
+Section 2 presents the formalization of symbolic FTs.
+Section 3 presents the Core operations of symbolic FTs. 
 
 
 
 
 
-\section{Lorem ipsum dolor sit amet}
+\section{Formalization of Symbolic FTs}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit \cite{DBLP:journals/cacm/Knuth74}. Praesent convallis orci arcu, eu mollis dolor. Aliquam eleifend suscipit lacinia. Maecenas quam mi, porta ut lacinia sed, convallis ac dui. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse potenti. Donec eget odio et magna ullamcorper vehicula ut vitae libero. Maecenas lectus nulla, auctor nec varius ac, ultricies et turpis. Pellentesque id ante erat. In hac habitasse platea dictumst. Curabitur a scelerisque odio. Pellentesque elit risus, posuere quis elementum at, pellentesque ut diam. Quisque aliquam libero id mi imperdiet quis convallis turpis eleifend. 
+We firstly present a mathematical form of FTs.
+
+\begin{definition}[Label Theory]
+	A label theory
+\end{definition}
+
+\begin{definition}[Symbolic FTs]
+	A symbolic FT is defined a quadruple $(Q, \Delta , I, F)$, where
+	\begin{itemize}
+		\item $Q$ is a finite set of states,
+		\item $\Delta$ is a finite set of transitions of the form $(q, \phi, f, q')$ or in a more succinct form $q\xrightarrow{(\phi, f)}q'$. $\phi$ is the input of the transition, which is a predicate, a symbolic representation of input characters. $f$ is a label theory that generates the output of this transition,
+		\item $I$ is the set of initial states,
+		\item $F$ is the set of accepting states.
+	\end{itemize} 
+\end{definition}
+
+\begin{figure}[t]
+	\begin{lstlisting}
+record (|$'q,$||$~'a,$| |$'b$|) |$\mathbf{NFT}$| =
+	|$\mathcal{Q}$| :: "|$'q$| set"
+	|$\Delta$| :: "(|$'q,$||$~'a,$| |$'b$|) LTTS"
+	|$\mathcal{I}$| :: "|$'q$| set"
+	|$\mathcal{F}$| :: "|$'q$| set"
+	\end{lstlisting}
+\caption{The definitions of $FTs$}
+\label{fig-def-wf-acyclic}
+\end{figure}
+ 
 
 \begin{lemma}[Lorem ipsum]
 \label{lemma:lorem}
