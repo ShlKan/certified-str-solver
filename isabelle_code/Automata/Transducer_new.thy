@@ -7,21 +7,21 @@ begin
 
 
 
-type_synonym 'a Tlabel = "('a option \<Rightarrow> 'a set option)"
+type_synonym ('a, 'b) Tlabel = "('a option \<Rightarrow> 'b set option)"
  
 
-type_synonym ('q, 'a, 'b) LTTS = 
-            "('q \<times> ('a set option \<times> 'b) \<times> 'q) set"
+type_synonym ('q, 'a, 'c) LTTS = 
+            "('q \<times> ('a set option \<times> 'c) \<times> 'q) set"
 
-record ('q, 'a, 'b) NFT =
+record ('q, 'a, 'b, 'c) NFT =
   \<Q>T :: "'q set"           (* "The set of states" *)
-  \<Delta>T :: " ('q, 'a, 'b) LTTS"   (* "The transition relation" *)
+  \<Delta>T :: " ('q, 'a, 'c) LTTS"   (* "The transition relation" *)
   \<I>T :: "'q set"            (* "The set of initial states *)
   \<F>T :: "'q set"           (* "The set of final states *)
-  \<M> :: "'b \<Rightarrow> 'a Tlabel"
+  \<M> :: "'c \<Rightarrow> ('a, 'b)  Tlabel"
 
 locale NFT_wf =  
-  fixes \<T> :: "('q, 'a, 'b) NFT" 
+  fixes \<T> :: "('q, 'a, 'b, 'c) NFT" 
   assumes \<Delta>_consistent: "\<And>q \<sigma> q' f. (q, (\<sigma>, f), q') \<in> \<Delta>T \<T> 
                 \<Longrightarrow> (q \<in> \<Q>T \<T>) \<and> (q' \<in> \<Q>T \<T>)"
       and \<I>_consistent: "\<I>T \<T> \<subseteq> \<Q>T \<T>"
@@ -37,7 +37,7 @@ fun Edge_path :: "('q, 'a, 'b) LTTS \<Rightarrow> 'q \<Rightarrow> (('a set opti
 
 
 
-fun inputE :: "('a option \<times> 'a option) list \<Rightarrow> 'a list" where
+fun inputE :: "('a option \<times> 'b option) list \<Rightarrow> 'a list" where
   "inputE [] = []" |
   "inputE ((Some a, _) # l) = a # (inputE l)" |
   "inputE ((None, _) # l) = (inputE l)" 
@@ -47,7 +47,7 @@ lemma inputE_concat: "inputE (\<pi> @ \<pi>') = inputE \<pi> @ inputE \<pi>'"
   apply simp
   by auto
 
-fun outputE :: "('a option \<times> 'a option) list \<Rightarrow> 'a list" where
+fun outputE :: "('a option \<times> 'b option) list \<Rightarrow> 'b list" where
   "outputE [] = []" |
   "outputE ((_, Some a) # l) = a # (outputE l)" |
   "outputE ((_, None) # l) = (outputE l)" 
@@ -66,8 +66,8 @@ fun matcht where
   "matcht (s,i) (a, b) M = ((matche s a) \<and> (matche ((M i) a) b))"
 
 
-fun LTTS_reachable :: "('q, 'a, 'b) LTTS \<Rightarrow> ('b \<Rightarrow> 'a Tlabel) 
-                        \<Rightarrow> 'q \<Rightarrow> ('a option \<times> 'a option) list \<Rightarrow> 'q \<Rightarrow> bool" where
+fun LTTS_reachable :: "('q, 'a, 'c) LTTS \<Rightarrow> ('c \<Rightarrow> ('a, 'b) Tlabel) 
+                        \<Rightarrow> 'q \<Rightarrow> ('a option \<times> 'b option) list \<Rightarrow> 'q \<Rightarrow> bool" where
   "LTTS_reachable Trans M q [] q'= (q = q')" |
   "LTTS_reachable Trans M q (s # w) q' = 
       (\<exists> q'' \<alpha>. (q, \<alpha>, q'') \<in> Trans \<and> matcht \<alpha> s M \<and> 
@@ -88,19 +88,19 @@ definition domainT where
   "domainT \<T> M = {inputE \<pi> | q \<pi> q'. q \<in> \<I>T \<T> \<and> 
                            q' \<in> \<F>T \<T> \<and> LTTS_reachable (\<Delta>T \<T>) M q \<pi> q'}"
 
-definition codomainT  :: "('q, 'a, 'b) NFT \<Rightarrow> ('b \<Rightarrow> 'a Tlabel) \<Rightarrow> 'a list set" where
+definition codomainT  :: "('q, 'a, 'b, 'c) NFT \<Rightarrow> ('c \<Rightarrow> ('a, 'b) Tlabel) \<Rightarrow> 'b list set" where
   "codomainT \<T> M = {outputE \<pi> | q \<pi> q'. q \<in> \<I>T \<T> \<and> 
                            q' \<in> \<F>T \<T> \<and> LTTS_reachable (\<Delta>T \<T>) M q \<pi> q'}"
 
-definition outputL :: "('q, 'a, 'b) NFT \<Rightarrow> ('b \<Rightarrow> 'a Tlabel) \<Rightarrow> 
-                               ('q, 'a) NFA_rec \<Rightarrow> 'a list set" where
+definition outputL :: "('q, 'a, 'b, 'c) NFT \<Rightarrow> ('c \<Rightarrow> ('a, 'b) Tlabel) \<Rightarrow> 
+                               ('q, 'a) NFA_rec \<Rightarrow> 'b list set" where
   "outputL \<T> M \<A> = {outputE \<pi> | \<pi> q q'. q \<in> \<I>T \<T> \<and> q' \<in> \<F>T \<T> \<and> 
                                 LTTS_reachable (\<Delta>T \<T>) M q \<pi> q' \<and>
                                 inputE \<pi> \<in> \<L> \<A>}" 
 
-definition productT :: "('q, 'a, 'b) NFT \<Rightarrow> ('q, 'a) NFA_rec \<Rightarrow> 
-                        (('a option \<Rightarrow> 'a set option) \<Rightarrow> 'a set \<Rightarrow> 'a set option) \<Rightarrow> 
-                         ('q \<times> 'q, 'a) NFAe_rec" where
+definition productT :: "('q, 'a, 'b, 'c) NFT \<Rightarrow> ('q, 'a) NFA_rec \<Rightarrow> 
+                        (('a option \<Rightarrow> 'b set option) \<Rightarrow> 'a set \<Rightarrow> 'b set option) \<Rightarrow> 
+                         ('q \<times> 'q, 'b) NFAe_rec" where
   "productT \<T> \<A> F = \<lparr> 
       \<Q>e = \<Q>T \<T> \<times> \<Q> \<A>,
       \<Delta>e = {((p,p'), the (((\<M> \<T>) f) None), (q,p')) 
