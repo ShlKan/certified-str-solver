@@ -13,6 +13,67 @@ module Typer =
 
 exception FormatError of string
 
+let path_to_name (path : Std.Path.t) =
+  let b = Buffer.create 16 in
+  let formatter = Format.formatter_of_buffer b in
+  Std.Path.print formatter path ;
+  Format.pp_print_flush formatter () ;
+  Buffer.contents b
+
+type strConstrain =
+  | Name of string
+  | IN_RE of strConstrain * strConstrain
+  | RegEx of string
+  | OTHER
+
+let rec print_str_constraint sc =
+  match sc with
+  | Name name -> Format.printf "%s" name
+  | IN_RE (lhs, rhs) ->
+      Format.printf "in_re " ;
+      print_str_constraint lhs ;
+      Format.printf ", " ;
+      print_str_constraint rhs ;
+      Format.printf "\n"
+  | RegEx reg -> Format.printf "%s" reg
+  | OTHER -> Format.printf "OTHER\n"
+
+(* | {operator; args} -> ( match operator with | IN_RE -> Format.printf
+   "in_re" | OTHER -> Format.printf "other" ) ; Format.printf " " ;
+   Format.pp_print_list ~pp_sep:(return ", ") str_print Format.std_formatter
+   args ; Format.printf "\n" *)
+
+let var_name (var : Std.Expr.term_var) =
+  match var with {path; _} -> path_to_name path
+
+let cst_name (var : Std.Expr.term_cst) =
+  match var with {path; _} -> path_to_name path
+
+let rec term_str_constraint (tm : Std.Expr.term) =
+  match tm with
+  | {term_descr; _} -> (
+    match term_descr with
+    | Var var -> Some (Name (var_name var))
+    | Cst cst -> Some (Name (cst_name cst))
+    | App (op, _, args) -> (
+      match term_str_constraint op with
+      | Some (Name "in_re") ->
+          let b = Buffer.create 16 in
+          let fmt = Format.formatter_of_buffer b in
+          Std.Expr.Print.term fmt (List.nth args 1) ;
+          Format.pp_print_flush fmt () ;
+          Some
+            (IN_RE
+               ( Option.get (term_str_constraint (List.nth args 0))
+               , RegEx (Buffer.contents b) ) )
+      | _ -> Some OTHER )
+    | _ -> None )
+
+let stmt_content (stmt : Typer.typechecked Typer.stmt) =
+  match stmt with
+  | {id= _; loc= _; contents; attrs= _; implicit= _} -> (
+    match contents with `Hyp f -> term_str_constraint f | _ -> None )
+
 let test file =
   (* Parse the file, and we get a tuple: - format: the guessed format
      (according to the file extension) - loc: some meta-data used for source
@@ -58,25 +119,12 @@ let test file =
         (state, List.rev_append typed_stmts acc) )
       (state, []) parsed_statements
   in
-  print_string "---------------" ;
-  print_int (List.length rev_typed_stmts) ;
-  print_string "\n" ;
-  let () =
-    List.iter
-      (fun ({id= _; loc= _; contents; attrs= _; implicit= _} :
-             Typer.typechecked Typer.stmt ) ->
-        match contents with
-        | `Defs _ -> print_string "defs\n"
-        | `Decls _ -> print_string "decls\n"
-        | `Hyp f -> Format.printf "%a\n" Dolmen.Std.Expr.Print.formula f
-        | _ -> print_string "other\n" )
-      rev_typed_stmts
-  in
-  let typed_stmts = List.rev rev_typed_stmts in
-  (* let's print the typed statements *)
-  List.iter
-    (fun typed_stmt -> Format.printf "%a@\n@." Typer.print typed_stmt)
-    typed_stmts
+  let res = List.filter_map stmt_content rev_typed_stmts in
+  List.iter print_str_constraint res
+(* let typed_stmts = List.rev rev_typed_stmts in
+
+   List.iter (fun typed_stmt -> Format.printf "%a@\n@." Typer.print
+   typed_stmt) typed_stmts *)
 ;;
 
 test Sys.argv.(1)
