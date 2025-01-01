@@ -56,7 +56,9 @@ let test file =
       (state, []) parsed_statements
   in
   let res = List.filter_map Parser.stmt_content (List.rev rev_typed_stmts) in
-  List.iter Parser.print_str_cons res
+  List.iter Parser.print_str_cons res ;
+  Nfa_dot.format_digraph Format.std_formatter
+    (Nfa_dot.digraph_of_nfa (Regex.compile (Regex.parse "a")))
 (*; let typed_stmts = List.rev rev_typed_stmts in List.iter (fun typed_stmt
   -> Format.printf "%a@\n@." Typer.print typed_stmt) typed_stmts*)
 ;;

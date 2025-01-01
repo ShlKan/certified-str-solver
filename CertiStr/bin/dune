@@ -1,4 +1,4 @@
 (executable
  (public_name CertiStr)
  (name main)
- (libraries Transducer Parser))
+ (libraries Transducer Parser re-nfa))
