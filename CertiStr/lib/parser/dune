@@ -1,0 +1,16 @@
+(library
+ (name Parser)
+ (libraries
+  dolmen
+  dolmen_loop
+  dolmen.intf
+  dolmen.std
+  dolmen.class
+  dolmen.smtlib2
+  dolmen.tptp
+  dolmen_type))
+
+(env
+ (dev
+  (flags
+   (:standard -warn-error -A))))

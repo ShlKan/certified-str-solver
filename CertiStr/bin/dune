@@ -1,14 +1,4 @@
 (executable
  (public_name CertiStr)
  (name main)
- (libraries
-  Transducer
-  dolmen
-  dolmen_loop
-  dolmen.intf
-  dolmen.std
-  dolmen.class
-  dolmen.smtlib2
-  dolmen.tptp
-  ; typechecker
-  dolmen_type))
+ (libraries Transducer Parser))

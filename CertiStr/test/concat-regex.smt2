@@ -10,6 +10,7 @@
 
 (assert (str.in_re a (re.+ (re.union (str.to_re "x") (str.to_re "y")))))
 (assert (str.in_re c (re.+ (str.to_re "x"))))
+(assert (= d (str.replace "Ilove" "love" "like")))
 
 (check-sat)
 (get-model)
