@@ -35,3 +35,18 @@ _opam/
 #others
 *.output
 
+#latex
+*.aux
+*.bbl
+*.blg
+*.out
+*.synctex*
+*.vtc
+Paper/main.fdb_latexmk
+Paper/main.fls
+Paper/main.log
+Paper/main.pdf
+
+#vscode
+CertiStr/.vscode/
+Paper/.vscode/

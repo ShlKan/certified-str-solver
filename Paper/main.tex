@@ -14,7 +14,7 @@
 
 %\pdfoutput=1 %uncomment to ensure pdflatex processing (mandatatory e.g. to submit to arXiv)
 %\hideLIPIcs  %uncomment to remove references to LIPIcs series (logo, DOI, ...), e.g. when preparing a pre-final version to be uploaded to arXiv or another public repository
-
+\usepackage{stmaryrd}
 %\graphicspath{{./graphics/}}%helpful if your graphic files are in another directory
 
 \bibliographystyle{plainurl}% the mandatory bibstyle
@@ -27,7 +27,7 @@
 
 
 
-\authorrunning{J. Open Access and J.\,R. Public} %TODO mandatory. First: Use abbreviated first/middle names. Second (only in severe cases): Use first author plus 'et al.'
+\authorrunning{S. Kan} %TODO mandatory. First: Use abbreviated first/middle names. Second (only in severe cases): Use first author plus 'et al.'
 
 \Copyright{Jane Open Access and Joan R. Public} %TODO mandatory, please use full first names. LIPIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
 
@@ -54,11 +54,12 @@
 %Editor-only macros:: begin (do not touch as author)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \EventEditors{John Q. Open and Joan R. Access}
 \EventNoEds{2}
-\EventLongTitle{42nd Conference on Very Important Topics (CVIT 2016)}
-\EventShortTitle{CVIT 2016}
-\EventAcronym{CVIT}
-\EventYear{2016}
-\EventDate{December 24--27, 2016}
+\EventLongTitle{15th Conference on
+Interactive Theorem Proving (ITP 2025)}
+\EventShortTitle{ITP 2025}
+\EventAcronym{ITP}
+\EventYear{2025}
+\EventDate{July 24--27, 2025}
 \EventLocation{Little Whinging, United Kingdom}
 \EventLogo{}
 \SeriesVolume{42}
@@ -68,7 +69,7 @@
 \lstset{
 	basicstyle=\ttfamily,
 	keywordstyle=\color{blue}\bfseries,
-	keywords={definition,if,then,else, where, record, fun, lemma},
+	keywords={definition,if,then,else, where, record, fun, lemma, type_synonym, fixes, assumes, shows},
 	escapeinside={|}{|}
 }
 
@@ -102,14 +103,14 @@ For instance, if the alphabet $\Sigma$ is of the size $10,000$, then a transitio
 The alphabet are usually finite. For practical applications, infinite alphabet are often necessary. For instance, if the alphabet is all integers. 
 
 
-Symblic FAs and FTs [2,3,4] are extensions of classic FAs and FTs that make their application more practical. The transition labels are represented by algebra. For instances, intervals ($'a'-'z'$), boolean algebras ($x \% 2 == 0$), or others. This symbolic way is more succinct and its support for infinite alphabet extend the expressive power of FAs and FTs.
+Symbolic FAs and FTs [2,3,4] are extensions of classic FAs and FTs that make their application more practical. The transition labels are represented by algebra. For instances, intervals ($'a'-'z'$), boolean algebras ($x \% 2 == 0$), or others. This symbolic way is more succinct and its support for infinite alphabet extend the expressive power of FAs and FTs.
 
 Formalizing FAs and FTs in Isabelle/HOL, Coq, and other proof assists are more challenging compare with formalizing classic ones. Moreover, how to make the formalization extensible is also an important point to think, because, symbolic FAs and FTs support different algebras symbolic representations. For new algebra representations, we do not want repeat some proof works.
 
 
-Fortunately, symblic FAs has been formalized in Isabelle/HOL [certistr] and experiments in [certistr] illustrates the efficiency and effective of symbolic FAs. Unfortunately FTs are not formalized yet.  FTs are more powerful and expressive than symbolic FAs. For instance, when FTs are support, replacement operation in modern programming languages, such as Javascript, python and others can be modelled as FTs. And CertiStr can be extended to support replacement operations.
+Fortunately, symbolic FAs has been formalized in Isabelle/HOL [certistr] and experiments in [certistr] illustrates the efficiency and effective of symbolic FAs. Unfortunately FTs are not formalized yet.  FTs are more powerful and expressive than symbolic FAs. For instance, when FTs are support, replacement operation in modern programming languages, such as Javascript, python and others can be modelled as FTs. And CertiStr can be extended to support replacement operations.
 
-In this paper, we formalize symblic FTs based on symblic FAs. In order to solve the potential extension problem of FTs to support additional transition label theories, the formalization is refinement-based, in which at the abstraction level, transition labels are modeled as a general concept: sets. We can project any theory to sets. \emph{extend this}.
+In this paper, we formalize symbolic FTs based on symbolic FAs. In order to solve the potential extension problem of FTs to support additional transition label theories, the formalization is refinement-based, in which at the abstraction level, transition labels are modeled as a general concept: sets. We can project any theory to sets. \emph{extend this}.
 The most important operation that we formalized and proved is the application operation on an input language.  More precisely, given an FA $\mathcal{A}$ (to represent a regular language) as the input language and a FT $\mathcal{T}$, the application operation $\mathcal{F}~\mathcal{A}$ is the  of output languages of FT after receiving the input language 
 
 In the next refinement level, the states and transitions are stored in efficient data structure based on Isabelle/HOL refinement framework [2].
@@ -127,237 +128,181 @@ Section 3 presents the Core operations of symbolic FTs.
 
 \section{Formalization of Symbolic FTs}
 
-We firstly present a mathematical form of FTs.
+We first present a mathematical form of FTs, which is independent of Isabelle's formalization. 
+The key is the label theory, which defines how do output labels generated from input labels.
 
-\begin{definition}[Label Theory]
-	A label theory
+Let $\mathcal{U}$ be a multi-sorted carrier set or background universe, which is equipped with functions and relations over the elements. We use $\tau$ as a sort and $\mathcal{U}^\tau$ denotes the sub-universe of elements of type $\tau$. 
+We have a special type $\mathbb{B}$ with $\mathcal{U}^\mathbb{B} = \{ \top, \bot\}$, which corresponds to the boolean type. Assume $\mathbb{N}$ is the set of elements of the sort natural numbers.
+
+A lambda term is defined as $\lambda x. t$ of the type $\tau_1 \rightarrow \tau_2$.
+When $\tau_2$ is $\mathbb{B}$, this lambda term is a predicate. Assume $\psi$ is a predicate. We write $a\in \llbracket\psi \rrbracket$ if $\psi~a=\top$. For the non-predicate lambda term, we view it as a function, which generates an output element of type $\tau_2$ with the input term of type $\tau_1$. 
+
+\begin{definition}[Symbolic Finite Transducer]
+\label{def-sft}
+   A Symbolic Transducer over $\tau_1\rightarrow \tau_2$ is a quadruple $(\mathcal{Q}, \Delta, \mathcal{I}, \mathcal{F})$, where 
+   \begin{itemize}
+   \item $\mathcal{Q}$ is a finite set of states,
+   \item $\mathcal{I}\subseteq \mathcal{Q}$ is the set of initial states,
+   \item $\mathcal{F} \subseteq\mathcal{Q}$ is the set of accepting states,
+   \item $\Delta$ is the set of transition relations. Each element in $\Delta$ is of the form $(q, \phi, f, q') (\text{or written in } q\xrightarrow{\phi, f} q')$, where $q$ and $q'$ are the states in $\mathcal{Q}$.
+   $\phi$ is a predicate of type $\tau_1\rightarrow \mathbb{B}$.
+   $f$ is a lambda term of the type $\tau_1\rightarrow \tau_2$. We call it output function in the following.
+   \end{itemize}
+
+For each transition $q\xrightarrow{\phi, f} q'$, if there exists an element $a\in \llbracket \phi \rrbracket$, where $a$ is called input,  then the application $f~a$ is the output.
+   
 \end{definition}
 
-\begin{definition}[Symbolic FTs]
-	A symbolic FT is defined a quadruple $(Q, \Delta , I, F)$, where
-	\begin{itemize}
-		\item $Q$ is a finite set of states,
-		\item $\Delta$ is a finite set of transitions of the form $(q, \phi, f, q')$ or in a more succinct form $q\xrightarrow{(\phi, f)}q'$. $\phi$ is the input of the transition, which is a predicate, a symbolic representation of input characters. $f$ is a label theory that generates the output of this transition,
-		\item $I$ is the set of initial states,
-		\item $F$ is the set of accepting states.
-	\end{itemize} 
-\end{definition}
+SFTs accept an input word and generate an output. This can be defined by runs of SFTs.
+An SFT run $\sigma$ is a sequence of $(q_0, \psi_0, f_0, q_1),(q_1, \psi_1, f_1, q_2),\ldots, (q_{n-1}, \psi_{n-1}, q_n)$ such that $q_0\in \mathcal{I}_T$ and $(q_i, 
+\psi_i, f_i, q_{i+1}), 0 \leq i \leq n-1$ is a transition in $\Delta_T$.
+$\sigma$ is an accepting run when $q_n$ is an accepting state.
+For a word $w = a_0,\ldots, a_{n-1}$, it is accepted by $\sigma$ iff $a_i \in \llbracket\psi_i \rrbracket$ for $0 \leq i \leq n - 1$. Run $\sigma$ will generate an output sequence if $w$ is accepted by it, which is $w'= (f_0~a_0), \ldots (f_{n_1}~a_{n_1})$. We denote this operation as $\mathcal{N}~w = w'$.
+
+
+\subsection{The Isabelle/HOL Formalization of SFT}
 
 \begin{figure}[t]
 	\begin{lstlisting}
 record (|$'q,$||$~'a,$| |$'b$|) |$\mathbf{NFT}$| =
+	|$\mathcal{Q}_T$| :: "|$'q$| set"
+	|$\Delta_T$| :: "(|$'q,$||$~'a,$| |$'b$|) LTTS"
+	|$\mathcal{I}_T$| :: "|$'q$| set"
+	|$\mathcal{F}_T$| :: "|$'q$| set"
+        |$\mathcal{M}$| :: "|$'b\Rightarrow 'a$| Tlabel"
+        
+type_synonym |$('q, 'a, 'b)$| LTTS = "|$('q \times ('a \text{ set option }\times b) \times 'q)$| set"
+
+type_synonym |$'a$| Tlabel = "|$'a \text{ option} \Rightarrow 'a$ set"
+	\end{lstlisting}
+\caption{The formalization of $FTs$ in Isabelle/HOL}
+\label{fig-def-FT}
+\end{figure}
+
+Figure \ref{fig-def-FT} shows our formalization of SFTs in Isabelle / HOL. The elements $\mathcal{Q}$, $\mathcal{I}$, and $\mathcal{F}$ are intuitive when referring to Definition \ref{def-sft}. However, the transitions are not exactly the same. 
+%
+The set of transitions is defined by \texttt{LTTS} ( which is short for Labeled Transducer Transition System). Each transition is defined as $'q \times ('a \text{ set option }\times b) \times 'q$. There are some design decisions, which are made to make the FT formalization more flexible.
+
+Firstly, $'a \text{ set option }$ is the type input of the transition, it accepts a set of elements of type $'a$ or \texttt{None} regarding the semantics of the type \texttt{option}. 
+Accepting a set of $'a$ elements aims to express the same but more abstract semantics of the input labels in Definition \ref{def-sft}, in which an input label is a predicate. A predicate's semantics as introduced before represents a set of elements that make the predicate true. But predicates have various different forms. For instance, the interval $[1, 9]$ is a predicate that contains all elements $e$ between $1$ and $9$, i.e., $1 \leq e \leq 9$. The predicate $\lambda x : \mathbb{N}.~ x \text{ mod } 2 = 0$ denotes the set of even natural numbers. All these different forms of labels are abstracted as sets.
+
+%
+The value $\texttt{None}$ is used to denote $\varepsilon$-move, that is, it accepts nothing but may still output some elements. This design makes it easier model real world applications in FTs. We will show an example after introducing the output functions. 
+
+The second element of type $'b$ is the \emph{indexes} of the output functions.  $\mathcal{M}$ maps each of these indexes to an output function. The output function, defined by \texttt{Tlabel} maps a single input element to a set of output elements instead of single one. The reason is to allow FTs output non-deterministically, which means that the output may randomly or according to some criteria select one of the element in the set to output.
+
+Now let us look at an example. In some modern programming languages, there are support for replacement operations : $\texttt{replace}(\texttt{str}, \texttt{pattern}, \texttt{replacement})$. This operation replaces the first occurrence of the substring  in \texttt{str} that matches \texttt{pattern} (which usually a regular expression) with the string \texttt{replacement}). 
+We can easily model this operation using our formalization of NFTs with the following steps:
+\begin{itemize}
+\item Step 1, construct a corresponding NFA from \texttt{pattern}).
+\item Step 2, convert each transition label for transducers by adding a function that maps each input character to empty, that is, generate nothing.
+\item Step 3, Add a new accepting state, and redirect existing accepting states to the new accepting state and transition label as $(\texttt{None}, \lambda x. \texttt{replacement})$.
+\item Step 4, unlabel previous accepting states as non-accepting states. 
+\end{itemize}
+
+We can see that the definition of transition labels in NFTs makes it is very easy to model the replacement operation.
+
+\section{The Key Operation of NFTs}
+
+Given an NFT $\mathcal{N}$ and a word $w$, it is crucial and interesting that the possible output words can be calculated. This is the operation, we want to formalize, but we will generalize this operation.
+
+Instead of calculating the outputs for a single word, the operation calculates the outputs for a set of input words. Single word input is a special case with the set contains exactly only one element.
+
+The set of input words is modeled as a regular language. To be more precise, let $\mathcal{N}$ be an NFT, and $\mathcal{A}$ be an NFA. We define the operation $\texttt{PRODUCT} ~\mathcal{N}~\mathcal{A} = \{w'\mid w\in \mathcal{L}(\mathcal{A})\text{ and } w' = \mathcal{N}~\mathcal{A}\}$, where $\mathcal{L}(\mathcal{A})$ denotes the language of NFA $\mathcal{A}$.
+
+
+But there is one thing we need to consider, as our NFT formalization accepts $\varepsilon$-transitions, the output NFAs may contain $\varepsilon$-transitions as well. Unfortunately, [CertiStr] does not formalize $\varepsilon-$NFA. We formalize symbolic $\varepsilon-$NFA and the conversion from $\varepsilon-$NFA to NFA. We only present the definitions of $\varepsilon-$NFA and NFA in this paper. The more details including correctness proofs can be found in the Isabelle code. 
+
+\begin{figure}[t]
+	\begin{lstlisting}
+record (|$'q,$||$~'a$|) |$\mathbf{NFA}$| =
 	|$\mathcal{Q}$| :: "|$'q$| set"
-	|$\Delta$| :: "(|$'q,$||$~'a,$| |$'b$|) LTTS"
+	|$\Delta$| :: "(|$'q,$||$~'a$|) LTS"
 	|$\mathcal{I}$| :: "|$'q$| set"
 	|$\mathcal{F}$| :: "|$'q$| set"
+
+record (|$'q,$||$~'a$|) |$\mathbf{eNFA}$| =
+	|$\mathcal{Q}_e$| :: "|$'q$| set"
+	|$\Delta_e$| :: "(|$'q,$||$~'a$|) LTS"
+        |$\Delta_e'$| :: "|$('q * 'q)$| set"
+	|$\mathcal{I}_e$| :: "|$'q$| set"
+	|$\mathcal{F}_e$| :: "|$'q$| set"
+
+type_synonym |$('q, 'a)$| LTS = "|$'q \times 'a \text{ set }\times 'q$|"    
 	\end{lstlisting}
-\caption{The definitions of $FTs$}
-\label{fig-def-wf-acyclic}
+\caption{The formalization of $\varepsilon-$NFA and NFA in Isabelle/HOL}
+\label{fig-def-FAs}
 \end{figure}
- 
 
-\begin{lemma}[Lorem ipsum]
-\label{lemma:lorem}
-Vestibulum sodales dolor et dui cursus iaculis. Nullam ullamcorper purus vel turpis lobortis eu tempus lorem semper. Proin facilisis gravida rutrum. Etiam sed sollicitudin lorem. Proin pellentesque risus at elit hendrerit pharetra. Integer at turpis varius libero rhoncus fermentum vitae vitae metus.
-\end{lemma}
+Figure \ref{fig-def-FAs} shows the definitions of NFA and $\varepsilon-$NFA.
+The record type \texttt{eNFA} corresponds to $\varepsilon-$NFA. $\Delta_e$ is same as $\Delta$ in \texttt{NFA}. $\varepsilon$-transitions are defined by $\Delta_e'$.  Now we are ready to present the operation \emph{APPLICATION}. Let $\mathcal{T}$ be an SFT and  $\mathcal{A}$ be an NFA. The output language generated by $\mathcal{T}$ with the input language $\mathcal{A}$ is an an \texttt{eNFA} $\mathcal{A}'$. 
 
-\begin{proof}
-Cras purus lorem, pulvinar et fermentum sagittis, suscipit quis magna.
+\begin{figure}[ht]
+	\begin{lstlisting}
+definition productT :: |$"('q,'a,'b,'c)"$| NFT |$\Rightarrow$| ('q,'a) NFA |$\Rightarrow$| 
+           |$(('a,'b)$| Tlabel |$\Rightarrow 'a \text{ set}\Rightarrow 'b\text{ set option})\Rightarrow$|
+           |$('q\times 'q, ~'b)$| eNFA where
+  "productT |$\mathcal{T}$| |$\mathcal{A}$| F = |$\llparenthesis$|
+    |$\mathcal{Q}e = \mathcal{Q}_t~\mathcal{T} \times \mathcal{Q} ~\mathcal{A}$|,
+    |$\Delta_e = \{((p,p'),~\texttt{the }(((\mathcal{M}~\mathcal{T})~f)\texttt{ None}),~(q, p'))\mid p, p', q, f.~p'\in \mathcal{Q}~\mathcal{A} \land$|
+          |$(p, (\texttt{None}, f), q)\in \Delta_T \mathcal{T} \land \exists S. (\mathcal{M}~\mathcal{T})~f~\text{None} = \text{Some } S\} ~\cup$|
+        |$\{((p,p'),~\texttt{the }(F~((\mathcal{M}~\mathcal{T})~f)~(\sigma_1\cap\sigma_2)),~(q, q'))\mid p, p', q, \sigma_1, \sigma_2, q', f.~$|
+          |$ (p, (\text{Some }\sigma_1, f), q)\in \Delta_T~\mathcal{T} \land (p', \sigma_2, q')\in\Delta~\mathcal{A}\land \sigma_1\cap \sigma_2 = \emptyset \land$|
+            |$ \exists S.~F~((\mathcal{M}~\mathcal{T})~f)~(\sigma_1\cap\sigma_2) = \text{Some } S\}$|,
+    |$\Delta_e' = \{((p,p'),~\text{the }(((\mathcal{M}~\mathcal{T})~f)\texttt{ None}),~(q, p'))\mid p, p', q, f.~p'\in \mathcal{Q}~\mathcal{A} \land$|
+          |$(p, (None, f), q)\in \Delta_T~\mathcal{T} \land (\mathcal{M}~\mathcal{T})~f~\texttt{None} = \text{None}\} ~\cup$|
+        |$\{((p,p'),~\texttt{the }(F~((\mathcal{M}~\mathcal{T})~f)~(\sigma_1\cap\sigma_2)),~(q, q'))\mid p, p', q, \sigma_1, \sigma_2, q', f.~$|
+          |$ (p, (\text{Some }\sigma_1, f), q)\in \Delta_T~\mathcal{T} \land (p', \sigma_2, q')\in\Delta~\mathcal{A}\land \sigma_1\cap \sigma_2 = \emptyset \land$|
+            |$ \exists x\in(\sigma_1\cap\sigma_2).~((\mathcal{M}~\mathcal{T})~f)~(\text{Some } x) = \text{None} \}$|,
+    |$\mathcal{I}_e = \mathcal{I}_t~\mathcal{T} \times \mathcal{I}~\mathcal{A}$|
+    |$\mathcal{F}_e = \mathcal{F}_t~\mathcal{T} \times \mathcal{F}~\mathcal{A}$| |$\rrparenthesis$|"
+	\end{lstlisting}
+\caption{The formalization of $\varepsilon-$NFA and NFA in Isabelle/HOL}
+\label{fig-def-FTProd}
+\end{figure}
 
+Figure \ref{fig-def-FTProd} depicts the abstract level formalization for the product of an SFT and an NFA. The parameters $\mathcal{T}$ and $\mathcal{A}$ are intuitive. But we need to explain the role of \texttt{F}. The output function is of type $'a \Rightarrow 'b \text{set option}$, which applies to a single element of the type $'a$. $\texttt{F}$ extends this function to apply it to a set of elements. More precisely, let $f$ be an output function, the semantics of $\texttt{F}$ is defined as $\texttt{F}~f~A=\bigcup_{a\in A} (\text{if }f~a= \text{Some }S \texttt{ then } S \texttt{ else } \emptyset)$.
+The transition relations $\Delta_e$ and $\Delta_e'$ are defined by splitting into two cases, whether the transitions in SFTs are $\varepsilon$-transitions or not. 
 
-\proofsubparagraph*{Just some paragraph within the proof.}
-Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
-\begin{claim}
-content...
-\end{claim}
-\begin{claimproof}
-content...
-    \begin{enumerate}
-        \item abc abc abc \claimqedhere{}
-    \end{enumerate}
-\end{claimproof}
+In order to prove this abstract definition of product operation's correctness, we firstly formalize the outputs of an NFT regarding the input of an NFA. Figure \ref{fig-def-output} has two definitions: (1) \texttt{outputE} extracts the output (second element) from a path. (2) \texttt{outputL} defines the set of all outputs of an NFT $\mathcal{T}$, regarding the input language $\mathcal{A}$.
 
-\end{proof}
+\begin{figure}[ht]
+	\begin{lstlisting}
+fun outputE :: "|$('a \text{ option} \times 'b \text{ option}) \text{ list} \Rightarrow 'b \text{ list}$|" where
+  "outputE [] = []" |$\mid$|
+  "outputE ((_, Some a) # l) = a # (outputE l)" |$\mid$|
+  "outputE ((_, None) # l) = (outputE l)"
 
-\begin{corollary}[Curabitur pulvinar, \cite{DBLP:books/mk/GrayR93}]
-\label{lemma:curabitur}
-Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
-\end{corollary}
-
-\begin{proposition}\label{prop1}
-This is a proposition
-\end{proposition}
-
-\autoref{prop1} and \cref{prop1} \ldots
-
-\subsection{Curabitur dictum felis id sapien}
-
-Curabitur dictum \cref{lemma:curabitur} felis id sapien \autoref{lemma:curabitur} mollis ut venenatis tortor feugiat. Curabitur sed velit diam. Integer aliquam, nunc ac egestas lacinia, nibh est vehicula nibh, ac auctor velit tellus non arcu. Vestibulum lacinia ipsum vitae nisi ultrices eget gravida turpis laoreet. Duis rutrum dapibus ornare. Nulla vehicula vulputate iaculis. Proin a consequat neque. Donec ut rutrum urna. Morbi scelerisque turpis sed elit sagittis eu scelerisque quam condimentum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aenean nec faucibus leo. Cras ut nisl odio, non tincidunt lorem. Integer purus ligula, venenatis et convallis lacinia, scelerisque at erat. Fusce risus libero, convallis at fermentum in, dignissim sed sem. Ut dapibus orci vitae nisl viverra nec adipiscing tortor condimentum \cite{DBLP:journals/cacm/Dijkstra68a}. Donec non suscipit lorem. Nam sit amet enim vitae nisl accumsan pretium. 
-
-\begin{lstlisting}[caption={Useless code.},label=list:8-6,captionpos=t,float,abovecaptionskip=-\medskipamount]
-for i:=maxint to 0 do 
-begin 
-    j:=square(root(i));
-end;
-\end{lstlisting}
-
-\subsection{Proin ac fermentum augue}
-
-Proin ac fermentum augue. Nullam bibendum enim sollicitudin tellus egestas lacinia euismod orci mollis. Nulla facilisi. Vivamus volutpat venenatis sapien, vitae feugiat arcu fringilla ac. Mauris sapien tortor, sagittis eget auctor at, vulputate pharetra magna. Sed congue, dui nec vulputate convallis, sem nunc adipiscing dui, vel venenatis mauris sem in dui. Praesent a pretium quam. Mauris non mauris sit amet eros rutrum aliquam id ut sapien. Nulla aliquet fringilla sagittis. Pellentesque eu metus posuere nunc tincidunt dignissim in tempor dolor. Nulla cursus aliquet enim. Cras sapien risus, accumsan eu cursus ut, commodo vel velit. Praesent aliquet consectetur ligula, vitae iaculis ligula interdum vel. Integer faucibus faucibus felis. 
-
-\begin{itemize}
-\item Ut vitae diam augue. 
-\item Integer lacus ante, pellentesque sed sollicitudin et, pulvinar adipiscing sem. 
-\item Maecenas facilisis, leo quis tincidunt egestas, magna ipsum condimentum orci, vitae facilisis nibh turpis et elit. 
-\end{itemize}
-
-\begin{remark}
-content...
-\end{remark}
-
-\section{Pellentesque quis tortor}
-
-Nec urna malesuada sollicitudin. Nulla facilisi. Vivamus aliquam tempus ligula eget ornare. Praesent eget magna ut turpis mattis cursus. Aliquam vel condimentum orci. Nunc congue, libero in gravida convallis \cite{DBLP:conf/focs/HopcroftPV75}, orci nibh sodales quam, id egestas felis mi nec nisi. Suspendisse tincidunt, est ac vestibulum posuere, justo odio bibendum urna, rutrum bibendum dolor sem nec tellus. 
-
-\begin{lemma} [Quisque blandit tempus nunc]
-Sed interdum nisl pretium non. Mauris sodales consequat risus vel consectetur. Aliquam erat volutpat. Nunc sed sapien ligula. Proin faucibus sapien luctus nisl feugiat convallis faucibus elit cursus. Nunc vestibulum nunc ac massa pretium pharetra. Nulla facilisis turpis id augue venenatis blandit. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-\end{lemma}
-
-Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
-
-\section{Morbi eros magna}
-
-Morbi eros magna, vestibulum non posuere non, porta eu quam. Maecenas vitae orci risus, eget imperdiet mauris. Donec massa mauris, pellentesque vel lobortis eu, molestie ac turpis. Sed condimentum convallis dolor, a dignissim est ultrices eu. Donec consectetur volutpat eros, et ornare dui ultricies id. Vivamus eu augue eget dolor euismod ultrices et sit amet nisi. Vivamus malesuada leo ac leo ullamcorper tempor. Donec justo mi, tempor vitae aliquet non, faucibus eu lacus. Donec dictum gravida neque, non porta turpis imperdiet eget. Curabitur quis euismod ligula. 
+definition outputL :: "|$('q, 'a, 'b, 'c)\text{  NFT} \Rightarrow $|
+            |$ ('c \Rightarrow ('a, 'b)\text{  Tlabel}) \Rightarrow 
+                               ('q, 'a) \text{ NFA\_rec} \Rightarrow 'b\text{ list set}$|" where
+  "outputL |$\mathcal{T}$| M |$\mathcal{A}$| = {outputE |$\pi~\mid~\pi~q~q'$|. |$q\in \mathcal{I}_T~\mathcal{T} \land q' \in \mathcal{F}_T~\mathcal{T} \land$|
+                |$ \text{LTTS\_reachable }(\Delta_T~\mathcal{T})~\text{M}~q~\pi~q'\land \text{inputE }\pi\in \mathcal{L}~\mathcal{A}$|}" 
+	\end{lstlisting}
+\caption{The formalization of $\varepsilon-$NFA and NFA in Isabelle/HOL}
+\label{fig-def-output}
+\end{figure}
 
 
-%%
-%% Bibliography
-%%
+\begin{figure}[ht]
+	\begin{lstlisting}
+lemma productT_correct:
+  fixes |$\mathcal{T}$| |$\mathcal{A}$| F
+  assumes F_ok1: "|$\forall~f~s.~(\forall e \in s. f (\text{ Some } e) = \text{None}) \mapsto \text{ F}~f~s = \text{None}"$|
+      and F_ok2: "|$\forall~f~s.~\text{F }f~s = $|
+            |$\text{Some }(\cup \{\text{the }(f (\text{ Some }e))\mid e. e \in s \land f~(\text{Some }e) \neq \text{ None}\})$|"
+      and wfTA: "NFT_wf |$\mathcal{T}~\land \text{ NFA } \mathcal{A}$|"
+    shows "|$\mathcal{L}_e$| (productT |$\mathcal{T}~\mathcal{A}$| F) = outputL |$\mathcal{T}~(\mathcal{M}~\mathcal{T})~\mathcal{A}$|"
 
-%% Please use bibtex, 
+	\end{lstlisting}
+\caption{The formalization of $\varepsilon-$NFA and NFA in Isabelle/HOL}
+\label{fig-def-product-correct}
+\end{figure}
 
-\bibliography{lipics-v2021-sample-article}
+Figure \ref{fig-def-product-correct} shows the correctness of the product operation and Figure \ref{fig-def-output} contains the definitions of \texttt{outputE} and \texttt{outputL} that are used in Lemma \texttt{productT\_correct}.
+The two assumptions define the constraints of the function \texttt{F}.
 
-\appendix
-
-\section{Styles of lists, enumerations, and descriptions}\label{sec:itemStyles}
-
-List of different predefined enumeration styles:
-
-\begin{itemize}
-\item \verb|\begin{itemize}...\end{itemize}|
-\item \dots
-\item \dots
-%\item \dots
-\end{itemize}
-
-\begin{enumerate}
-\item \verb|\begin{enumerate}...\end{enumerate}|
-\item \dots
-\item \dots
-%\item \dots
-\end{enumerate}
-
-\begin{alphaenumerate}
-\item \verb|\begin{alphaenumerate}...\end{alphaenumerate}|
-\item \dots
-\item \dots
-%\item \dots
-\end{alphaenumerate}
-
-\begin{romanenumerate}
-\item \verb|\begin{romanenumerate}...\end{romanenumerate}|
-\item \dots
-\item \dots
-%\item \dots
-\end{romanenumerate}
-
-\begin{bracketenumerate}
-\item \verb|\begin{bracketenumerate}...\end{bracketenumerate}|
-\item \dots
-\item \dots
-%\item \dots
-\end{bracketenumerate}
-
-\begin{description}
-\item[Description 1] \verb|\begin{description} \item[Description 1]  ...\end{description}|
-\item[Description 2] Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
-\item[Description 3]  \dots
-%\item \dots
-\end{description}
-
-\cref{testenv-proposition} and \autoref{testenv-proposition} ...
-
-\section{Theorem-like environments}\label{sec:theorem-environments}
-
-List of different predefined enumeration styles:
-
-\begin{theorem}\label{testenv-theorem}
-Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
-\end{theorem}
-
-\begin{lemma}\label{testenv-lemma}
-Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
-\end{lemma}
-
-\begin{corollary}\label{testenv-corollary}
-Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
-\end{corollary}
-
-\begin{proposition}\label{testenv-proposition}
-Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
-\end{proposition}
-
-\begin{conjecture}\label{testenv-conjecture}
-Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
-\end{conjecture}
-
-\begin{observation}\label{testenv-observation}
-Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
-\end{observation}
-
-\begin{exercise}\label{testenv-exercise}
-Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
-\end{exercise}
-
-\begin{definition}\label{testenv-definition}
-Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
-\end{definition}
-
-\begin{example}\label{testenv-example}
-Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
-\end{example}
-
-\begin{note}\label{testenv-note}
-Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
-\end{note}
-
-\begin{note*}
-Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
-\end{note*}
-
-\begin{remark}\label{testenv-remark}
-Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
-\end{remark}
-
-\begin{remark*}
-Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
-\end{remark*}
-
-\begin{claim}\label{testenv-claim}
-Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
-\end{claim}
-
-\begin{claim*}\label{testenv-claim2}
-Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
-\end{claim*}
-
-\begin{proof}
-Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
-\end{proof}
-
-\begin{claimproof}
-Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
-\end{claimproof}
+\section{Algorithm Level Refinement}
+We have 
 
 \end{document}
