@@ -1,5 +1,6 @@
 open Dolmen
 open Parser
+open Nfa
 
 (* Instantiate a module for parsing logic languages *)
 module Logic =
@@ -57,8 +58,19 @@ let test file =
   in
   let res = List.filter_map Parser.stmt_content (List.rev rev_typed_stmts) in
   List.iter Parser.print_str_cons res ;
-  Nfa_dot.format_digraph Format.std_formatter
-    (Nfa_dot.digraph_of_nfa (Regex.compile (Regex.parse "a")))
+  let nfa = Regex.compile (Regex.parse "[.]*[^a-zA-Z]") in
+  match nfa with
+  | {start; finals; next} ->
+      Format.printf "Initial state: " ;
+      StateSet.iter (fun s -> print_int (Int32.to_int s)) start ;
+      Format.printf "\nAccepting state: " ;
+      StateSet.iter (fun s -> print_int (Int32.to_int s)) finals ;
+      let trans = next (Int32.of_int 0) in
+      CharMap.iter
+        (fun s i ->
+          Format.printf " - %s -> " s ;
+          StateSet.iter (fun s -> print_int (Int32.to_int s)) i )
+        trans
 (*; let typed_stmts = List.rev rev_typed_stmts in List.iter (fun typed_stmt
   -> Format.printf "%a@\n@." Typer.print typed_stmt) typed_stmts*)
 ;;
