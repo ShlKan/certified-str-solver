@@ -4,4 +4,4 @@ CertiStr is a certified string solver developed by [Isabelle proof assistant](ht
 
 ## Papers
 1. [Shuanglong Kan, Anthony Widjaja Lin, Philipp Rümmer, Micha Schrader:
-CertiStr: a certified string solver. CPP 2022: 210-224](https://arxiv.org/abs/2112.06039)
+CertiStr: a certified string solver. CPP 2022: 210-224](https://arxiv.org/abs/2112.06039) [Distinguished Paper Award]
