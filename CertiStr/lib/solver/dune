@@ -1,6 +1,6 @@
 (library
- (name Transducer)
- (libraries zarith re-nfa))
+ (name Solve)
+ (libraries Transducer re-nfa Parser))
 
 (env
  (dev

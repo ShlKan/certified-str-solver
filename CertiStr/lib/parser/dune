@@ -8,7 +8,9 @@
   dolmen.class
   dolmen.smtlib2
   dolmen.tptp
-  dolmen_type))
+  dolmen_type
+  re-nfa
+  Transducer))
 
 (env
  (dev

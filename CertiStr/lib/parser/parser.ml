@@ -25,18 +25,36 @@ let path_to_name (path : Std.Path.t) =
 type strConstrain =
   | Name of string
   | IN_RE of strConstrain * strConstrain
+  | IN_NFA of strConstrain * Nfa.nfa
   | RegEx of string
   | REPLACE of string * string * string
   | StrEq of strConstrain * strConstrain
   | Concat of strConstrain * strConstrain
+  | Union of strConstrain * strConstrain
+  | Star of strConstrain
+  | Plus of strConstrain
   | OTHER
+
+let rec reg2Str (c : strConstrain) =
+  match c with
+  | Name s -> s
+  | Concat (sl, sr) -> reg2Str sl ^ reg2Str sr
+  | Union (sl, sr) -> reg2Str sl ^ "|" ^ reg2Str sr
+  | RegEx s -> String.sub s 1 (String.length s - 2)
+  | Star s -> "(" ^ reg2Str s ^ ")*"
+  | Plus s -> "(" ^ reg2Str s ^ ")+"
+  | OTHER -> "other"
+  | _ -> "xx"
 
 let rec print_str_constraint fmt sc =
   match sc with
   | Name name -> Format.fprintf fmt "%s" name
   | IN_RE (lhs, rhs) ->
-      Format.fprintf fmt "str.in_re %a, %a" print_str_constraint lhs
-        print_str_constraint rhs
+      Format.fprintf fmt "str.in_re %a, %s" print_str_constraint lhs
+        (reg2Str rhs)
+  | IN_NFA (lhs, rhs) ->
+      Format.fprintf fmt "str.in_re %a, \n" print_str_constraint lhs ;
+      Transducer.SNFA.printNfa rhs
   | RegEx reg -> Format.fprintf fmt "%s" reg
   | REPLACE (s, p, r) -> Format.fprintf fmt "str.replace %s %s %s" s p r
   | StrEq (lhs, rhs) ->
@@ -45,6 +63,11 @@ let rec print_str_constraint fmt sc =
   | Concat (lhs, rhs) ->
       Format.fprintf fmt "str.++ %a %a" print_str_constraint lhs
         print_str_constraint rhs
+  | Union (lhs, rhs) ->
+      Format.fprintf fmt "str.union %a %a" print_str_constraint lhs
+        print_str_constraint rhs
+  | Star cons -> Format.fprintf fmt "str.+ %a" print_str_constraint cons
+  | Plus cons -> Format.fprintf fmt "str.* %a" print_str_constraint cons
   | OTHER -> Format.fprintf fmt "OTHER\n"
 
 let print_str_cons sc =
@@ -77,7 +100,7 @@ let rec term_str_constraint (tm : Std.Expr.term) =
           Option.some
             (IN_RE
                ( Option.get (term_str_constraint (List.nth args 0))
-               , RegEx (term_str (List.nth args 1)) ) )
+               , Option.get (term_str_constraint (List.nth args 1)) ) )
       | "replace" ->
           Option.some
             (REPLACE
@@ -89,12 +112,26 @@ let rec term_str_constraint (tm : Std.Expr.term) =
             (Concat
                ( Option.get (term_str_constraint (List.nth args 0))
                , Option.get (term_str_constraint (List.nth args 1)) ) )
+      | "∪" ->
+          Option.some
+            (Union
+               ( Option.get (term_str_constraint (List.nth args 0))
+               , Option.get (term_str_constraint (List.nth args 1)) ) )
+      | "of_string" -> Option.some (RegEx (term_str (List.nth args 0)))
       | "=" ->
           Option.some
             (StrEq
                ( Option.get (term_str_constraint (List.nth args 0))
                , Option.get (term_str_constraint (List.nth args 1)) ) )
-      | _ -> Some OTHER )
+      | "+" ->
+          Option.some
+            (Plus (Option.get (term_str_constraint (List.nth args 0))))
+      | "*" ->
+          Option.some
+            (Star (Option.get (term_str_constraint (List.nth args 0))))
+      | _ ->
+          Format.fprintf Format.std_formatter "%s\n" (term_str op) ;
+          Some OTHER )
     | _ -> None )
 
 module State = Dolmen_loop.State
@@ -106,3 +143,60 @@ let stmt_content (stmt : Typer.typechecked Typer.stmt) =
   match stmt with
   | {id= _; loc= _; contents; attrs= _; implicit= _} -> (
     match contents with `Hyp f -> term_str_constraint f | _ -> None )
+
+(* Instantiate a module for parsing logic languages *)
+module Logic =
+  Class.Logic.Make (Std.Loc) (Std.Id) (Std.Term) (Std.Statement)
+    (Std.Extensions)
+
+(* instantiate the modules for typechecking *)
+
+exception FormatError of string
+
+(* Parse a file and return the statements of the file. *)
+let parseSMT file =
+  (* Parse the file, and we get a tuple: - format: the guessed format
+     (according to the file extension) - loc: some meta-data used for source
+     file locations - statements: a lazy list of top-level directives found
+     in the file *)
+  let format, loc, parsed_statements_lazy = Logic.parse_all (`File file) in
+  (* Any lexing/parsing error will be raised when forcing the lazy list of
+     statements *)
+  let parsed_statements = Lazy.force parsed_statements_lazy in
+  (* You can match on the detected format of the input *)
+  let () =
+    match format with
+    | Logic.Smtlib2 _ -> ()
+    | Logic.Dimacs | Logic.ICNF | Logic.Alt_ergo | Logic.Tptp _ | Logic.Zf ->
+        raise (FormatError "Only SMT file accepted")
+  in
+  (* Typing errors have a retcode associated to them, so that any typing
+     error results in *)
+  (* create the logic file corresponding to our input *)
+  let lang : Dolmen_loop.Logic.language = Smtlib2 `Latest in
+  let logic_file = State.mk_file ~lang ~loc "./" (`File file) in
+  let response_file = State.mk_file "" (`File "this is unused") in
+  (* let's create the initial state *)
+  let state =
+    State.empty
+    |> State.init ~debug:false ~report_style:Contextual ~max_warn:max_int
+         ~reports:(Dolmen_loop.Report.Conf.mk ~default:Enabled)
+         ~response_file
+           (* these limits are ignored in this example; to actually enforce
+              the limits, one has to use the `run` function from
+              `Dolmen_loop.Pipeline` *)
+         ~time_limit:0. ~size_limit:0.
+    |> State.set State.logic_file logic_file
+    |> Typer_aux.init
+    |> Typer.init ~type_check:true
+  in
+  (* We can loop over the parsed statements to generated the typed
+     statements *)
+  let _final_state, rev_typed_stmts =
+    List.fold_left
+      (fun (state, acc) parsed_stmt ->
+        let state, typed_stmts = Typer.check state parsed_stmt in
+        (state, List.rev_append typed_stmts acc) )
+      (state, []) parsed_statements
+  in
+  List.rev rev_typed_stmts
