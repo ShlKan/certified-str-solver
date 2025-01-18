@@ -30,6 +30,7 @@ type strConstrain =
   | REPLACE of string * string * string
   | StrEq of strConstrain * strConstrain
   | Concat of strConstrain * strConstrain
+  | Range of string * string
   | Union of strConstrain * strConstrain
   | Star of strConstrain
   | Plus of strConstrain
@@ -43,8 +44,9 @@ let rec reg2Str (c : strConstrain) =
   | RegEx s -> String.sub s 1 (String.length s - 2)
   | Star s -> "(" ^ reg2Str s ^ ")*"
   | Plus s -> "(" ^ reg2Str s ^ ")+"
-  | OTHER -> "other"
-  | _ -> "xx"
+  | Range (s1, s2) -> "[" ^ s1 ^ "-" ^ s2 ^ "]"
+  | OTHER -> "Other"
+  | _ -> "Error"
 
 let rec print_str_constraint fmt sc =
   match sc with
@@ -68,6 +70,7 @@ let rec print_str_constraint fmt sc =
         print_str_constraint rhs
   | Star cons -> Format.fprintf fmt "str.+ %a" print_str_constraint cons
   | Plus cons -> Format.fprintf fmt "str.* %a" print_str_constraint cons
+  | Range (s1, s2) -> Format.fprintf fmt "str.range %s %s" s1 s2
   | OTHER -> Format.fprintf fmt "OTHER\n"
 
 let print_str_cons sc =
@@ -129,8 +132,14 @@ let rec term_str_constraint (tm : Std.Expr.term) =
       | "*" ->
           Option.some
             (Star (Option.get (term_str_constraint (List.nth args 0))))
+      | "range" ->
+          Option.some
+            (Range
+               ( String.sub (term_str (List.nth args 0)) 1 1
+               , String.sub (term_str (List.nth args 1)) 1 1 ) )
       | _ ->
-          Format.fprintf Format.std_formatter "%s\n" (term_str op) ;
+          Format.fprintf Format.std_formatter "[%s] %d\n" (term_str op)
+            (List.length args) ;
           Some OTHER )
     | _ -> None )
 
