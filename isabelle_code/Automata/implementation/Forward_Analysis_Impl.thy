@@ -9,12 +9,13 @@ imports "../Forward_Analysis" NFAByLTS_Interval
 begin
 
 locale Forward_Analysis_Impl =
-   nfa: nfa_dfa_by_lts_interval_defs s_ops ss_ops l_ops d_nfa_ops dd_nfa_ops +
+   nfa: nfa_dfa_by_lts_interval_defs s_ops ss_ops l_ops lt_ops d_nfa_ops dd_nfa_ops  +
     s: StdSet s_ops +
     ss: StdSet ss_ops +
-    l: StdSet l_ops  +
-    d_nfa: StdLTS d_nfa_ops elemI +
-    dd_nfa: StdLTS dd_nfa_ops elemI  +
+    l: StdSet l_ops  +  
+    lt: StdSet lt_ops   (* Set operations on labels *) +  
+    d_nfa: StdLTS d_nfa_ops elemIs +
+    dd_nfa: StdLTS dd_nfa_ops elemIs  +
     sss: StdSet sss_ops +
     sp: StdSet sp_ops +    
     rc: StdMap rc_ops +
@@ -23,8 +24,9 @@ locale Forward_Analysis_Impl =
     for s_ops::"('q::{NFA_states},'q_set,_) set_ops_scheme"
     and ss_ops::"('q \<times> 'q,'qq_set,_) set_ops_scheme"
     and l_ops::"('a ::linorder,'a_set,_) set_ops_scheme"
-    and d_nfa_ops::"('q,'a \<times> 'a,'a,'d_nfa,_) lts_ops_scheme"
-    and dd_nfa_ops::"('q \<times> 'q,'a \<times> 'a,'a,'dd_nfa,_) lts_ops_scheme" and
+    and lt_ops::"(('a::linorder \<times> 'a) list, 'ai_set ,_) set_ops_scheme"
+    and d_nfa_ops::"('q,('a \<times> 'a) list,'a,'d_nfa,_) lts_ops_scheme"
+    and dd_nfa_ops::"('q \<times> 'q, ('a \<times> 'a) list,'a,'dd_nfa,_) lts_ops_scheme" and
     sss_ops::"('v::linorder, 'v_set,_) set_ops_scheme" and
     sp_ops::"('v \<times> 'v, 'v_v_set,_) set_ops_scheme" and
     rm_ops :: "('v, 'q_set \<times> 'd_nfa \<times> 'q_set \<times> 'q_set, 'mm, _) map_ops_scheme" and
@@ -252,6 +254,7 @@ term Pair
 definition L_eq where
            "L_eq \<alpha> invar = {(x, y). \<L> y = \<L> (\<alpha> x) \<and> NFA y \<and>invar x}"
 
+term nfa.bool_comb_impl
 
 lemma language_var_impl_correct :
    fixes \<alpha>1 :: "('q,'a::linorder,'nfa) nfa_\<alpha>"
@@ -268,27 +271,28 @@ lemma language_var_impl_correct :
     and it_1_nfa_OK: "lts_succ_label_it nfa.d_nfa.\<alpha> nfa.d_nfa.invar it_1_nfa"
     and it_2_nfa_OK: "lts_succ_it nfa.d_nfa.\<alpha> nfa.d_nfa.invar it_2_nfa"
     and \<Delta>_\<A>1: "\<And> n1. nfa.nfa.nfa_invar_NFA n1 \<Longrightarrow> 
-          \<exists>D1. {(q, semI a, q')| q a q'. (q, a, q') \<in> D1} = \<Delta> (nfa.nfa.nfa_\<alpha> n1) \<and>
+          \<exists>D1. {(q, semIs a, q')| q a q'. (q, a, q') \<in> D1} = \<Delta> (nfa.nfa.nfa_\<alpha> n1) \<and>
                finite D1"
     and \<Delta>_\<A>2: "\<And> n2. nfa.nfa.nfa_invar_NFA n2 \<Longrightarrow> 
-          \<exists>D2. {(q, semI a, q')| q a q'. (q, a, q') \<in> D2} = \<Delta> (nfa.nfa.nfa_\<alpha> n2) \<and>
+          \<exists>D2. {(q, semIs a, q')| q a q'. (q, a, q') \<in> D2} = \<Delta> (nfa.nfa.nfa_\<alpha> n2) \<and>
                finite D2"
-    and \<Delta>_it_ok1: "\<And> q D1 n1. {(q, semI a, q') |q a q'. (q, a, q') \<in> D1} = 
+    and \<Delta>_it_ok1: "\<And> q D1 n1. {(q, semIs a, q') |q a q'. (q, a, q') \<in> D1} = 
        \<Delta> (nfa.nfa.nfa_\<alpha> n1) \<Longrightarrow>
        finite D1 \<Longrightarrow>
        nfa.nfa.nfa_invar_NFA n1 \<Longrightarrow>
        set_iterator_genord (it_1_nfa (nfa.nfa.nfa_trans n1) q) {(a, q'). (q, a, q') \<in> D1}
         (\<lambda>_ _. True)"
-    and \<Delta>_it_ok2: "\<And> q D2 n2 a. {(q, semI a, q') |q a q'. (q, a, q') \<in> D2} = 
+    and \<Delta>_it_ok2: "\<And> q D2 n2 a. {(q, semIs a, q') |q a q'. (q, a, q') \<in> D2} = 
        \<Delta> (nfa.nfa.nfa_\<alpha> n2) \<Longrightarrow>
        finite D2 \<Longrightarrow>
        nfa.nfa.nfa_invar_NFA n2 \<Longrightarrow>
        set_iterator_genord (it_2_nfa (nfa.nfa.nfa_trans n2) q a) 
     {(a, q'). (q, a, q') \<in> D2}
-        (\<lambda>_ _. True)" and
+        (\<lambda>_ _. True)" 
+(*
     sem_OK: "\<And>n1 n2 D1 D2.
-      {(q, semI a, q') |q a q'. (q, a, q') \<in> D1} = \<Delta> (nfa.nfa.nfa_\<alpha> n1) \<Longrightarrow>
-      {(q, semI a, q') |q a q'. (q, a, q') \<in> D2} = \<Delta> (nfa.nfa.nfa_\<alpha> n2) \<Longrightarrow>
+      {(q, semIs a, q') |q a q'. (q, a, q') \<in> D1} = \<Delta> (nfa.nfa.nfa_\<alpha> n1) \<Longrightarrow>
+      {(q, semIs a, q') |q a q'. (q, a, q') \<in> D2} = \<Delta> (nfa.nfa.nfa_\<alpha> n2) \<Longrightarrow>
       nfa.nfa.nfa_invar_NFA n1 \<Longrightarrow>
       nfa.nfa.nfa_invar_NFA n2 \<Longrightarrow>
       \<forall>q a b aa ba q'.
@@ -297,9 +301,9 @@ lemma language_var_impl_correct :
              (q, a, q')
              \<in> {((q1, q2), (a1, a2), q1', q2') |q1 a1 q1' q2 a2 q2'.
                  (q1, a1, q1') \<in> D1 \<and> (q2, a2, q2') \<in> D2}} \<longrightarrow>
-         a \<le> b \<and> aa \<le> ba"       
+         a \<le> b \<and> aa \<le> ba" *)      
     and qm_ops2_OK: "StdMap qm_ops2"
-    and wf_target: "nfa_dfa_by_lts_interval_defs s_ops ss_ops l_ops d_nfa_ops dd_nfa_ops"
+    and wf_target: "nfa_dfa_by_lts_interval_defs s_ops ss_ops l_ops lt_ops d_nfa_ops dd_nfa_ops"
     and im_OK: "set_image nfa.s.\<alpha> nfa.s.invar (set_op_\<alpha> ss_ops) (set_op_invar ss_ops) im1"
     and im2_OK: "lts_image nfa.d_nfa.\<alpha> nfa.d_nfa.invar 
                  (clts_op_\<alpha> dd_nfa_ops) (clts_op_invar dd_nfa_ops) im2"
@@ -308,13 +312,13 @@ lemma language_var_impl_correct :
     and it_3_nfa_OK: "lts_connect_it nfa.dd_nfa.\<alpha> nfa.dd_nfa.invar 
                                      nfa.ss.\<alpha> nfa.ss.invar it_3_nfa"
     and \<Delta>_\<A>1': "\<And> n1. nfa.nfa_invarp_NFA n1 \<Longrightarrow> 
-          \<exists>D1. {(q, semI a, q')| q a q'. (q, a, q') \<in> D1} = 
+          \<exists>D1. {(q, semIs a, q')| q a q'. (q, a, q') \<in> D1} = 
                 \<Delta> (nfa.nfa_\<alpha>p n1) \<and>
                finite D1"
     and \<Delta>_\<A>2': "\<And> n2. nfa.nfa_invarp_NFA n2 \<Longrightarrow> 
-          \<exists>D2. {(q, semI a, q')| q a q'. (q, a, q') \<in> D2} = \<Delta> (nfa.nfa_\<alpha>p n2) \<and>
+          \<exists>D2. {(q, semIs a, q')| q a q'. (q, a, q') \<in> D2} = \<Delta> (nfa.nfa_\<alpha>p n2) \<and>
                finite D2"
-    and \<Delta>_it_ok1': "\<And> q D1 n1. {(q, semI a, q') |q a q'. (q, a, q') \<in> D1} = 
+    and \<Delta>_it_ok1': "\<And> q D1 n1. {(q, semIs a, q') |q a q'. (q, a, q') \<in> D1} = 
        \<Delta> (nfa.nfa_\<alpha>p n1) \<Longrightarrow>
        finite D1 \<Longrightarrow>
        nfa.nfa_invarp_NFA n1 \<Longrightarrow>
@@ -322,7 +326,7 @@ lemma language_var_impl_correct :
                     n1) q) {(a, q')| a q'. 
           (q, a, q') \<in> D1}
         (\<lambda>_ _. True)"
-    and \<Delta>_it_ok2': "\<And> q D2 n2. {(q, semI a, q') |q a q'. (q, a, q') \<in> D2} = 
+    and \<Delta>_it_ok2': "\<And> q D2 n2. {(q, semIs a, q') |q a q'. (q, a, q') \<in> D2} = 
        \<Delta> (nfa.nfa_\<alpha>p n2) \<Longrightarrow>
        finite D2 \<Longrightarrow>
        nfa.nfa_invarp_NFA n2 \<Longrightarrow>
@@ -331,7 +335,7 @@ lemma language_var_impl_correct :
     {(a, q')| a q'. (q, a, q') \<in> D2}
         (\<lambda>_ _. True)"
     and \<Delta>_it_ok3: "\<And> q D1 n1 n2. 
-       {(q, semI a, q') |q a q'. (q, a, q') \<in> D1} = 
+       {(q, semIs a, q') |q a q'. (q, a, q') \<in> D1} = 
        \<Delta> (nfa.nfa_\<alpha>p n1) \<Longrightarrow>
        finite D1 \<Longrightarrow>
        nfa.nfa_invarp_NFA n1 \<Longrightarrow>
@@ -344,10 +348,10 @@ lemma language_var_impl_correct :
                                    \<and> q' \<in> (nfa.ss.\<alpha> (nfa.nfa.nfa_initialp n2))}
         (\<lambda>_ _. True)"
     and inj_12: "\<And> q n1 n2 D1 D2. 
-      {(q, semI a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (nfa.nfa_\<alpha>p n1) \<and> finite D1 \<Longrightarrow> 
-      {(q, semI a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (nfa.nfa_\<alpha>p n2) \<and> finite D2 \<Longrightarrow>
+      {(q, semIs a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (nfa.nfa_\<alpha>p n1) \<and> finite D1 \<Longrightarrow> 
+      {(q, semIs a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (nfa.nfa_\<alpha>p n2) \<and> finite D2 \<Longrightarrow>
       nfa.nfa_invarp_NFA n1 \<Longrightarrow> nfa.nfa_invarp_NFA n2 \<Longrightarrow>
-      inj_on (\<lambda>(a, y). (semI a, y))
+      inj_on (\<lambda>(a, y). (semIs a, y))
       {(a, q').
        (q, a, q')
         \<in> {(q, a, q').
@@ -2107,7 +2111,7 @@ lemma comp_indegree_imp_correct :
    apply assumption
    using comp_indegree_v_imp_correct
    apply (meson rc_OK subsetD)
-   by simp
+   by simp 
 
 definition indegree_imp where
 "indegree_imp S rc = do {
@@ -2348,5 +2352,4 @@ lemmas rs_indegree_code [code] =
 
 
 end
-
 

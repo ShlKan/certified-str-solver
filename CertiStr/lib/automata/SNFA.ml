@@ -14,6 +14,15 @@ let printTransSet ori trans =
         ss )
     trans
 
+let universalAuto =
+  { start= StateSet.add (Int32.of_int 0) StateSet.empty
+  ; finals= StateSet.add (Int32.of_int 0) StateSet.empty
+  ; next=
+      (fun x ->
+        CharMap.add "a-Z"
+          (StateSet.add (Int32.of_int 0) StateSet.empty)
+          CharMap.empty ) }
+
 let rec reachableStates (reached : StateSet.t) (state : state)
     (next : state -> transitions) =
   let reached = StateSet.add state reached in

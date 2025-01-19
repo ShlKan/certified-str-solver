@@ -1,5 +1,3 @@
-
-
 (*  
     Authors:     Shuanglong Kan <shuanglong@uni-kl.de>           
 *)
@@ -503,6 +501,7 @@ lemma Forward_analysis_unsat:
         rm' :: "'a \<Rightarrow> ('g, 'h) NFA_rec option" 
   assumes rm_v_OK: "\<And> v. v \<in> dom rm \<longrightarrow> NFA (the (rm v))"
       and rc_OK: "dom rc \<subseteq> S \<and> (\<forall> v \<in> S. v \<in> dom rc \<longrightarrow> finite (the (rc v)))" 
+      and rc_wf: "\<forall>v1 v2 x. x \<in> dom rc \<and> (v1, v2) \<in> the (rc x) \<longrightarrow> v1 \<in> S \<and> v2 \<in> S"
       and rm_OK: "S = dom rm" 
       and finite_S: "finite S"
       and S_ok: "S = \<Union> (set l) \<and> acyclic rc l"
@@ -511,9 +510,13 @@ lemma Forward_analysis_unsat:
     shows "(\<exists> v. v \<in> dom rm' \<and> \<L> (the (rm' v)) = {}) \<longrightarrow>
             (\<forall> ag. \<not> (sat_pred_as S rc rm ag))"
 proof -
+  from S_ok 
+  have S_ok': "\<exists>l. S = \<Union> (set l) \<and> Forward_Analysis.acyclic rc l"
+    by blast
+  note fac =  Forward_analysis_correct[OF rm_v_OK rc_OK rc_wf rm_OK S_ok' finite_S a_neq_b]
   from result_Ok have impf: "forward_spec rm' S rc rm"
     unfolding forward_spec_def
-    using Forward_analysis_correct[OF rm_v_OK rc_OK  rm_OK finite_S a_neq_b]
+    using fac
     by auto
 
   note imp1 =  Forward_analysis_unsat_gen[OF rm_v_OK rc_OK rm_OK finite_S S_ok impf]
@@ -2255,8 +2258,8 @@ proof -
    case False note v_in_a = this
    from p2 acyclic.simps(2)[of rc a l] cce1
    have suc1: "v \<in> dom rc \<longrightarrow>  (\<forall> (v1, v2) \<in> the (rc v). v1 \<in> S - a \<and> v2 \<in> S - a)"
-     by (smt acyclic_dep2 case_prodI2 cce1 v_in_a)
-
+     using acyclic_dep2 case_prodI2 cce1 v_in_a
+     by (metis (no_types, lifting))
    from p5
    have suc2: "\<forall> v2 w . v2 \<in> S - a  \<longrightarrow> NFA_accept (the (rm' v2)) w = 
           NFA_accept (the ((rm' |` (S - a)) v2)) w"
@@ -3083,7 +3086,8 @@ qed qed
                 (v1, v2) \<Rightarrow>
                   w = ?ag v1 @ ?ag v2 \<and>
                   ?ag v1 \<in> \<L> (the (rm v1)) \<and> ?ag v2 \<in> \<L> (the (rm v2)))"
-    by (smt case_prodD case_prodI2)
+    using case_prodD case_prodI2
+    by force
 
   from imp1 w1w2' hop1 hop2 have sss4: "
     ((case x of (v1, v2) \<Rightarrow>
@@ -3263,7 +3267,8 @@ qed qed qed qed
          have "va = v \<longrightarrow> (\<exists>w w1 w2.
           w1 = ag' v1 \<and>
           w2 = ag' v2 \<and> w = w1 @ w2 \<and> w1 \<in> \<L> (the (rm v1)) \<and> w2 \<in> \<L> (the (rm v2)))"
-           by (smt \<open>\<And>w' va. va \<in> reachable_set rc v \<and> w' = ag' va \<Longrightarrow> w' \<in> \<L> (the (rm va))\<close> \<open>ag' = ag(v := w)\<close> case_prodD fun_upd_other)
+           using \<open>\<And>w' va. va \<in> reachable_set rc v \<and> w' = ag' va \<Longrightarrow> w' \<in> \<L> (the (rm va))\<close> \<open>ag' = ag(v := w)\<close> case_prodD fun_upd_other
+           by fastforce
          show "\<exists>w w1 w2.
           w1 = ag' v1 \<and>
           w2 = ag' v2 \<and> w = w1 @ w2 \<and> w1 \<in> \<L> (the (rm v1)) \<and> w2 \<in> \<L> (the (rm v2))" 
@@ -4248,7 +4253,6 @@ qed qed qed
 
 
 end
-
 
 
 

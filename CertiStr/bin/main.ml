@@ -6,8 +6,7 @@ let main file =
   if Solver.check_constraints strCons = false then
     Format.fprintf Format.err_formatter "Unsupported string constraints." ;
   let normalStrCons = Solver.normalStrConstraints strCons in
-  let ss, cc, cr = Solver.genStrConstraints normalStrCons in
-  Solver.print_vars ss ; Solver.print_conC cc ; Solver.print_conR cr
+  Solver.solve normalStrCons
 ;;
 
 main Sys.argv.(1)

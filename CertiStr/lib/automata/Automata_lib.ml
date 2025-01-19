@@ -126,9 +126,17 @@ end
 (*struct Bits_Integer*)
 
 module Automata_lib : sig
+  type 'a enum
+
   type 'a equal = {equal: 'a -> 'a -> bool}
 
   type nat = Nat of Z.t
+
+  type 'a nFA_states = {states_enumerate: nat -> 'a}
+
+  type ('b, 'a) rbt
+
+  type 'a set
 
   type 'a ord = {less_eq: 'a -> 'a -> bool; less: 'a -> 'a -> bool}
 
@@ -138,391 +146,195 @@ module Automata_lib : sig
 
   type 'a linorder = {order_linorder: 'a order}
 
-  type 'a nFA_states = {states_enumerate: nat -> 'a}
-
-  type ('b, 'a) rbt
-
   val integer_of_nat : nat -> Z.t
 
   val nat_of_integer : Z.t -> nat
 
-  val equal_prod : 'a equal -> 'b equal -> ('a * 'b) equal
-
-  val linorder_prod : 'a linorder -> 'b linorder -> ('a * 'b) linorder
-
-  val rs_nfa_qsize :
-       'a nFA_states * 'a linorder
-    -> 'b linorder
-    -> ('a, unit) rbt
-       * ( ('b * 'b) list
-         * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
-           * (('a, unit) rbt * ('a, unit) rbt) ) )
-    -> nat
-
-  val rs_nfa_union :
-       'a nFA_states * 'a linorder
-    -> 'b equal * 'b linorder
-    -> ('a, unit) rbt
-       * ( ('b * 'b) list
-         * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
-           * (('a, unit) rbt * ('a, unit) rbt) ) )
-    -> ('a, unit) rbt
-       * ( ('b * 'b) list
-         * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
-           * (('a, unit) rbt * ('a, unit) rbt) ) )
-    -> ('a, unit) rbt
-       * ( ('b * 'b) list
-         * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
-           * (('a, unit) rbt * ('a, unit) rbt) ) )
-
   val prod_encode : nat * nat -> nat
-
-  val rs_nfa_rename :
-       'a linorder
-    -> 'b equal * 'b linorder
-    -> 'c linorder
-    -> ('a, unit) rbt
-       * ( ('b * 'b) list
-         * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
-           * (('a, unit) rbt * ('a, unit) rbt) ) )
-    -> ('a -> 'c)
-    -> ('c, unit) rbt
-       * ( ('b * 'b) list
-         * ( ('c, (('b * 'b) list, ('c, unit) rbt) rbt) rbt
-           * (('c, unit) rbt * ('c, unit) rbt) ) )
-
-  val rs_split_trans_code :
-       'a equal * 'a linorder
-    -> 'b nFA_states * 'b linorder
-    -> ('a -> 'a)
-    -> ('a -> 'a)
-    -> ('b, (('a * 'a) list, ('b, unit) rbt) rbt) rbt
-    -> ('b, (('a * 'a) list, ('b, unit) rbt) rbt) rbt
-
-  val rs_nfa_uniq :
-       'a equal * 'a linorder
-    -> 'd nFA_states * 'd linorder
-    -> ('a -> 'a)
-    -> ('a -> 'a)
-    -> 'b
-       * ('c * (('d, (('a * 'a) list, ('d, unit) rbt) rbt) rbt * ('e * 'f)))
-    -> 'b
-       * ('c * (('d, (('a * 'a) list, ('d, unit) rbt) rbt) rbt * ('e * 'f)))
 
   val rs_nfa_concate :
        'a nFA_states * 'a linorder
-    -> 'b equal * 'b linorder
+    -> 'b linorder
     -> ('a, unit) rbt
-       * ( ('b * 'b) list
-         * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
-           * (('a, unit) rbt * ('a, unit) rbt) ) )
+       * ( ('a, ('b * 'b, ('a, unit) rbt) rbt) rbt
+         * (('a, unit) rbt * ('a, unit) rbt) )
     -> ('a, unit) rbt
-       * ( ('b * 'b) list
-         * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
-           * (('a, unit) rbt * ('a, unit) rbt) ) )
+       * ( ('a, ('b * 'b, ('a, unit) rbt) rbt) rbt
+         * (('a, unit) rbt * ('a, unit) rbt) )
     -> ('a, unit) rbt
-       * ( ('b * 'b) list
-         * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
-           * (('a, unit) rbt * ('a, unit) rbt) ) )
+       * ( ('a, ('b * 'b, ('a, unit) rbt) rbt) rbt
+         * (('a, unit) rbt * ('a, unit) rbt) )
 
   val rs_nfa_destruct :
        'a nFA_states * 'a linorder
-    -> 'c equal * 'c linorder
+    -> 'b linorder
     -> ('a, unit) rbt
-       * ( 'b
-         * ( ('a, (('c * 'c) list, ('a, unit) rbt) rbt) rbt
-           * (('a, unit) rbt * ('a, unit) rbt) ) )
-    -> 'a list
-       * ('b * (('a * (('c * 'c) list * 'a)) list * ('a list * 'a list)))
+       * ( ('a, ('b * 'b, ('a, unit) rbt) rbt) rbt
+         * (('a, unit) rbt * ('a, unit) rbt) )
+    -> 'a list * (('a * (('b * 'b) * 'a)) list * ('a list * 'a list))
 
   val rs_nfa_bool_comb :
        'a nFA_states * 'a linorder
-    -> 'b equal * 'b linorder
+    -> 'b linorder
     -> (bool -> bool -> bool)
     -> ('a, unit) rbt
-       * ( ('b * 'b) list
-         * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
-           * (('a, unit) rbt * ('a, unit) rbt) ) )
+       * ( ('a, ('b * 'b, ('a, unit) rbt) rbt) rbt
+         * (('a, unit) rbt * ('a, unit) rbt) )
     -> ('a, unit) rbt
-       * ( ('b * 'b) list
-         * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
-           * (('a, unit) rbt * ('a, unit) rbt) ) )
+       * ( ('a, ('b * 'b, ('a, unit) rbt) rbt) rbt
+         * (('a, unit) rbt * ('a, unit) rbt) )
     -> ('a, unit) rbt
-       * ( ('b * 'b) list
-         * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
-           * (('a, unit) rbt * ('a, unit) rbt) ) )
+       * ( ('a, ('b * 'b, ('a, unit) rbt) rbt) rbt
+         * (('a, unit) rbt * ('a, unit) rbt) )
 
-  val rs_nfa_elim :
-       'a equal * 'a nFA_states * 'a linorder
-    -> 'c equal * 'c linorder
+  val rs_indegree :
+       'a equal * 'a linorder
     -> ('a, unit) rbt
-       * ( 'b
-         * ( ('a, (('c * 'c) list, ('a, unit) rbt) rbt) rbt
-           * (('a * 'a, unit) rbt * (('a, unit) rbt * ('a, unit) rbt)) ) )
-    -> ('a, unit) rbt
-       * ( 'b
-         * ( ('a, (('c * 'c) list, ('a, unit) rbt) rbt) rbt
-           * (('a, unit) rbt * ('a, unit) rbt) ) )
-
-  val rs_nfa_complement :
-       'a nFA_states * 'a linorder
-    -> ('a, unit) rbt * ('b * ('c * ('d * ('a, unit) rbt)))
-    -> ('a, unit) rbt * ('b * ('c * ('d * ('a, unit) rbt)))
-
-  val rs_nfa_determinise :
-       'a nFA_states * 'a linorder
-    -> 'b equal * 'b linorder
-    -> ('a, unit) rbt
-       * ( ('b * 'b) list
-         * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
-           * (('a, unit) rbt * ('a, unit) rbt) ) )
-    -> ('a, unit) rbt
-       * ( ('b * 'b) list
-         * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
-           * (('a, unit) rbt * ('a, unit) rbt) ) )
+    -> ('a, ('a * 'a, unit) rbt) rbt
+    -> bool
 
   val rs_nfa_concate_rename :
        'a nFA_states * 'a linorder
-    -> 'b equal * 'b linorder
+    -> 'b linorder
     -> ('a -> 'a * 'a)
     -> ('a -> 'a * 'a)
     -> ('a, unit) rbt
-       * ( ('b * 'b) list
-         * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
-           * (('a, unit) rbt * ('a, unit) rbt) ) )
+       * ( ('a, ('b * 'b, ('a, unit) rbt) rbt) rbt
+         * (('a, unit) rbt * ('a, unit) rbt) )
     -> ('a, unit) rbt
-       * ( ('b * 'b) list
-         * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
-           * (('a, unit) rbt * ('a, unit) rbt) ) )
+       * ( ('a, ('b * 'b, ('a, unit) rbt) rbt) rbt
+         * (('a, unit) rbt * ('a, unit) rbt) )
     -> ('a, unit) rbt
-       * ( ('b * 'b) list
-         * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
-           * (('a, unit) rbt * ('a, unit) rbt) ) )
+       * ( ('a, ('b * 'b, ('a, unit) rbt) rbt) rbt
+         * (('a, unit) rbt * ('a, unit) rbt) )
 
-  val rs_nfa_normal :
-       'a nFA_states * 'a linorder
-    -> 'b equal * 'b linorder
-    -> ('a * 'a, unit) rbt
-       * ( ('b * 'b) list
-         * ( ('a * 'a, (('b * 'b) list, ('a * 'a, unit) rbt) rbt) rbt
-           * (('a * 'a, unit) rbt * ('a * 'a, unit) rbt) ) )
-    -> ('a, unit) rbt
-       * ( ('b * 'b) list
-         * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
-           * (('a, unit) rbt * ('a, unit) rbt) ) )
+  val rs_S_to_list : 'a linorder -> ('a, unit) rbt -> 'a list
 
-  val rs_nft_destruct :
-       'a nFA_states * 'a linorder
-    -> 'c equal * 'c linorder
-    -> 'd linorder
-    -> ('a, unit) rbt
-       * ( 'b
-         * ( ('a, (('c * 'c) list option * 'd, ('a, unit) rbt) rbt) rbt
-           * (('a, unit) rbt * (('a, unit) rbt * 'e)) ) )
-    -> 'a list
-       * ( 'b
-         * ( ('a * ((('c * 'c) list option * 'd) * 'a)) list
-           * ('a list * ('a list * 'e)) ) )
+  val rs_rc_to_list :
+       'a enum * 'a linorder
+    -> ('a, ('a * 'a, unit) rbt) rbt
+    -> ('a * ('a * 'a) set) list
 
-  val rs_nfae_destruct :
-       'a nFA_states * 'a linorder
-    -> 'c equal * 'c linorder
-    -> ('a * 'a, unit) rbt
-       * ( 'b
-         * ( ('a * 'a, (('c * 'c) list, ('a * 'a, unit) rbt) rbt) rbt
-           * ( (('a * 'a) * ('a * 'a), unit) rbt
-             * (('a * 'a, unit) rbt * ('a * 'a, unit) rbt) ) ) )
-    -> ('a * 'a) list
-       * ( 'b
-         * ( (('a * 'a) * (('c * 'c) list * ('a * 'a))) list
-           * ( (('a * 'a) * ('a * 'a)) list
-             * (('a * 'a) list * ('a * 'a) list) ) ) )
-
-  val rs_nfa_tran_complement :
-       'a equal * 'a linorder
-    -> 'b equal * 'b nFA_states * 'b linorder
-    -> ('a -> 'a)
-    -> ('a -> 'a)
-    -> ('b, unit) rbt
-       * ( ('a * 'a) list
-         * (('b, (('a * 'a) list, ('b, unit) rbt) rbt) rbt * ('c * 'd)) )
-    -> 'b
-    -> ('b, unit) rbt
-       * ( ('a * 'a) list
-         * (('b, (('a * 'a) list, ('b, unit) rbt) rbt) rbt * ('c * 'd)) )
+  val rs_rm_to_list :
+       'a linorder
+    -> 'b nFA_states * 'b linorder
+    -> 'c linorder
+    -> ( 'a
+       , ('b, unit) rbt
+         * ( ('b, ('c * 'c, ('b, unit) rbt) rbt) rbt
+           * (('b, unit) rbt * ('b, unit) rbt) ) )
+       rbt
+    -> ( 'a
+       * ( ('b, unit) rbt
+         * ( ('b, ('c * 'c, ('b, unit) rbt) rbt) rbt
+           * (('b, unit) rbt * ('b, unit) rbt) ) ) )
+       list
 
   val rs_nfa_construct_interval :
        'a nFA_states * 'a linorder
-    -> 'b equal * 'b linorder
-    -> 'a list
-       * ( ('b * 'b) list
-         * (('a * (('b * 'b) list * 'a)) list * ('a list * 'a list)) )
+    -> 'b linorder
+    -> 'a list * (('a * (('b * 'b) * 'a)) list * ('a list * 'a list))
     -> ('a, unit) rbt
-       * ( ('b * 'b) list
-         * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
-           * (('a, unit) rbt * ('a, unit) rbt) ) )
+       * ( ('a, ('b * 'b, ('a, unit) rbt) rbt) rbt
+         * (('a, unit) rbt * ('a, unit) rbt) )
 
   val rs_nfa_construct_reachable :
        'a nFA_states * 'a linorder
-    -> 'b equal * 'b linorder
+    -> 'b linorder
     -> ('a, unit) rbt
-       * ( ('b * 'b) list
-         * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
-           * (('a, unit) rbt * ('a, unit) rbt) ) )
+       * ( ('a, ('b * 'b, ('a, unit) rbt) rbt) rbt
+         * (('a, unit) rbt * ('a, unit) rbt) )
     -> ('a, unit) rbt
-       * ( (   ('a, unit) rbt
-               * ( ('b * 'b) list
-                 * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
-                   * (('a, unit) rbt * ('a, unit) rbt) ) )
-            -> ('b * 'b) list )
-         * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
-           * (('a, unit) rbt * ('a, unit) rbt) ) )
+       * ( ('a, ('b * 'b, ('a, unit) rbt) rbt) rbt
+         * (('a, unit) rbt * ('a, unit) rbt) )
 
-  val rs_product_transducer :
-       'a nFA_states * 'a linorder
-    -> 'c equal * 'c linorder
-    -> 'd linorder
-    -> 'f equal * 'f linorder
-    -> ('a, unit) rbt
-       * ( 'b
-         * ( ('a, (('c * 'c) list option * 'd, ('a, unit) rbt) rbt) rbt
-           * ( ('a, unit) rbt
-             * (('a, unit) rbt * ('d -> 'e option -> ('f * 'f) list option))
-             ) ) )
-    -> ('a, unit) rbt
-       * ( 'g
-         * ( ('a, (('c * 'c) list, ('a, unit) rbt) rbt) rbt
-           * (('a, unit) rbt * ('a, unit) rbt) ) )
-    -> (   ('e option -> ('f * 'f) list option)
-        -> ('c * 'c) list
-        -> ('f * 'f) list option )
-    -> (('e option -> ('f * 'f) list option) -> ('c * 'c) list -> bool)
-    -> ('a * 'a, unit) rbt
-       * ( 'b
-         * ( ('a * 'a, (('f * 'f) list, ('a * 'a, unit) rbt) rbt) rbt
-           * ( (('a * 'a) * ('a * 'a), unit) rbt
-             * (('a * 'a, unit) rbt * ('a * 'a, unit) rbt) ) ) )
+  val rs_gen_S_from_list : 'a linorder -> 'a list -> ('a, unit) rbt
 
-  val rs_nft_construct_interval :
+  val rs_forward_analysis :
        'a nFA_states * 'a linorder
-    -> 'b equal * 'b linorder
+    -> 'b linorder
     -> 'c linorder
-    -> 'a list
-       * ( ('b * 'b) list
-         * ( ('a * ((('b * 'b) list option * 'c) * 'a)) list
-           * ( 'a list
-             * ('a list * ('c -> 'b option -> ('b * 'b) list option)) ) ) )
-    -> ('a, unit) rbt
-       * ( ('b * 'b) list
-         * ( ('a, (('b * 'b) list option * 'c, ('a, unit) rbt) rbt) rbt
-           * ( ('a, unit) rbt
-             * (('a, unit) rbt * ('c -> 'b option -> ('b * 'b) list option))
-             ) ) )
+    -> 'a
+    -> 'a
+    -> ('b, unit) rbt
+    -> ('b, ('b * 'b, unit) rbt) rbt
+    -> ( 'b
+       , ('a, unit) rbt
+         * ( ('a, ('c * 'c, ('a, unit) rbt) rbt) rbt
+           * (('a, unit) rbt * ('a, unit) rbt) ) )
+       rbt
+    -> ('b, unit) rbt
+       * ( ( 'b
+           , ('a, unit) rbt
+             * ( ('a, ('c * 'c, ('a, unit) rbt) rbt) rbt
+               * (('a, unit) rbt * ('a, unit) rbt) ) )
+           rbt
+         * ('b, unit) rbt )
+
+  val rs_gen_rc_from_list :
+       'a linorder
+    -> ('a * ('a * 'a) list) list
+    -> ('a, ('a * 'a, unit) rbt) rbt
+
+  val rs_gen_rm_from_list :
+       'a linorder
+    -> 'b nFA_states * 'b linorder
+    -> 'c linorder
+    -> ( 'a
+       * ( ('b, unit) rbt
+         * ( ('b, ('c * 'c, ('b, unit) rbt) rbt) rbt
+           * (('b, unit) rbt * ('b, unit) rbt) ) ) )
+       list
+    -> ( 'a
+       , ('b, unit) rbt
+         * ( ('b, ('c * 'c, ('b, unit) rbt) rbt) rbt
+           * (('b, unit) rbt * ('b, unit) rbt) ) )
+       rbt
 end = struct
-  type nat = Nat of Z.t
+  type 'a finite = unit
 
-  let rec integer_of_nat (Nat x) = x
+  type 'a enum =
+    { finite_enum: 'a finite
+    ; enum: 'a list
+    ; enum_all: ('a -> bool) -> bool
+    ; enum_ex: ('a -> bool) -> bool }
 
-  let rec less_eq_nat m n = Z.leq (integer_of_nat m) (integer_of_nat n)
+  let enum _A = _A.enum
+
+  let enum_all _A = _A.enum_all
+
+  let enum_ex _A = _A.enum_ex
+
+  let rec enum_all_prod _A _B p =
+    enum_all _A (fun x -> enum_all _B (fun y -> p (x, y)))
+
+  let rec enum_ex_prod _A _B p =
+    enum_ex _A (fun x -> enum_ex _B (fun y -> p (x, y)))
+
+  let rec map f x1 =
+    match (f, x1) with f, [] -> [] | f, x21 :: x22 -> f x21 :: map f x22
+
+  let rec product x0 uu =
+    match (x0, uu) with
+    | [], uu -> []
+    | x :: xs, ys -> map (fun a -> (x, a)) ys @ product xs ys
+
+  let rec enum_proda _A _B = product (enum _A) (enum _B)
+
+  let rec finite_prod _A _B = (() : ('a * 'b) finite)
+
+  let rec enum_prod _A _B =
+    ( { finite_enum= finite_prod _A.finite_enum _B.finite_enum
+      ; enum= enum_proda _A _B
+      ; enum_all= enum_all_prod _A _B
+      ; enum_ex= enum_ex_prod _A _B }
+      : ('a * 'b) enum )
 
   type 'a ord = {less_eq: 'a -> 'a -> bool; less: 'a -> 'a -> bool}
 
   let less_eq _A = _A.less_eq
 
   let less _A = _A.less
-
-  let rec less_nat m n = Z.lt (integer_of_nat m) (integer_of_nat n)
-
-  let ord_nat = ({less_eq= less_eq_nat; less= less_nat} : nat ord)
-
-  type 'a preorder = {ord_preorder: 'a ord}
-
-  type 'a order = {preorder_order: 'a preorder}
-
-  let preorder_nat = ({ord_preorder= ord_nat} : nat preorder)
-
-  let order_nat = ({preorder_order= preorder_nat} : nat order)
-
-  type 'a linorder = {order_linorder: 'a order}
-
-  let linorder_nat = ({order_linorder= order_nat} : nat linorder)
-
-  type ordera = Eq | Lt | Gt
-
-  type 'a equal = {equal: 'a -> 'a -> bool}
-
-  let equal _A = _A.equal
-
-  let rec eq _A a b = equal _A a b
-
-  let rec comparator_of (_A1, _A2) x y =
-    if less _A2.order_linorder.preorder_order.ord_preorder x y then Lt
-    else if eq _A1 x y then Eq
-    else Gt
-
-  let rec comparator_list comp_a x1 x2 =
-    match (comp_a, x1, x2) with
-    | comp_a, x :: xa, y :: ya -> (
-      match comp_a x y with
-      | Eq -> comparator_list comp_a xa ya
-      | Lt -> Lt
-      | Gt -> Gt )
-    | comp_a, x :: xa, [] -> Gt
-    | comp_a, [], y :: ya -> Lt
-    | comp_a, [], [] -> Eq
-
-  let rec le_of_comp acomp x y =
-    match acomp x y with Eq -> true | Lt -> true | Gt -> false
-
-  let rec less_eq_list (_A1, _A2) =
-    le_of_comp (comparator_list (comparator_of (_A1, _A2)))
-
-  let rec lt_of_comp acomp x y =
-    match acomp x y with Eq -> false | Lt -> true | Gt -> false
-
-  let rec less_list (_A1, _A2) =
-    lt_of_comp (comparator_list (comparator_of (_A1, _A2)))
-
-  let rec ord_list (_A1, _A2) =
-    ( {less_eq= less_eq_list (_A1, _A2); less= less_list (_A1, _A2)}
-      : 'a list ord )
-
-  let rec preorder_list (_A1, _A2) =
-    ({ord_preorder= ord_list (_A1, _A2)} : 'a list preorder)
-
-  let rec order_list (_A1, _A2) =
-    ({preorder_order= preorder_list (_A1, _A2)} : 'a list order)
-
-  let rec linorder_list (_A1, _A2) =
-    ({order_linorder= order_list (_A1, _A2)} : 'a list linorder)
-
-  let rec less_eq_option _A xa0 x =
-    match (xa0, x) with
-    | Some x, Some y -> less_eq _A.ord_preorder x y
-    | Some x, None -> false
-    | None, x -> true
-
-  let rec less_option _A x xa1 =
-    match (x, xa1) with
-    | Some x, Some y -> less _A.ord_preorder x y
-    | None, Some x -> true
-    | x, None -> false
-
-  let rec ord_option _A =
-    ({less_eq= less_eq_option _A; less= less_option _A} : 'a option ord)
-
-  let rec preorder_option _A =
-    ({ord_preorder= ord_option _A} : 'a option preorder)
-
-  let rec order_option _A =
-    ({preorder_order= preorder_option _A.preorder_order} : 'a option order)
-
-  let rec linorder_option _A =
-    ({order_linorder= order_option _A.order_linorder} : 'a option linorder)
-
-  let rec equal_proda _A _B (x1, x2) (y1, y2) = eq _A x1 y1 && eq _B x2 y2
-
-  let rec equal_prod _A _B = ({equal= equal_proda _A _B} : ('a * 'b) equal)
 
   let rec less_eq_prod _A _B (x1, y1) (x2, y2) =
     less _A x1 x2 || (less_eq _A x1 x2 && less_eq _B y1 y2)
@@ -533,6 +345,10 @@ end = struct
   let rec ord_prod _A _B =
     ({less_eq= less_eq_prod _A _B; less= less_prod _A _B} : ('a * 'b) ord)
 
+  type 'a preorder = {ord_preorder: 'a ord}
+
+  type 'a order = {preorder_order: 'a preorder}
+
   let rec preorder_prod _A _B =
     ( {ord_preorder= ord_prod _A.ord_preorder _B.ord_preorder}
       : ('a * 'b) preorder )
@@ -541,11 +357,19 @@ end = struct
     ( {preorder_order= preorder_prod _A.preorder_order _B.preorder_order}
       : ('a * 'b) order )
 
+  type 'a linorder = {order_linorder: 'a order}
+
   let rec linorder_prod _A _B =
     ( {order_linorder= order_prod _A.order_linorder _B.order_linorder}
       : ('a * 'b) linorder )
 
   let ord_integer = ({less_eq= Z.leq; less= Z.lt} : Z.t ord)
+
+  type 'a equal = {equal: 'a -> 'a -> bool}
+
+  let equal _A = _A.equal
+
+  type nat = Nat of Z.t
 
   type 'a nFA_states = {states_enumerate: nat -> 'a}
 
@@ -561,7 +385,24 @@ end = struct
 
   type ('b, 'a) rbt = RBT of ('b, 'a) rbta
 
+  type 'a set = Set of 'a list | Coset of 'a list
+
   let rec id x = (fun xa -> xa) x
+
+  let rec eq _A a b = equal _A a b
+
+  let rec is_none = function Some x -> false | None -> true
+
+  let rec filter p x1 =
+    match (p, x1) with
+    | p, [] -> []
+    | p, x :: xs -> if p x then x :: filter p xs else filter p xs
+
+  let rec collect _A p = Set (filter p (enum _A))
+
+  let rec dom _A m = collect _A (fun a -> not (is_none (m a)))
+
+  let rec integer_of_nat (Nat x) = x
 
   let rec plus_nat m n = Nat (Z.add (integer_of_nat m) (integer_of_nat n))
 
@@ -571,17 +412,12 @@ end = struct
 
   let rec comp f g = fun x -> f (g x)
 
-  let rec null = function [] -> true | x :: xs -> false
-
   let rec empty _A = RBT Empty
 
   let rec foldl f a x2 =
     match (f, a, x2) with
     | f, a, [] -> a
     | f, a, x :: xs -> foldl f (f a x) xs
-
-  let rec foldr f x1 =
-    match (f, x1) with f, [] -> id | f, x :: xs -> comp (f x) (foldr f xs)
 
   let rec balance x0 s t x3 =
     match (x0, s, t, x3) with
@@ -1003,59 +839,20 @@ end = struct
   let rec lookup _A x =
     rbt_lookup _A.order_linorder.preorder_order.ord_preorder (impl_of _A x)
 
-  let rec map f x1 =
-    match (f, x1) with f, [] -> [] | f, x21 :: x22 -> f x21 :: map f x22
+  let rec member _A x0 y =
+    match (x0, y) with
+    | [], y -> false
+    | x :: xs, y -> eq _A x y || member _A xs y
 
-  let rec product x0 uu =
-    match (x0, uu) with
-    | [], uu -> []
-    | x :: xs, ys -> map (fun a -> (x, a)) ys @ product xs ys
+  let rec distinct _A = function
+    | [] -> true
+    | x :: xs -> (not (member _A xs x)) && distinct _A xs
 
   let rec snd (x1, x2) = x2
 
   let rec fst (x1, x2) = x1
 
-  let rec diffI _A suc pre ib is =
-    if less _A.order_linorder.preorder_order.ord_preorder (snd ib) (fst ib)
-    then []
-    else if
-      less _A.order_linorder.preorder_order.ord_preorder (snd is) (fst is)
-    then [ib]
-    else if
-      less _A.order_linorder.preorder_order.ord_preorder (snd is) (fst ib)
-    then [ib]
-    else if
-      less _A.order_linorder.preorder_order.ord_preorder (snd is) (snd ib)
-    then
-      if
-        less_eq _A.order_linorder.preorder_order.ord_preorder (fst is)
-          (fst ib)
-      then [(suc (snd is), snd ib)]
-      else [(fst ib, pre (fst is)); (suc (snd is), snd ib)]
-    else if
-      less _A.order_linorder.preorder_order.ord_preorder (snd ib) (fst is)
-    then [ib]
-    else if
-      less_eq _A.order_linorder.preorder_order.ord_preorder (fst is) (fst ib)
-    then []
-    else [(fst ib, pre (fst is))]
-
   let rec nempI _A s = less_eq _A (fst s) (snd s)
-
-  let rec is_none = function Some x -> false | None -> true
-
-  let rec diffIs_aux _A suc pre x2 i =
-    match (suc, pre, x2, i) with
-    | suc, pre, [], i -> []
-    | suc, pre, a :: l, i -> diffI _A suc pre a i @ diffIs_aux _A suc pre l i
-
-  let rec diffIs _A suc pre l1 x3 =
-    match (suc, pre, l1, x3) with
-    | suc, pre, l1, [] -> l1
-    | suc, pre, l1, i :: l2 ->
-        diffIs _A suc pre (diffIs_aux _A suc pre l1 i) l2
-
-  let rec emptyIs _A l = null l
 
   let rec worklist b f x2 =
     match (b, f, x2) with
@@ -1065,8 +862,6 @@ end = struct
           worklist b f (sa, n @ wl)
         else (s, e :: wl)
     | b, f, (s, []) -> (s, [])
-
-  let rec nemptyIs _A l = not (null l)
 
   let rec ltsga_image imf f =
     imf f (fun _ -> true) (fun _ -> true) (fun _ -> true) (fun _ -> true)
@@ -1082,25 +877,6 @@ end = struct
   let rec iterate_to_list it = it (fun _ -> true) (fun a b -> a :: b) []
 
   let rec ltsga_to_list it = comp iterate_to_list it
-
-  let rec intersectIs_aux _A a x1 =
-    match (a, x1) with
-    | a, [] -> []
-    | a, b :: l ->
-        if
-          nempI _A.order_linorder.preorder_order.ord_preorder
-            (intersectI _A.order_linorder.preorder_order.ord_preorder
-               _A.order_linorder.preorder_order.ord_preorder a b )
-        then
-          intersectI _A.order_linorder.preorder_order.ord_preorder
-            _A.order_linorder.preorder_order.ord_preorder a b
-          :: intersectIs_aux _A a l
-        else intersectIs_aux _A a l
-
-  let rec intersectIs _A x0 l2 =
-    match (x0, l2) with
-    | [], l2 -> []
-    | a :: l1, l2 -> intersectIs_aux _A a l2 @ intersectIs _A l1 l2
 
   let rec ltsga_iterator it =
     it (fun _ -> true) (fun _ -> true) (fun _ -> true) (fun _ -> true)
@@ -1225,24 +1001,6 @@ end = struct
 
   let rec whilea b c s = if b s then whilea b c (c s) else s
 
-  let rec set_iterator_union it_a it_b =
-   fun c f sigma_0 -> it_b c f (it_a c f sigma_0)
-
-  let rec tri_union_iterator it_1 it_2 it_3 =
-   fun q ->
-    set_iterator_union (it_1 q) (set_iterator_union (it_2 q) (it_3 q))
-
-  let rec concat_impl_aux c_inter c_nempty s_inter const f it_1 it_2 it_3
-      sig1 sig2 i1a i2a i1 f1 i2 fP1 fP2 =
-   fun aA1 aA2 ->
-    const f
-      (s_inter (sig1 aA1) (sig2 aA2))
-      ( if c_nempty (c_inter (i1 aA1) (f1 aA1)) then i1a aA1 @ i2a aA2
-        else i1a aA1 )
-      (fP2 aA2)
-      (tri_union_iterator (it_1 aA1) (it_2 aA2)
-         (it_3 aA1 (fP1 aA1) (i2 aA2)) )
-
   let rec ltsga_image_filter e a it f p_v1 p_e p_v2 p l =
     it p_v1 p_e p_v2 p l
       (fun _ -> true)
@@ -1250,16 +1008,6 @@ end = struct
         let v, (ea, va) = f vev in
         a v ea va la )
       e
-
-  let rec dnfa_iter _A _B _C =
-   fun x c f ->
-    iteratei_map_op_list_it_rm_ops _A x c (fun (q, aq) ->
-        iteratei_map_op_list_it_rm_ops _B aq
-          (fun _ -> true)
-          (fun (a, mq) ->
-            iteratei_set_op_list_it_rs_ops _C mq
-              (fun _ -> true)
-              (fun qa -> f (q, (a, qa))) ) )
 
   let rec rs_lts_empty _A _B = empty _A
 
@@ -1276,210 +1024,10 @@ end = struct
   let rec rs_lts_image _A _B _C _D =
     ltsga_image (rs_lts_image_filter _A _B _C _D)
 
-  let rec iteratei_bset_op_list_it_dflt_basic_oops_rm_basic_ops _A s =
-   fun c f -> rm_iterateoi (impl_of _A s) c (comp f fst)
-
-  let rec g_to_list_dflt_basic_oops_rm_basic_ops _A s =
-    iteratei_bset_op_list_it_dflt_basic_oops_rm_basic_ops _A s
-      (fun _ -> true)
-      (fun a b -> a :: b)
-      []
-
-  let rec iteratei_bmap_op_list_it_rm_basic_ops _A s =
-    rm_iterateoi (impl_of _A s)
-
-  let rec g_to_list_rm_basic_ops _A m =
-    iteratei_bmap_op_list_it_rm_basic_ops _A m
-      (fun _ -> true)
-      (fun a b -> a :: b)
-      []
-
-  let rec rs_lts_union _A _B =
-   fun l1 l2 ->
-    foldl
-      (fun s t ->
-        foldl
-          (fun sa ta ->
-            foldl
-              (fun sb q ->
-                match lookup _A sb (fst t) with
-                | None ->
-                    insert _A (fst t)
-                      (g_sng_rm_basic_ops _B (fst ta)
-                         (g_sng_dflt_basic_oops_rm_basic_ops _A q) )
-                      sb
-                | Some m2 -> (
-                  match lookup _B m2 (fst ta) with
-                  | None ->
-                      insert _A (fst t)
-                        (insert _B (fst ta)
-                           (g_sng_dflt_basic_oops_rm_basic_ops _A q)
-                           m2 )
-                        sb
-                  | Some s3 ->
-                      insert _A (fst t)
-                        (insert _B (fst ta) (ins_rm_basic_ops _A q s3) m2)
-                        sb ) )
-              sa
-              (g_to_list_dflt_basic_oops_rm_basic_ops _A (snd ta)) )
-          s
-          (g_to_list_rm_basic_ops _B (snd t)) )
-      l2
-      (g_to_list_rm_basic_ops _A l1)
-
-  let zero_nat : nat = Nat Z.zero
-
-  let rec g_size_dflt_basic_oops_rm_basic_ops _A s =
-    iteratei_bset_op_list_it_dflt_basic_oops_rm_basic_ops _A s
-      (fun _ -> true)
-      (fun _ -> suc)
-      zero_nat
-
-  let rec rs_nfa_qsize (_A1, _A2) _B n =
-    g_size_dflt_basic_oops_rm_basic_ops _A2 (fst n)
-
-  let rec g_union_dflt_basic_oops_rm_basic_ops _A s1 s2 =
-    iteratei_bset_op_list_it_dflt_basic_oops_rm_basic_ops _A s1
-      (fun _ -> true)
-      (ins_rm_basic_ops _A) s2
-
-  let rec rs_nfa_union (_A1, _A2) (_B1, _B2) n1 n2 =
-    ( g_union_dflt_basic_oops_rm_basic_ops _A2 (fst n1) (fst n2)
-    , ( fst (snd n1)
-      , ( rs_lts_union _A2
-            (linorder_list (equal_prod _B1 _B1, linorder_prod _B2 _B2))
-            (fst (snd (snd n1)))
-            (fst (snd (snd n2)))
-        , ( g_union_dflt_basic_oops_rm_basic_ops _A2
-              (fst (snd (snd (snd n1))))
-              (fst (snd (snd (snd n2))))
-          , g_union_dflt_basic_oops_rm_basic_ops _A2
-              (snd (snd (snd (snd n1))))
-              (snd (snd (snd (snd n2)))) ) ) ) )
-
   let rec prod_encode x =
     (fun (m, n) -> plus_nat (triangle (plus_nat m n)) m) x
 
-  let rec rename_states_gen_impl im im2 (q, (siga, (d, (i, f)))) =
-   fun fa ->
-    ( im fa q
-    , ( siga
-      , ( im2
-            (fun qaq -> (fa (fst qaq), (fst (snd qaq), fa (snd (snd qaq)))))
-            d
-        , (im fa i, im fa f) ) ) )
-
-  let rec rename_states_impl im im2 = rename_states_gen_impl im im2
-
-  let rec rs_nfa_rename _A (_B1, _B2) _C =
-    rename_states_impl
-      (fun f s ->
-        iteratei_set_op_list_it_rs_ops _A s
-          (fun _ -> true)
-          (fun b -> ins_rm_basic_ops _C (f b))
-          (empty_rm_basic_ops _C ()) )
-      (rs_lts_image _A
-         (linorder_list (equal_prod _B1 _B1, linorder_prod _B2 _B2))
-         _C
-         (linorder_list (equal_prod _B1 _B1, linorder_prod _B2 _B2)) )
-
-  let rec equal_list _A x0 x1 =
-    match (x0, x1) with
-    | [], x21 :: x22 -> false
-    | x21 :: x22, [] -> false
-    | x21 :: x22, y21 :: y22 -> eq _A x21 y21 && equal_list _A x22 y22
-    | [], [] -> true
-
-  let rec rs_split_trans_code (_A1, _A2) (_B1, _B2) f1 f2 ts =
-    let x =
-      dnfa_iter _B2
-        (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2))
-        _B2 ts
-        (fun _ -> true)
-        (fun x ->
-          ins_rm_basic_ops
-            (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2))
-            (fst (snd x)) )
-        (empty_rm_basic_ops
-           (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2))
-           () )
-    in
-    dnfa_iter _B2
-      (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2))
-      _B2 ts
-      (fun _ -> true)
-      (fun xa sigma ->
-        let a =
-          let xb =
-            iteratei_set_op_list_it_rs_ops
-              (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2))
-              x
-              (fun _ -> true)
-              (fun xb sigmaa ->
-                iteratei_set_op_list_it_rs_ops
-                  (linorder_list
-                     (equal_prod _A1 _A1, linorder_prod _A2 _A2) )
-                  sigmaa
-                  (fun _ -> true)
-                  (fun xc sigmab ->
-                    if nemptyIs _A2 (intersectIs _A2 xc xb) then
-                      if
-                        equal_list (equal_prod _A1 _A1) xc
-                          (intersectIs _A2 xc xb)
-                      then
-                        ins_rm_basic_ops
-                          (linorder_list
-                             (equal_prod _A1 _A1, linorder_prod _A2 _A2) )
-                          xc sigmab
-                      else
-                        ins_rm_basic_ops
-                          (linorder_list
-                             (equal_prod _A1 _A1, linorder_prod _A2 _A2) )
-                          (intersectIs _A2 xc xb)
-                          (ins_rm_basic_ops
-                             (linorder_list
-                                (equal_prod _A1 _A1, linorder_prod _A2 _A2) )
-                             (diffIs _A2 f1 f2 xc (intersectIs _A2 xc xb))
-                             sigmab )
-                    else
-                      ins_rm_basic_ops
-                        (linorder_list
-                           (equal_prod _A1 _A1, linorder_prod _A2 _A2) )
-                        xc sigmab )
-                  (empty_rm_basic_ops
-                     (linorder_list
-                        (equal_prod _A1 _A1, linorder_prod _A2 _A2) )
-                     () ) )
-              (ins_rm_basic_ops
-                 (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2))
-                 (fst (snd xa))
-                 (empty_rm_basic_ops
-                    (linorder_list
-                       (equal_prod _A1 _A1, linorder_prod _A2 _A2) )
-                    () ) )
-          in
-          iteratei_set_op_list_it_rs_ops
-            (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2))
-            xb
-            (fun _ -> true)
-            (fun xc ->
-              rs_lts_add _B2
-                (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2))
-                (fst xa) xc
-                (snd (snd xa)) )
-            (rs_lts_empty _B2
-               (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2)) )
-        in
-        rs_lts_union _B2
-          (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2))
-          sigma a )
-      (rs_lts_empty _B2
-         (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2)) )
-
-  let rec rs_nfa_uniq (_A1, _A2) (_D1, _D2) f1 f2 (q, (a, (d, (i, f)))) =
-    let qa, aa = (q, (a, (d, (i, f)))) in
-    let ab, (da, (ia, fa)) = aa in
-    (qa, (ab, (rs_split_trans_code (_A1, _A2) (_D1, _D2) f1 f2 da, (ia, fa))))
+  let zero_nat : nat = Nat Z.zero
 
   let rec set_iterator_emp c f sigma_0 = sigma_0
 
@@ -1493,6 +1041,15 @@ end = struct
           (iteratei_set_op_list_it_rs_ops _A)
 
   let rec rs_lts_to_list _A _B = ltsga_to_list (rs_lts_it _A _B _A)
+
+  let rec iteratei_bset_op_list_it_dflt_basic_oops_rm_basic_ops _A s =
+   fun c f -> rm_iterateoi (impl_of _A s) c (comp f fst)
+
+  let rec g_to_list_dflt_basic_oops_rm_basic_ops _A s =
+    iteratei_bset_op_list_it_dflt_basic_oops_rm_basic_ops _A s
+      (fun _ -> true)
+      (fun a b -> a :: b)
+      []
 
   let rec g_isEmpty_dflt_basic_oops_rm_basic_ops _A s =
     iteratei_bset_op_list_it_dflt_basic_oops_rm_basic_ops _A s
@@ -1510,6 +1067,9 @@ end = struct
       (fun x s ->
         if memb_rm_basic_ops _A x s2 then ins_dj_rm_basic_ops _A x s else s )
       (empty_rm_basic_ops _A ())
+
+  let rec set_iterator_union it_a it_b =
+   fun c f sigma_0 -> it_b c f (it_a c f sigma_0)
 
   let rec rs_lts_succ_label_it _A _B =
    fun m1 v ->
@@ -1542,7 +1102,7 @@ end = struct
              (iteratei_map_op_list_it_rm_ops _B m2) )
           (fun _ -> iteratei_set_op_list_it_rs_ops _C si)
 
-  let rec rs_nfa_concate (_A1, _A2) (_B1, _B2) (q1, (d1, (i1, f1)))
+  let rec rs_nfa_concate (_A1, _A2) _B (q1, (d1, (i1, f1)))
       (q2, (d2, (i2, f2))) =
     let a =
       foldl
@@ -1556,11 +1116,11 @@ end = struct
         ( if
             not
               (g_isEmpty_dflt_basic_oops_rm_basic_ops _A2
-                 (g_inter_dflt_basic_oops_rm_basic_ops _A2 (fst f1) (snd f1)) )
+                 (g_inter_dflt_basic_oops_rm_basic_ops _A2 i1 f1) )
           then
-            g_to_list_dflt_basic_oops_rm_basic_ops _A2 (fst f1)
-            @ g_to_list_dflt_basic_oops_rm_basic_ops _A2 (fst f2)
-          else g_to_list_dflt_basic_oops_rm_basic_ops _A2 (fst f1) )
+            g_to_list_dflt_basic_oops_rm_basic_ops _A2 i1
+            @ g_to_list_dflt_basic_oops_rm_basic_ops _A2 i2
+          else g_to_list_dflt_basic_oops_rm_basic_ops _A2 i1 )
     in
     let aa, b = a in
     (let qm, n = aa in
@@ -1570,31 +1130,27 @@ end = struct
            (fun _ -> true)
            (fun (ab, ba) ->
              (let qma, na = ab in
-              fun (qs, (siga, (dd, (isa, fs)))) q ->
+              fun (qs, (dd, (isa, fs))) q ->
                 let r = the (lookup _A2 qma (id q)) in
                 if memb_rm_basic_ops _A2 r qs then
-                  (((qma, na), (qs, (siga, (dd, (isa, fs))))), [])
+                  (((qma, na), (qs, (dd, (isa, fs)))), [])
                 else
                   let ac =
                     set_iterator_union
-                      (rs_lts_succ_label_it _A2
-                         (linorder_list
-                            (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
-                         i1 q )
+                      (rs_lts_succ_label_it _A2 (linorder_prod _B _B) d1 q)
                       (set_iterator_union
-                         (rs_lts_succ_label_it _A2
-                            (linorder_list
-                               (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
-                            i2 q )
-                         (rs_lts_connect_it _A2
-                            (linorder_list
-                               (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
-                            _A2 i1 (snd f1) (fst f2) q ) )
+                         (rs_lts_succ_label_it _A2 (linorder_prod _B _B) d2 q)
+                         (rs_lts_connect_it _A2 (linorder_prod _B _B) _A2 d1
+                            f1 i2 q ) )
                       (fun _ -> true)
                       (fun (ac, qa) (bb, c) ->
                         (let qmb, nb = bb in
                          fun (dda, naa) ->
-                           if nemptyIs _B2 ac then
+                           if
+                             nempI
+                               _B.order_linorder.preorder_order.ord_preorder
+                               ac
+                           then
                              let r_opt = lookup _A2 qmb (id qa) in
                              let bc =
                                if is_none r_opt then
@@ -1606,11 +1162,8 @@ end = struct
                              (let qmc, nc = bd in
                               fun ra ->
                                 ( (qmc, nc)
-                                , ( rs_lts_add _A2
-                                      (linorder_list
-                                         ( equal_prod _B1 _B1
-                                         , linorder_prod _B2 _B2 ) )
-                                      r ac ra dda
+                                , ( rs_lts_add _A2 (linorder_prod _B _B) r ac
+                                      ra dda
                                   , qa :: naa ) ) )
                                ca
                            else ((qmb, nb), (dda, naa)) )
@@ -1622,31 +1175,26 @@ end = struct
                    fun (dda, ae) ->
                      ( ( (qmb, nb)
                        , ( ins_dj_rm_basic_ops _A2 r qs
-                         , ( siga
-                           , ( dda
-                             , ( isa
-                               , if memb_rm_basic_ops _A2 q (snd f2) then
-                                   ins_dj_rm_basic_ops _A2 r fs
-                                 else fs ) ) ) ) )
+                         , ( dda
+                           , ( isa
+                             , if memb_rm_basic_ops _A2 q f2 then
+                                 ins_dj_rm_basic_ops _A2 r fs
+                               else fs ) ) ) )
                      , ae ) )
                     bb )
                ba )
            ( ( (qm, n)
              , ( empty_rm_basic_ops _A2 ()
-               , ( d1
-                 , ( rs_lts_empty _A2
-                       (linorder_list
-                          (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
-                   , (is, empty_rm_basic_ops _A2 ()) ) ) ) )
+               , ( rs_lts_empty _A2 (linorder_prod _B _B)
+                 , (is, empty_rm_basic_ops _A2 ()) ) ) )
            , if
                not
                  (g_isEmpty_dflt_basic_oops_rm_basic_ops _A2
-                    (g_inter_dflt_basic_oops_rm_basic_ops _A2 (fst f1)
-                       (snd f1) ) )
+                    (g_inter_dflt_basic_oops_rm_basic_ops _A2 i1 f1) )
              then
-               g_to_list_dflt_basic_oops_rm_basic_ops _A2 (fst f1)
-               @ g_to_list_dflt_basic_oops_rm_basic_ops _A2 (fst f2)
-             else g_to_list_dflt_basic_oops_rm_basic_ops _A2 (fst f1) )
+               g_to_list_dflt_basic_oops_rm_basic_ops _A2 i1
+               @ g_to_list_dflt_basic_oops_rm_basic_ops _A2 i2
+             else g_to_list_dflt_basic_oops_rm_basic_ops _A2 i1 )
        in
        let ac, ba = ab in
        (let _, aaa = ac in
@@ -1656,30 +1204,16 @@ end = struct
 
   let rec ltsga_to_collect_list to_list l = to_list l
 
-  let rec rs_lts_succq_it _A _B =
-   fun m1 v e ->
-    match lookup _A m1 v with
-    | None -> set_iterator_emp
-    | Some m2 -> (
-      match lookup _B m2 e with
-      | None -> set_iterator_emp
-      | Some a -> iteratei_set_op_list_it_rs_ops _A a )
-
   let rec rs_lts_to_collect_list _A _B =
     ltsga_to_collect_list (rs_lts_to_list _A _B)
 
-  let rec rs_nfa_destruct (_A1, _A2) (_C1, _C2) (q, (siga, (d, (i, f)))) =
+  let rec rs_nfa_destruct (_A1, _A2) _B (q, (d, (i, f))) =
     ( g_to_list_dflt_basic_oops_rm_basic_ops _A2 q
-    , ( siga
-      , ( rs_lts_to_collect_list _A2
-            (linorder_list (equal_prod _C1 _C1, linorder_prod _C2 _C2))
-            d
-        , ( g_to_list_dflt_basic_oops_rm_basic_ops _A2 i
-          , g_to_list_dflt_basic_oops_rm_basic_ops _A2 f ) ) ) )
+    , ( rs_lts_to_collect_list _A2 (linorder_prod _B _B) d
+      , ( g_to_list_dflt_basic_oops_rm_basic_ops _A2 i
+        , g_to_list_dflt_basic_oops_rm_basic_ops _A2 f ) ) )
 
-  let rec lookup_aux (_A1, _A2) v rc = lookup _A2 rc v
-
-  let rec rs_nfa_bool_comb (_A1, _A2) (_B1, _B2) bc (q1, (d1, (i1, f1)))
+  let rec rs_nfa_bool_comb (_A1, _A2) _B bc (q1, (d1, (i1, f1)))
       (q2, (d2, (i2, f2))) =
     let a =
       foldl
@@ -1693,8 +1227,8 @@ end = struct
             b )
         ((empty (linorder_prod _A2 _A2), zero_nat), empty_rm_basic_ops _A2 ())
         (product
-           (g_to_list_dflt_basic_oops_rm_basic_ops _A2 (fst f1))
-           (g_to_list_dflt_basic_oops_rm_basic_ops _A2 (fst f2)) )
+           (g_to_list_dflt_basic_oops_rm_basic_ops _A2 i1)
+           (g_to_list_dflt_basic_oops_rm_basic_ops _A2 i2) )
     in
     let aa, b = a in
     (let qm, n = aa in
@@ -1704,30 +1238,31 @@ end = struct
            (fun _ -> true)
            (fun (ab, ba) ->
              (let qma, na = ab in
-              fun (qs, (siga, (dd, (isa, fs)))) q ->
+              fun (qs, (dd, (isa, fs))) q ->
                 let r = the (lookup (linorder_prod _A2 _A2) qma (id q)) in
                 if memb_rm_basic_ops _A2 r qs then
-                  (((qma, na), (qs, (siga, (dd, (isa, fs))))), [])
+                  (((qma, na), (qs, (dd, (isa, fs)))), [])
                 else
                   let ac =
                     (let q1a, q2a = q in
                      fun c f ->
-                       rs_lts_succ_label_it _A2
-                         (linorder_list
-                            (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
-                         i1 q1a c
-                         (fun (a1, q1b) ->
-                           rs_lts_succ_it _A2
-                             (linorder_list
-                                (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
-                             i2 q2a a1 c
-                             (fun (a2, q2b) -> f ((a1, a2), (q1b, q2b))) ) )
+                       rs_lts_succ_label_it _A2 (linorder_prod _B _B) d1 q1a
+                         c (fun (a1, q1b) ->
+                           rs_lts_succ_it _A2 (linorder_prod _B _B) d2 q2a a1
+                             c (fun (a2, q2b) -> f ((a1, a2), (q1b, q2b)) ) )
+                    )
                       (fun _ -> true)
                       (fun (ac, qa) (bb, c) ->
                         (let qmb, nb = bb in
                          fun (dda, naa) ->
                            if
-                             nemptyIs _B2 (intersectIs _B2 (fst ac) (snd ac))
+                             nempI
+                               _B.order_linorder.preorder_order.ord_preorder
+                               (intersectI
+                                  _B.order_linorder.preorder_order
+                                    .ord_preorder
+                                  _B.order_linorder.preorder_order
+                                    .ord_preorder (fst ac) (snd ac) )
                            then
                              let r_opt =
                                lookup (linorder_prod _A2 _A2) qmb (id qa)
@@ -1745,12 +1280,12 @@ end = struct
                              (let qmc, nc = be in
                               fun ra ->
                                 ( (qmc, nc)
-                                , ( rs_lts_add _A2
-                                      (linorder_list
-                                         ( equal_prod _B1 _B1
-                                         , linorder_prod _B2 _B2 ) )
-                                      r
-                                      (intersectIs _B2 (fst ac) (snd ac))
+                                , ( rs_lts_add _A2 (linorder_prod _B _B) r
+                                      (intersectI
+                                         _B.order_linorder.preorder_order
+                                           .ord_preorder
+                                         _B.order_linorder.preorder_order
+                                           .ord_preorder (fst ac) (snd ac) )
                                       ra dda
                                   , qa :: naa ) ) )
                                ca
@@ -1763,413 +1298,108 @@ end = struct
                    fun (dda, ae) ->
                      ( ( (qmb, nb)
                        , ( ins_dj_rm_basic_ops _A2 r qs
-                         , ( siga
-                           , ( dda
-                             , ( isa
-                               , if
-                                   let q1a, q2a = q in
-                                   bc
-                                     (memb_rm_basic_ops _A2 q1a (snd f1))
-                                     (memb_rm_basic_ops _A2 q2a (snd f2))
-                                 then ins_dj_rm_basic_ops _A2 r fs
-                                 else fs ) ) ) ) )
+                         , ( dda
+                           , ( isa
+                             , if
+                                 let q1a, q2a = q in
+                                 bc
+                                   (memb_rm_basic_ops _A2 q1a f1)
+                                   (memb_rm_basic_ops _A2 q2a f2)
+                               then ins_dj_rm_basic_ops _A2 r fs
+                               else fs ) ) ) )
                      , ae ) )
                     bb )
                ba )
            ( ( (qm, n)
              , ( empty_rm_basic_ops _A2 ()
-               , ( intersectIs _B2 d1 d2
-                 , ( rs_lts_empty _A2
-                       (linorder_list
-                          (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
-                   , (is, empty_rm_basic_ops _A2 ()) ) ) ) )
+               , ( rs_lts_empty _A2 (linorder_prod _B _B)
+                 , (is, empty_rm_basic_ops _A2 ()) ) ) )
            , product
-               (g_to_list_dflt_basic_oops_rm_basic_ops _A2 (fst f1))
-               (g_to_list_dflt_basic_oops_rm_basic_ops _A2 (fst f2)) )
+               (g_to_list_dflt_basic_oops_rm_basic_ops _A2 i1)
+               (g_to_list_dflt_basic_oops_rm_basic_ops _A2 i2) )
        in
        let ac, ba = ab in
        (let _, aaa = ac in
         fun _ -> aaa )
          ba )
       b
-
-  let rec g_ball_dflt_basic_oops_rm_basic_ops _A s p =
-    iteratei_bset_op_list_it_dflt_basic_oops_rm_basic_ops _A s
-      (fun c -> c)
-      (fun x _ -> p x)
-      true
-
-  let rec g_subset_dflt_basic_oops_rm_basic_ops _A s1 s2 =
-    g_ball_dflt_basic_oops_rm_basic_ops _A s1 (fun x ->
-        memb_rm_basic_ops _A x s2 )
-
-  let rec rs_nfa_elim (_A1, _A2, _A3) (_C1, _C2) a =
-    let x =
-      let b =
-        iteratei_set_op_list_it_rs_ops _A3 (fst a)
-          (fun _ -> true)
-          (fun x sigma ->
-            let xa =
-              iteratei_set_op_list_it_rs_ops (linorder_prod _A3 _A3)
-                (fst (snd (snd (snd a))))
-                (fun _ -> true)
-                (fun xa sigmaa ->
-                  if eq _A1 (fst xa) x then
-                    ins_rm_basic_ops _A3 (snd xa) sigmaa
-                  else sigmaa )
-                (ins_rm_basic_ops _A3 x (empty_rm_basic_ops _A3 ()))
-            in
-            insert _A3 x xa sigma )
-          (empty _A3)
-      in
-      whilea
-        (fun r ->
-          not
-            (g_ball_dflt_basic_oops_rm_basic_ops _A3 (fst a) (fun x ->
-                 g_ball_dflt_basic_oops_rm_basic_ops _A3
-                   (the (lookup _A3 r x))
-                   (fun q ->
-                     g_subset_dflt_basic_oops_rm_basic_ops _A3
-                       (the (lookup _A3 r q))
-                       (the (lookup _A3 r x)) ) ) ) )
-        (fun xa ->
-          iteratei_set_op_list_it_rs_ops _A3 (fst a)
-            (fun _ -> true)
-            (fun xb sigma ->
-              let xc =
-                let aa =
-                  iteratei_set_op_list_it_rs_ops _A3
-                    (the (lookup_aux (_A2, _A3) xb xa))
-                    (fun _ -> true)
-                    (fun xc sigmaa ->
-                      g_union_dflt_basic_oops_rm_basic_ops _A3 sigmaa
-                        (the (lookup _A3 xa xc)) )
-                    (the (lookup _A3 xa xb))
-                in
-                g_sng_rm_basic_ops _A3 xb aa
-              in
-              insert _A3 xb (the (lookup _A3 xc xb)) sigma )
-            (empty _A3) )
-        b
-    in
-    let xa =
-      rs_lts_it _A3
-        (linorder_list (equal_prod _C1 _C1, linorder_prod _C2 _C2))
-        _A3
-        (fst (snd (snd a)))
-        (fun _ -> true)
-        (fun xa sigma ->
-          let xb =
-            iteratei_set_op_list_it_rs_ops _A3 (fst a)
-              (fun _ -> true)
-              (fun xb sigmaa ->
-                if memb_rm_basic_ops _A3 (fst xa) (the (lookup _A3 x xb))
-                then
-                  rs_lts_add _A3
-                    (linorder_list
-                       (equal_prod _C1 _C1, linorder_prod _C2 _C2) )
-                    xb
-                    (fst (snd xa))
-                    (snd (snd xa))
-                    sigmaa
-                else sigmaa )
-              (rs_lts_empty _A3
-                 (linorder_list (equal_prod _C1 _C1, linorder_prod _C2 _C2)) )
-          in
-          rs_lts_union _A3
-            (linorder_list (equal_prod _C1 _C1, linorder_prod _C2 _C2))
-            xb sigma )
-        (rs_lts_empty _A3
-           (linorder_list (equal_prod _C1 _C1, linorder_prod _C2 _C2)) )
-    in
-    let xb =
-      iteratei_set_op_list_it_rs_ops _A3
-        (fst (snd (snd (snd (snd a)))))
-        (fun _ -> true)
-        (fun xb sigma ->
-          if is_none (lookup _A3 x xb) then sigma
-          else
-            g_union_dflt_basic_oops_rm_basic_ops _A3 sigma
-              (the (lookup _A3 x xb)) )
-        (empty_rm_basic_ops _A3 ())
-    in
-    let xc =
-      iteratei_set_op_list_it_rs_ops _A3
-        (snd (snd (snd (snd (snd a)))))
-        (fun _ -> true)
-        (fun xc sigma ->
-          let xd =
-            iteratei_set_op_list_it_rs_ops _A3 (fst a)
-              (fun _ -> true)
-              (fun xd sigmaa ->
-                if memb_rm_basic_ops _A3 xc (the (lookup _A3 x xd)) then
-                  ins_rm_basic_ops _A3 xd sigmaa
-                else sigmaa )
-              (empty_rm_basic_ops _A3 ())
-          in
-          g_union_dflt_basic_oops_rm_basic_ops _A3 xd sigma )
-        (empty_rm_basic_ops _A3 ())
-    in
-    ( fst a
-    , ( fst (snd a)
-      , ( rs_lts_union _A3
-            (linorder_list (equal_prod _C1 _C1, linorder_prod _C2 _C2))
-            (fst (snd (snd a)))
-            xa
-        , ( g_union_dflt_basic_oops_rm_basic_ops _A3
-              (fst (snd (snd (snd (snd a)))))
-              xb
-          , g_union_dflt_basic_oops_rm_basic_ops _A3
-              (snd (snd (snd (snd (snd a)))))
-              xc ) ) ) )
 
   let rec delete_rm_basic_ops _A x s = delete _A x s
 
-  let rec g_diff_dflt_basic_oops_rm_basic_ops _A s1 s2 =
-    iteratei_bset_op_list_it_dflt_basic_oops_rm_basic_ops _A s2
-      (fun _ -> true)
-      (delete_rm_basic_ops _A) s1
+  let rec lookup_aux _A v rc = lookup _A rc v
 
-  let rec rs_nfa_complement (_A1, _A2) (q1, (a1, (d1, (i1, f1)))) =
-    (q1, (a1, (d1, (i1, g_diff_dflt_basic_oops_rm_basic_ops _A2 q1 f1))))
+  let rec alpha_rm_basic_ops (_A1, _A2) s = dom _A1 (lookup _A2 s)
 
-  let rec g_disjoint_dflt_basic_oops_rm_basic_ops _A s1 s2 =
-    g_ball_dflt_basic_oops_rm_basic_ops _A s1 (fun x ->
-        not (memb_rm_basic_ops _A x s2) )
-
-  let rec set_iterator_product it_a it_b =
-   fun c f -> it_a c (fun a -> it_b a c (fun b -> f (a, b)))
-
-  let rec rs_nfa_determinise (_A1, _A2) (_B1, _B2) (q1, (a1, (d1, (i1, f1))))
-      =
-    let a =
-      foldl
-        (fun (a, b) ->
-          (let qm, n = a in
-           fun is q ->
-             ( ( insert linorder_nat
-                   (iteratei_set_op_list_it_rs_ops _A2 q
-                      (fun _ -> true)
-                      (fun qa na ->
-                        plus_nat na
-                          (the
-                             (lookup _A2
-                                (fst
-                                   (iteratei_set_op_list_it_rs_ops _A2 q1
-                                      (fun _ -> true)
-                                      (fun qb (m, nb) ->
-                                        ( insert _A2 qb nb m
-                                        , times_nat
-                                            (nat_of_integer (Z.of_int 2))
-                                            nb ) )
-                                      (empty _A2, one_nat) ) )
-                                qa ) ) )
-                      zero_nat )
-                   (states_enumerate _A1 n) qm
-               , suc n )
-             , ins_dj_rm_basic_ops _A2 (states_enumerate _A1 n) is ) )
-            b )
-        ((empty linorder_nat, zero_nat), empty_rm_basic_ops _A2 ())
-        [i1]
+  let rec rs_indegree (_A1, _A2) s rc =
+    let x =
+      iteratei_set_op_list_it_rs_ops _A2 s
+        (fun _ -> true)
+        (fun x sigma ->
+          let xa =
+            if not (is_none (lookup _A2 rc x)) then
+              iteratei_set_op_list_it_rs_ops (linorder_prod _A2 _A2)
+                (the (lookup_aux _A2 x rc))
+                (fun _ -> true)
+                (fun xa sigmaa -> fst xa :: snd xa :: sigmaa)
+                []
+            else []
+          in
+          xa @ sigma )
+        []
     in
-    let aa, b = a in
-    (let qm, n = aa in
-     fun is ->
-       let ab =
-         worklist
-           (fun _ -> true)
-           (fun (ab, ba) ->
-             (let qma, na = ab in
-              fun (qs, (siga, (dd, (isa, fs)))) q ->
-                let r =
-                  the
-                    (lookup linorder_nat qma
-                       (iteratei_set_op_list_it_rs_ops _A2 q
-                          (fun _ -> true)
-                          (fun qa nb ->
-                            plus_nat nb
-                              (the
-                                 (lookup _A2
-                                    (fst
-                                       (iteratei_set_op_list_it_rs_ops _A2 q1
-                                          (fun _ -> true)
-                                          (fun qb (m, nc) ->
-                                            ( insert _A2 qb nc m
-                                            , times_nat
-                                                (nat_of_integer (Z.of_int 2))
-                                                nc ) )
-                                          (empty _A2, one_nat) ) )
-                                    qa ) ) )
-                          zero_nat ) )
-                in
-                if memb_rm_basic_ops _A2 r qs then
-                  (((qma, na), (qs, (siga, (dd, (isa, fs))))), [])
-                else
-                  let ac =
-                    set_iterator_image_filter
-                      (fun ac ->
-                        let nq =
-                          set_iterator_product
-                            (iteratei_set_op_list_it_rs_ops _A2 q)
-                            (fun qa ->
-                              rs_lts_succq_it _A2
-                                (linorder_list
-                                   (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
-                                d1 qa ac )
-                            (fun _ -> true)
-                            (fun (_, ad) -> ins_rm_basic_ops _A2 ad)
-                            (empty_rm_basic_ops _A2 ())
-                        in
-                        if
-                          not (g_isEmpty_dflt_basic_oops_rm_basic_ops _A2 nq)
-                        then Some (ac, nq)
-                        else None )
-                      (iteratei_set_op_list_it_rs_ops
-                         (linorder_list
-                            (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
-                         (foldr
-                            (fun e ->
-                              ins_rm_basic_ops
-                                (linorder_list
-                                   (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
-                                (fst (snd e)) )
-                            (rs_lts_to_list _A2
-                               (linorder_list
-                                  (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
-                               d1 )
-                            (empty_rm_basic_ops
-                               (linorder_list
-                                  (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
-                               () ) ) )
-                      (fun _ -> true)
-                      (fun (ac, qa) (bb, c) ->
-                        (let qmb, nb = bb in
-                         fun (dda, naa) ->
-                           if nemptyIs _B2 ac then
-                             let r_opt =
-                               lookup linorder_nat qmb
-                                 (iteratei_set_op_list_it_rs_ops _A2 qa
-                                    (fun _ -> true)
-                                    (fun qb nc ->
-                                      plus_nat nc
-                                        (the
-                                           (lookup _A2
-                                              (fst
-                                                 (iteratei_set_op_list_it_rs_ops
-                                                    _A2 q1
-                                                    (fun _ -> true)
-                                                    (fun qc (m, nd) ->
-                                                      ( insert _A2 qc nd m
-                                                      , times_nat
-                                                          (nat_of_integer
-                                                             (Z.of_int 2) )
-                                                          nd ) )
-                                                    (empty _A2, one_nat) ) )
-                                              qb ) ) )
-                                    zero_nat )
-                             in
-                             let bc =
-                               if is_none r_opt then
-                                 let ra = states_enumerate _A1 nb in
-                                 ( ( insert linorder_nat
-                                       (iteratei_set_op_list_it_rs_ops _A2 qa
-                                          (fun _ -> true)
-                                          (fun qb nc ->
-                                            plus_nat nc
-                                              (the
-                                                 (lookup _A2
-                                                    (fst
-                                                       (iteratei_set_op_list_it_rs_ops
-                                                          _A2 q1
-                                                          (fun _ -> true)
-                                                          (fun qc (m, nd) ->
-                                                            ( insert _A2 qc
-                                                                nd m
-                                                            , times_nat
-                                                                (nat_of_integer
-                                                                   (Z.of_int
-                                                                      2 ) )
-                                                                nd ) )
-                                                          (empty _A2, one_nat) ) )
-                                                    qb ) ) )
-                                          zero_nat )
-                                       ra qmb
-                                   , suc nb )
-                                 , ra )
-                               else ((qmb, nb), the r_opt)
-                             in
-                             let bd, ca = bc in
-                             (let qmc, nc = bd in
-                              fun ra ->
-                                ( (qmc, nc)
-                                , ( rs_lts_add _A2
-                                      (linorder_list
-                                         ( equal_prod _B1 _B1
-                                         , linorder_prod _B2 _B2 ) )
-                                      r ac ra dda
-                                  , qa :: naa ) ) )
-                               ca
-                           else ((qmb, nb), (dda, naa)) )
-                          c )
-                      ((qma, na), (dd, []))
-                  in
-                  let ad, bb = ac in
-                  (let qmb, nb = ad in
-                   fun (dda, ae) ->
-                     ( ( (qmb, nb)
-                       , ( ins_dj_rm_basic_ops _A2 r qs
-                         , ( siga
-                           , ( dda
-                             , ( isa
-                               , if
-                                   not
-                                     (g_disjoint_dflt_basic_oops_rm_basic_ops
-                                        _A2 q f1 )
-                                 then ins_dj_rm_basic_ops _A2 r fs
-                                 else fs ) ) ) ) )
-                     , ae ) )
-                    bb )
-               ba )
-           ( ( (qm, n)
-             , ( empty_rm_basic_ops _A2 ()
-               , ( a1
-                 , ( rs_lts_empty _A2
-                       (linorder_list
-                          (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
-                   , (is, empty_rm_basic_ops _A2 ()) ) ) ) )
-           , [i1] )
-       in
-       let ac, ba = ab in
-       (let _, aaa = ac in
-        fun _ -> aaa )
-         ba )
-      b
+    if distinct _A1 x then true else false
 
-  let rec concat_rename_impl_aux c_inter c_nempty s_inter const f it_1 it_2
-      it_3 sig1 sig2 i1a i2a i1 f1a i2 fP1 fP2 rename1 rename2 f1 f2 =
+  let rec tri_union_iterator it_1 it_2 it_3 =
+   fun q ->
+    set_iterator_union (it_1 q) (set_iterator_union (it_2 q) (it_3 q))
+
+  let rec concat_impl_aux c_inter c_nempty const f it_1 it_2 it_3 i1a i2a i1
+      f1 i2 fP1 fP2 =
+   fun aA1 aA2 ->
+    const f
+      ( if c_nempty (c_inter (i1 aA1) (f1 aA1)) then i1a aA1 @ i2a aA2
+        else i1a aA1 )
+      (fP2 aA2)
+      (tri_union_iterator (it_1 aA1) (it_2 aA2)
+         (it_3 aA1 (fP1 aA1) (i2 aA2)) )
+
+  let rec iteratei_bmap_op_list_it_rm_basic_ops _A s =
+    rm_iterateoi (impl_of _A s)
+
+  let rec g_to_list_rm_basic_ops _A m =
+    iteratei_bmap_op_list_it_rm_basic_ops _A m
+      (fun _ -> true)
+      (fun a b -> a :: b)
+      []
+
+  let rec rename_states_gen_impl im im2 (q, (d, (i, f))) =
+   fun fa ->
+    ( im fa q
+    , ( im2 (fun qaq -> (fa (fst qaq), (fst (snd qaq), fa (snd (snd qaq))))) d
+      , (im fa i, im fa f) ) )
+
+  let rec nfa_acceptingp a = snd (snd (snd a))
+
+  let rec nfa_initialp a = fst (snd (snd a))
+
+  let rec nfa_transp a = fst (snd a)
+
+  let rec concat_rename_impl_aux c_inter c_nempty const f it_1 it_2 it_3 i1a
+      i2a i1 f1a i2 fP1 fP2 rename1 rename2 f1 f2 =
    fun a1 a2 ->
     let aA1 = rename1 a1 f1 in
     let a = rename2 a2 f2 in
-    concat_impl_aux c_inter c_nempty s_inter const f it_1 it_2 it_3 sig1 sig2
-      i1a i2a i1 f1a i2 fP1 fP2 aA1 a
+    concat_impl_aux c_inter c_nempty const f it_1 it_2 it_3 i1a i2a i1 f1a i2
+      fP1 fP2 aA1 a
 
-  let rec nfa_acceptingp _B a = snd (snd (snd (snd a)))
-
-  let rec nfa_initialp _B a = fst (snd (snd (snd a)))
-
-  let rec nfa_transp _B a = fst (snd (snd a))
-
-  let rec nfa_alphap _B a = fst (snd a)
-
-  let rec rs_nfa_concate_rename (_A1, _A2) (_B1, _B2) f1a f2a
-      (q1, (d1, (i1, f1))) (q2, (d2, (i2, f2))) =
+  let rec rs_nfa_concate_rename (_A1, _A2) _B f1a f2a (q1, (d1, (i1, f1)))
+      (q2, (d2, (i2, f2))) =
     concat_rename_impl_aux
       (g_inter_dflt_basic_oops_rm_basic_ops (linorder_prod _A2 _A2))
       (fun x ->
         not
           (g_isEmpty_dflt_basic_oops_rm_basic_ops (linorder_prod _A2 _A2) x) )
-      (fun x _ -> x)
-      (fun ff siga i fp d_it ->
+      (fun ff i fp d_it ->
         let a =
           foldl
             (fun (a, b) ->
@@ -2192,12 +1422,12 @@ end = struct
                (fun _ -> true)
                (fun (ab, ba) ->
                  (let qma, na = ab in
-                  fun (qs, (sigb, (dd, (isa, fs)))) q ->
+                  fun (qs, (dd, (isa, fs))) q ->
                     let r =
                       the (lookup (linorder_prod _A2 _A2) qma (ff q))
                     in
                     if memb_rm_basic_ops _A2 r qs then
-                      (((qma, na), (qs, (sigb, (dd, (isa, fs))))), [])
+                      (((qma, na), (qs, (dd, (isa, fs)))), [])
                     else
                       let ac =
                         d_it q
@@ -2205,7 +1435,11 @@ end = struct
                           (fun (ac, qa) (bb, c) ->
                             (let qmb, nb = bb in
                              fun (dda, naa) ->
-                               if nemptyIs _B2 ac then
+                               if
+                                 nempI
+                                   _B.order_linorder.preorder_order
+                                     .ord_preorder ac
+                               then
                                  let r_opt =
                                    lookup (linorder_prod _A2 _A2) qmb (ff qa)
                                  in
@@ -2222,10 +1456,7 @@ end = struct
                                  (let qmc, nc = bd in
                                   fun ra ->
                                     ( (qmc, nc)
-                                    , ( rs_lts_add _A2
-                                          (linorder_list
-                                             ( equal_prod _B1 _B1
-                                             , linorder_prod _B2 _B2 ) )
+                                    , ( rs_lts_add _A2 (linorder_prod _B _B)
                                           r ac ra dda
                                       , qa :: naa ) ) )
                                    ca
@@ -2238,22 +1469,17 @@ end = struct
                        fun (dda, ae) ->
                          ( ( (qmb, nb)
                            , ( ins_dj_rm_basic_ops _A2 r qs
-                             , ( sigb
-                               , ( dda
-                                 , ( isa
-                                   , if fp q then
-                                       ins_dj_rm_basic_ops _A2 r fs
-                                     else fs ) ) ) ) )
+                             , ( dda
+                               , ( isa
+                                 , if fp q then ins_dj_rm_basic_ops _A2 r fs
+                                   else fs ) ) ) )
                          , ae ) )
                         bb )
                    ba )
                ( ( (qm, n)
                  , ( empty_rm_basic_ops _A2 ()
-                   , ( siga
-                     , ( rs_lts_empty _A2
-                           (linorder_list
-                              (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
-                       , (is, empty_rm_basic_ops _A2 ()) ) ) ) )
+                   , ( rs_lts_empty _A2 (linorder_prod _B _B)
+                     , (is, empty_rm_basic_ops _A2 ()) ) ) )
                , i )
            in
            let ac, ba = ab in
@@ -2263,215 +1489,71 @@ end = struct
           b )
       id
       (fun a ->
-        rs_lts_succ_label_it (linorder_prod _A2 _A2)
-          (linorder_list (equal_prod _B1 _B1, linorder_prod _B2 _B2))
-          (nfa_transp _B2 a) )
+        rs_lts_succ_label_it (linorder_prod _A2 _A2) (linorder_prod _B _B)
+          (nfa_transp a) )
       (fun a ->
-        rs_lts_succ_label_it (linorder_prod _A2 _A2)
-          (linorder_list (equal_prod _B1 _B1, linorder_prod _B2 _B2))
-          (nfa_transp _B2 a) )
+        rs_lts_succ_label_it (linorder_prod _A2 _A2) (linorder_prod _B _B)
+          (nfa_transp a) )
       (fun a ->
-        rs_lts_connect_it (linorder_prod _A2 _A2)
-          (linorder_list (equal_prod _B1 _B1, linorder_prod _B2 _B2))
-          (linorder_prod _A2 _A2) (nfa_transp _B2 a) )
-      (nfa_alphap _B2) (nfa_alphap _B2)
+        rs_lts_connect_it (linorder_prod _A2 _A2) (linorder_prod _B _B)
+          (linorder_prod _A2 _A2) (nfa_transp a) )
       (fun a ->
         g_to_list_dflt_basic_oops_rm_basic_ops (linorder_prod _A2 _A2)
-          (nfa_initialp _B2 a) )
+          (nfa_initialp a) )
       (fun a ->
         g_to_list_dflt_basic_oops_rm_basic_ops (linorder_prod _A2 _A2)
-          (nfa_initialp _B2 a) )
-      (nfa_initialp _B2) (nfa_acceptingp _B2) (nfa_initialp _B2)
-      (nfa_acceptingp _B2)
+          (nfa_initialp a) )
+      nfa_initialp nfa_acceptingp nfa_initialp nfa_acceptingp
       (fun a q ->
-        memb_rm_basic_ops (linorder_prod _A2 _A2) q (nfa_acceptingp _B2 a) )
+        memb_rm_basic_ops (linorder_prod _A2 _A2) q (nfa_acceptingp a) )
       (rename_states_gen_impl
          (fun f s ->
            iteratei_set_op_list_it_rs_ops _A2 s
              (fun _ -> true)
              (fun b -> ins_rm_basic_ops (linorder_prod _A2 _A2) (f b))
              (empty_rm_basic_ops (linorder_prod _A2 _A2) ()) )
-         (rs_lts_image _A2
-            (linorder_list (equal_prod _B1 _B1, linorder_prod _B2 _B2))
-            (linorder_prod _A2 _A2)
-            (linorder_list (equal_prod _B1 _B1, linorder_prod _B2 _B2)) ) )
+         (rs_lts_image _A2 (linorder_prod _B _B) (linorder_prod _A2 _A2)
+            (linorder_prod _B _B) ) )
       (rename_states_gen_impl
          (fun f s ->
            iteratei_set_op_list_it_rs_ops _A2 s
              (fun _ -> true)
              (fun b -> ins_rm_basic_ops (linorder_prod _A2 _A2) (f b))
              (empty_rm_basic_ops (linorder_prod _A2 _A2) ()) )
-         (rs_lts_image _A2
-            (linorder_list (equal_prod _B1 _B1, linorder_prod _B2 _B2))
-            (linorder_prod _A2 _A2)
-            (linorder_list (equal_prod _B1 _B1, linorder_prod _B2 _B2)) ) )
+         (rs_lts_image _A2 (linorder_prod _B _B) (linorder_prod _A2 _A2)
+            (linorder_prod _B _B) ) )
       f1a f2a
       (q1, (d1, (i1, f1)))
       (q2, (d2, (i2, f2)))
 
-  let rec rs_nfa_normal (_A1, _A2) (_B1, _B2) =
-   fun a ->
-    let b =
-      foldl
-        (fun (aa, b) ->
-          (let qm, n = aa in
-           fun is q ->
-             ( ( insert (linorder_prod _A2 _A2) (id q)
-                   (states_enumerate _A1 n) qm
-               , suc n )
-             , ins_dj_rm_basic_ops _A2 (states_enumerate _A1 n) is ) )
-            b )
-        ((empty (linorder_prod _A2 _A2), zero_nat), empty_rm_basic_ops _A2 ())
-        (g_to_list_dflt_basic_oops_rm_basic_ops (linorder_prod _A2 _A2)
-           (fst (snd (snd (snd a)))) )
-    in
-    let ba, c = b in
-    (let qm, n = ba in
-     fun is ->
-       let aa =
-         worklist
-           (fun _ -> true)
-           (fun (bb, ca) ->
-             (let qma, na = bb in
-              fun (qs, (siga, (dd, (isa, fs)))) q ->
-                let r = the (lookup (linorder_prod _A2 _A2) qma (id q)) in
-                if memb_rm_basic_ops _A2 r qs then
-                  (((qma, na), (qs, (siga, (dd, (isa, fs))))), [])
-                else
-                  let bc =
-                    rs_lts_succ_label_it (linorder_prod _A2 _A2)
-                      (linorder_list
-                         (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
-                      (fst (snd (snd a)))
-                      q
-                      (fun _ -> true)
-                      (fun (aa, qa) (bc, cb) ->
-                        (let qmb, nb = bc in
-                         fun (dda, naa) ->
-                           if nemptyIs _B2 aa then
-                             let r_opt =
-                               lookup (linorder_prod _A2 _A2) qmb (id qa)
-                             in
-                             let bd =
-                               if is_none r_opt then
-                                 let ra = states_enumerate _A1 nb in
-                                 ( ( insert (linorder_prod _A2 _A2) (id qa)
-                                       ra qmb
-                                   , suc nb )
-                                 , ra )
-                               else ((qmb, nb), the r_opt)
-                             in
-                             let be, cc = bd in
-                             (let qmc, nc = be in
-                              fun ra ->
-                                ( (qmc, nc)
-                                , ( rs_lts_add _A2
-                                      (linorder_list
-                                         ( equal_prod _B1 _B1
-                                         , linorder_prod _B2 _B2 ) )
-                                      r aa ra dda
-                                  , qa :: naa ) ) )
-                               cc
-                           else ((qmb, nb), (dda, naa)) )
-                          cb )
-                      ((qma, na), (dd, []))
-                  in
-                  let bd, cb = bc in
-                  (let qmb, nb = bd in
-                   fun (dda, be) ->
-                     ( ( (qmb, nb)
-                       , ( ins_dj_rm_basic_ops _A2 r qs
-                         , ( siga
-                           , ( dda
-                             , ( isa
-                               , if
-                                   memb_rm_basic_ops (linorder_prod _A2 _A2)
-                                     q
-                                     (snd (snd (snd (snd a))))
-                                 then ins_dj_rm_basic_ops _A2 r fs
-                                 else fs ) ) ) ) )
-                     , be ) )
-                    cb )
-               ca )
-           ( ( (qm, n)
-             , ( empty_rm_basic_ops _A2 ()
-               , ( fst (snd a)
-                 , ( rs_lts_empty _A2
-                       (linorder_list
-                          (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
-                   , (is, empty_rm_basic_ops _A2 ()) ) ) ) )
-           , g_to_list_dflt_basic_oops_rm_basic_ops (linorder_prod _A2 _A2)
-               (fst (snd (snd (snd a)))) )
-       in
-       let ab, bb = aa in
-       (let _, aaa = ab in
-        fun _ -> aaa )
-         bb )
-      c
+  let rec rs_S_to_list _A s = g_to_list_dflt_basic_oops_rm_basic_ops _A s
 
-  let rec rs_nft_destruct (_A1, _A2) (_C1, _C2) _D
-      (q, (siga, (d, (i, (f, tF))))) =
-    ( g_to_list_dflt_basic_oops_rm_basic_ops _A2 q
-    , ( siga
-      , ( rs_lts_to_collect_list _A2
-            (linorder_prod
-               (linorder_option
-                  (linorder_list (equal_prod _C1 _C1, linorder_prod _C2 _C2)) )
-               _D )
-            d
-        , ( g_to_list_dflt_basic_oops_rm_basic_ops _A2 i
-          , (g_to_list_dflt_basic_oops_rm_basic_ops _A2 f, tF) ) ) ) )
+  let rec set_iterator_product it_a it_b =
+   fun c f -> it_a c (fun a -> it_b a c (fun b -> f (a, b)))
 
-  let rec rs_nfae_destruct (_A1, _A2) (_C1, _C2)
-      (q, (siga, (d1, (d2, (i, f))))) =
-    ( g_to_list_dflt_basic_oops_rm_basic_ops (linorder_prod _A2 _A2) q
-    , ( siga
-      , ( rs_lts_to_collect_list (linorder_prod _A2 _A2)
-            (linorder_list (equal_prod _C1 _C1, linorder_prod _C2 _C2))
-            d1
-        , ( g_to_list_dflt_basic_oops_rm_basic_ops
-              (linorder_prod (linorder_prod _A2 _A2) (linorder_prod _A2 _A2))
-              d2
-          , ( g_to_list_dflt_basic_oops_rm_basic_ops (linorder_prod _A2 _A2) i
-            , g_to_list_dflt_basic_oops_rm_basic_ops (linorder_prod _A2 _A2)
-                f ) ) ) ) )
+  let rec set_iterator_image g it = fun c f -> it c (fun x -> f (g x))
 
-  let rec diffS _A f1 f2 i s = foldl (diffIs _A f1 f2) i s
+  let rec product_iterator it_1 it_2 =
+   fun (q1, q2) ->
+    set_iterator_image
+      (fun (a, b) ->
+        (let a1, q1a = a in
+         fun (a2, q2a) -> ((a1, a2), (q1a, q2a)) )
+          b )
+      (set_iterator_product (it_1 q1) (fun aq -> it_2 q2 (fst aq)))
 
-  let rec rs_nfa_tran_complement (_A1, _A2) (_B1, _B2, _B3) f1 f2
-      (q, (a, (d, (i, f)))) q_dead =
-    (let qa, aa = (q, (a, (d, (i, f)))) in
-     let ab, (da, (ia, fa)) = aa in
-     fun q_deada ->
-       let x =
-         iteratei_set_op_list_it_rs_ops _B3 qa
-           (fun _ -> true)
-           (fun x sigma ->
-             let xa =
-               dnfa_iter _B3
-                 (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2))
-                 _B3 da
-                 (fun _ -> true)
-                 (fun xa sigmaa ->
-                   if eq _B1 x (fst xa) then fst (snd xa) :: sigmaa
-                   else sigmaa )
-                 []
-             in
-             let xb = diffS _A2 f1 f2 ab xa in
-             if emptyIs _A2 xb then sigma
-             else
-               rs_lts_add _B3
-                 (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2))
-                 x xb q_deada sigma )
-           da
-       in
-       ( ins_rm_basic_ops _B3 q_deada qa
-       , ( ab
-         , ( rs_lts_add _B3
-               (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2))
-               q_deada ab q_deada x
-           , (ia, fa) ) ) ) )
-      q_dead
+  let rec rs_rc_to_list (_A1, _A2) l =
+    foldl
+      (fun l1 s ->
+        ( fst s
+        , alpha_rm_basic_ops
+            (enum_prod _A1 _A1, linorder_prod _A2 _A2)
+            (snd s) )
+        :: l1 )
+      []
+      (g_to_list_rm_basic_ops _A2 l)
+
+  let rec rs_rm_to_list _A (_B1, _B2) _C l = g_to_list_rm_basic_ops _A l
 
   let rec g_from_list_aux_dflt_basic_oops_rm_basic_ops _A accs x1 =
     match (accs, x1) with
@@ -2486,26 +1568,18 @@ end = struct
       (empty_rm_basic_ops _A ())
       l
 
-  let rec rs_nfa_construct_interval (_A1, _A2) (_B1, _B2)
-      (ql, (sigL, (dl, (il, fl)))) =
+  let rec rs_nfa_construct_interval (_A1, _A2) _B (ql, (dl, (il, fl))) =
     foldl
-      (fun (q, (siga, (d, (i, f)))) (q1, (l, q2)) ->
+      (fun (q, (d, (i, f))) (q1, (l, q2)) ->
         ( ins_rm_basic_ops _A2 q1 (ins_rm_basic_ops _A2 q2 q)
-        , ( siga
-          , ( rs_lts_add _A2
-                (linorder_list (equal_prod _B1 _B1, linorder_prod _B2 _B2))
-                q1 (intersectIs _B2 l siga) q2 d
-            , (i, f) ) ) ) )
+        , (rs_lts_add _A2 (linorder_prod _B _B) q1 l q2 d, (i, f)) ) )
       ( g_from_list_dflt_basic_oops_rm_basic_ops _A2 (ql @ il @ fl)
-      , ( sigL
-        , ( rs_lts_empty _A2
-              (linorder_list (equal_prod _B1 _B1, linorder_prod _B2 _B2))
-          , ( g_from_list_dflt_basic_oops_rm_basic_ops _A2 il
-            , g_from_list_dflt_basic_oops_rm_basic_ops _A2 fl ) ) ) )
+      , ( rs_lts_empty _A2 (linorder_prod _B _B)
+        , ( g_from_list_dflt_basic_oops_rm_basic_ops _A2 il
+          , g_from_list_dflt_basic_oops_rm_basic_ops _A2 fl ) ) )
       dl
 
-  let rec rs_nfa_construct_reachable (_A1, _A2) (_B1, _B2)
-      (q2, (d2, (i2, f2))) =
+  let rec rs_nfa_construct_reachable (_A1, _A2) _B (q2, (d2, (i2, f2))) =
     let a =
       foldl
         (fun (a, b) ->
@@ -2515,7 +1589,7 @@ end = struct
              , ins_dj_rm_basic_ops _A2 (states_enumerate _A1 n) is ) )
             b )
         ((empty _A2, zero_nat), empty_rm_basic_ops _A2 ())
-        (g_to_list_dflt_basic_oops_rm_basic_ops _A2 (fst f2))
+        (g_to_list_dflt_basic_oops_rm_basic_ops _A2 i2)
     in
     let aa, b = a in
     (let qm, n = aa in
@@ -2525,21 +1599,22 @@ end = struct
            (fun _ -> true)
            (fun (ab, ba) ->
              (let qma, na = ab in
-              fun (qs, (siga, (dd, (isa, fs)))) q ->
+              fun (qs, (dd, (isa, fs))) q ->
                 let r = the (lookup _A2 qma (id q)) in
                 if memb_rm_basic_ops _A2 r qs then
-                  (((qma, na), (qs, (siga, (dd, (isa, fs))))), [])
+                  (((qma, na), (qs, (dd, (isa, fs)))), [])
                 else
                   let ac =
-                    rs_lts_succ_label_it _A2
-                      (linorder_list
-                         (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
-                      i2 q
+                    rs_lts_succ_label_it _A2 (linorder_prod _B _B) d2 q
                       (fun _ -> true)
                       (fun (ac, qa) (bb, c) ->
                         (let qmb, nb = bb in
                          fun (dda, naa) ->
-                           if nemptyIs _B2 ac then
+                           if
+                             nempI
+                               _B.order_linorder.preorder_order.ord_preorder
+                               ac
+                           then
                              let r_opt = lookup _A2 qmb (id qa) in
                              let bc =
                                if is_none r_opt then
@@ -2551,11 +1626,8 @@ end = struct
                              (let qmc, nc = bd in
                               fun ra ->
                                 ( (qmc, nc)
-                                , ( rs_lts_add _A2
-                                      (linorder_list
-                                         ( equal_prod _B1 _B1
-                                         , linorder_prod _B2 _B2 ) )
-                                      r ac ra dda
+                                , ( rs_lts_add _A2 (linorder_prod _B _B) r ac
+                                      ra dda
                                   , qa :: naa ) ) )
                                ca
                            else ((qmb, nb), (dda, naa)) )
@@ -2567,23 +1639,19 @@ end = struct
                    fun (dda, ae) ->
                      ( ( (qmb, nb)
                        , ( ins_dj_rm_basic_ops _A2 r qs
-                         , ( siga
-                           , ( dda
-                             , ( isa
-                               , if memb_rm_basic_ops _A2 q (snd f2) then
-                                   ins_dj_rm_basic_ops _A2 r fs
-                                 else fs ) ) ) ) )
+                         , ( dda
+                           , ( isa
+                             , if memb_rm_basic_ops _A2 q f2 then
+                                 ins_dj_rm_basic_ops _A2 r fs
+                               else fs ) ) ) )
                      , ae ) )
                     bb )
                ba )
            ( ( (qm, n)
              , ( empty_rm_basic_ops _A2 ()
-               , ( (fun ab -> fst (snd ab))
-                 , ( rs_lts_empty _A2
-                       (linorder_list
-                          (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
-                   , (is, empty_rm_basic_ops _A2 ()) ) ) ) )
-           , g_to_list_dflt_basic_oops_rm_basic_ops _A2 (fst f2) )
+               , ( rs_lts_empty _A2 (linorder_prod _B _B)
+                 , (is, empty_rm_basic_ops _A2 ()) ) ) )
+           , g_to_list_dflt_basic_oops_rm_basic_ops _A2 i2 )
        in
        let ac, ba = ab in
        (let _, aaa = ac in
@@ -2591,211 +1659,1390 @@ end = struct
          ba )
       b
 
-  let rec rs_product_transducer (_A1, _A2) (_C1, _C2) _D (_F1, _F2) t a f fe
-      =
-    let x =
-      iteratei_set_op_list_it_rs_ops _A2 (fst t)
-        (fun _ -> true)
-        (fun x sigma ->
-          let aa =
-            iteratei_set_op_list_it_rs_ops _A2 (fst a)
-              (fun _ -> true)
-              (fun xa -> ins_rm_basic_ops (linorder_prod _A2 _A2) (x, xa))
-              (empty_rm_basic_ops (linorder_prod _A2 _A2) ())
-          in
-          g_union_dflt_basic_oops_rm_basic_ops (linorder_prod _A2 _A2) sigma
-            aa )
-        (empty_rm_basic_ops (linorder_prod _A2 _A2) ())
-    in
-    let xa = fst (snd t) in
-    let xb =
-      rs_lts_it _A2
-        (linorder_prod
-           (linorder_option
-              (linorder_list (equal_prod _C1 _C1, linorder_prod _C2 _C2)) )
-           _D )
-        _A2
-        (fst (snd (snd t)))
-        (fun _ -> true)
-        (fun xb sigma ->
-          if is_none (fst (fst (snd xb))) then
-            if
-              is_none
-                (snd (snd (snd (snd (snd t)))) (snd (fst (snd xb))) None)
-            then
-              let xc =
-                iteratei_set_op_list_it_rs_ops _A2 (fst a)
-                  (fun _ -> true)
-                  (fun xc ->
-                    ins_rm_basic_ops
-                      (linorder_prod (linorder_prod _A2 _A2)
-                         (linorder_prod _A2 _A2) )
-                      ((fst xb, xc), (snd (snd xb), xc)) )
-                  (empty_rm_basic_ops
-                     (linorder_prod (linorder_prod _A2 _A2)
-                        (linorder_prod _A2 _A2) )
-                     () )
-              in
-              ( fst sigma
-              , g_union_dflt_basic_oops_rm_basic_ops
-                  (linorder_prod (linorder_prod _A2 _A2)
-                     (linorder_prod _A2 _A2) )
-                  (snd sigma) xc )
-            else
-              let xc =
-                iteratei_set_op_list_it_rs_ops _A2 (fst a)
-                  (fun _ -> true)
-                  (fun xc ->
-                    rs_lts_add (linorder_prod _A2 _A2)
-                      (linorder_list
-                         (equal_prod _F1 _F1, linorder_prod _F2 _F2) )
-                      (fst xb, xc)
-                      (the
-                         (snd
-                            (snd (snd (snd (snd t))))
-                            (snd (fst (snd xb)))
-                            None ) )
-                      (snd (snd xb), xc) )
-                  (rs_lts_empty (linorder_prod _A2 _A2)
-                     (linorder_list
-                        (equal_prod _F1 _F1, linorder_prod _F2 _F2) ) )
-              in
-              ( rs_lts_union (linorder_prod _A2 _A2)
-                  (linorder_list
-                     (equal_prod _F1 _F1, linorder_prod _F2 _F2) )
-                  (fst sigma) xc
-              , snd sigma )
-          else
-            rs_lts_it _A2
-              (linorder_list (equal_prod _C1 _C1, linorder_prod _C2 _C2))
-              _A2
-              (fst (snd (snd a)))
-              (fun _ -> true)
-              (fun xc sigmaa ->
-                if
-                  nemptyIs _C2
-                    (intersectIs _C2
-                       (the (fst (fst (snd xb))))
-                       (fst (snd xc)) )
-                then
-                  let xd =
-                    if
-                      not
-                        (is_none
-                           (f
-                              (snd
-                                 (snd (snd (snd (snd t))))
-                                 (snd (fst (snd xb))) )
-                              (intersectIs _C2
-                                 (the (fst (fst (snd xb))))
-                                 (fst (snd xc)) ) ) )
-                    then
-                      rs_lts_add (linorder_prod _A2 _A2)
-                        (linorder_list
-                           (equal_prod _F1 _F1, linorder_prod _F2 _F2) )
-                        (fst xb, fst xc)
-                        (the
-                           (f
-                              (snd
-                                 (snd (snd (snd (snd t))))
-                                 (snd (fst (snd xb))) )
-                              (intersectIs _C2
-                                 (the (fst (fst (snd xb))))
-                                 (fst (snd xc)) ) ) )
-                        (snd (snd xb), snd (snd xc))
-                        (fst sigmaa)
-                    else fst sigmaa
-                  in
-                  let aa =
-                    if
-                      fe
-                        (snd (snd (snd (snd (snd t)))) (snd (fst (snd xb))))
-                        (intersectIs _C2
-                           (the (fst (fst (snd xb))))
-                           (fst (snd xc)) )
-                    then
-                      ins_rm_basic_ops
-                        (linorder_prod (linorder_prod _A2 _A2)
-                           (linorder_prod _A2 _A2) )
-                        ((fst xb, fst xc), (snd (snd xb), snd (snd xc)))
-                        (snd sigmaa)
-                    else snd sigmaa
-                  in
-                  (xd, aa)
-                else sigmaa )
-              sigma )
-        ( rs_lts_empty (linorder_prod _A2 _A2)
-            (linorder_list (equal_prod _F1 _F1, linorder_prod _F2 _F2))
-        , empty_rm_basic_ops
-            (linorder_prod (linorder_prod _A2 _A2) (linorder_prod _A2 _A2))
-            () )
-    in
-    let xc =
-      iteratei_set_op_list_it_rs_ops _A2
-        (fst (snd (snd (snd t))))
-        (fun _ -> true)
-        (fun xc sigma ->
-          let aa =
-            iteratei_set_op_list_it_rs_ops _A2
-              (fst (snd (snd (snd a))))
-              (fun _ -> true)
-              (fun xd -> ins_rm_basic_ops (linorder_prod _A2 _A2) (xc, xd))
-              (empty_rm_basic_ops (linorder_prod _A2 _A2) ())
-          in
-          g_union_dflt_basic_oops_rm_basic_ops (linorder_prod _A2 _A2) sigma
-            aa )
-        (empty_rm_basic_ops (linorder_prod _A2 _A2) ())
-    in
-    let xd =
-      iteratei_set_op_list_it_rs_ops _A2
-        (fst (snd (snd (snd (snd t)))))
-        (fun _ -> true)
-        (fun xd sigma ->
-          let aa =
-            iteratei_set_op_list_it_rs_ops _A2
-              (snd (snd (snd (snd a))))
-              (fun _ -> true)
-              (fun xe -> ins_rm_basic_ops (linorder_prod _A2 _A2) (xd, xe))
-              (empty_rm_basic_ops (linorder_prod _A2 _A2) ())
-          in
-          g_union_dflt_basic_oops_rm_basic_ops (linorder_prod _A2 _A2) sigma
-            aa )
-        (empty_rm_basic_ops (linorder_prod _A2 _A2) ())
-    in
-    (x, (xa, (fst xb, (snd xb, (xc, xd)))))
+  let rec rs_gen_S_from_list _A l =
+    foldl (fun s a -> ins_rm_basic_ops _A a s) (empty_rm_basic_ops _A ()) l
 
-  let rec rs_nft_construct_interval_aux (_A1, _A2) (_B1, _B2) _C =
-   fun (q, (siga, (d, (i, (f, funa))))) (q1, a) ->
-    let aa, b = a in
-    (let l, fa = aa in
-     fun q2 ->
-       ( ins_rm_basic_ops _A2 q1 (ins_rm_basic_ops _A2 q2 q)
-       , ( siga
-         , ( rs_lts_add _A2
-               (linorder_prod
-                  (linorder_option
-                     (linorder_list
-                        (equal_prod _B1 _B1, linorder_prod _B2 _B2) ) )
-                  _C )
-               q1 (l, fa) q2 d
-           , (i, (f, funa)) ) ) ) )
-      b
+  let rec rename_states_impl im im2 = rename_states_gen_impl im im2
 
-  let rec rs_nft_construct_interval (_A1, _A2) (_B1, _B2) _C
-      (ql, (sigL, (dl, (il, (fl, funa))))) =
+  let rec g_ball_dflt_basic_oops_rm_basic_ops _A s p =
+    iteratei_bset_op_list_it_dflt_basic_oops_rm_basic_ops _A s
+      (fun c -> c)
+      (fun x _ -> p x)
+      true
+
+  let rec g_subset_dflt_basic_oops_rm_basic_ops _A s1 s2 =
+    g_ball_dflt_basic_oops_rm_basic_ops _A s1 (fun x ->
+        memb_rm_basic_ops _A x s2 )
+
+  let rec g_union_dflt_basic_oops_rm_basic_ops _A s1 s2 =
+    iteratei_bset_op_list_it_dflt_basic_oops_rm_basic_ops _A s1
+      (fun _ -> true)
+      (ins_rm_basic_ops _A) s2
+
+  let rec g_diff_dflt_basic_oops_rm_basic_ops _A s1 s2 =
+    iteratei_bset_op_list_it_dflt_basic_oops_rm_basic_ops _A s2
+      (fun _ -> true)
+      (delete_rm_basic_ops _A) s1
+
+  let rec rs_forward_analysis (_A1, _A2) _B _C rm =
+   fun b si rc rma ->
+    whilea
+      (fun p -> not (g_isEmpty_dflt_basic_oops_rm_basic_ops _B (fst p)))
+      (fun x ->
+        let xa =
+          iteratei_set_op_list_it_rs_ops _B (fst x)
+            (fun _ -> true)
+            (fun xa sigma ->
+              let xb =
+                if not (is_none (lookup _B rc xa)) then
+                  iteratei_set_op_list_it_rs_ops (linorder_prod _B _B)
+                    (the (lookup_aux _B xa rc))
+                    (fun _ -> true)
+                    (fun xb sigmaa ->
+                      ins_rm_basic_ops _B (fst xb)
+                        (ins_rm_basic_ops _B (snd xb) sigmaa) )
+                    (empty_rm_basic_ops _B ())
+                else empty_rm_basic_ops _B ()
+              in
+              if g_subset_dflt_basic_oops_rm_basic_ops _B xb (snd (snd x))
+              then ins_rm_basic_ops _B xa sigma
+              else sigma )
+            (empty_rm_basic_ops _B ())
+        in
+        let xb =
+          iteratei_set_op_list_it_rs_ops _B xa
+            (fun _ -> true)
+            (fun xb sigma ->
+              if not (is_none (lookup _B rc xb)) then
+                let xc =
+                  iteratei_set_op_list_it_rs_ops (linorder_prod _B _B)
+                    (the (lookup_aux _B xb rc))
+                    (fun _ -> true)
+                    (fun xc sigmaa ->
+                      let p =
+                        foldl
+                          (fun p q ->
+                            ( ( insert (linorder_prod _A2 _A2) (id q)
+                                  (states_enumerate _A1 (snd (fst p)))
+                                  (fst (fst p))
+                              , suc (snd (fst p)) )
+                            , ins_dj_rm_basic_ops _A2
+                                (states_enumerate _A1 (snd (fst p)))
+                                (snd p) ) )
+                          ( (empty (linorder_prod _A2 _A2), zero_nat)
+                          , empty_rm_basic_ops _A2 () )
+                          (product
+                             (g_to_list_dflt_basic_oops_rm_basic_ops _A2
+                                (fst (snd (snd sigmaa))) )
+                             (g_to_list_dflt_basic_oops_rm_basic_ops _A2
+                                (fst
+                                   (snd
+                                      (snd
+                                         (let nA1 =
+                                            rename_states_impl
+                                              (fun f s ->
+                                                iteratei_set_op_list_it_rs_ops
+                                                  _A2 s
+                                                  (fun _ -> true)
+                                                  (fun ba ->
+                                                    ins_rm_basic_ops
+                                                      (linorder_prod _A2 _A2)
+                                                      (f ba) )
+                                                  (empty_rm_basic_ops
+                                                     (linorder_prod _A2 _A2)
+                                                     () ) )
+                                              (rs_lts_image _A2
+                                                 (linorder_prod _C _C)
+                                                 (linorder_prod _A2 _A2)
+                                                 (linorder_prod _C _C) )
+                                              (the
+                                                 (lookup _B sigma (fst xc)) )
+                                              (fun a -> (rm, a))
+                                          in
+                                          let aA2 =
+                                            rename_states_impl
+                                              (fun f s ->
+                                                iteratei_set_op_list_it_rs_ops
+                                                  _A2 s
+                                                  (fun _ -> true)
+                                                  (fun ba ->
+                                                    ins_rm_basic_ops
+                                                      (linorder_prod _A2 _A2)
+                                                      (f ba) )
+                                                  (empty_rm_basic_ops
+                                                     (linorder_prod _A2 _A2)
+                                                     () ) )
+                                              (rs_lts_image _A2
+                                                 (linorder_prod _C _C)
+                                                 (linorder_prod _A2 _A2)
+                                                 (linorder_prod _C _C) )
+                                              (the
+                                                 (lookup _B sigma (snd xc)) )
+                                              (fun a -> (b, a))
+                                          in
+                                          let p =
+                                            foldl
+                                              (fun p q ->
+                                                ( ( insert
+                                                      (linorder_prod _A2 _A2)
+                                                      (id q)
+                                                      (states_enumerate _A1
+                                                         (snd (fst p)) )
+                                                      (fst (fst p))
+                                                  , suc (snd (fst p)) )
+                                                , ins_dj_rm_basic_ops _A2
+                                                    (states_enumerate _A1
+                                                       (snd (fst p)) )
+                                                    (snd p) ) )
+                                              ( ( empty
+                                                    (linorder_prod _A2 _A2)
+                                                , zero_nat )
+                                              , empty_rm_basic_ops _A2 () )
+                                              ( if
+                                                  not
+                                                    (g_isEmpty_dflt_basic_oops_rm_basic_ops
+                                                       (linorder_prod _A2 _A2)
+                                                       (g_inter_dflt_basic_oops_rm_basic_ops
+                                                          (linorder_prod _A2
+                                                             _A2 )
+                                                          (nfa_initialp nA1)
+                                                          (nfa_acceptingp nA1) ) )
+                                                then
+                                                  g_to_list_dflt_basic_oops_rm_basic_ops
+                                                    (linorder_prod _A2 _A2)
+                                                    (nfa_initialp nA1)
+                                                  @ g_to_list_dflt_basic_oops_rm_basic_ops
+                                                      (linorder_prod _A2 _A2)
+                                                      (nfa_initialp aA2)
+                                                else
+                                                  g_to_list_dflt_basic_oops_rm_basic_ops
+                                                    (linorder_prod _A2 _A2)
+                                                    (nfa_initialp nA1) )
+                                          in
+                                          let pa =
+                                            worklist
+                                              (fun _ -> true)
+                                              (fun pa q ->
+                                                let r =
+                                                  the
+                                                    (lookup
+                                                       (linorder_prod _A2 _A2)
+                                                       (fst (fst pa))
+                                                       (id q) )
+                                                in
+                                                if
+                                                  memb_rm_basic_ops _A2 r
+                                                    (fst (snd pa))
+                                                then (pa, [])
+                                                else
+                                                  let paa =
+                                                    tri_union_iterator
+                                                      (rs_lts_succ_label_it
+                                                         (linorder_prod _A2
+                                                            _A2 )
+                                                         (linorder_prod _C _C)
+                                                         (nfa_transp nA1) )
+                                                      (rs_lts_succ_label_it
+                                                         (linorder_prod _A2
+                                                            _A2 )
+                                                         (linorder_prod _C _C)
+                                                         (nfa_transp aA2) )
+                                                      (rs_lts_connect_it
+                                                         (linorder_prod _A2
+                                                            _A2 )
+                                                         (linorder_prod _C _C)
+                                                         (linorder_prod _A2
+                                                            _A2 )
+                                                         (nfa_transp nA1)
+                                                         (nfa_acceptingp nA1)
+                                                         (nfa_initialp aA2) )
+                                                      q
+                                                      (fun _ -> true)
+                                                      (fun pb paa ->
+                                                        if
+                                                          nempI
+                                                            _C.order_linorder
+                                                              .preorder_order
+                                                              .ord_preorder
+                                                            (fst pb)
+                                                        then
+                                                          let r_opt =
+                                                            lookup
+                                                              (linorder_prod
+                                                                 _A2 _A2 )
+                                                              (fst (fst paa))
+                                                              (id (snd pb))
+                                                          in
+                                                          let pba =
+                                                            if is_none r_opt
+                                                            then
+                                                              let ra =
+                                                                states_enumerate
+                                                                  _A1
+                                                                  (snd
+                                                                     (fst paa) )
+                                                              in
+                                                              ( ( insert
+                                                                    (linorder_prod
+                                                                       _A2
+                                                                       _A2 )
+                                                                    (id
+                                                                       (snd
+                                                                          pb ) )
+                                                                    ra
+                                                                    (fst
+                                                                       (fst
+                                                                          paa ) )
+                                                                , suc
+                                                                    (snd
+                                                                       (fst
+                                                                          paa ) )
+                                                                )
+                                                              , ra )
+                                                            else
+                                                              ( fst paa
+                                                              , the r_opt )
+                                                          in
+                                                          ( fst pba
+                                                          , ( rs_lts_add _A2
+                                                                (linorder_prod
+                                                                   _C _C ) r
+                                                                (fst pb)
+                                                                (snd pba)
+                                                                (fst
+                                                                   (snd paa) )
+                                                            , snd pb
+                                                              :: snd
+                                                                   (snd paa)
+                                                            ) )
+                                                        else paa )
+                                                      ( fst pa
+                                                      , ( fst (snd (snd pa))
+                                                        , [] ) )
+                                                  in
+                                                  ( ( fst paa
+                                                    , ( ins_dj_rm_basic_ops
+                                                          _A2 r
+                                                          (fst (snd pa))
+                                                      , ( fst (snd paa)
+                                                        , ( fst
+                                                              (snd
+                                                                 (snd
+                                                                    (snd pa) ) )
+                                                          , if
+                                                              memb_rm_basic_ops
+                                                                (linorder_prod
+                                                                   _A2 _A2 )
+                                                                q
+                                                                (nfa_acceptingp
+                                                                   aA2 )
+                                                            then
+                                                              ins_dj_rm_basic_ops
+                                                                _A2 r
+                                                                (snd
+                                                                   (snd
+                                                                      (snd
+                                                                         (snd
+                                                                            pa ) ) ) )
+                                                            else
+                                                              snd
+                                                                (snd
+                                                                   (snd
+                                                                      (snd pa) ) )
+                                                          ) ) ) )
+                                                  , snd (snd paa) ) )
+                                              ( ( fst p
+                                                , ( empty_rm_basic_ops _A2 ()
+                                                  , ( rs_lts_empty _A2
+                                                        (linorder_prod _C _C)
+                                                    , ( snd p
+                                                      , empty_rm_basic_ops
+                                                          _A2 () ) ) ) )
+                                              , if
+                                                  not
+                                                    (g_isEmpty_dflt_basic_oops_rm_basic_ops
+                                                       (linorder_prod _A2 _A2)
+                                                       (g_inter_dflt_basic_oops_rm_basic_ops
+                                                          (linorder_prod _A2
+                                                             _A2 )
+                                                          (nfa_initialp nA1)
+                                                          (nfa_acceptingp nA1) ) )
+                                                then
+                                                  g_to_list_dflt_basic_oops_rm_basic_ops
+                                                    (linorder_prod _A2 _A2)
+                                                    (nfa_initialp nA1)
+                                                  @ g_to_list_dflt_basic_oops_rm_basic_ops
+                                                      (linorder_prod _A2 _A2)
+                                                      (nfa_initialp aA2)
+                                                else
+                                                  g_to_list_dflt_basic_oops_rm_basic_ops
+                                                    (linorder_prod _A2 _A2)
+                                                    (nfa_initialp nA1) )
+                                          in
+                                          snd (fst pa) ) ) ) ) ) )
+                      in
+                      let pa =
+                        worklist
+                          (fun _ -> true)
+                          (fun pa q ->
+                            let r =
+                              the
+                                (lookup (linorder_prod _A2 _A2)
+                                   (fst (fst pa))
+                                   (id q) )
+                            in
+                            if memb_rm_basic_ops _A2 r (fst (snd pa)) then
+                              (pa, [])
+                            else
+                              let paa =
+                                product_iterator
+                                  (rs_lts_succ_label_it _A2
+                                     (linorder_prod _C _C)
+                                     (fst (snd sigmaa)) )
+                                  (rs_lts_succ_it _A2 (linorder_prod _C _C)
+                                     (fst
+                                        (snd
+                                           (let nA1 =
+                                              rename_states_impl
+                                                (fun f s ->
+                                                  iteratei_set_op_list_it_rs_ops
+                                                    _A2 s
+                                                    (fun _ -> true)
+                                                    (fun ba ->
+                                                      ins_rm_basic_ops
+                                                        (linorder_prod _A2
+                                                           _A2 ) (f ba) )
+                                                    (empty_rm_basic_ops
+                                                       (linorder_prod _A2 _A2)
+                                                       () ) )
+                                                (rs_lts_image _A2
+                                                   (linorder_prod _C _C)
+                                                   (linorder_prod _A2 _A2)
+                                                   (linorder_prod _C _C) )
+                                                (the
+                                                   (lookup _B sigma (fst xc)) )
+                                                (fun a -> (rm, a))
+                                            in
+                                            let aA2 =
+                                              rename_states_impl
+                                                (fun f s ->
+                                                  iteratei_set_op_list_it_rs_ops
+                                                    _A2 s
+                                                    (fun _ -> true)
+                                                    (fun ba ->
+                                                      ins_rm_basic_ops
+                                                        (linorder_prod _A2
+                                                           _A2 ) (f ba) )
+                                                    (empty_rm_basic_ops
+                                                       (linorder_prod _A2 _A2)
+                                                       () ) )
+                                                (rs_lts_image _A2
+                                                   (linorder_prod _C _C)
+                                                   (linorder_prod _A2 _A2)
+                                                   (linorder_prod _C _C) )
+                                                (the
+                                                   (lookup _B sigma (snd xc)) )
+                                                (fun a -> (b, a))
+                                            in
+                                            let pb =
+                                              foldl
+                                                (fun pb qa ->
+                                                  ( ( insert
+                                                        (linorder_prod _A2
+                                                           _A2 ) (id qa)
+                                                        (states_enumerate _A1
+                                                           (snd (fst pb)) )
+                                                        (fst (fst pb))
+                                                    , suc (snd (fst pb)) )
+                                                  , ins_dj_rm_basic_ops _A2
+                                                      (states_enumerate _A1
+                                                         (snd (fst pb)) )
+                                                      (snd pb) ) )
+                                                ( ( empty
+                                                      (linorder_prod _A2 _A2)
+                                                  , zero_nat )
+                                                , empty_rm_basic_ops _A2 ()
+                                                )
+                                                ( if
+                                                    not
+                                                      (g_isEmpty_dflt_basic_oops_rm_basic_ops
+                                                         (linorder_prod _A2
+                                                            _A2 )
+                                                         (g_inter_dflt_basic_oops_rm_basic_ops
+                                                            (linorder_prod
+                                                               _A2 _A2 )
+                                                            (nfa_initialp nA1)
+                                                            (nfa_acceptingp
+                                                               nA1 ) ) )
+                                                  then
+                                                    g_to_list_dflt_basic_oops_rm_basic_ops
+                                                      (linorder_prod _A2 _A2)
+                                                      (nfa_initialp nA1)
+                                                    @ g_to_list_dflt_basic_oops_rm_basic_ops
+                                                        (linorder_prod _A2
+                                                           _A2 )
+                                                        (nfa_initialp aA2)
+                                                  else
+                                                    g_to_list_dflt_basic_oops_rm_basic_ops
+                                                      (linorder_prod _A2 _A2)
+                                                      (nfa_initialp nA1) )
+                                            in
+                                            let pc =
+                                              worklist
+                                                (fun _ -> true)
+                                                (fun pc qa ->
+                                                  let ra =
+                                                    the
+                                                      (lookup
+                                                         (linorder_prod _A2
+                                                            _A2 )
+                                                         (fst (fst pc))
+                                                         (id qa) )
+                                                  in
+                                                  if
+                                                    memb_rm_basic_ops _A2 ra
+                                                      (fst (snd pc))
+                                                  then (pc, [])
+                                                  else
+                                                    let paa =
+                                                      tri_union_iterator
+                                                        (rs_lts_succ_label_it
+                                                           (linorder_prod _A2
+                                                              _A2 )
+                                                           (linorder_prod _C
+                                                              _C )
+                                                           (nfa_transp nA1) )
+                                                        (rs_lts_succ_label_it
+                                                           (linorder_prod _A2
+                                                              _A2 )
+                                                           (linorder_prod _C
+                                                              _C )
+                                                           (nfa_transp aA2) )
+                                                        (rs_lts_connect_it
+                                                           (linorder_prod _A2
+                                                              _A2 )
+                                                           (linorder_prod _C
+                                                              _C )
+                                                           (linorder_prod _A2
+                                                              _A2 )
+                                                           (nfa_transp nA1)
+                                                           (nfa_acceptingp
+                                                              nA1 )
+                                                           (nfa_initialp aA2) )
+                                                        qa
+                                                        (fun _ -> true)
+                                                        (fun pd paa ->
+                                                          if
+                                                            nempI
+                                                              _C
+                                                                .order_linorder
+                                                                .preorder_order
+                                                                .ord_preorder
+                                                              (fst pd)
+                                                          then
+                                                            let r_opt =
+                                                              lookup
+                                                                (linorder_prod
+                                                                   _A2 _A2 )
+                                                                (fst
+                                                                   (fst paa) )
+                                                                (id (snd pd))
+                                                            in
+                                                            let pba =
+                                                              if
+                                                                is_none r_opt
+                                                              then
+                                                                let rb =
+                                                                  states_enumerate
+                                                                    _A1
+                                                                    (snd
+                                                                       (fst
+                                                                          paa ) )
+                                                                in
+                                                                ( ( insert
+                                                                      (linorder_prod
+                                                                         _A2
+                                                                         _A2 )
+                                                                      (id
+                                                                         (snd
+                                                                            pd ) )
+                                                                      rb
+                                                                      (fst
+                                                                         (fst
+                                                                            paa ) )
+                                                                  , suc
+                                                                      (snd
+                                                                         (fst
+                                                                            paa ) )
+                                                                  )
+                                                                , rb )
+                                                              else
+                                                                ( fst paa
+                                                                , the r_opt
+                                                                )
+                                                            in
+                                                            ( fst pba
+                                                            , ( rs_lts_add
+                                                                  _A2
+                                                                  (linorder_prod
+                                                                     _C _C )
+                                                                  ra (fst pd)
+                                                                  (snd pba)
+                                                                  (fst
+                                                                     (snd paa) )
+                                                              , snd pd
+                                                                :: snd
+                                                                     (snd paa)
+                                                              ) )
+                                                          else paa )
+                                                        ( fst pc
+                                                        , ( fst (snd (snd pc))
+                                                          , [] ) )
+                                                    in
+                                                    ( ( fst paa
+                                                      , ( ins_dj_rm_basic_ops
+                                                            _A2 ra
+                                                            (fst (snd pc))
+                                                        , ( fst (snd paa)
+                                                          , ( fst
+                                                                (snd
+                                                                   (snd
+                                                                      (snd pc) ) )
+                                                            , if
+                                                                memb_rm_basic_ops
+                                                                  (linorder_prod
+                                                                     _A2 _A2 )
+                                                                  qa
+                                                                  (nfa_acceptingp
+                                                                     aA2 )
+                                                              then
+                                                                ins_dj_rm_basic_ops
+                                                                  _A2 ra
+                                                                  (snd
+                                                                     (snd
+                                                                        (snd
+                                                                           (snd
+                                                                             pc ) ) ) )
+                                                              else
+                                                                snd
+                                                                  (snd
+                                                                     (snd
+                                                                        (snd
+                                                                           pc ) ) )
+                                                            ) ) ) )
+                                                    , snd (snd paa) ) )
+                                                ( ( fst pb
+                                                  , ( empty_rm_basic_ops _A2
+                                                        ()
+                                                    , ( rs_lts_empty _A2
+                                                          (linorder_prod _C
+                                                             _C )
+                                                      , ( snd pb
+                                                        , empty_rm_basic_ops
+                                                            _A2 () ) ) ) )
+                                                , if
+                                                    not
+                                                      (g_isEmpty_dflt_basic_oops_rm_basic_ops
+                                                         (linorder_prod _A2
+                                                            _A2 )
+                                                         (g_inter_dflt_basic_oops_rm_basic_ops
+                                                            (linorder_prod
+                                                               _A2 _A2 )
+                                                            (nfa_initialp nA1)
+                                                            (nfa_acceptingp
+                                                               nA1 ) ) )
+                                                  then
+                                                    g_to_list_dflt_basic_oops_rm_basic_ops
+                                                      (linorder_prod _A2 _A2)
+                                                      (nfa_initialp nA1)
+                                                    @ g_to_list_dflt_basic_oops_rm_basic_ops
+                                                        (linorder_prod _A2
+                                                           _A2 )
+                                                        (nfa_initialp aA2)
+                                                  else
+                                                    g_to_list_dflt_basic_oops_rm_basic_ops
+                                                      (linorder_prod _A2 _A2)
+                                                      (nfa_initialp nA1) )
+                                            in
+                                            snd (fst pc) ) ) ) )
+                                  q
+                                  (fun _ -> true)
+                                  (fun pb paa ->
+                                    if
+                                      nempI
+                                        _C.order_linorder.preorder_order
+                                          .ord_preorder
+                                        (intersectI
+                                           _C.order_linorder.preorder_order
+                                             .ord_preorder
+                                           _C.order_linorder.preorder_order
+                                             .ord_preorder
+                                           (fst (fst pb))
+                                           (snd (fst pb)) )
+                                    then
+                                      let r_opt =
+                                        lookup (linorder_prod _A2 _A2)
+                                          (fst (fst paa))
+                                          (id (snd pb))
+                                      in
+                                      let pba =
+                                        if is_none r_opt then
+                                          let ra =
+                                            states_enumerate _A1
+                                              (snd (fst paa))
+                                          in
+                                          ( ( insert (linorder_prod _A2 _A2)
+                                                (id (snd pb))
+                                                ra
+                                                (fst (fst paa))
+                                            , suc (snd (fst paa)) )
+                                          , ra )
+                                        else (fst paa, the r_opt)
+                                      in
+                                      ( fst pba
+                                      , ( rs_lts_add _A2
+                                            (linorder_prod _C _C) r
+                                            (intersectI
+                                               _C.order_linorder
+                                                 .preorder_order
+                                                 .ord_preorder
+                                               _C.order_linorder
+                                                 .preorder_order
+                                                 .ord_preorder
+                                               (fst (fst pb))
+                                               (snd (fst pb)) )
+                                            (snd pba)
+                                            (fst (snd paa))
+                                        , snd pb :: snd (snd paa) ) )
+                                    else paa )
+                                  (fst pa, (fst (snd (snd pa)), []))
+                              in
+                              ( ( fst paa
+                                , ( ins_dj_rm_basic_ops _A2 r (fst (snd pa))
+                                  , ( fst (snd paa)
+                                    , ( fst (snd (snd (snd pa)))
+                                      , if
+                                          memb_rm_basic_ops _A2 (fst q)
+                                            (snd (snd (snd sigmaa)))
+                                          && memb_rm_basic_ops _A2 (snd q)
+                                               (snd
+                                                  (snd
+                                                     (snd
+                                                        (let nA1 =
+                                                           rename_states_impl
+                                                             (fun f s ->
+                                                               iteratei_set_op_list_it_rs_ops
+                                                                 _A2 s
+                                                                 (fun _ ->
+                                                                   true )
+                                                                 (fun ba ->
+                                                                   ins_rm_basic_ops
+                                                                     (linorder_prod
+                                                                        _A2
+                                                                        _A2 )
+                                                                     (f ba) )
+                                                                 (empty_rm_basic_ops
+                                                                    (linorder_prod
+                                                                       _A2
+                                                                       _A2 )
+                                                                    () ) )
+                                                             (rs_lts_image
+                                                                _A2
+                                                                (linorder_prod
+                                                                   _C _C )
+                                                                (linorder_prod
+                                                                   _A2 _A2 )
+                                                                (linorder_prod
+                                                                   _C _C ) )
+                                                             (the
+                                                                (lookup _B
+                                                                   sigma
+                                                                   (fst xc) ) )
+                                                             (fun a ->
+                                                               (rm, a) )
+                                                         in
+                                                         let aA2 =
+                                                           rename_states_impl
+                                                             (fun f s ->
+                                                               iteratei_set_op_list_it_rs_ops
+                                                                 _A2 s
+                                                                 (fun _ ->
+                                                                   true )
+                                                                 (fun ba ->
+                                                                   ins_rm_basic_ops
+                                                                     (linorder_prod
+                                                                        _A2
+                                                                        _A2 )
+                                                                     (f ba) )
+                                                                 (empty_rm_basic_ops
+                                                                    (linorder_prod
+                                                                       _A2
+                                                                       _A2 )
+                                                                    () ) )
+                                                             (rs_lts_image
+                                                                _A2
+                                                                (linorder_prod
+                                                                   _C _C )
+                                                                (linorder_prod
+                                                                   _A2 _A2 )
+                                                                (linorder_prod
+                                                                   _C _C ) )
+                                                             (the
+                                                                (lookup _B
+                                                                   sigma
+                                                                   (snd xc) ) )
+                                                             (fun a -> (b, a))
+                                                         in
+                                                         let pb =
+                                                           foldl
+                                                             (fun pb qa ->
+                                                               ( ( insert
+                                                                     (linorder_prod
+                                                                        _A2
+                                                                        _A2 )
+                                                                     (id qa)
+                                                                     (states_enumerate
+                                                                        _A1
+                                                                        (snd
+                                                                           (fst
+                                                                             pb ) ) )
+                                                                     (fst
+                                                                        (fst
+                                                                           pb ) )
+                                                                 , suc
+                                                                     (snd
+                                                                        (fst
+                                                                           pb ) )
+                                                                 )
+                                                               , ins_dj_rm_basic_ops
+                                                                   _A2
+                                                                   (states_enumerate
+                                                                      _A1
+                                                                      (snd
+                                                                         (fst
+                                                                            pb ) ) )
+                                                                   (snd pb)
+                                                               ) )
+                                                             ( ( empty
+                                                                   (linorder_prod
+                                                                      _A2 _A2 )
+                                                               , zero_nat )
+                                                             , empty_rm_basic_ops
+                                                                 _A2 () )
+                                                             ( if
+                                                                 not
+                                                                   (g_isEmpty_dflt_basic_oops_rm_basic_ops
+                                                                      (linorder_prod
+                                                                         _A2
+                                                                         _A2 )
+                                                                      (g_inter_dflt_basic_oops_rm_basic_ops
+                                                                         (linorder_prod
+                                                                            _A2
+                                                                            _A2 )
+                                                                         (nfa_initialp
+                                                                            nA1 )
+                                                                         (nfa_acceptingp
+                                                                            nA1 ) ) )
+                                                               then
+                                                                 g_to_list_dflt_basic_oops_rm_basic_ops
+                                                                   (linorder_prod
+                                                                      _A2 _A2 )
+                                                                   (nfa_initialp
+                                                                      nA1 )
+                                                                 @ g_to_list_dflt_basic_oops_rm_basic_ops
+                                                                     (linorder_prod
+                                                                        _A2
+                                                                        _A2 )
+                                                                     (nfa_initialp
+                                                                        aA2 )
+                                                               else
+                                                                 g_to_list_dflt_basic_oops_rm_basic_ops
+                                                                   (linorder_prod
+                                                                      _A2 _A2 )
+                                                                   (nfa_initialp
+                                                                      nA1 )
+                                                             )
+                                                         in
+                                                         let pc =
+                                                           worklist
+                                                             (fun _ -> true)
+                                                             (fun pc qa ->
+                                                               let ra =
+                                                                 the
+                                                                   (lookup
+                                                                      (linorder_prod
+                                                                         _A2
+                                                                         _A2 )
+                                                                      (fst
+                                                                         (fst
+                                                                            pc ) )
+                                                                      (id qa) )
+                                                               in
+                                                               if
+                                                                 memb_rm_basic_ops
+                                                                   _A2 ra
+                                                                   (fst
+                                                                      (snd pc) )
+                                                               then (pc, [])
+                                                               else
+                                                                 let pab =
+                                                                   tri_union_iterator
+                                                                     (rs_lts_succ_label_it
+                                                                        (linorder_prod
+                                                                           _A2
+                                                                           _A2 )
+                                                                        (linorder_prod
+                                                                           _C
+                                                                           _C )
+                                                                        (nfa_transp
+                                                                           nA1 ) )
+                                                                     (rs_lts_succ_label_it
+                                                                        (linorder_prod
+                                                                           _A2
+                                                                           _A2 )
+                                                                        (linorder_prod
+                                                                           _C
+                                                                           _C )
+                                                                        (nfa_transp
+                                                                           aA2 ) )
+                                                                     (rs_lts_connect_it
+                                                                        (linorder_prod
+                                                                           _A2
+                                                                           _A2 )
+                                                                        (linorder_prod
+                                                                           _C
+                                                                           _C )
+                                                                        (linorder_prod
+                                                                           _A2
+                                                                           _A2 )
+                                                                        (nfa_transp
+                                                                           nA1 )
+                                                                        (nfa_acceptingp
+                                                                           nA1 )
+                                                                        (nfa_initialp
+                                                                           aA2 ) )
+                                                                     qa
+                                                                     (fun _
+                                                                        ->
+                                                                       true )
+                                                                     (fun pd
+                                                                          pab
+                                                                        ->
+                                                                       if
+                                                                         nempI
+                                                                           _C
+                                                                             .order_linorder
+                                                                             .preorder_order
+                                                                             .ord_preorder
+                                                                           (fst
+                                                                             pd )
+                                                                       then
+                                                                         let r_opt
+                                                                             =
+                                                                           lookup
+                                                                             (
+                                                                             linorder_prod
+                                                                             _A2
+                                                                             _A2 )
+                                                                             (
+                                                                             fst
+                                                                             (
+                                                                             fst
+                                                                             pab ) )
+                                                                             (
+                                                                             id
+                                                                             (
+                                                                             snd
+                                                                             pd ) )
+                                                                         in
+                                                                         let pba
+                                                                             =
+                                                                           if
+                                                                             is_none
+                                                                             r_opt
+                                                                           then
+                                                                             let rb
+                                                                             =
+                                                                             states_enumerate
+                                                                             _A1
+                                                                             (
+                                                                             snd
+                                                                             (
+                                                                             fst
+                                                                             pab ) )
+                                                                             in
+                                                                             ( 
+                                                                             ( 
+                                                                             insert
+                                                                             (
+                                                                             linorder_prod
+                                                                             _A2
+                                                                             _A2 )
+                                                                             (
+                                                                             id
+                                                                             (
+                                                                             snd
+                                                                             pd ) )
+                                                                             rb
+                                                                             (
+                                                                             fst
+                                                                             (
+                                                                             fst
+                                                                             pab ) )
+                                                                           , suc
+                                                                             (
+                                                                             snd
+                                                                             (
+                                                                             fst
+                                                                             pab ) )
+                                                                             )
+                                                                           , rb
+                                                                             )
+                                                                           else
+                                                                             ( 
+                                                                             fst
+                                                                             pab
+                                                                           , the
+                                                                             r_opt
+                                                                             )
+                                                                         in
+                                                                         ( fst
+                                                                             pba
+                                                                         , ( rs_lts_add
+                                                                             _A2
+                                                                             (
+                                                                             linorder_prod
+                                                                             _C
+                                                                             _C )
+                                                                             ra
+                                                                             (
+                                                                             fst
+                                                                             pd )
+                                                                             (
+                                                                             snd
+                                                                             pba )
+                                                                             (
+                                                                             fst
+                                                                             (
+                                                                             snd
+                                                                             pab ) )
+                                                                           , snd
+                                                                             pd
+                                                                             :: 
+                                                                             snd
+                                                                             (
+                                                                             snd
+                                                                             pab )
+                                                                           )
+                                                                         )
+                                                                       else
+                                                                         pab )
+                                                                     ( fst pc
+                                                                     , ( fst
+                                                                           (snd
+                                                                             (
+                                                                             snd
+                                                                             pc ) )
+                                                                       , []
+                                                                       ) )
+                                                                 in
+                                                                 ( ( fst pab
+                                                                   , ( ins_dj_rm_basic_ops
+                                                                         _A2
+                                                                         ra
+                                                                         (fst
+                                                                            (snd
+                                                                             pc ) )
+                                                                     , ( fst
+                                                                           (snd
+                                                                             pab )
+                                                                       , ( fst
+                                                                             (
+                                                                             snd
+                                                                             (
+                                                                             snd
+                                                                             (
+                                                                             snd
+                                                                             pc ) ) )
+                                                                         , if
+                                                                             memb_rm_basic_ops
+                                                                             (
+                                                                             linorder_prod
+                                                                             _A2
+                                                                             _A2 )
+                                                                             qa
+                                                                             (
+                                                                             nfa_acceptingp
+                                                                             aA2 )
+                                                                           then
+                                                                             ins_dj_rm_basic_ops
+                                                                             _A2
+                                                                             ra
+                                                                             (
+                                                                             snd
+                                                                             (
+                                                                             snd
+                                                                             (
+                                                                             snd
+                                                                             (
+                                                                             snd
+                                                                             pc ) ) ) )
+                                                                           else
+                                                                             snd
+                                                                             (
+                                                                             snd
+                                                                             (
+                                                                             snd
+                                                                             (
+                                                                             snd
+                                                                             pc ) ) )
+                                                                         ) )
+                                                                     ) )
+                                                                 , snd
+                                                                     (snd pab)
+                                                                 ) )
+                                                             ( ( fst pb
+                                                               , ( empty_rm_basic_ops
+                                                                     _A2 ()
+                                                                 , ( rs_lts_empty
+                                                                       _A2
+                                                                       (linorder_prod
+                                                                          _C
+                                                                          _C )
+                                                                   , ( snd pb
+                                                                     , empty_rm_basic_ops
+                                                                         _A2
+                                                                         ()
+                                                                     ) ) ) )
+                                                             , if
+                                                                 not
+                                                                   (g_isEmpty_dflt_basic_oops_rm_basic_ops
+                                                                      (linorder_prod
+                                                                         _A2
+                                                                         _A2 )
+                                                                      (g_inter_dflt_basic_oops_rm_basic_ops
+                                                                         (linorder_prod
+                                                                            _A2
+                                                                            _A2 )
+                                                                         (nfa_initialp
+                                                                            nA1 )
+                                                                         (nfa_acceptingp
+                                                                            nA1 ) ) )
+                                                               then
+                                                                 g_to_list_dflt_basic_oops_rm_basic_ops
+                                                                   (linorder_prod
+                                                                      _A2 _A2 )
+                                                                   (nfa_initialp
+                                                                      nA1 )
+                                                                 @ g_to_list_dflt_basic_oops_rm_basic_ops
+                                                                     (linorder_prod
+                                                                        _A2
+                                                                        _A2 )
+                                                                     (nfa_initialp
+                                                                        aA2 )
+                                                               else
+                                                                 g_to_list_dflt_basic_oops_rm_basic_ops
+                                                                   (linorder_prod
+                                                                      _A2 _A2 )
+                                                                   (nfa_initialp
+                                                                      nA1 )
+                                                             )
+                                                         in
+                                                         snd (fst pc) ) ) ) )
+                                        then
+                                          ins_dj_rm_basic_ops _A2 r
+                                            (snd (snd (snd (snd pa))))
+                                        else snd (snd (snd (snd pa))) ) ) )
+                                )
+                              , snd (snd paa) ) )
+                          ( ( fst p
+                            , ( empty_rm_basic_ops _A2 ()
+                              , ( rs_lts_empty _A2 (linorder_prod _C _C)
+                                , (snd p, empty_rm_basic_ops _A2 ()) ) ) )
+                          , product
+                              (g_to_list_dflt_basic_oops_rm_basic_ops _A2
+                                 (fst (snd (snd sigmaa))) )
+                              (g_to_list_dflt_basic_oops_rm_basic_ops _A2
+                                 (fst
+                                    (snd
+                                       (snd
+                                          (let nA1 =
+                                             rename_states_impl
+                                               (fun f s ->
+                                                 iteratei_set_op_list_it_rs_ops
+                                                   _A2 s
+                                                   (fun _ -> true)
+                                                   (fun ba ->
+                                                     ins_rm_basic_ops
+                                                       (linorder_prod _A2 _A2)
+                                                       (f ba) )
+                                                   (empty_rm_basic_ops
+                                                      (linorder_prod _A2 _A2)
+                                                      () ) )
+                                               (rs_lts_image _A2
+                                                  (linorder_prod _C _C)
+                                                  (linorder_prod _A2 _A2)
+                                                  (linorder_prod _C _C) )
+                                               (the
+                                                  (lookup _B sigma (fst xc)) )
+                                               (fun a -> (rm, a))
+                                           in
+                                           let aA2 =
+                                             rename_states_impl
+                                               (fun f s ->
+                                                 iteratei_set_op_list_it_rs_ops
+                                                   _A2 s
+                                                   (fun _ -> true)
+                                                   (fun ba ->
+                                                     ins_rm_basic_ops
+                                                       (linorder_prod _A2 _A2)
+                                                       (f ba) )
+                                                   (empty_rm_basic_ops
+                                                      (linorder_prod _A2 _A2)
+                                                      () ) )
+                                               (rs_lts_image _A2
+                                                  (linorder_prod _C _C)
+                                                  (linorder_prod _A2 _A2)
+                                                  (linorder_prod _C _C) )
+                                               (the
+                                                  (lookup _B sigma (snd xc)) )
+                                               (fun a -> (b, a))
+                                           in
+                                           let pa =
+                                             foldl
+                                               (fun pa q ->
+                                                 ( ( insert
+                                                       (linorder_prod _A2 _A2)
+                                                       (id q)
+                                                       (states_enumerate _A1
+                                                          (snd (fst pa)) )
+                                                       (fst (fst pa))
+                                                   , suc (snd (fst pa)) )
+                                                 , ins_dj_rm_basic_ops _A2
+                                                     (states_enumerate _A1
+                                                        (snd (fst pa)) )
+                                                     (snd pa) ) )
+                                               ( ( empty
+                                                     (linorder_prod _A2 _A2)
+                                                 , zero_nat )
+                                               , empty_rm_basic_ops _A2 () )
+                                               ( if
+                                                   not
+                                                     (g_isEmpty_dflt_basic_oops_rm_basic_ops
+                                                        (linorder_prod _A2
+                                                           _A2 )
+                                                        (g_inter_dflt_basic_oops_rm_basic_ops
+                                                           (linorder_prod _A2
+                                                              _A2 )
+                                                           (nfa_initialp nA1)
+                                                           (nfa_acceptingp
+                                                              nA1 ) ) )
+                                                 then
+                                                   g_to_list_dflt_basic_oops_rm_basic_ops
+                                                     (linorder_prod _A2 _A2)
+                                                     (nfa_initialp nA1)
+                                                   @ g_to_list_dflt_basic_oops_rm_basic_ops
+                                                       (linorder_prod _A2 _A2)
+                                                       (nfa_initialp aA2)
+                                                 else
+                                                   g_to_list_dflt_basic_oops_rm_basic_ops
+                                                     (linorder_prod _A2 _A2)
+                                                     (nfa_initialp nA1) )
+                                           in
+                                           let pb =
+                                             worklist
+                                               (fun _ -> true)
+                                               (fun pb q ->
+                                                 let r =
+                                                   the
+                                                     (lookup
+                                                        (linorder_prod _A2
+                                                           _A2 )
+                                                        (fst (fst pb))
+                                                        (id q) )
+                                                 in
+                                                 if
+                                                   memb_rm_basic_ops _A2 r
+                                                     (fst (snd pb))
+                                                 then (pb, [])
+                                                 else
+                                                   let paa =
+                                                     tri_union_iterator
+                                                       (rs_lts_succ_label_it
+                                                          (linorder_prod _A2
+                                                             _A2 )
+                                                          (linorder_prod _C
+                                                             _C )
+                                                          (nfa_transp nA1) )
+                                                       (rs_lts_succ_label_it
+                                                          (linorder_prod _A2
+                                                             _A2 )
+                                                          (linorder_prod _C
+                                                             _C )
+                                                          (nfa_transp aA2) )
+                                                       (rs_lts_connect_it
+                                                          (linorder_prod _A2
+                                                             _A2 )
+                                                          (linorder_prod _C
+                                                             _C )
+                                                          (linorder_prod _A2
+                                                             _A2 )
+                                                          (nfa_transp nA1)
+                                                          (nfa_acceptingp nA1)
+                                                          (nfa_initialp aA2) )
+                                                       q
+                                                       (fun _ -> true)
+                                                       (fun pc paa ->
+                                                         if
+                                                           nempI
+                                                             _C
+                                                               .order_linorder
+                                                               .preorder_order
+                                                               .ord_preorder
+                                                             (fst pc)
+                                                         then
+                                                           let r_opt =
+                                                             lookup
+                                                               (linorder_prod
+                                                                  _A2 _A2 )
+                                                               (fst (fst paa))
+                                                               (id (snd pc))
+                                                           in
+                                                           let pba =
+                                                             if is_none r_opt
+                                                             then
+                                                               let ra =
+                                                                 states_enumerate
+                                                                   _A1
+                                                                   (snd
+                                                                      (fst
+                                                                         paa ) )
+                                                               in
+                                                               ( ( insert
+                                                                     (linorder_prod
+                                                                        _A2
+                                                                        _A2 )
+                                                                     (id
+                                                                        (snd
+                                                                           pc ) )
+                                                                     ra
+                                                                     (fst
+                                                                        (fst
+                                                                           paa ) )
+                                                                 , suc
+                                                                     (snd
+                                                                        (fst
+                                                                           paa ) )
+                                                                 )
+                                                               , ra )
+                                                             else
+                                                               ( fst paa
+                                                               , the r_opt )
+                                                           in
+                                                           ( fst pba
+                                                           , ( rs_lts_add _A2
+                                                                 (linorder_prod
+                                                                    _C _C ) r
+                                                                 (fst pc)
+                                                                 (snd pba)
+                                                                 (fst
+                                                                    (snd paa) )
+                                                             , snd pc
+                                                               :: snd
+                                                                    (snd paa)
+                                                             ) )
+                                                         else paa )
+                                                       ( fst pb
+                                                       , ( fst (snd (snd pb))
+                                                         , [] ) )
+                                                   in
+                                                   ( ( fst paa
+                                                     , ( ins_dj_rm_basic_ops
+                                                           _A2 r
+                                                           (fst (snd pb))
+                                                       , ( fst (snd paa)
+                                                         , ( fst
+                                                               (snd
+                                                                  (snd
+                                                                     (snd pb) ) )
+                                                           , if
+                                                               memb_rm_basic_ops
+                                                                 (linorder_prod
+                                                                    _A2 _A2 )
+                                                                 q
+                                                                 (nfa_acceptingp
+                                                                    aA2 )
+                                                             then
+                                                               ins_dj_rm_basic_ops
+                                                                 _A2 r
+                                                                 (snd
+                                                                    (snd
+                                                                       (snd
+                                                                          (snd
+                                                                             pb ) ) ) )
+                                                             else
+                                                               snd
+                                                                 (snd
+                                                                    (snd
+                                                                       (snd
+                                                                          pb ) ) )
+                                                           ) ) ) )
+                                                   , snd (snd paa) ) )
+                                               ( ( fst pa
+                                                 , ( empty_rm_basic_ops _A2 ()
+                                                   , ( rs_lts_empty _A2
+                                                         (linorder_prod _C _C)
+                                                     , ( snd pa
+                                                       , empty_rm_basic_ops
+                                                           _A2 () ) ) ) )
+                                               , if
+                                                   not
+                                                     (g_isEmpty_dflt_basic_oops_rm_basic_ops
+                                                        (linorder_prod _A2
+                                                           _A2 )
+                                                        (g_inter_dflt_basic_oops_rm_basic_ops
+                                                           (linorder_prod _A2
+                                                              _A2 )
+                                                           (nfa_initialp nA1)
+                                                           (nfa_acceptingp
+                                                              nA1 ) ) )
+                                                 then
+                                                   g_to_list_dflt_basic_oops_rm_basic_ops
+                                                     (linorder_prod _A2 _A2)
+                                                     (nfa_initialp nA1)
+                                                   @ g_to_list_dflt_basic_oops_rm_basic_ops
+                                                       (linorder_prod _A2 _A2)
+                                                       (nfa_initialp aA2)
+                                                 else
+                                                   g_to_list_dflt_basic_oops_rm_basic_ops
+                                                     (linorder_prod _A2 _A2)
+                                                     (nfa_initialp nA1) )
+                                           in
+                                           snd (fst pb) ) ) ) ) ) )
+                      in
+                      snd (fst pa) )
+                    (the (lookup _B sigma xb))
+                in
+                insert _B xb xc sigma
+              else sigma )
+            (fst (snd x))
+        in
+        ( g_diff_dflt_basic_oops_rm_basic_ops _B (fst x) xa
+        , (xb, g_union_dflt_basic_oops_rm_basic_ops _B (snd (snd x)) xa) ) )
+      (si, (rma, empty_rm_basic_ops _B ()))
+
+  let rec rs_gen_rc_from_list _A l =
     foldl
-      (rs_nft_construct_interval_aux (_A1, _A2) (_B1, _B2) _C)
-      ( g_from_list_dflt_basic_oops_rm_basic_ops _A2 (ql @ il @ fl)
-      , ( sigL
-        , ( rs_lts_empty _A2
-              (linorder_prod
-                 (linorder_option
-                    (linorder_list
-                       (equal_prod _B1 _B1, linorder_prod _B2 _B2) ) )
-                 _C )
-          , ( g_from_list_dflt_basic_oops_rm_basic_ops _A2 il
-            , (g_from_list_dflt_basic_oops_rm_basic_ops _A2 fl, funa) ) ) )
-      )
-      dl
+      (fun m a ->
+        insert _A (fst a)
+          (foldl
+             (fun s aa -> ins_rm_basic_ops (linorder_prod _A _A) aa s)
+             (empty_rm_basic_ops (linorder_prod _A _A) ())
+             (snd a) )
+          m )
+      (empty _A) l
+
+  let rec rs_gen_rm_from_list _A (_B1, _B2) _C l =
+    foldl (fun m a -> insert _A (fst a) (snd a) m) (empty _A) l
 end
 (*struct Automata_lib*)

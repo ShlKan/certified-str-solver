@@ -3,8 +3,7 @@ section \<open> Interface for NFAs and DFAs \<close>
 
 theory NFASpec
  
- imports Main 
-  "../DFA" 
+ imports Main  
   "../NFA_set" 
   "Collections.Collections"
   "../NFA_epsilon"
@@ -22,7 +21,7 @@ type_synonym ('q,'a,'nfa) nfa_\<alpha> = "'nfa \<Rightarrow> ('q, 'a) NFA_rec"
   text \<open>construct nfa from lists \<close>
 
   type_synonym ('q,'a,'nfa) nfa_from_list = 
-    "('q list \<times> 'a list \<times> ('q \<times> 'a list \<times> 'q) list \<times> 'q list \<times> 'q list) \<Rightarrow> 'nfa"
+    "('q list \<times> ('q \<times> 'a list \<times> 'q) list \<times> 'q list \<times> 'q list) \<Rightarrow> 'nfa"
 
   locale nfa_from_list = nfa +
     constrains \<alpha> :: "('q,'a,'nfa) nfa_\<alpha>"
@@ -33,8 +32,7 @@ type_synonym ('q,'a,'nfa) nfa_\<alpha> = "'nfa \<Rightarrow> ('q, 'a) NFA_rec"
   begin
     lemma nfa_from_list_correct___isomorphic :
       "invar (from_list l)"
-      "(\<forall>(q, \<sigma>, q')\<in>set (fst (snd (snd l))). set \<sigma> \<subseteq> set (fst (snd l))) \<longrightarrow>
-        NFA_isomorphic_wf (\<alpha> (from_list l)) (NFA_construct l)"
+      "NFA_isomorphic_wf (\<alpha> (from_list l)) (NFA_construct l)"
       by (simp_all add: nfa_from_list_correct NFA_isomorphic_wf_def NFA_isomorphic_refl
                       NFA_construct___is_well_formed)
   end

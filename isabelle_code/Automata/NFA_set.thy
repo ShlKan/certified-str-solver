@@ -3795,7 +3795,7 @@ definition efficient_NFA_concatenation where
    NFA_remove_unreachable_states (NFA_concatenation \<A>1 \<A>2)"
 
 lemma efficient_NFA_concatenation___is_well_formed :
-  "\<lbrakk> NFA \<A>1;  NFA \<A>2 ; \<Q> \<A>1 \<inter> \<Q> \<A>2 = {}; \<Sigma> \<A>1 = \<Sigma> \<A>2\<rbrakk> \<Longrightarrow> 
+  "\<lbrakk> NFA \<A>1;  NFA \<A>2 ; \<Q> \<A>1 \<inter> \<Q> \<A>2 = {}\<rbrakk> \<Longrightarrow> 
         NFA (efficient_NFA_concatenation \<A>1 \<A>2)"
 unfolding efficient_NFA_concatenation_def
   by (simp add: NFA_concatenation___is_well_formed)
