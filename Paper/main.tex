@@ -118,9 +118,16 @@ For transition labels, we implemented an interval algebra, which are efficient f
 %
 In the future the refinement of transition label from sets to other algebras instead of intervals can be done easily by implementing the common interfaces with interval algebras.
 
-The paper is organized as follows. 
+We highlight our formulization with the following points.
+(1) Efficiency, the algebraic representation
+support compressed storage of transition labels and efficiency checking
+of membership.
+(2) Extensible, the refinement based formulization allows the extension
+of the SNFA to support different theories of transition labels.
+
+The paper is organized as follows.
 Section 2 presents the formalization of symbolic FTs.
-Section 3 presents the Core operations of symbolic FTs. 
+Section 3 presents the Core operations of symbolic FTs.
 
 
 
@@ -301,6 +308,8 @@ lemma productT_correct:
 
 Figure \ref{fig-def-product-correct} shows the correctness of the product operation and Figure \ref{fig-def-output} contains the definitions of \texttt{outputE} and \texttt{outputL} that are used in Lemma \texttt{productT\_correct}.
 The two assumptions define the constraints of the function \texttt{F}.
+The conclusion in \textcolor{blue}{\texttt{show}} illustrates 
+that the language equivalence between the production definition and mathematical semantics.
 
 \section{Algorithm Level Refinement}
 We have 

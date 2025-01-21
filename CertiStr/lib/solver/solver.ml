@@ -104,6 +104,10 @@ let rec gen_mapc s l = out_mapc (ConcatC.bindings s) l
 
 exception Automata_less
 
+let eq_Z n1 n2 = n1 = n2
+
+let equal_Z = {Automata_lib.equal= eq_Z}
+
 let nFA_states_nat =
   ( {states_enumerate= (fun i -> i)}
     : Automata_lib.nat Automata_lib.nFA_states )
@@ -137,16 +141,20 @@ let linorder_Z = ({order_linorder= order_Z} : Z.t Automata_lib.linorder)
 let nfa_construct (q, d, i, f) =
   Automata_lib.rs_nfa_construct_interval
     (nFA_states_nat, linorder_nat)
-    linorder_Z
+    (equal_Z, linorder_Z)
     ( List.map z_to_int q
     , ( List.map
-          (fun (a, (b1, b2), c) ->
-            (z_to_int a, ((Z.of_int b1, Z.of_int b2), z_to_int c)) )
+          (fun (a, l, c) ->
+            ( z_to_int a
+            , ( List.map (fun (l, r) -> (Z.of_int l, Z.of_int r)) l
+              , z_to_int c ) ) )
           d
       , (List.map z_to_int i, List.map z_to_int f) ) )
 
 let nfa_construct_reachable nfa =
-  rs_nfa_construct_reachable (nFA_states_nat, linorder_nat) linorder_Z nfa
+  rs_nfa_construct_reachable
+    (nFA_states_nat, linorder_nat)
+    (equal_Z, linorder_Z) nfa
 
 let get_interval s =
   let l = String.split_on_char '-' s in
@@ -162,7 +170,7 @@ let transitions_single next left pre_trans =
     (fun l rights trans ->
       StateSet.fold
         (fun right ss ->
-          (Int32.to_int left, get_interval l, Int32.to_int right) :: ss )
+          (Int32.to_int left, [get_interval l], Int32.to_int right) :: ss )
         rights trans )
     (next left) pre_trans
 
@@ -184,12 +192,14 @@ let gen_aut at =
 let nfa_product nfa1 nfa2 =
   Automata_lib.rs_nfa_bool_comb
     (nFA_states_nat, linorder_nat)
-    linorder_Z
+    (equal_Z, linorder_Z)
     (fun b1 b2 -> b1 && b2)
     nfa1 nfa2
 
 let nfa_destruct nfa =
-  Automata_lib.rs_nfa_destruct (nFA_states_nat, linorder_nat) linorder_Z nfa
+  Automata_lib.rs_nfa_destruct
+    (nFA_states_nat, linorder_nat)
+    (equal_Z, linorder_Z) nfa
 
 let rec gen_concater l =
   match l with
@@ -229,7 +239,7 @@ let rec check_unsat_rm s rc rm =
 let rm_to_list rm =
   Automata_lib.rs_rm_to_list linorder_nat
     (nFA_states_nat, linorder_nat)
-    linorder_Z rm
+    (equal_Z, linorder_Z) rm
 
 let solve (constraints : Parser.strConstrain list) =
   let ss, cc, cr = genStrConstraints constraints in
@@ -241,7 +251,8 @@ let solve (constraints : Parser.strConstrain list) =
   let rc = Forward.gen_rc_from_list (gen_mapc cc sl) in
   let rr = full_rm sl cr in
   let rm = Forward.gen_rm_from_list (gen_mapr rr sl) in
-  let s, (rm, r) =
-    Forward.forward_analysis (z_to_int 1) (z_to_int 2) s rc rm
-  in
-  print_string (check_unsat_rm r rc (rm_to_list rm))
+  List.iter
+    (fun (v, a) -> Forward.print_auto (nfa_destruct a))
+    (rm_to_list rm)
+(* let s, (rm, r) = Forward.forward_analysis (z_to_int 1) (z_to_int 2) s rc
+   rm in print_string (check_unsat_rm r rc (rm_to_list rm)) *)
