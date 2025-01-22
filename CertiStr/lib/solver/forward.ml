@@ -42,6 +42,45 @@ let nFA_states_nat =
 
 let z_to_int z = Automata_lib.nat_of_integer (Z.of_int z)
 
+let nFA_states_natnat =
+  ( {states_enumerate= (fun i -> (i, i))}
+    : (Automata_lib.nat * Automata_lib.nat) Automata_lib.nFA_states )
+
+let linorder_natnat = Automata_lib.linorder_prod linorder_nat linorder_nat
+
+let less_eq_str (s1 : string) (s2 : string) = String.compare s1 s2 <= 0
+
+let less_str (s1 : string) (s2 : string) = String.compare s1 s2 < 0
+
+let ord_str =
+  ({less_eq= less_eq_str; less= less_str} : string Automata_lib.ord)
+
+let preorder_str = ({ord_preorder= ord_str} : string Automata_lib.preorder)
+
+let order_str = ({preorder_order= preorder_str} : string Automata_lib.order)
+
+let eq_str n1 n2 = String.compare n1 n2 == 0
+
+let equal_str = {Automata_lib.equal= eq_str}
+
+let order_string =
+  ({preorder_order= preorder_str} : string Automata_lib.order)
+
+let linorder_str =
+  ({order_linorder= order_str} : string Automata_lib.linorder)
+
+let nfa_elim nfa =
+  Automata_lib.rs_nfa_elim
+    ( Automata_lib.equal_prod equal_nat equal_nat
+    , nFA_states_natnat
+    , linorder_natnat )
+    (equal_Z, linorder_Z) nfa
+
+let nfa_normal nfa =
+  Automata_lib.rs_nfa_normal
+    (nFA_states_nat, linorder_nat)
+    (equal_Z, linorder_Z) nfa
+
 let nfa_construct (q, d, i, f) =
   Automata_lib.rs_nfa_construct_interval
     (nFA_states_nat, linorder_nat)
@@ -66,6 +105,11 @@ let nfa_destruct nfa =
   Automata_lib.rs_nfa_destruct
     (nFA_states_nat, linorder_nat)
     (equal_Z, linorder_Z) nfa
+
+let nfa_destruct_str nfa =
+  Automata_lib.rs_nfa_destruct
+    (nFA_states_nat, linorder_nat)
+    (equal_str, linorder_str) nfa
 
 let nfa_concate nfa1 nfa2 =
   Automata_lib.rs_nfa_concate
@@ -129,6 +173,19 @@ let rec print_tran l =
       Format.printf ")" ;
       print_tran rl
 
+let rec print_tran_str l =
+  match l with
+  | [] -> Format.printf "\n"
+  | (a, (l, c)) :: rl ->
+      Format.printf "(" ;
+      Format.printf "%d" (Z.to_int (Automata_lib.integer_of_nat a)) ;
+      Format.printf ", " ;
+      List.iter (fun (l, r) -> Format.printf "[%s, %s]" l r) l ;
+      Format.printf ", " ;
+      Format.printf "%d" (Z.to_int (Automata_lib.integer_of_nat c)) ;
+      Format.printf ")" ;
+      print_tran_str rl
+
 let print_auto a =
   match a with
   | s, (d, (i, f)) ->
@@ -138,6 +195,18 @@ let print_auto a =
       print_list i ;
       Format.printf "Transitions:" ;
       print_tran d ;
+      Format.printf "Accepting states:" ;
+      print_list f
+
+let print_auto_str a =
+  match a with
+  | s, (d, (i, f)) ->
+      Format.printf "States:" ;
+      print_list s ;
+      Format.printf "Initial states:" ;
+      print_list i ;
+      Format.printf "Transitions:" ;
+      print_tran_str d ;
       Format.printf "Accepting states:" ;
       print_list f
 

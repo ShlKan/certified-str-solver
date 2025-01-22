@@ -140,11 +140,13 @@ module Automata_lib : sig
 
   type 'a linorder = {order_linorder: 'a order}
 
+  val equal_prod : 'a equal -> 'b equal -> ('a * 'b) equal
+
+  val linorder_prod : 'a linorder -> 'b linorder -> ('a * 'b) linorder
+
   val integer_of_nat : nat -> Z.t
 
   val nat_of_integer : Z.t -> nat
-
-  val prod_encode : nat * nat -> nat
 
   type ('b, 'a) rbt
 
@@ -170,6 +172,51 @@ module Automata_lib : sig
          * (('a, unit) rbt * ('a, unit) rbt) )
 
   val prod_encode : nat * nat -> nat
+
+  val rs_gen_S_from_list : 'a linorder -> 'a list -> ('a, unit) rbt
+
+  val rs_gen_rm_from_list :
+       'a linorder
+    -> 'b nFA_states * 'b linorder
+    -> 'c equal * 'c linorder
+    -> ( 'a
+       * ( ('b, unit) rbt
+         * ( ('b, (('c * 'c) list, ('b, unit) rbt) rbt) rbt
+           * (('b, unit) rbt * ('b, unit) rbt) ) ) )
+       list
+    -> ( 'a
+       , ('b, unit) rbt
+         * ( ('b, (('c * 'c) list, ('b, unit) rbt) rbt) rbt
+           * (('b, unit) rbt * ('b, unit) rbt) ) )
+       rbt
+
+  val rs_gen_rc_from_list :
+       'a linorder
+    -> ('a * ('a * 'a) list) list
+    -> ('a, ('a * 'a, unit) rbt) rbt
+
+  val rs_S_to_list : 'a linorder -> ('a, unit) rbt -> 'a list
+
+  val rs_rm_to_list :
+       'a linorder
+    -> 'b nFA_states * 'b linorder
+    -> 'c equal * 'c linorder
+    -> ( 'a
+       , ('b, unit) rbt
+         * ( ('b, (('c * 'c) list, ('b, unit) rbt) rbt) rbt
+           * (('b, unit) rbt * ('b, unit) rbt) ) )
+       rbt
+    -> ( 'a
+       * ( ('b, unit) rbt
+         * ( ('b, (('c * 'c) list, ('b, unit) rbt) rbt) rbt
+           * (('b, unit) rbt * ('b, unit) rbt) ) ) )
+       list
+
+  val rs_indegree :
+       'a equal * 'a linorder
+    -> ('a, unit) rbt
+    -> ('a, ('a * 'a, unit) rbt) rbt
+    -> bool
 
   val rs_nfa_rename :
        'a linorder
@@ -214,6 +261,16 @@ module Automata_lib : sig
     -> ('a, unit) rbt
        * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
          * (('a, unit) rbt * ('a, unit) rbt) )
+    -> ('a, unit) rbt
+       * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
+         * (('a, unit) rbt * ('a, unit) rbt) )
+
+  val rs_nfa_elim :
+       'a equal * 'a nFA_states * 'a linorder
+    -> 'b equal * 'b linorder
+    -> ('a, unit) rbt
+       * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
+         * (('a * 'a, unit) rbt * (('a, unit) rbt * ('a, unit) rbt)) )
     -> ('a, unit) rbt
        * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
          * (('a, unit) rbt * ('a, unit) rbt) )
@@ -311,60 +368,16 @@ module Automata_lib : sig
        'a nFA_states * 'a linorder
     -> 'b equal * 'b linorder
     -> 'c linorder
+    -> 'd linorder
     -> 'a list
        * ( ('a * ((('b * 'b) list option * 'c) * 'a)) list
-         * ('a list * ('a list * ('c -> 'b option -> ('b * 'b) list option)))
+         * ('a list * ('a list * ('c -> 'b option -> ('d * 'd) list option)))
          )
     -> ('a, unit) rbt
        * ( ('a, (('b * 'b) list option * 'c, ('a, unit) rbt) rbt) rbt
          * ( ('a, unit) rbt
-           * (('a, unit) rbt * ('c -> 'b option -> ('b * 'b) list option)) )
+           * (('a, unit) rbt * ('c -> 'b option -> ('d * 'd) list option)) )
          )
-
-  val rs_gen_S_from_list : 'a linorder -> 'a list -> ('a, unit) rbt
-
-  val rs_gen_rm_from_list :
-       'a linorder
-    -> 'b nFA_states * 'b linorder
-    -> 'c equal * 'c linorder
-    -> ( 'a
-       * ( ('b, unit) rbt
-         * ( ('b, (('c * 'c) list, ('b, unit) rbt) rbt) rbt
-           * (('b, unit) rbt * ('b, unit) rbt) ) ) )
-       list
-    -> ( 'a
-       , ('b, unit) rbt
-         * ( ('b, (('c * 'c) list, ('b, unit) rbt) rbt) rbt
-           * (('b, unit) rbt * ('b, unit) rbt) ) )
-       rbt
-
-  val rs_gen_rc_from_list :
-       'a linorder
-    -> ('a * ('a * 'a) list) list
-    -> ('a, ('a * 'a, unit) rbt) rbt
-
-  val rs_S_to_list : 'a linorder -> ('a, unit) rbt -> 'a list
-
-  val rs_rm_to_list :
-       'a linorder
-    -> 'b nFA_states * 'b linorder
-    -> 'c equal * 'c linorder
-    -> ( 'a
-       , ('b, unit) rbt
-         * ( ('b, (('c * 'c) list, ('b, unit) rbt) rbt) rbt
-           * (('b, unit) rbt * ('b, unit) rbt) ) )
-       rbt
-    -> ( 'a
-       * ( ('b, unit) rbt
-         * ( ('b, (('c * 'c) list, ('b, unit) rbt) rbt) rbt
-           * (('b, unit) rbt * ('b, unit) rbt) ) ) )
-       list
-
-  val rs_indegree :
-       'a equal * 'a linorder
-    -> ('a, unit) rbt
-    -> ('a, ('a * 'a, unit) rbt) rbt
-    -> bool
 end = struct
   type 'a equal = {equal: 'a -> 'a -> bool}
 
@@ -996,6 +1009,8 @@ end = struct
       | Some s3 -> insert _A v (insert _B w (ins_rm_basic_ops _A va s3) m2) l
       )
 
+  let rec whilea b c s = if b s then whilea b c (c s) else s
+
   let rec set_iterator_union it_a it_b =
    fun c f sigma_0 -> it_b c f (it_a c f sigma_0)
 
@@ -1318,6 +1333,8 @@ end = struct
       , ( g_to_list_dflt_basic_oops_rm_basic_ops _A2 i
         , g_to_list_dflt_basic_oops_rm_basic_ops _A2 f ) ) )
 
+  let rec lookup_aux (_A1, _A2) v rc = lookup _A2 rc v
+
   let rec rs_nfa_bool_comb (_A1, _A2) (_B1, _B2) bc (q1, (d1, (i1, f1)))
       (q2, (d2, (i2, f2))) =
     let a, b =
@@ -1425,6 +1442,135 @@ end = struct
         fun _ -> aaa )
          ba )
       b
+
+  let rec g_ball_dflt_basic_oops_rm_basic_ops _A s p =
+    iteratei_bset_op_list_it_dflt_basic_oops_rm_basic_ops _A s
+      (fun c -> c)
+      (fun x _ -> p x)
+      true
+
+  let rec g_subset_dflt_basic_oops_rm_basic_ops _A s1 s2 =
+    g_ball_dflt_basic_oops_rm_basic_ops _A s1 (fun x ->
+        memb_rm_basic_ops _A x s2 )
+
+  let rec rs_nfa_elim (_A1, _A2, _A3) (_B1, _B2) a =
+    let x =
+      let b =
+        iteratei_set_op_list_it_rs_ops _A3 (fst a)
+          (fun _ -> true)
+          (fun x sigma ->
+            let xa =
+              iteratei_set_op_list_it_rs_ops (linorder_prod _A3 _A3)
+                (fst (snd (snd a)))
+                (fun _ -> true)
+                (fun xa sigmaa ->
+                  if eq _A1 (fst xa) x then
+                    ins_rm_basic_ops _A3 (snd xa) sigmaa
+                  else sigmaa )
+                (ins_rm_basic_ops _A3 x (empty_rm_basic_ops _A3 ()))
+            in
+            insert _A3 x xa sigma )
+          (empty _A3)
+      in
+      whilea
+        (fun r ->
+          not
+            (g_ball_dflt_basic_oops_rm_basic_ops _A3 (fst a) (fun x ->
+                 g_ball_dflt_basic_oops_rm_basic_ops _A3
+                   (the (lookup _A3 r x))
+                   (fun q ->
+                     g_subset_dflt_basic_oops_rm_basic_ops _A3
+                       (the (lookup _A3 r q))
+                       (the (lookup _A3 r x)) ) ) ) )
+        (fun xa ->
+          iteratei_set_op_list_it_rs_ops _A3 (fst a)
+            (fun _ -> true)
+            (fun xb sigma ->
+              let xc =
+                let aa =
+                  iteratei_set_op_list_it_rs_ops _A3
+                    (the (lookup_aux (_A2, _A3) xb xa))
+                    (fun _ -> true)
+                    (fun xc sigmaa ->
+                      g_union_dflt_basic_oops_rm_basic_ops _A3 sigmaa
+                        (the (lookup _A3 xa xc)) )
+                    (the (lookup _A3 xa xb))
+                in
+                g_sng_rm_basic_ops _A3 xb aa
+              in
+              insert _A3 xb (the (lookup _A3 xc xb)) sigma )
+            (empty _A3) )
+        b
+    in
+    let xa =
+      rs_lts_it _A3
+        (linorder_list (equal_prod _B1 _B1, linorder_prod _B2 _B2))
+        _A3
+        (fst (snd a))
+        (fun _ -> true)
+        (fun xa sigma ->
+          let xb =
+            iteratei_set_op_list_it_rs_ops _A3 (fst a)
+              (fun _ -> true)
+              (fun xb sigmaa ->
+                if memb_rm_basic_ops _A3 (fst xa) (the (lookup _A3 x xb))
+                then
+                  rs_lts_add _A3
+                    (linorder_list
+                       (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
+                    xb
+                    (fst (snd xa))
+                    (snd (snd xa))
+                    sigmaa
+                else sigmaa )
+              (rs_lts_empty _A3
+                 (linorder_list (equal_prod _B1 _B1, linorder_prod _B2 _B2)) )
+          in
+          rs_lts_union _A3
+            (linorder_list (equal_prod _B1 _B1, linorder_prod _B2 _B2))
+            xb sigma )
+        (rs_lts_empty _A3
+           (linorder_list (equal_prod _B1 _B1, linorder_prod _B2 _B2)) )
+    in
+    let xb =
+      iteratei_set_op_list_it_rs_ops _A3
+        (fst (snd (snd (snd a))))
+        (fun _ -> true)
+        (fun xb sigma ->
+          if is_none (lookup _A3 x xb) then sigma
+          else
+            g_union_dflt_basic_oops_rm_basic_ops _A3 sigma
+              (the (lookup _A3 x xb)) )
+        (empty_rm_basic_ops _A3 ())
+    in
+    let xc =
+      iteratei_set_op_list_it_rs_ops _A3
+        (snd (snd (snd (snd a))))
+        (fun _ -> true)
+        (fun xc sigma ->
+          let xd =
+            iteratei_set_op_list_it_rs_ops _A3 (fst a)
+              (fun _ -> true)
+              (fun xd sigmaa ->
+                if memb_rm_basic_ops _A3 xc (the (lookup _A3 x xd)) then
+                  ins_rm_basic_ops _A3 xd sigmaa
+                else sigmaa )
+              (empty_rm_basic_ops _A3 ())
+          in
+          g_union_dflt_basic_oops_rm_basic_ops _A3 xd sigma )
+        (empty_rm_basic_ops _A3 ())
+    in
+    ( fst a
+    , ( rs_lts_union _A3
+          (linorder_list (equal_prod _B1 _B1, linorder_prod _B2 _B2))
+          (fst (snd a))
+          xa
+      , ( g_union_dflt_basic_oops_rm_basic_ops _A3
+            (fst (snd (snd (snd a))))
+            xb
+        , g_union_dflt_basic_oops_rm_basic_ops _A3
+            (snd (snd (snd (snd a))))
+            xc ) ) )
 
   let rec concat_rename_impl_aux c_inter c_nempty const f it_1 it_2 it_3 i1a
       i2a i1 f1a i2 fP1 fP2 rename1 rename2 f1 f2 =
@@ -1959,7 +2105,7 @@ end = struct
     in
     (x, (fst xa, (snd xa, (xb, xc))))
 
-  let rec rs_nft_construct_interval_aux (_A1, _A2) (_B1, _B2) _C =
+  let rec rs_nft_construct_interval_aux (_A1, _A2) (_B1, _B2) _C _D =
    fun (q, (d, (i, (f, funa)))) (q1, (a, b)) ->
     (let l, fa = a in
      fun q2 ->
@@ -1974,10 +2120,10 @@ end = struct
          , (i, (f, funa)) ) ) )
       b
 
-  let rec rs_nft_construct_interval (_A1, _A2) (_B1, _B2) _C
+  let rec rs_nft_construct_interval (_A1, _A2) (_B1, _B2) _C _D
       (ql, (dl, (il, (fl, funa)))) =
     foldl
-      (rs_nft_construct_interval_aux (_A1, _A2) (_B1, _B2) _C)
+      (rs_nft_construct_interval_aux (_A1, _A2) (_B1, _B2) _C _D)
       ( g_from_list_dflt_basic_oops_rm_basic_ops _A2 (ql @ il @ fl)
       , ( rs_lts_empty _A2
             (linorder_prod

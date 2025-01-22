@@ -19,7 +19,7 @@ let universalAuto =
   ; finals= StateSet.add (Int32.of_int 0) StateSet.empty
   ; next=
       (fun x ->
-        CharMap.add "a-Z"
+        CharMap.add "a-z"
           (StateSet.add (Int32.of_int 0) StateSet.empty)
           CharMap.empty ) }
 

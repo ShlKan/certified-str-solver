@@ -16,6 +16,7 @@ locale transducer_code = automaton_by_lts_interval_defs
   s: StdSet s_ops (* Set operations on states *) +
   l: StdSet l_ops (* Set operations on labels *) +
   lt: StdSet lt_ops   (* Set operations on labels *) +
+  llt: StdSet llt_ops   (* Set operations on labels *) +
   d: StdLTS d_ops elemIs (* An LTS *) +
   dt: StdLTS dt_ops "\<lambda> _ _. True" (* An LTS *) +
   ddt: StdLTS ddt_ops "\<lambda> _ _. True" (* An LTS *) +
@@ -27,6 +28,7 @@ locale transducer_code = automaton_by_lts_interval_defs
   and ssd_ops::"(('q \<times> 'q) \<times> ('q \<times> 'q),'qqqq_set,_) set_ops_scheme"
   and l_ops::"('a ::linorder, 'a_set ,_) set_ops_scheme"
   and lt_ops::"(('a \<times> 'a) list, 'ai_set ,_) set_ops_scheme"
+  and llt_ops::"(('c \<times> 'c) list, 'ac_set ,_) set_ops_scheme"
   and m_ops :: "('q, 'q_set, 'qqset_m, 'more) map_ops_scheme"
   and ddt_ops::"('q \<times> 'q,('a \<times> 'a) list,'a,'ddt,_) lts_ops_scheme"
   and d_ops::"('q,('a \<times> 'a) list,'a,'d,_) lts_ops_scheme"
@@ -1058,10 +1060,10 @@ definition dt\<alpha> where "dt\<alpha> d = dt.\<alpha> d"
 
 definition nft_construct_interval_aux ::
   "'q_set \<times> 'dt \<times> 'q_set \<times> 'q_set \<times> 
-                    ('b \<Rightarrow> 'a option \<Rightarrow> ('a \<times> 'a) list option) \<Rightarrow> 
+                    ('b \<Rightarrow> 'a option \<Rightarrow> ('c \<times> 'c) list option) \<Rightarrow> 
    'q \<times> (('a \<times> 'a) list option \<times> 'b) \<times> 'q \<Rightarrow> 
    'q_set \<times>  'dt \<times> 'q_set \<times> 'q_set \<times> 
-   ('b \<Rightarrow> 'a option \<Rightarrow> ('a \<times> 'a) list option)" where 
+   ('b \<Rightarrow> 'a option \<Rightarrow> ('c \<times> 'c) list option)" where 
    "nft_construct_interval_aux = (\<lambda>(Q, D, I, F, Fun) (q1, (l, f), q2).
     (s.ins q1 (s.ins q2 Q),
      dt.add q1 (l, f) q2 D,
@@ -1173,8 +1175,8 @@ end
 
 
 interpretation transducer_implementation_defs: 
-        transducer_code rs_ops rs_ops rs_ops rs_ops rs_ops 
-                           rm_ops rs_lts_ops rs_lts_ops  rs_lts_ops
+        transducer_code rs_ops rs_ops rs_ops rs_ops rs_ops rs_ops 
+                           rm_ops rs_lts_ops  rs_lts_ops  rs_lts_ops
   by intro_locales
 
 

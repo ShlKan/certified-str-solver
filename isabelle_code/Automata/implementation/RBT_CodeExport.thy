@@ -9,6 +9,7 @@ theory RBT_CodeExport
 imports Main 
         RBT_NFAImpl 
         Transducer_Impl_new
+        Epsilon_elim_code
 begin
 
 export_code
@@ -17,6 +18,7 @@ export_code
   rs_nfa_bool_comb
   rs_nfa_destruct  
   rs_nfa_concate 
+  rs_nfa_elim 
   rs_nfa_concate_rename 
   rs_nfa_construct_reachable 
   rs_nfa_union
@@ -26,7 +28,8 @@ export_code
   rs_nft_construct_interval
   rs_nft_destruct
   rs_nfae_destruct
-  rs_nfa_normal
+  rs_nfa_normal 
+  
 
 in OCaml module_name "Automata_lib"
 

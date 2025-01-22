@@ -130,6 +130,23 @@ let order_nat =
 let linorder_nat =
   ({order_linorder= order_nat} : Automata_lib.nat Automata_lib.linorder)
 
+let less_eq_str (s1 : string) (s2 : string) = String.compare s1 s2 <= 0
+
+let less_str (s1 : string) (s2 : string) = String.compare s1 s2 < 0
+
+let ord_str =
+  ({less_eq= less_eq_str; less= less_str} : string Automata_lib.ord)
+
+let preorder_str = ({ord_preorder= ord_str} : string Automata_lib.preorder)
+
+let order_str = ({preorder_order= preorder_str} : string Automata_lib.order)
+
+let order_string =
+  ({preorder_order= preorder_str} : string Automata_lib.order)
+
+let linorder_str =
+  ({order_linorder= order_str} : string Automata_lib.linorder)
+
 let ord_Z = ({less_eq= Z.leq; less= Z.lt} : Z.t Automata_lib.ord)
 
 let preorder_Z = ({ord_preorder= ord_Z} : Z.t Automata_lib.preorder)
@@ -155,6 +172,27 @@ let nfa_construct_reachable nfa =
   rs_nfa_construct_reachable
     (nFA_states_nat, linorder_nat)
     (equal_Z, linorder_Z) nfa
+
+let nft_construct nft =
+  rs_nft_construct_interval
+    (nFA_states_nat, linorder_nat)
+    (equal_Z, linorder_Z) linorder_Z linorder_Z nft
+
+let f (x : Z.t option) = Some [(Z.of_int 1, Z.of_int 100)]
+
+let nft_example =
+  nft_construct
+    ( List.map (fun x -> Automata_lib.nat_of_integer (Z.of_int x)) [1; 2]
+    , ( [ ( Automata_lib.nat_of_integer (Z.of_int 1)
+          , ( (Some [(Z.of_int 1, Z.of_int 10000)], Z.of_int 1)
+            , Automata_lib.nat_of_integer (Z.of_int 2) ) ) ]
+      , ( [Automata_lib.nat_of_integer (Z.of_int 1)]
+        , ([Automata_lib.nat_of_integer (Z.of_int 2)], fun x -> f) ) ) )
+
+let nft_product nft =
+  rs_product_transducer
+    (nFA_states_nat, linorder_nat)
+    (equal_Z, linorder_Z) linorder_Z (equal_Z, linorder_Z) nft
 
 let get_interval s =
   let l = String.split_on_char '-' s in
@@ -241,6 +279,16 @@ let rm_to_list rm =
     (nFA_states_nat, linorder_nat)
     (equal_Z, linorder_Z) rm
 
+let fmap ff e =
+  match e with
+  | [] -> None
+  | (a, b) :: l ->
+      Some [(Z.of_int (Z.to_int a + 1), Z.of_int (Z.to_int b + 1))]
+
+let fe f e = false
+
+let output_nfa = nft_product nft_example (gen_aut SNFA.universalAuto) fmap fe
+
 let solve (constraints : Parser.strConstrain list) =
   let ss, cc, cr = genStrConstraints constraints in
   let sl = SS.elements ss in
@@ -260,7 +308,14 @@ let solve (constraints : Parser.strConstrain list) =
   let rr = full_rm sl cr in
   let rm = Forward.gen_rm_from_list (gen_mapr rr sl) in
   List.iter
-    (fun (v, a) -> Forward.print_auto (nfa_destruct a))
-    (rm_to_list rm)
+    (fun (v, a) -> ()) (* Forward.print_auto (nfa_destruct a)) *)
+    (rm_to_list rm) ;
+  Forward.print_auto
+    (nfa_destruct
+       (nfa_construct (gen_nfa_construct_input SNFA.universalAuto)) ) ;
+  Format.printf "--------\n" ;
+  Forward.print_auto
+    (Forward.nfa_destruct
+       (Forward.nfa_normal (Forward.nfa_elim output_nfa)) )
 (* let s, (rm, r) = Forward.forward_analysis (z_to_int 1) (z_to_int 2) s rc
    rm in print_string (check_unsat_rm r rc (rm_to_list rm)) *)

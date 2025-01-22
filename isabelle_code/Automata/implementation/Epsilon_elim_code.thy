@@ -96,9 +96,7 @@ lemma init_closure_impl_correct:
   apply simp
 proof -
   fix x it \<sigma> x' it' \<sigma>' onestep onestepa
-  assume p1: "\<sigma>' = (\<lambda>k. if ssm.\<alpha> \<sigma> k = None then None else 
-                        Some (s.\<alpha> (the (ssm.\<alpha> \<sigma> k)))) \<and>
-              ssm.invar \<sigma> \<and>
+  assume p1: "ssm.invar \<sigma> \<and>
        (\<forall>k. if ssm.\<alpha> \<sigma> k = None then True else s.invar (the (ssm.\<alpha> \<sigma> k)))"
      and p2: "(onestep, onestepa) \<in> br s.\<alpha> s.invar"
   from p2 
@@ -793,35 +791,31 @@ lemma compute_ep_Trans_imp_correct:
 
 
 
-definition nfae_states :: "'q_set \<times> ('a \<times> 'a) list \<times> 'd \<times> 'qq_set\<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
+definition nfae_states :: "'q_set \<times>  'd \<times> 'qq_set\<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
   "nfae_states A = fst A"
-lemma [simp]: "nfae_states (Q, Sig, D, D', I, F) = Q" by (simp add: nfae_states_def)
-
-definition nfae_alphabet :: "'q_set \<times> ('a \<times> 'a) list \<times> 'd \<times> 'qq_set \<times> 'q_set \<times> 'q_set \<Rightarrow> ('a \<times> 'a) list" where
-  "nfae_alphabet A = fst (snd A)"
-lemma [simp]: "nfae_alphabet (Q, Sig, D, D', I, F) = Sig" by (simp add: nfae_alphabet_def)
+lemma [simp]: "nfae_states (Q,  D, D', I, F) = Q" by (simp add: nfae_states_def)
 
 
 definition nfae_trans :: 
-        "'q_set \<times> ('a \<times> 'a) list \<times> 'd \<times> 'qq_set \<times> 'q_set \<times> 'q_set \<Rightarrow> 'd" where
-  "nfae_trans A = (fst (snd (snd A)))"
-lemma [simp]: "nfae_trans (Q, Sig, D, D', I, F) = D" by (simp add: nfae_trans_def)
+        "'q_set \<times> 'd \<times> 'qq_set \<times> 'q_set \<times> 'q_set \<Rightarrow> 'd" where
+  "nfae_trans A = (fst (snd A))"
+lemma [simp]: "nfae_trans (Q, D, D', I, F) = D" by (simp add: nfae_trans_def)
 
 definition nfae_trans_ep :: 
-        "'q_set \<times> ('a \<times> 'a) list \<times> 'd \<times> 'qq_set \<times> 'q_set \<times> 'q_set \<Rightarrow> 'qq_set" where
-  "nfae_trans_ep A = (fst (snd (snd (snd A))))"
-lemma [simp]: "nfae_trans_ep (Q, Sig, D, D', I, F) = D'" by (simp add: nfae_trans_ep_def)
+        "'q_set \<times> 'd \<times> 'qq_set \<times> 'q_set \<times> 'q_set \<Rightarrow> 'qq_set" where
+  "nfae_trans_ep A = (fst(snd (snd A)))"
+lemma [simp]: "nfae_trans_ep (Q, D, D', I, F) = D'" by (simp add: nfae_trans_ep_def)
 
-definition nfae_initial :: "'q_set \<times> ('a \<times> 'a) list \<times> 'd \<times> 'qq_set \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
-  "nfae_initial A = fst (snd (snd (snd  (snd A))))"
-lemma [simp]: "nfae_initial (Q, Sig, D, D', I, F) = I" by (simp add: nfae_initial_def)
+definition nfae_initial :: "'q_set \<times> 'd \<times> 'qq_set \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
+  "nfae_initial A = fst (snd (snd  (snd A)))"
+lemma [simp]: "nfae_initial (Q, D, D', I, F) = I" by (simp add: nfae_initial_def)
 
-definition nfae_accepting :: "'q_set \<times> ('a \<times> 'a) list\<times> 'd \<times> 'qq_set \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
-  "nfae_accepting A = snd (snd (snd (snd (snd A))))"
-lemma [simp]: "nfae_accepting (Q, Sig, D, D', I, F) = F" by (simp add: nfae_accepting_def)
+definition nfae_accepting :: "'q_set \<times>  'd \<times> 'qq_set \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
+  "nfae_accepting A = snd (snd (snd (snd A)))"
+lemma [simp]: "nfae_accepting (Q, D, D', I, F) = F" by (simp add: nfae_accepting_def)
 
 
-definition nfae_invar :: "'q_set \<times> ('a \<times> 'a) list \<times> 'd \<times> 'qq_set \<times> 'q_set \<times> 'q_set \<Rightarrow> bool" where
+definition nfae_invar :: "'q_set \<times> 'd \<times> 'qq_set \<times> 'q_set \<times> 'q_set \<Rightarrow> bool" where
   "nfae_invar A =
    (s.invar (nfae_states A) \<and> 
     d.invar (nfae_trans A) \<and>
@@ -830,12 +824,11 @@ definition nfae_invar :: "'q_set \<times> ('a \<times> 'a) list \<times> 'd \<ti
     s.invar (nfae_accepting A))"
 
 
-definition nfae_\<alpha> :: "'q_set \<times> ('a \<times> 'a) list \<times> 'd \<times> 'qq_set \<times> 'q_set \<times> 'q_set
+definition nfae_\<alpha> :: "'q_set \<times>  'd \<times> 'qq_set \<times> 'q_set \<times> 'q_set
                            \<Rightarrow> ('q, 'a) NFAe_rec" 
   where
   "nfae_\<alpha> A =
    \<lparr> \<Q>e = s.\<alpha> (nfae_states A),   
-     \<Sigma>e = semIs (nfae_alphabet A),
      \<Delta>e = interval_to_set ` (d.\<alpha> (nfae_trans A)),
      \<Delta>e' = ss.\<alpha> (nfae_trans_ep A),
      \<I>e = s.\<alpha> (nfae_initial A), 
@@ -848,7 +841,6 @@ definition NFA_elim_imp  where
        N\<I> \<leftarrow>  compute_ep_I_imp (nfae_initial A) P;
        N\<F> \<leftarrow>  compute_ep_F_imp (nfae_accepting A) (nfae_states A) P;
        RETURN (nfae_states A, 
-               nfae_alphabet A, 
                d.union (nfae_trans A)  N\<Delta>, 
                s.union (nfae_initial A) N\<I>, 
                s.union (nfae_accepting A) N\<F>)
@@ -861,7 +853,6 @@ lemma NFA_elim_imp_correct:
       and trans_ok': "\<Delta>e \<A>' = interval_to_set ` {t. t \<in> d.\<alpha> (nfae_trans \<A>)} \<and>
                       d.invar (nfae_trans \<A>) \<and> 
                       (\<forall>(q, \<alpha>, q')\<in>{t. t \<in> d.\<alpha> (nfae_trans \<A>)}. canonicalIs \<alpha>)"
-      and alphabet_ok: "\<Sigma>e \<A>' = semIs (nfae_alphabet \<A>)"
       and initial_ok: "\<I>e \<A>' = s.\<alpha> (nfae_initial \<A>) \<and> s.invar (nfae_initial \<A>)"
       and accepting_ok: "\<F>e \<A>' = s.\<alpha> (nfae_accepting \<A>) \<and> s.invar (nfae_accepting \<A>)"
       and wf_\<A>': "NFAe \<A>' \<and> finite (\<Delta>e' \<A>')"
@@ -1050,17 +1041,15 @@ proof -
     assume trans_pre: "(N\<Delta>, N\<Delta>') \<in> br (\<lambda>d. interval_to_set ` d.\<alpha> d) d.invar"
        and init_pre: "(N\<I>, N\<I>') \<in> br s.\<alpha> s.invar"
        and accept_pre: "(N\<F>, N\<F>') \<in> br s.\<alpha> s.invar"
-    show "((nfae_states \<A>, nfae_alphabet \<A>, d.union (nfae_trans \<A>) N\<Delta>,
+    show "((nfae_states \<A>,  d.union (nfae_trans \<A>) N\<Delta>,
          s.union (nfae_initial \<A>) N\<I>, s.union (nfae_accepting \<A>) N\<F>),
-        \<lparr>\<Q> = \<Q>e \<A>', \<Sigma> = \<Sigma>e \<A>', \<Delta> = \<Delta>e \<A>' \<union> N\<Delta>', \<I> = \<I>e \<A>' \<union> N\<I>',
+        \<lparr>\<Q> = \<Q>e \<A>',  \<Delta> = \<Delta>e \<A>' \<union> N\<Delta>', \<I> = \<I>e \<A>' \<union> N\<I>',
            \<F> = \<F>e \<A>' \<union> N\<F>'\<rparr>)
        \<in> br nfa_\<alpha> nfa_invar"
       unfolding br_def nfa_\<alpha>_def nfa_invar_def
       apply simp
       apply (rule conjI)
       using state_ok apply force
-      apply (rule conjI)
-      using alphabet_ok apply force
       apply (rule conjI)
       using trans_pre unfolding br_def
       apply simp
@@ -1105,23 +1094,23 @@ schematic_goal NFA_elim_imp_code:
   assumes D_it1_OK [rule_format, refine_transfer]: 
          "set_iterator (D_it1 (fst A)) {e. e \<in> s.\<alpha> (fst A)}"
       and D_it2_OK [rule_format, refine_transfer]: 
-         "set_iterator (D_it2 (fst (snd (snd (snd A))))) 
-                          {e. e \<in> ss.\<alpha> (fst (snd (snd (snd A))))}"
+         "set_iterator (D_it2 (fst (snd (snd A)))) 
+                          {e. e \<in> ss.\<alpha> (fst (snd (snd A)))}"
       and D_it3_OK [rule_format, refine_transfer]: 
          "\<And> q ssm. set_iterator (D_it3 q ssm) 
                           {e. e \<in> s.\<alpha> (the (ssm.lookup q ssm))}"
       and D_it4_OK [rule_format, refine_transfer]: 
-         "set_iterator (D_it4 (fst (snd (snd A)))) 
-                          {t. t \<in> d.\<alpha> (fst (snd (snd A)))}"
+         "set_iterator (D_it4 (fst (snd A))) 
+                          {t. t \<in> d.\<alpha> (fst (snd A))}"
       and D_it5_OK [rule_format, refine_transfer]: 
          "set_iterator (D_it5 (fst A)) 
                           {e. e \<in> s.\<alpha> (fst A)}"
       and D_it6_OK [rule_format, refine_transfer]: 
-         "set_iterator (D_it6 (fst (snd (snd (snd (snd A)))))) 
-                          {e. e \<in> s.\<alpha> (fst (snd (snd (snd (snd A)))))}"
+         "set_iterator (D_it6 (fst (snd (snd (snd A))))) 
+                          {e. e \<in> s.\<alpha> (fst (snd (snd (snd A))))}"
       and D_it7_OK [rule_format, refine_transfer]: 
-         "set_iterator (D_it7 (snd (snd (snd (snd (snd A)))))) 
-                          {e. e \<in> s.\<alpha> (snd (snd (snd (snd (snd A)))))}"
+         "set_iterator (D_it7 (snd (snd (snd (snd A)))))
+                          {e. e \<in> s.\<alpha> (snd (snd (snd (snd A))))}"
       and D_it8_OK [rule_format, refine_transfer]: 
          "set_iterator (D_it8 (fst A)) 
                           {e. e \<in> s.\<alpha> (fst A)}"
@@ -1141,7 +1130,6 @@ schematic_goal NFA_elim_imp_code:
             compute_ep_I_imp_def
             compute_ep_F_imp_def
             nfae_accepting_def
-            nfae_alphabet_def
   apply (unfold split_def snd_conv fst_conv prod.collapse)
   apply (rule refine_transfer | assumption | erule conjE)+
   done
@@ -1150,7 +1138,7 @@ schematic_goal NFA_elim_imp_code:
 definition NFA_elim_code where
     "NFA_elim_code D_it1 D_it2 D_it3 D_it4 D_it5 D_it6 D_it7 D_it8 A
               = (let x = Let (D_it1 (fst A) (\<lambda>_. True)
-                 (\<lambda>x \<sigma>. let xa = D_it2 (fst (snd (snd (snd A)))) (\<lambda>_. True)
+                 (\<lambda>x \<sigma>. let xa = D_it2 (fst (snd (snd A))) (\<lambda>_. True)
                                   (\<lambda>xa \<sigma>'.
                                       if fst xa = x then s.ins (snd xa) \<sigma>' else \<sigma>')
                                   (s.ins x (s.empty ()))
@@ -1164,37 +1152,38 @@ definition NFA_elim_code where
               (\<lambda>xa. D_it1 (fst A) (\<lambda>_. True)
                      (\<lambda>xb \<sigma>.
                          let xc = Let (D_it3 xb xa (\<lambda>_. True)
-                                        (\<lambda>xc \<sigma>'. s.union \<sigma>' (the (ssm.lookup xc xa)))
+                                        (\<lambda>xc \<sigma>'.
+  s.union \<sigma>' (the (ssm.lookup xc xa)))
                                         (the (ssm.lookup xb xa)))
                                    (ssm.sng xb)
                          in ssm.update xb (the (ssm.lookup xb xc)) \<sigma>)
                      (ssm.empty ())));
-       xa = D_it4 (fst (snd (snd A))) (\<lambda>_. True)
+       xa = D_it4 (fst (snd A)) (\<lambda>_. True)
              (\<lambda>xa \<sigma>.
                  let xb = D_it5 (fst A) (\<lambda>_. True)
                            (\<lambda>xb \<sigma>'.
                                if s.memb (fst xa) (the (ssm.lookup xb x))
-                               then d.add xb (fst (snd xa)) (snd (snd xa)) \<sigma>' else \<sigma>')
+                               then d.add xb (fst (snd xa)) (snd (snd xa)) \<sigma>'
+                               else \<sigma>')
                            d.empty
                  in d.union xb \<sigma>)
              d.empty;
-       xb = D_it6 (fst (snd (snd (snd (snd A))))) (\<lambda>_. True)
+       xb = D_it6 (fst (snd (snd (snd A)))) (\<lambda>_. True)
              (\<lambda>xb \<sigma>.
                  if ssm.lookup xb x = None then \<sigma>
                  else s.union \<sigma> (the (ssm.lookup xb x)))
              (s.empty ());
-       xc = D_it7 (snd (snd (snd (snd (snd A))))) (\<lambda>_. True)
+       xc = D_it7 (snd (snd (snd (snd A)))) (\<lambda>_. True)
              (\<lambda>xc \<sigma>.
                  let xd = D_it8 (fst A) (\<lambda>_. True)
                            (\<lambda>xd \<sigma>'.
-                               if s.memb xc (the (ssm.lookup xd x)) then s.ins xd \<sigma>'
-                               else \<sigma>')
+                               if s.memb xc (the (ssm.lookup xd x))
+                               then s.ins xd \<sigma>' else \<sigma>')
                            (s.empty ())
                  in s.union xd \<sigma>)
              (s.empty ())
-   in (fst A, fst (snd A), d.union (fst (snd (snd A))) xa,
-       s.union (fst (snd (snd (snd (snd A))))) xb,
-       s.union (snd (snd (snd (snd (snd A))))) xc))"
+   in (fst A, d.union (fst (snd A)) xa, s.union (fst (snd (snd (snd A)))) xb,
+       s.union (snd (snd (snd (snd A)))) xc))"
 
 schematic_goal NFA_elim_impl_code :
     "NFA_elim_code D_it1 D_it2 D_it3 D_it4 D_it5 D_it6 D_it7 D_it8 A  = ?XXX1"

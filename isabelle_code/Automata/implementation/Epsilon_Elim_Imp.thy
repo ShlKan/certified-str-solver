@@ -914,7 +914,7 @@ qed
         show "q' \<in> the (s q)"
           apply (induction l T arbitrary:  q rule: epsilon_reach.induct)
           apply simp
-          using s_cons apply simp apply blast
+          using s_cons apply simp
         proof -
           fix q1 q2 l D q
           assume ind_hyp: "(\<And>q. q2 # l \<noteq> [] \<and>
@@ -1126,7 +1126,6 @@ definition NFA_elim_Impl ::"('q, 'a) NFAe_rec
        N\<I> \<leftarrow>  compute_ep_I (\<I>e A) P;
        N\<F> \<leftarrow>  compute_ep_F (\<F>e A) (\<Q>e A) P;
        RETURN \<lparr> \<Q> = \<Q>e A, 
-                \<Sigma> = \<Sigma>e A, 
                 \<Delta> = (\<Delta>e A) \<union> N\<Delta>, 
                 \<I> = (\<I>e A) \<union> N\<I>, 
                 \<F> = (\<F>e A) \<union> N\<F> \<rparr>
@@ -1159,7 +1158,7 @@ proof -
                  (\<lambda>N\<Delta>. compute_ep_I (\<I>e \<A>e) P \<bind>
                         (\<lambda>N\<I>. compute_ep_F (\<F>e \<A>e) (\<Q>e \<A>e) P \<bind>
                               (\<lambda>N\<F>. RETURN
-                                      \<lparr>\<Q> = \<Q>e \<A>e, \<Sigma> = \<Sigma>e \<A>e, \<Delta> = \<Delta>e \<A>e \<union> N\<Delta>,
+                                      \<lparr>\<Q> = \<Q>e \<A>e, \<Delta> = \<Delta>e \<A>e \<union> N\<Delta>,
                                          \<I> = \<I>e \<A>e \<union> N\<I>, \<F> = \<F>e \<A>e \<union> N\<F>\<rparr>)))
                  \<le> SPEC (\<lambda>\<A>. \<A> = epsilon_elim \<A>e))"
     apply simp
@@ -1225,7 +1224,7 @@ proof -
          (\<lambda>N\<Delta>. compute_ep_I (\<I>e \<A>e) x \<bind>
                 (\<lambda>N\<I>. compute_ep_F (\<F>e \<A>e) (\<Q>e \<A>e) x \<bind>
                       (\<lambda>N\<F>. RETURN
-                              \<lparr>\<Q> = \<Q>e \<A>e, \<Sigma> = \<Sigma>e \<A>e, \<Delta> = \<Delta>e \<A>e \<union> N\<Delta>,
+                              \<lparr>\<Q> = \<Q>e \<A>e, \<Delta> = \<Delta>e \<A>e \<union> N\<Delta>,
                                  \<I> = \<I>e \<A>e \<union> N\<I>, \<F> = \<F>e \<A>e \<union> N\<F>\<rparr>)))
          \<le> SPEC (\<lambda>\<A>. \<A> = epsilon_elim \<A>e)"
       apply (refine_vcg)
@@ -1238,7 +1237,7 @@ proof -
             SPEC (\<lambda>N\<Delta>. compute_ep_I (\<I>e \<A>e) x \<bind>
                   (\<lambda>N\<I>. compute_ep_F (\<F>e \<A>e) (\<Q>e \<A>e) x \<bind>
                         (\<lambda>N\<F>. RETURN
-                                \<lparr>\<Q> = \<Q>e \<A>e, \<Sigma> = \<Sigma>e \<A>e, \<Delta> = \<Delta>e \<A>e \<union> N\<Delta>,
+                                \<lparr>\<Q> = \<Q>e \<A>e, \<Delta> = \<Delta>e \<A>e \<union> N\<Delta>,
                                    \<I> = \<I>e \<A>e \<union> N\<I>, \<F> = \<F>e \<A>e \<union> N\<F>\<rparr>))
                   \<le> SPEC (\<lambda>\<A>. \<A> = epsilon_elim \<A>e))"
         apply simp
@@ -1246,7 +1245,7 @@ proof -
         have "compute_ep_I (\<I>e \<A>e) x \<bind>
     (\<lambda>N\<I>. compute_ep_F (\<F>e \<A>e) (\<Q>e \<A>e) x \<bind>
           (\<lambda>N\<F>. RETURN
-                  \<lparr>\<Q> = \<Q>e \<A>e, \<Sigma> = \<Sigma>e \<A>e,
+                  \<lparr>\<Q> = \<Q>e \<A>e, 
                      \<Delta> = \<Delta>e \<A>e \<union>
                           {uu.
                            \<exists>q \<alpha> q' q''.
@@ -1262,7 +1261,7 @@ proof -
                            \<and> x q \<noteq> None \<and> q' \<in> the (x q)}) \<le> 
                SPEC (\<lambda>N\<I>. compute_ep_F (\<F>e \<A>e) (\<Q>e \<A>e) x \<bind>
                   (\<lambda>N\<F>. RETURN
-                          \<lparr>\<Q> = \<Q>e \<A>e, \<Sigma> = \<Sigma>e \<A>e,
+                          \<lparr>\<Q> = \<Q>e \<A>e,
                              \<Delta> = \<Delta>e \<A>e \<union>
                                   {uu.
                                    \<exists>q \<alpha> q' q''.
@@ -1276,7 +1275,7 @@ proof -
           proof -
             have "compute_ep_F (\<F>e \<A>e) (\<Q>e \<A>e) x \<bind>
     (\<lambda>N\<F>. RETURN
-            \<lparr>\<Q> = \<Q>e \<A>e, \<Sigma> = \<Sigma>e \<A>e,
+            \<lparr>\<Q> = \<Q>e \<A>e,
                \<Delta> = \<Delta>e \<A>e \<union>
                     {uu.
                      \<exists>q \<alpha> q' q''.
@@ -1291,7 +1290,7 @@ proof -
               
               have "SPEC (\<lambda>NI. NI = {uu. \<exists>q q'. uu = q' \<and> q \<in> \<F>e \<A>e \<and> 
                      q' \<in> \<Q>e \<A>e \<and> q \<in> the (x q')}) \<le> SPEC (\<lambda>N\<F>. RETURN
-                   \<lparr>\<Q> = \<Q>e \<A>e, \<Sigma> = \<Sigma>e \<A>e,
+                   \<lparr>\<Q> = \<Q>e \<A>e, 
                       \<Delta> = \<Delta>e \<A>e \<union>
                            {uu.
                             \<exists>q \<alpha> q' q''.
@@ -1527,7 +1526,7 @@ proof -
               from this cc3
               show "compute_ep_F (\<F>e \<A>e) (\<Q>e \<A>e) x
     \<le> SPEC (\<lambda>N\<F>. RETURN
-                   \<lparr>\<Q> = \<Q>e \<A>e, \<Sigma> = \<Sigma>e \<A>e,
+                   \<lparr>\<Q> = \<Q>e \<A>e,
                       \<Delta> = \<Delta>e \<A>e \<union>
                            {uu.
                             \<exists>q \<alpha> q' q''.
@@ -1543,7 +1542,7 @@ proof -
             qed
             from this show "compute_ep_F (\<F>e \<A>e) (\<Q>e \<A>e) x \<bind>
     (\<lambda>N\<F>. RETURN
-            \<lparr>\<Q> = \<Q>e \<A>e, \<Sigma> = \<Sigma>e \<A>e,
+            \<lparr>\<Q> = \<Q>e \<A>e, 
                \<Delta> = \<Delta>e \<A>e \<union>
                     {uu.
                      \<exists>q \<alpha> q' q''.
@@ -1559,7 +1558,7 @@ proof -
           show "compute_ep_I (\<I>e \<A>e) x
     \<le> SPEC (\<lambda>N\<I>. compute_ep_F (\<F>e \<A>e) (\<Q>e \<A>e) x \<bind>
                   (\<lambda>N\<F>. RETURN
-                          \<lparr>\<Q> = \<Q>e \<A>e, \<Sigma> = \<Sigma>e \<A>e,
+                          \<lparr>\<Q> = \<Q>e \<A>e,
                              \<Delta> = \<Delta>e \<A>e \<union>
                                   {uu.
                                    \<exists>q \<alpha> q' q''.
@@ -1575,7 +1574,7 @@ proof -
           show "compute_ep_I (\<I>e \<A>e) x \<bind>
     (\<lambda>N\<I>. compute_ep_F (\<F>e \<A>e) (\<Q>e \<A>e) x \<bind>
           (\<lambda>N\<F>. RETURN
-                  \<lparr>\<Q> = \<Q>e \<A>e, \<Sigma> = \<Sigma>e \<A>e,
+                  \<lparr>\<Q> = \<Q>e \<A>e, 
                      \<Delta> = \<Delta>e \<A>e \<union>
                           {uu.
                            \<exists>q \<alpha> q' q''.
@@ -1591,7 +1590,7 @@ proof -
     \<le> SPEC (\<lambda>N\<Delta>. compute_ep_I (\<I>e \<A>e) x \<bind>
                   (\<lambda>N\<I>. compute_ep_F (\<F>e \<A>e) (\<Q>e \<A>e) x \<bind>
                         (\<lambda>N\<F>. RETURN
-                                \<lparr>\<Q> = \<Q>e \<A>e, \<Sigma> = \<Sigma>e \<A>e, \<Delta> = \<Delta>e \<A>e \<union> N\<Delta>,
+                                \<lparr>\<Q> = \<Q>e \<A>e,  \<Delta> = \<Delta>e \<A>e \<union> N\<Delta>,
                                    \<I> = \<I>e \<A>e \<union> N\<I>, \<F> = \<F>e \<A>e \<union> N\<F>\<rparr>))
                   \<le> SPEC (\<lambda>\<A>. \<A> = epsilon_elim \<A>e))"
           
@@ -1602,7 +1601,7 @@ proof -
          (\<lambda>N\<Delta>. compute_ep_I (\<I>e \<A>e) x \<bind>
                 (\<lambda>N\<I>. compute_ep_F (\<F>e \<A>e) (\<Q>e \<A>e) x \<bind>
                       (\<lambda>N\<F>. RETURN
-                              \<lparr>\<Q> = \<Q>e \<A>e, \<Sigma> = \<Sigma>e \<A>e, \<Delta> = \<Delta>e \<A>e \<union> N\<Delta>,
+                              \<lparr>\<Q> = \<Q>e \<A>e,  \<Delta> = \<Delta>e \<A>e \<union> N\<Delta>,
                                  \<I> = \<I>e \<A>e \<union> N\<I>, \<F> = \<F>e \<A>e \<union> N\<F>\<rparr>)))
          \<le> RES {epsilon_elim \<A>e}"
       by auto
@@ -1615,7 +1614,7 @@ proof -
                  (\<lambda>N\<Delta>. compute_ep_I (\<I>e \<A>e) P \<bind>
                         (\<lambda>N\<I>. compute_ep_F (\<F>e \<A>e) (\<Q>e \<A>e) P \<bind>
                               (\<lambda>N\<F>. RETURN
-                                      \<lparr>\<Q> = \<Q>e \<A>e, \<Sigma> = \<Sigma>e \<A>e, \<Delta> = \<Delta>e \<A>e \<union> N\<Delta>,
+                                      \<lparr>\<Q> = \<Q>e \<A>e,  \<Delta> = \<Delta>e \<A>e \<union> N\<Delta>,
                                          \<I> = \<I>e \<A>e \<union> N\<I>, \<F> = \<F>e \<A>e \<union> N\<F>\<rparr>)))
                  \<le> SPEC (\<lambda>\<A>. \<A> = epsilon_elim \<A>e))"
     using SPEC_trans by blast
