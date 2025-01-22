@@ -190,3 +190,27 @@ let rec print_size rm =
   match rm with
   | [] -> ()
   | (v, a) :: rml -> print_trans_num a ; print_size rml
+
+let sub_list lsmall llarge =
+  List.for_all
+    (fun (e1, e2) ->
+      List.exists (fun e' -> e1 = e') llarge
+      && List.exists (fun e' -> e2 = e') llarge )
+    lsmall
+
+let rec forward_analysis rest refined rc rm =
+  if List.is_empty rest then []
+  else
+    let ready =
+      List.fold_left
+        (fun vars (l, deps) ->
+          if List.exists (fun e' -> e' = l) rest && sub_list deps refined
+          then l :: vars
+          else vars )
+        [] rc
+    in
+    let new_rest =
+      List.filter (fun e -> not (List.exists (fun e' -> e = e') ready)) rest
+    in
+    let new_refined = refined @ ready in
+    forward_analysis new_rest new_refined rc rm

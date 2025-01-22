@@ -244,6 +244,14 @@ let rm_to_list rm =
 let solve (constraints : Parser.strConstrain list) =
   let ss, cc, cr = genStrConstraints constraints in
   let sl = SS.elements ss in
+  let new_rc = gen_mapc cc sl in
+  let rest = List.map (fun (l, _) -> l) new_rc in
+  let new_sl =
+    List.filter
+      (fun e -> not (List.exists (fun e' -> e = e') rest))
+      (List.map z_to_int (gen_intl 0 (List.length sl - 1)))
+  in
+  let _tmp = Forward.forward_analysis rest new_sl new_rc cr in
   let s =
     Forward.gen_S_from_list
       (List.map z_to_int (gen_intl 0 (List.length sl - 1)))
