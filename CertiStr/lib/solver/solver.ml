@@ -2,6 +2,8 @@ open Transducer
 open Nfa
 open Automata_lib
 open Automata_lib
+open Rel
+open Transducer.SFT
 module SS = Set.Make (String)
 module ConcatC = Map.Make (String)
 module ConcatR = Map.Make (String)
@@ -77,8 +79,6 @@ let print_conR r =
     r ;
   Format.printf "\n"
 
-let z_to_int z = nat_of_integer (Z.of_int z)
-
 let rec gen_intl b e = if b = e then [e] else b :: gen_intl (b + 1) e
 
 let rec get_index_aux e l i =
@@ -103,57 +103,6 @@ let rec out_mapc s l =
 let rec gen_mapc s l = out_mapc (ConcatC.bindings s) l
 
 exception Automata_less
-
-let eq_Z n1 n2 = n1 = n2
-
-let equal_Z = {Automata_lib.equal= eq_Z}
-
-let nFA_states_nat =
-  ( {states_enumerate= (fun i -> i)}
-    : Automata_lib.nat Automata_lib.nFA_states )
-
-let less_eq_nat z1 z2 =
-  Z.leq (Automata_lib.integer_of_nat z1) (Automata_lib.integer_of_nat z2)
-
-let less_nat z1 z2 =
-  Z.lt (Automata_lib.integer_of_nat z1) (Automata_lib.integer_of_nat z2)
-
-let ord_nat =
-  ({less_eq= less_eq_nat; less= less_nat} : Automata_lib.nat Automata_lib.ord)
-
-let preorder_nat =
-  ({ord_preorder= ord_nat} : Automata_lib.nat Automata_lib.preorder)
-
-let order_nat =
-  ({preorder_order= preorder_nat} : Automata_lib.nat Automata_lib.order)
-
-let linorder_nat =
-  ({order_linorder= order_nat} : Automata_lib.nat Automata_lib.linorder)
-
-let less_eq_str (s1 : string) (s2 : string) = String.compare s1 s2 <= 0
-
-let less_str (s1 : string) (s2 : string) = String.compare s1 s2 < 0
-
-let ord_str =
-  ({less_eq= less_eq_str; less= less_str} : string Automata_lib.ord)
-
-let preorder_str = ({ord_preorder= ord_str} : string Automata_lib.preorder)
-
-let order_str = ({preorder_order= preorder_str} : string Automata_lib.order)
-
-let order_string =
-  ({preorder_order= preorder_str} : string Automata_lib.order)
-
-let linorder_str =
-  ({order_linorder= order_str} : string Automata_lib.linorder)
-
-let ord_Z = ({less_eq= Z.leq; less= Z.lt} : Z.t Automata_lib.ord)
-
-let preorder_Z = ({ord_preorder= ord_Z} : Z.t Automata_lib.preorder)
-
-let order_Z = ({preorder_order= preorder_Z} : Z.t Automata_lib.order)
-
-let linorder_Z = ({order_linorder= order_Z} : Z.t Automata_lib.linorder)
 
 let nfa_construct (q, d, i, f) =
   Automata_lib.rs_nfa_construct_interval
@@ -180,6 +129,24 @@ let nft_construct nft =
 
 let f (x : Z.t option) = Some [(Z.of_int 1, Z.of_int 100)]
 
+let rec maxState states i =
+  match states with
+  | [] -> i
+  | state :: states' ->
+      if state > i then maxState states' state else maxState states' state
+
+let rename_states states max =
+  List.map
+    (fun state -> Automata_lib.nat_of_integer (Z.of_int (state + max)))
+    states
+
+let rename_transtions trans max =
+  List.map
+    (fun (q, (l, q')) ->
+      ( Automata_lib.nat_of_integer (Z.of_int (q + max))
+      , (l, Automata_lib.nat_of_integer (Z.of_int (q' + max))) ) )
+    trans
+
 let nft_example =
   nft_construct
     ( List.map (fun x -> Automata_lib.nat_of_integer (Z.of_int x)) [1; 2]
@@ -189,32 +156,6 @@ let nft_example =
       , ( [Automata_lib.nat_of_integer (Z.of_int 1)]
         , ([Automata_lib.nat_of_integer (Z.of_int 2)], fun x -> f) ) ) )
 
-let nft_product nft =
-  rs_product_transducer
-    (nFA_states_nat, linorder_nat)
-    (equal_Z, linorder_Z) linorder_Z (equal_Z, linorder_Z) nft
-
-let get_interval s =
-  let l = String.split_on_char '-' s in
-  if List.length l == 2 then
-    ( Char.code (String.get (List.nth l 0) 0)
-    , Char.code (String.get (List.nth l 1) 0) )
-  else
-    ( Char.code (String.get (List.nth l 0) 0)
-    , Char.code (String.get (List.nth l 0) 0) )
-
-let transitions_single next left pre_trans =
-  CharMap.fold
-    (fun l rights trans ->
-      StateSet.fold
-        (fun right ss ->
-          (Int32.to_int left, [get_interval l], Int32.to_int right) :: ss )
-        rights trans )
-    (next left) pre_trans
-
-let transitions all_states next =
-  StateSet.fold (transitions_single next) all_states []
-
 let gen_nfa_construct_input (n : Nfa.nfa) =
   let all_states = SNFA.gather_states n in
   match n with
@@ -223,6 +164,57 @@ let gen_nfa_construct_input (n : Nfa.nfa) =
       , transitions all_states next
       , List.map Int32.to_int (StateSet.to_list start)
       , List.map Int32.to_int (StateSet.to_list finals) )
+
+let connectTrans ends starts =
+  List.fold_left
+    (fun trans a ->
+      List.fold_left
+        (fun trans_s b -> (a, ((None, -1), b)) :: trans_s)
+        trans starts )
+    [] ends
+
+let nft_from_replace pattern replacement =
+  let pAuto = Regex.compile (Regex.parse pattern) in
+  SNFA.printNfa pAuto ;
+  let rAuto = Regex.compile (Regex.parse replacement) in
+  SNFA.printNfa rAuto ;
+  let pStates = SNFA.gather_states pAuto in
+  let max =
+    1 + maxState (List.map Int32.to_int (StateSet.to_list pStates)) 0
+  in
+  let _, pTrans, pInit, pAccept = gen_nfa_construct_input pAuto in
+  let _, rTrans, rInit, rAccepts = gen_nfa_construct_input rAuto in
+  let rTrans, output = trans_NFA2NFT rTrans in
+  let outputZ =
+    List.map
+      (fun l -> List.map (fun (l1, l2) -> (Z.of_int l1, Z.of_int l2)) l)
+      output
+  in
+  let nftInit =
+    List.map (fun s -> Automata_lib.nat_of_integer (Z.of_int s)) pInit
+  in
+  let rAccepts = rename_states rAccepts max in
+  let nftAccepts = rAccepts in
+  let rTrans = rename_transtions rTrans max in
+  let pTrans = trans_NFA2NFT_None pTrans in
+  let pTrans = rename_transtions pTrans max in
+  let pAccept =
+    List.map (fun s -> Automata_lib.nat_of_integer (Z.of_int s)) pAccept
+  in
+  let rInit = rename_states rInit max in
+  let nftTrans = rTrans @ pTrans @ connectTrans pAccept rInit in
+  let nftTrans =
+    List.map (fun (p, ((l, i), q)) -> (p, ((l, Z.of_int i), q))) nftTrans
+  in
+  let outputFun = outputFunc outputZ in
+  nft_construct ([], (nftTrans, (nftInit, (nftAccepts, outputFun))))
+
+(* let () = nft_from_replace "[a-b]|c" "abcd" *)
+
+let nft_product nft =
+  rs_product_transducer
+    (nFA_states_nat, linorder_nat)
+    (equal_Z, linorder_Z) linorder_Z (equal_Z, linorder_Z) nft
 
 let gen_aut at =
   nfa_construct_reachable (nfa_construct (gen_nfa_construct_input at))
