@@ -22,7 +22,13 @@ let transitions all_states next =
   StateSet.fold (transitions_single next) all_states []
 
 let outputFunc l index i =
-  match i with None -> Some (List.nth l (Z.to_int index)) | Some _ -> None
+  if Z.to_int index = -1 then None
+  else if Z.to_int index = -2 then
+    match i with None -> None | Some b -> Some [(b, b)]
+  else
+    match i with
+    | None -> Some (List.nth l (Z.to_int index))
+    | Some _ -> None
 
 let rec trans_NFA2NFT trans =
   match trans with

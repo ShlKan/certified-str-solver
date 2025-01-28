@@ -4,9 +4,7 @@ open Automata_lib
 open Automata_lib
 open Rel
 open Transducer.SFT
-module SS = Set.Make (String)
-module ConcatC = Map.Make (String)
-module ConcatR = Map.Make (String)
+open Forward
 
 (* Currently, only in_re, concat allowed. *)
 let check_constraints (cons : Parser.strConstrain list) =
@@ -33,23 +31,23 @@ exception UnsupportError of string
 
 let rec genStrConstraints (constraints : Parser.strConstrain list) =
   match constraints with
-  | [] -> (SS.empty, ConcatC.empty, ConcatR.empty)
+  | [] -> (Forward.SS.empty, Forward.ConcatC.empty, Forward.ConcatR.empty)
   | cons :: constraints' -> (
       let reS, reC, reR = genStrConstraints constraints' in
       match cons with
       | Parser.StrEq (Name lhs, Concat (Name c1, Name c2)) ->
-          ( SS.add lhs ((SS.add c1) (SS.add c2 reS))
-          , ConcatC.update lhs
+          ( Forward.SS.add lhs ((Forward.SS.add c1) (Forward.SS.add c2 reS))
+          , Forward.ConcatC.update lhs
               (fun x ->
                 match x with
-                | None -> Some [(c1, c2)]
-                | Some l -> Some ((c1, c2) :: l) )
+                | None -> Some [Concat (c1, c2)]
+                | Some l -> Some (Concat (c1, c2) :: l) )
               reC
           , reR )
       | Parser.IN_NFA (Name lhs, nfa) ->
-          ( SS.add lhs reS
+          ( Forward.SS.add lhs reS
           , reC
-          , ConcatR.update lhs
+          , Forward.ConcatR.update lhs
               (fun x ->
                 match x with None -> Some [nfa] | Some l -> Some (nfa :: l) )
               reR )
@@ -58,12 +56,12 @@ let rec genStrConstraints (constraints : Parser.strConstrain list) =
 
 let print_vars s =
   Format.printf "The following are variables:" ;
-  SS.iter (fun v -> Format.printf "%s, " v) s ;
+  Forward.SS.iter (fun v -> Format.printf "%s, " v) s ;
   Format.printf "\n"
 
 let print_conC c =
   Format.printf "The following are concatenations:\n" ;
-  ConcatC.iter
+  Forward.ConcatC.iter
     (fun s l ->
       Format.printf "%s = " s ;
       List.iter (fun (c1, c2) -> Format.printf "(%s, %s); " c1 c2) l )
@@ -72,7 +70,7 @@ let print_conC c =
 
 let print_conR r =
   Format.printf "The following are Regex constraints:\n" ;
-  ConcatR.iter
+  Forward.ConcatR.iter
     (fun s l ->
       Format.printf "%s = \n" s ;
       List.iter (fun a -> SNFA.printNfa a) l )
@@ -91,14 +89,16 @@ let get_index e l = get_index_aux e l 0
 let rec genPair ls l =
   match ls with
   | [] -> []
-  | (s1, s2) :: rs ->
-      (z_to_int (get_index s1 l), z_to_int (get_index s2 l)) :: genPair rs l
+  | Concat (s1, s2) :: rs ->
+      ConcatI (get_index s1 l, get_index s2 l) :: genPair rs l
+  | Replace (a, b, c, d) :: rs -> Replace (a, b, c, d) :: genPair rs l
+  | ConcatI (a, b) :: rs -> ConcatI (a, b) :: genPair rs l
 
 let rec out_mapc s l =
   match s with
-  | [] -> []
+  | [] -> ConcatCI.empty
   | (s1, s2) :: rs ->
-      (z_to_int (get_index s1 l), genPair s2 l) :: out_mapc rs l
+      ConcatCI.add (get_index s1 l) (genPair s2 l) (out_mapc rs l)
 
 let rec gen_mapc s l = out_mapc (ConcatC.bindings s) l
 
@@ -173,11 +173,15 @@ let connectTrans ends starts =
         trans starts )
     [] ends
 
+let selfTrans states =
+  List.fold_left
+    (fun trans_s a ->
+      (a, ((Some [(Z.of_int 0, Z.of_int 255)], -2), a)) :: trans_s )
+    [] states
+
 let nft_from_replace pattern replacement =
   let pAuto = Regex.compile (Regex.parse pattern) in
-  SNFA.printNfa pAuto ;
   let rAuto = Regex.compile (Regex.parse replacement) in
-  SNFA.printNfa rAuto ;
   let pStates = SNFA.gather_states pAuto in
   let max =
     1 + maxState (List.map Int32.to_int (StateSet.to_list pStates)) 0
@@ -193,20 +197,35 @@ let nft_from_replace pattern replacement =
   let nftInit =
     List.map (fun s -> Automata_lib.nat_of_integer (Z.of_int s)) pInit
   in
-  let rAccepts = rename_states rAccepts max in
-  let nftAccepts = rAccepts in
+  List.iter
+    (fun x ->
+      Format.printf "%d :  " (Z.to_int (Automata_lib.integer_of_nat x)) )
+    nftInit ;
+  let nftAccepts = rename_states rAccepts max in
   let rTrans = rename_transtions rTrans max in
   let pTrans = trans_NFA2NFT_None pTrans in
-  let pTrans = rename_transtions pTrans max in
+  let pTrans = rename_transtions pTrans 0 in
   let pAccept =
     List.map (fun s -> Automata_lib.nat_of_integer (Z.of_int s)) pAccept
   in
   let rInit = rename_states rInit max in
-  let nftTrans = rTrans @ pTrans @ connectTrans pAccept rInit in
+  let nftTrans =
+    rTrans @ pTrans
+    @ connectTrans pAccept rInit
+    @ selfTrans (nftInit @ nftAccepts)
+  in
   let nftTrans =
     List.map (fun (p, ((l, i), q)) -> (p, ((l, Z.of_int i), q))) nftTrans
   in
+  List.iter
+    (fun (i, ((a, k), j)) ->
+      Format.printf "(%d, (_, %d), %d)\n"
+        (Z.to_int (Automata_lib.integer_of_nat i))
+        (Z.to_int k)
+        (Z.to_int (Automata_lib.integer_of_nat j)) )
+    nftTrans ;
   let outputFun = outputFunc outputZ in
+  Format.printf "\n" ;
   nft_construct ([], (nftTrans, (nftInit, (nftAccepts, outputFun))))
 
 (* let () = nft_from_replace "[a-b]|c" "abcd" *)
@@ -240,8 +259,7 @@ let rec gen_concater l =
 let rec gen_maprs s l =
   match s with
   | [] -> []
-  | (s1, s2) :: rs ->
-      (z_to_int (get_index s1 l), gen_concater s2) :: gen_maprs rs l
+  | (s1, s2) :: rs -> (get_index s1 l, gen_concater s2) :: gen_maprs rs l
 
 let gen_mapr s l = gen_maprs (ConcatR.bindings s) l
 
@@ -275,9 +293,14 @@ let fmap ff e =
   match e with
   | [] -> None
   | (a, b) :: l ->
-      Some [(Z.of_int (Z.to_int a + 1), Z.of_int (Z.to_int b + 1))]
+      let l = ff (Some a) in
+      let r = ff (Some b) in
+      if l = None then None else l
 
-let fe f e = false
+let fe f l =
+  match l with
+  | [] -> false
+  | e :: l' -> if f (Some (fst e)) = None then true else false
 
 let output_nfa = nft_product nft_example (gen_aut SNFA.universalAuto) fmap fe
 
@@ -289,25 +312,16 @@ let solve (constraints : Parser.strConstrain list) =
   let new_sl =
     List.filter
       (fun e -> not (List.exists (fun e' -> e = e') rest))
-      (List.map z_to_int (gen_intl 0 (List.length sl - 1)))
+      (gen_intl 0 (List.length sl - 1))
   in
-  let _tmp = Forward.forward_analysis rest new_sl new_rc cr in
-  let s =
-    Forward.gen_S_from_list
-      (List.map z_to_int (gen_intl 0 (List.length sl - 1)))
-  in
-  let rc = Forward.gen_rc_from_list (gen_mapc cc sl) in
   let rr = full_rm sl cr in
-  let rm = Forward.gen_rm_from_list (gen_mapr rr sl) in
-  List.iter
-    (fun (v, a) -> ()) (* Forward.print_auto (nfa_destruct a)) *)
-    (rm_to_list rm) ;
+  let rm = gen_mapr rr sl in
+  let new_rm = Forward.forward_analysis rest new_sl new_rc rm in
+  let nft = nft_from_replace "[a-z]+" "dsd" in
+  let nfa = gen_aut (Regex.compile (Regex.parse "UaU")) in
+  let o_nfa = nft_product nft nfa fmap fe in
+  Format.printf "----- ******************************* ----\n" ;
   Forward.print_auto
-    (nfa_destruct
-       (nfa_construct (gen_nfa_construct_input SNFA.universalAuto)) ) ;
-  Format.printf "--------\n" ;
-  Forward.print_auto
-    (Forward.nfa_destruct
-       (Forward.nfa_normal (Forward.nfa_elim output_nfa)) )
+    (Forward.nfa_destruct (Forward.nfa_normal (Forward.nfa_elim o_nfa)))
 (* let s, (rm, r) = Forward.forward_analysis (z_to_int 1) (z_to_int 2) s rc
    rm in print_string (check_unsat_rm r rc (rm_to_list rm)) *)

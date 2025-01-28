@@ -1,6 +1,11 @@
 open Transducer
 open Automata_lib
 open Rel
+module SS = Set.Make (String)
+module ConcatC = Map.Make (String)
+module ConcatR = Map.Make (String)
+module ConcatCI = Map.Make (Int)
+module ConcatRI = Map.Make (Int)
 
 let nfa_elim nfa =
   Automata_lib.rs_nfa_elim
@@ -200,19 +205,23 @@ let sub_list lsmall llarge =
       && List.exists (fun e' -> e2 = e') llarge )
     lsmall
 
-let rec forward_analysis rest refined rc rm =
-  if List.is_empty rest then []
-  else
-    let ready =
-      List.fold_left
-        (fun vars (l, deps) ->
-          if List.exists (fun e' -> e' = l) rest && sub_list deps refined
-          then l :: vars
-          else vars )
-        [] rc
-    in
-    let new_rest =
-      List.filter (fun e -> not (List.exists (fun e' -> e = e') ready)) rest
-    in
-    let new_refined = refined @ ready in
-    forward_analysis new_rest new_refined rc rm
+let update_rm rm var add_auto =
+  List.map
+    (fun (v, old_auto) ->
+      if v = var then (v, nfa_product old_auto add_auto) else (v, old_auto) )
+    rm
+
+type ('a, 'b, 'c, 'd) str_op =
+  | Concat of string * string
+  | ConcatI of int * int
+  | Replace of 'a * 'b * 'c * 'd
+(* let rec acc_nfa l auto = match l with | [] -> auto | ConcatI (l1, l2) ::
+   rs ->
+
+   let rec forward_analysis rest refined rc rm = if List.is_empty rest then
+   rm else let ready = List.fold_left (fun vars (l, deps) -> if List.exists
+   (fun e' -> e' = l) rest && sub_list deps refined then l :: vars else vars
+   ) [] rc in let new_rest = List.filter (fun e -> not (List.exists (fun e'
+   -> e = e') ready)) rest in let new_refined = refined @ ready in let new_rm
+   = List.fold_left (fun acc_rm (v, l) -> acc_rm) rm rc in forward_analysis
+   new_rest new_refined rc rm *)
