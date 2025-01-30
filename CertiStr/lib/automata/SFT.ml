@@ -1,13 +1,13 @@
 open Nfa
 
+let to_code s =
+  if String.length s = 1 then Char.code (String.get s 0)
+  else int_of_string ("0x" ^ String.sub s 2 (String.length s - 2))
+
 let get_interval s =
   let l = String.split_on_char '-' s in
-  if List.length l == 2 then
-    ( Char.code (String.get (List.nth l 0) 0)
-    , Char.code (String.get (List.nth l 1) 0) )
-  else
-    ( Char.code (String.get (List.nth l 0) 0)
-    , Char.code (String.get (List.nth l 0) 0) )
+  if List.length l == 2 then (to_code (List.nth l 0), to_code (List.nth l 1))
+  else (to_code (List.nth l 0), to_code (List.nth l 0))
 
 let transitions_single next left pre_trans =
   CharMap.fold

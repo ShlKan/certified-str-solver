@@ -13,19 +13,47 @@ let check_constraints (cons : Parser.strConstrain list) =
       match c with
       | Parser.IN_RE _ -> true
       | Parser.StrEq (_, rhs) -> (
-        match rhs with Parser.Concat _ -> true | _ -> false )
+        match rhs with
+        | Parser.Concat _ -> true
+        | Parser.REPLACE (Name _, Str _, _) -> true
+        | _ -> false )
       | _ -> false )
     cons
 
+let count = ref 0
+
+exception Unreachable of string
+
+let add_additional s =
+  match s with
+  | Parser.Str s ->
+      let nfa_from_reg = Regex.compile (Regex.parse s) in
+      let new_var = Parser.Name ("tmp_" ^ string_of_int !count) in
+      count := !count + 1 ;
+      (new_var, Parser.IN_NFA (new_var, nfa_from_reg))
+  | _ -> raise (Unreachable "Unreachable")
+
 let convertRE2NFA (cons : Parser.strConstrain) =
   match cons with
-  | Parser.IN_RE (lhs, rhs) ->
+  | IN_RE (lhs, rhs) ->
       let nfa_from_reg = Regex.compile (Regex.parse (Parser.reg2Str rhs)) in
-      Parser.IN_NFA (lhs, nfa_from_reg)
-  | _ -> cons
+      [Parser.IN_NFA (lhs, nfa_from_reg)]
+  | StrEq (lhs, REPLACE (s, p, r)) -> (
+      let pp =
+        match p with
+        | Str s -> Parser.Str s
+        | _ -> Parser.Str (Parser.reg2Str p)
+      in
+      match s with
+      | Parser.Str _ ->
+          let v1, cons1 = add_additional s in
+          [cons1; StrEq (lhs, Parser.REPLACE (v1, pp, r))]
+      | _ -> [StrEq (lhs, Parser.REPLACE (s, pp, r))] )
+  | _ -> [cons]
 
 let normalStrConstraints (cons : Parser.strConstrain list) =
-  List.map convertRE2NFA cons
+  let res = List.map convertRE2NFA cons in
+  List.flatten res
 
 exception UnsupportError of string
 
@@ -42,6 +70,15 @@ let rec genStrConstraints (constraints : Parser.strConstrain list) =
                 match x with
                 | None -> Some [Concat (c1, c2)]
                 | Some l -> Some (Concat (c1, c2) :: l) )
+              reC
+          , reR )
+      | Parser.StrEq (Name lhs, REPLACE (Name s, Str p, r)) ->
+          ( Forward.SS.add lhs (Forward.SS.add s reS)
+          , Forward.ConcatC.update lhs
+              (fun x ->
+                match x with
+                | None -> Some [Replace (s, p, r)]
+                | Some l -> Some (Replace (s, p, r) :: l) )
               reC
           , reR )
       | Parser.IN_NFA (Name lhs, nfa) ->
@@ -91,8 +128,9 @@ let rec genPair ls l =
   | [] -> []
   | Concat (s1, s2) :: rs ->
       ConcatI (get_index s1 l, get_index s2 l) :: genPair rs l
-  | Replace (a, b, c, d) :: rs -> Replace (a, b, c, d) :: genPair rs l
+  | Replace (a, p, r) :: rs -> ReplaceI (get_index a l, p, r) :: genPair rs l
   | ConcatI (a, b) :: rs -> ConcatI (a, b) :: genPair rs l
+  | ReplaceI (a, p, r) :: rs -> ReplaceI (a, p, r) :: genPair rs l
 
 let rec out_mapc s l =
   match s with
@@ -122,30 +160,7 @@ let nfa_construct_reachable nfa =
     (nFA_states_nat, linorder_nat)
     (equal_Z, linorder_Z) nfa
 
-let nft_construct nft =
-  rs_nft_construct_interval
-    (nFA_states_nat, linorder_nat)
-    (equal_Z, linorder_Z) linorder_Z linorder_Z nft
-
 let f (x : Z.t option) = Some [(Z.of_int 1, Z.of_int 100)]
-
-let rec maxState states i =
-  match states with
-  | [] -> i
-  | state :: states' ->
-      if state > i then maxState states' state else maxState states' state
-
-let rename_states states max =
-  List.map
-    (fun state -> Automata_lib.nat_of_integer (Z.of_int (state + max)))
-    states
-
-let rename_transtions trans max =
-  List.map
-    (fun (q, (l, q')) ->
-      ( Automata_lib.nat_of_integer (Z.of_int (q + max))
-      , (l, Automata_lib.nat_of_integer (Z.of_int (q' + max))) ) )
-    trans
 
 let nft_example =
   nft_construct
@@ -156,84 +171,7 @@ let nft_example =
       , ( [Automata_lib.nat_of_integer (Z.of_int 1)]
         , ([Automata_lib.nat_of_integer (Z.of_int 2)], fun x -> f) ) ) )
 
-let gen_nfa_construct_input (n : Nfa.nfa) =
-  let all_states = SNFA.gather_states n in
-  match n with
-  | {start; finals; next} ->
-      ( []
-      , transitions all_states next
-      , List.map Int32.to_int (StateSet.to_list start)
-      , List.map Int32.to_int (StateSet.to_list finals) )
-
-let connectTrans ends starts =
-  List.fold_left
-    (fun trans a ->
-      List.fold_left
-        (fun trans_s b -> (a, ((None, -1), b)) :: trans_s)
-        trans starts )
-    [] ends
-
-let selfTrans states =
-  List.fold_left
-    (fun trans_s a ->
-      (a, ((Some [(Z.of_int 0, Z.of_int 255)], -2), a)) :: trans_s )
-    [] states
-
-let nft_from_replace pattern replacement =
-  let pAuto = Regex.compile (Regex.parse pattern) in
-  let rAuto = Regex.compile (Regex.parse replacement) in
-  let pStates = SNFA.gather_states pAuto in
-  let max =
-    1 + maxState (List.map Int32.to_int (StateSet.to_list pStates)) 0
-  in
-  let _, pTrans, pInit, pAccept = gen_nfa_construct_input pAuto in
-  let _, rTrans, rInit, rAccepts = gen_nfa_construct_input rAuto in
-  let rTrans, output = trans_NFA2NFT rTrans in
-  let outputZ =
-    List.map
-      (fun l -> List.map (fun (l1, l2) -> (Z.of_int l1, Z.of_int l2)) l)
-      output
-  in
-  let nftInit =
-    List.map (fun s -> Automata_lib.nat_of_integer (Z.of_int s)) pInit
-  in
-  List.iter
-    (fun x ->
-      Format.printf "%d :  " (Z.to_int (Automata_lib.integer_of_nat x)) )
-    nftInit ;
-  let nftAccepts = rename_states rAccepts max in
-  let rTrans = rename_transtions rTrans max in
-  let pTrans = trans_NFA2NFT_None pTrans in
-  let pTrans = rename_transtions pTrans 0 in
-  let pAccept =
-    List.map (fun s -> Automata_lib.nat_of_integer (Z.of_int s)) pAccept
-  in
-  let rInit = rename_states rInit max in
-  let nftTrans =
-    rTrans @ pTrans
-    @ connectTrans pAccept rInit
-    @ selfTrans (nftInit @ nftAccepts)
-  in
-  let nftTrans =
-    List.map (fun (p, ((l, i), q)) -> (p, ((l, Z.of_int i), q))) nftTrans
-  in
-  List.iter
-    (fun (i, ((a, k), j)) ->
-      Format.printf "(%d, (_, %d), %d)\n"
-        (Z.to_int (Automata_lib.integer_of_nat i))
-        (Z.to_int k)
-        (Z.to_int (Automata_lib.integer_of_nat j)) )
-    nftTrans ;
-  let outputFun = outputFunc outputZ in
-  Format.printf "\n" ;
-  nft_construct ([], (nftTrans, (nftInit, (nftAccepts, outputFun))))
-
 (* let () = nft_from_replace "[a-b]|c" "abcd" *)
-
-let nft_product nft =
-  rs_product_transducer
-    (nFA_states_nat, linorder_nat)
-    (equal_Z, linorder_Z) linorder_Z (equal_Z, linorder_Z) nft
 
 let gen_aut at =
   nfa_construct_reachable (nfa_construct (gen_nfa_construct_input at))
@@ -258,8 +196,9 @@ let rec gen_concater l =
 
 let rec gen_maprs s l =
   match s with
-  | [] -> []
-  | (s1, s2) :: rs -> (get_index s1 l, gen_concater s2) :: gen_maprs rs l
+  | [] -> ConcatRI.empty
+  | (s1, s2) :: rs ->
+      ConcatRI.add (get_index s1 l) (gen_concater s2) (gen_maprs rs l)
 
 let gen_mapr s l = gen_maprs (ConcatR.bindings s) l
 
@@ -289,26 +228,13 @@ let rm_to_list rm =
     (nFA_states_nat, linorder_nat)
     (equal_Z, linorder_Z) rm
 
-let fmap ff e =
-  match e with
-  | [] -> None
-  | (a, b) :: l ->
-      let l = ff (Some a) in
-      let r = ff (Some b) in
-      if l = None then None else l
-
-let fe f l =
-  match l with
-  | [] -> false
-  | e :: l' -> if f (Some (fst e)) = None then true else false
-
 let output_nfa = nft_product nft_example (gen_aut SNFA.universalAuto) fmap fe
 
 let solve (constraints : Parser.strConstrain list) =
   let ss, cc, cr = genStrConstraints constraints in
   let sl = SS.elements ss in
   let new_rc = gen_mapc cc sl in
-  let rest = List.map (fun (l, _) -> l) new_rc in
+  let rest = List.map (fun (l, _) -> l) (ConcatRI.to_list new_rc) in
   let new_sl =
     List.filter
       (fun e -> not (List.exists (fun e' -> e = e') rest))
@@ -316,12 +242,14 @@ let solve (constraints : Parser.strConstrain list) =
   in
   let rr = full_rm sl cr in
   let rm = gen_mapr rr sl in
-  let new_rm = Forward.forward_analysis rest new_sl new_rc rm in
-  let nft = nft_from_replace "[a-z]+" "dsd" in
-  let nfa = gen_aut (Regex.compile (Regex.parse "UaU")) in
-  let o_nfa = nft_product nft nfa fmap fe in
-  Format.printf "----- ******************************* ----\n" ;
-  Forward.print_auto
-    (Forward.nfa_destruct (Forward.nfa_normal (Forward.nfa_elim o_nfa)))
+  (* test_input rest new_sl new_rc rm *)
+  let final_rm = forward_analysis rest new_sl new_rc rm in
+  check_sat final_rm
+(* let new_rm = Forward.forward_analysis rest new_sl new_rc rm in let nft =
+   nft_from_replace "[a-z]+" "dsd" in let nfa = gen_aut (Regex.compile
+   (Regex.parse "UaU")) in () let o_nfa = nft_product nft nfa fmap fe in
+   Format.printf "----- ******************************* ----\n" ;
+   Forward.print_auto (Forward.nfa_destruct (Forward.nfa_normal
+   (Forward.nfa_elim o_nfa))) *)
 (* let s, (rm, r) = Forward.forward_analysis (z_to_int 1) (z_to_int 2) s rc
    rm in print_string (check_unsat_rm r rc (rm_to_list rm)) *)

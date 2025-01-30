@@ -27,13 +27,14 @@ type strConstrain =
   | IN_RE of strConstrain * strConstrain
   | IN_NFA of strConstrain * Nfa.nfa
   | RegEx of string
-  | REPLACE of string * string * string
+  | REPLACE of strConstrain * strConstrain * string
   | StrEq of strConstrain * strConstrain
   | Concat of strConstrain * strConstrain
   | Range of string * string
   | Union of strConstrain * strConstrain
   | Star of strConstrain
   | Plus of strConstrain
+  | Str of string
   | OTHER
 
 let rec reg2Str (c : strConstrain) =
@@ -52,15 +53,17 @@ let rec print_str_constraint fmt sc =
   match sc with
   | Name name -> Format.fprintf fmt "%s" name
   | IN_RE (lhs, rhs) ->
-      Format.fprintf fmt "str.in_re %a, %s" print_str_constraint lhs
+      Format.fprintf fmt "str.in_re %a, %s\n" print_str_constraint lhs
         (reg2Str rhs)
   | IN_NFA (lhs, rhs) ->
       Format.fprintf fmt "str.in_re %a, \n" print_str_constraint lhs ;
       Transducer.SNFA.printNfa rhs
   | RegEx reg -> Format.fprintf fmt "%s" reg
-  | REPLACE (s, p, r) -> Format.fprintf fmt "str.replace %s %s %s" s p r
+  | REPLACE (s, p, r) ->
+      Format.fprintf fmt "str.replace %a %a %s" print_str_constraint s
+        print_str_constraint p r
   | StrEq (lhs, rhs) ->
-      Format.fprintf fmt "%a = %a" print_str_constraint lhs
+      Format.fprintf fmt "%a = %a\n" print_str_constraint lhs
         print_str_constraint rhs
   | Concat (lhs, rhs) ->
       Format.fprintf fmt "str.++ %a %a" print_str_constraint lhs
@@ -71,6 +74,7 @@ let rec print_str_constraint fmt sc =
   | Star cons -> Format.fprintf fmt "str.+ %a" print_str_constraint cons
   | Plus cons -> Format.fprintf fmt "str.* %a" print_str_constraint cons
   | Range (s1, s2) -> Format.fprintf fmt "str.range %s %s" s1 s2
+  | Str s -> Format.fprintf fmt "%s" s
   | OTHER -> Format.fprintf fmt "OTHER\n"
 
 let print_str_cons sc =
@@ -81,7 +85,8 @@ let var_name (var : Std.Expr.term_var) =
   match var with {path; _} -> path_to_name path
 
 let cst_name (var : Std.Expr.term_cst) =
-  match var with {path; _} -> path_to_name path
+  let s = match var with {path; _} -> path_to_name path in
+  if String.get s 0 = '\"' then Str s else Name s
 
 (* term_name returns name (string) of a term. *)
 let term_str (tm : Std.Expr.term) =
@@ -96,7 +101,7 @@ let rec term_str_constraint (tm : Std.Expr.term) =
   | {term_descr; _} -> (
     match term_descr with
     | Var var -> Some (Name (var_name var))
-    | Cst cst -> Some (Name (cst_name cst))
+    | Cst cst -> Some (cst_name cst)
     | App (op, _, args) -> (
       match term_str op with
       | "in_re" ->
@@ -107,8 +112,8 @@ let rec term_str_constraint (tm : Std.Expr.term) =
       | "replace" ->
           Option.some
             (REPLACE
-               ( term_str (List.nth args 0)
-               , term_str (List.nth args 1)
+               ( Option.get (term_str_constraint (List.nth args 0))
+               , Option.get (term_str_constraint (List.nth args 1))
                , term_str (List.nth args 2) ) )
       | "++" ->
           Option.some

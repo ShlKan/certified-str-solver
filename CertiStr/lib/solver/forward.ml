@@ -1,6 +1,8 @@
 open Transducer
 open Automata_lib
 open Rel
+open Nfa
+open SFT
 module SS = Set.Make (String)
 module ConcatC = Map.Make (String)
 module ConcatR = Map.Make (String)
@@ -198,12 +200,10 @@ let rec print_size rm =
   | [] -> ()
   | (v, a) :: rml -> print_trans_num a ; print_size rml
 
-let sub_list lsmall llarge =
-  List.for_all
-    (fun (e1, e2) ->
-      List.exists (fun e' -> e1 = e') llarge
-      && List.exists (fun e' -> e2 = e') llarge )
-    lsmall
+let nft_product nft =
+  Automata_lib.rs_product_transducer
+    (nFA_states_nat, linorder_nat)
+    (equal_Z, linorder_Z) linorder_Z (equal_Z, linorder_Z) nft
 
 let update_rm rm var add_auto =
   List.map
@@ -211,17 +211,212 @@ let update_rm rm var add_auto =
       if v = var then (v, nfa_product old_auto add_auto) else (v, old_auto) )
     rm
 
-type ('a, 'b, 'c, 'd) str_op =
+let rename_states states max =
+  List.map
+    (fun state -> Automata_lib.nat_of_integer (Z.of_int (state + max)))
+    states
+
+let rename_transtions trans max =
+  List.map
+    (fun (q, (l, q')) ->
+      ( Automata_lib.nat_of_integer (Z.of_int (q + max))
+      , (l, Automata_lib.nat_of_integer (Z.of_int (q' + max))) ) )
+    trans
+
+let rec maxState states i =
+  match states with
+  | [] -> i
+  | state :: states' ->
+      if state > i then maxState states' state else maxState states' state
+
+let gen_nfa_construct_input (n : Nfa.nfa) =
+  let all_states = SNFA.gather_states n in
+  match n with
+  | {start; finals; next} ->
+      ( []
+      , transitions all_states next
+      , List.map Int32.to_int (StateSet.to_list start)
+      , List.map Int32.to_int (StateSet.to_list finals) )
+
+let connectTrans ends starts =
+  List.fold_left
+    (fun trans a ->
+      List.fold_left
+        (fun trans_s b -> (a, ((None, -1), b)) :: trans_s)
+        trans starts )
+    [] ends
+
+let selfTrans states =
+  List.fold_left
+    (fun trans_s a ->
+      (a, ((Some [(Z.of_int 0, Z.of_int 255)], -2), a)) :: trans_s )
+    [] states
+
+let nft_construct nft =
+  Automata_lib.rs_nft_construct_interval
+    (nFA_states_nat, linorder_nat)
+    (equal_Z, linorder_Z) linorder_Z linorder_Z nft
+
+let nft_from_replace pattern replacement =
+  let pAuto =
+    Regex.compile
+      (Regex.parse (String.sub pattern 1 (String.length pattern - 2)))
+  in
+  let rAuto =
+    Regex.compile
+      (Regex.parse
+         (String.sub replacement 1 (String.length replacement - 2)) )
+  in
+  let pStates = SNFA.gather_states pAuto in
+  let max =
+    1 + maxState (List.map Int32.to_int (StateSet.to_list pStates)) 0
+  in
+  let _, pTrans, pInit, pAccept = gen_nfa_construct_input pAuto in
+  let _, rTrans, rInit, rAccepts = gen_nfa_construct_input rAuto in
+  let rTrans, output = trans_NFA2NFT rTrans in
+  let outputZ =
+    List.map
+      (fun l -> List.map (fun (l1, l2) -> (Z.of_int l1, Z.of_int l2)) l)
+      output
+  in
+  let nftInit =
+    List.map (fun s -> Automata_lib.nat_of_integer (Z.of_int s)) pInit
+  in
+  let nftAccepts = rename_states rAccepts max in
+  let rTrans = rename_transtions rTrans max in
+  let pTrans = trans_NFA2NFT_None pTrans in
+  let pTrans = rename_transtions pTrans 0 in
+  let pAccept =
+    List.map (fun s -> Automata_lib.nat_of_integer (Z.of_int s)) pAccept
+  in
+  let rInit = rename_states rInit max in
+  let nftTrans =
+    rTrans @ pTrans
+    @ connectTrans pAccept rInit
+    @ selfTrans (nftInit @ nftAccepts)
+  in
+  let nftTrans =
+    List.map (fun (p, ((l, i), q)) -> (p, ((l, Z.of_int i), q))) nftTrans
+  in
+  List.iter
+    (fun (p, ((l, i), q)) ->
+      Format.printf "(%d, %d)\n"
+        (Z.to_int (Automata_lib.integer_of_nat p))
+        (Z.to_int (Automata_lib.integer_of_nat q)) )
+    nftTrans ;
+  let outputFun = outputFunc outputZ in
+  nft_construct ([], (nftTrans, (nftInit, (nftAccepts, outputFun))))
+
+type str_op =
   | Concat of string * string
   | ConcatI of int * int
-  | Replace of 'a * 'b * 'c * 'd
-(* let rec acc_nfa l auto = match l with | [] -> auto | ConcatI (l1, l2) ::
-   rs ->
+  | Replace of string * string * string
+  | ReplaceI of int * string * string
 
-   let rec forward_analysis rest refined rc rm = if List.is_empty rest then
-   rm else let ready = List.fold_left (fun vars (l, deps) -> if List.exists
-   (fun e' -> e' = l) rest && sub_list deps refined then l :: vars else vars
-   ) [] rc in let new_rest = List.filter (fun e -> not (List.exists (fun e'
-   -> e = e') ready)) rest in let new_refined = refined @ ready in let new_rm
-   = List.fold_left (fun acc_rm (v, l) -> acc_rm) rm rc in forward_analysis
-   new_rest new_refined rc rm *)
+exception Unreachable of string
+
+let sub_list lsmall llarge =
+  List.for_all
+    (fun e ->
+      match e with
+      | ConcatI (e1, e2) ->
+          List.exists (fun e' -> e1 = e') llarge
+          && List.exists (fun e' -> e2 = e') llarge
+      | Concat _ -> raise (Unreachable "sub_list")
+      | Replace _ -> raise (Unreachable "sub_list")
+      | ReplaceI (i, _, _) -> List.exists (fun e' -> i = e') llarge )
+    lsmall
+
+let fmap ff e =
+  match e with
+  | [] -> None
+  | (a, b) :: l ->
+      let l = ff (Some a) in
+      let r = ff (Some b) in
+      if l = None then None else l
+
+let fe f l =
+  match l with
+  | [] -> false
+  | e :: l' -> if f (Some (fst e)) = None then true else false
+
+let rec update_once l rm auto =
+  List.fold_left
+    (fun acc_auto op ->
+      match op with
+      | ConcatI (i, j) ->
+          nfa_product acc_auto
+            (nfa_concate (ConcatRI.find i rm) (ConcatRI.find j rm))
+      | Concat (_, _) -> raise (Unreachable "update_once")
+      | Replace _ -> raise (Unreachable "update_once")
+      | ReplaceI (i, a, c) ->
+          let nft = nft_from_replace a c in
+          nfa_product acc_auto
+            (nfa_normal
+               (nfa_elim (nft_product nft (ConcatRI.find i rm) fmap fe)) ) )
+    auto l
+
+let rec update_auto var rc rm =
+  update_once (ConcatCI.find var rc) rm (ConcatRI.find var rm)
+
+let check_sat rm =
+  let res =
+    ConcatRI.for_all
+      (fun i a ->
+        let dAuto = nfa_destruct a in
+        if snd (snd (snd dAuto)) == [] then false else true )
+      rm
+  in
+  if res then Format.printf "SAT" else Format.printf "UNSAT"
+
+let test_input rest refined rc rm =
+  Format.printf "Rest: " ;
+  List.iter (fun e -> Format.printf "%d, " e) rest ;
+  Format.printf "\nRefined: " ;
+  List.iter (fun e -> Format.printf "%d, " e) refined ;
+  Format.printf "\nConstraints: " ;
+  ConcatCI.iter
+    (fun id s ->
+      Format.printf "%d = " id ;
+      match s with
+      | [] -> Format.printf "Empty Error"
+      | e :: s' ->
+          ( match e with
+          | ConcatI (i, j) -> Format.printf "(%d, %d)" i j
+          | ReplaceI (i, p, s) -> Format.printf "(replace %d %s %s)" i p s
+          | _ -> Format.printf "Unreachable" ) ;
+          Format.printf "\n" )
+    rc ;
+  Format.printf "\nInitDomain:\n" ;
+  ConcatRI.iter
+    (fun id s ->
+      Format.printf "%d = " id ;
+      print_auto (nfa_destruct s) ;
+      Format.printf "\n--------------------\n" )
+    rm
+
+let rec forward_analysis rest refined rc rm =
+  test_input rest refined rc rm ;
+  if List.is_empty rest then rm
+  else
+    let ready =
+      ConcatCI.fold
+        (fun l deps vars ->
+          if List.exists (fun e' -> e' = l) rest && sub_list deps refined
+          then l :: vars
+          else vars )
+        rc []
+    in
+    let new_rest =
+      List.filter (fun e -> not (List.exists (fun e' -> e = e') ready)) rest
+    in
+    let new_refined = refined @ ready in
+    let new_rm =
+      List.fold_left
+        (fun acc_rm v ->
+          ConcatRI.update v
+            (Option.map (fun _ -> update_auto v rc rm))
+            acc_rm )
+        rm ready
+    in
+    forward_analysis new_rest new_refined rc new_rm
