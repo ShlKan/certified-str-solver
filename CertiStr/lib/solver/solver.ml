@@ -244,12 +244,4 @@ let solve (constraints : Parser.strConstrain list) =
   let rm = gen_mapr rr sl in
   (* test_input rest new_sl new_rc rm *)
   let final_rm = forward_analysis rest new_sl new_rc rm in
-  check_sat final_rm
-(* let new_rm = Forward.forward_analysis rest new_sl new_rc rm in let nft =
-   nft_from_replace "[a-z]+" "dsd" in let nfa = gen_aut (Regex.compile
-   (Regex.parse "UaU")) in () let o_nfa = nft_product nft nfa fmap fe in
-   Format.printf "----- ******************************* ----\n" ;
-   Forward.print_auto (Forward.nfa_destruct (Forward.nfa_normal
-   (Forward.nfa_elim o_nfa))) *)
-(* let s, (rm, r) = Forward.forward_analysis (z_to_int 1) (z_to_int 2) s rc
-   rm in print_string (check_unsat_rm r rc (rm_to_list rm)) *)
+  check_sat (rest @ new_sl) new_rc final_rm

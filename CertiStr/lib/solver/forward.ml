@@ -8,6 +8,7 @@ module ConcatC = Map.Make (String)
 module ConcatR = Map.Make (String)
 module ConcatCI = Map.Make (Int)
 module ConcatRI = Map.Make (Int)
+module InDegree = Map.Make (Int)
 
 let nfa_elim nfa =
   Automata_lib.rs_nfa_elim
@@ -351,15 +352,38 @@ let rec update_once l rm auto =
       | Replace _ -> raise (Unreachable "update_once")
       | ReplaceI (i, a, c) ->
           let nft = nft_from_replace a c in
-          nfa_product acc_auto
-            (nfa_normal
-               (nfa_elim (nft_product nft (ConcatRI.find i rm) fmap fe)) ) )
+          let nfa =
+            nfa_product acc_auto
+              (nfa_normal
+                 (nfa_elim (nft_product nft (ConcatRI.find i rm) fmap fe)) )
+          in
+          let _, (_, (_, f)) = nfa_destruct nfa in
+          if f = [] then ConcatRI.find i rm else nfa )
     auto l
 
 let rec update_auto var rc rm =
   update_once (ConcatCI.find var rc) rm (ConcatRI.find var rm)
 
-let check_sat rm =
+let indegree_count rc vars =
+  let indegree_map =
+    List.fold_left (fun acc k -> InDegree.add k 0 acc) InDegree.empty vars
+  in
+  ConcatCI.fold
+    (fun _ l acc ->
+      List.fold_left
+        (fun acc cons ->
+          match cons with
+          | ConcatI (i, j) ->
+              let acc1 = InDegree.add i (InDegree.find i acc + 1) acc in
+              InDegree.add j (InDegree.find j acc1 + 1) acc1
+          | ReplaceI (i, _, _) ->
+              InDegree.add i (InDegree.find i acc + 1) acc
+          | _ -> acc )
+        acc l )
+    rc indegree_map
+
+let check_sat vars rc rm =
+  let ind = indegree_count rc vars in
   let res =
     ConcatRI.for_all
       (fun i a ->
@@ -367,7 +391,13 @@ let check_sat rm =
         if snd (snd (snd dAuto)) == [] then false else true )
       rm
   in
-  if res then Format.printf "SAT" else Format.printf "UNSAT"
+  let indegree_cons =
+    InDegree.for_all (fun _ c -> if c <= 1 then true else false) ind
+  in
+  if res then
+    if indegree_cons = false then Format.printf "inconclusive"
+    else Format.printf "SAT"
+  else Format.printf "UNSAT"
 
 let test_input rest refined rc rm =
   Format.printf "Rest: " ;
