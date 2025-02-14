@@ -261,7 +261,7 @@ let nft_construct nft =
 let nft_from_replace pattern replacement =
   let pAuto =
     Regex.compile
-      (Regex.parse (String.sub pattern 1 (String.length pattern - 2)))
+      (Parser.str2Reg (String.sub pattern 1 (String.length pattern - 2)))
   in
   let rAuto =
     Regex.compile
@@ -299,12 +299,9 @@ let nft_from_replace pattern replacement =
   let nftTrans =
     List.map (fun (p, ((l, i), q)) -> (p, ((l, Z.of_int i), q))) nftTrans
   in
-  List.iter
-    (fun (p, ((l, i), q)) ->
-      Format.printf "(%d, %d)\n"
-        (Z.to_int (Automata_lib.integer_of_nat p))
-        (Z.to_int (Automata_lib.integer_of_nat q)) )
-    nftTrans ;
+  (* List.iter (fun (p, ((l, i), q)) -> Format.printf "(%d, %d)\n" (Z.to_int
+     (Automata_lib.integer_of_nat p)) (Z.to_int (Automata_lib.integer_of_nat
+     q)) ) nftTrans ; *)
   let outputFun = outputFunc outputZ in
   nft_construct ([], (nftTrans, (nftInit, (nftAccepts, outputFun))))
 
@@ -426,7 +423,7 @@ let test_input rest refined rc rm =
     rm
 
 let rec forward_analysis rest refined rc rm =
-  test_input rest refined rc rm ;
+  (* test_input rest refined rc rm ; *)
   if List.is_empty rest then rm
   else
     let ready =

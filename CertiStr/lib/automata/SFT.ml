@@ -5,7 +5,7 @@ let to_code s =
   else int_of_string ("0x" ^ String.sub s 2 (String.length s - 2))
 
 let get_interval s =
-  let l = String.split_on_char '-' s in
+  let l = if String.length s = 1 then [s] else String.split_on_char '-' s in
   if List.length l == 2 then (to_code (List.nth l 0), to_code (List.nth l 1))
   else (to_code (List.nth l 0), to_code (List.nth l 0))
 

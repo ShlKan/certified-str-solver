@@ -83,15 +83,14 @@ Interactive Theorem Proving (ITP 2025)}
 
 %TODO mandatory: add short abstract of the document
 \begin{abstract}
-Finite-State Automata (FAs) and Finite-State Transducers (FTs) are extensively used in programming languages and software engineering applications. Regular expressions and their variations, for example, play a crucial role in languages like JavaScript, Python, and others. While formalizing FAs and FTs in proof assistants such as Coq and Isabelle/HOL is a popular topic, these formalizations often lack practicality for real-world applications. 
+Finite-State Automata (FAs) and Finite-State Transducers (FTs) are integral components in the domains of programming languages and software engineering. Regular expressions, which are often implemented using FAs, play a pivotal role in languages such as JavaScript and Python. FTs extend the capabilities of FAs by allowing transformations of input strings into output strings, thus providing a more expressive framework for operations that involve both recognition and transformation. Despite the popularity of formalizing FAs and FTs within proof assistants like Coq and Isabelle/HOL, these formalizations frequently fall short in terms of applicability to real-world scenarios.
 
-One of the reasons the transition labels are only single characters in the alphabet, for instance $q\xrightarrow{a} q'$ is a transition and $a$ is a single character. For real-world applications, the alphabet an FA or FT may be enormous or even \emph{infinite}. This classic way of transition definition can yield transitions explosion. 
-
-
-A more pragmatic approach involves the formalization of symbolic Finite Automata (FAs) [1] and Finite Transducers (FTs) [2], where transition labels are symbolic and potentially infinite. Although the formalization of symbolic FAs has been comprehensively addressed in the work of [3], the formalization of symbolic FTs remains uncharted. This presents additional challenges in establishing the correctness of such formalizations.
+One limitation of traditional finite-state models is that transition labels are typically restricted to single characters from a finite alphabet. For example, a transition is often represented as $q \xrightarrow{a} q'$, where $a$ is a single character. However, in real-world applications, the alphabet of a FA or FT can be vast or even \emph{infinite}. This conventional approach to defining transitions can lead to a phenomenon known as transition explosion, where the number of transitions becomes unmanageably large.
 
 
-In this paper, we aim to filling this gap. We gave a symbolic transducer formalization in Isabelle/HOL. The formalization is refinement-based and extensible with different symbolic representations of transition labels. In order to evaluate its effect and efficiency, we applied it to a  SMT string solver for modeling replacement operations in modern programming languages. The experimental results show the formalized symbolic transducer can efficient solver string constraints.
+A more pragmatic approach involves the formalization of symbolic FAs [1] and FTs [2], wherein transition labels are symbolic and potentially infinite. While the formalization of symbolic FAs has been comprehensively explored in the work of [3], the formalization of symbolic FTs remains largely unexplored. This gap presents additional challenges in establishing the correctness and applicability of such formalizations.
+
+In this paper, we endeavor to address this gap by presenting a formalization of symbolic transducers within the Isabelle/HOL framework. This formalization is refinement-based and is designed to be extensible with various symbolic representations of transition labels. To evaluate its effectiveness and efficiency, we applied this formalization to an SMT string solver for modeling replacement operations. The experimental results demonstrate that the formalized symbolic transducer can efficiently solve string constraints.
 
 
 \end{abstract}
@@ -107,6 +106,7 @@ non-symbolic and usually finite.
 A classic and normal definition of a transition is $q\xrightarrow{a}q'$, where $a$ is a character in an finite alphabet.  This simple way will yield transition explosions. 
 For instance, if the alphabet $\Sigma$ is of the size $10,000$, then a transition from $q$ to $q'$ that accept any characters in $\Sigma$ need to split into $10,000$ transitions. Automata product in this way will be very inefficient. Moreover, 
 The alphabet are usually finite. For practical applications, infinite alphabet are often necessary. For instance, if the alphabet is all integers. 
+
 
 
 Symbolic FAs and FTs [2,3,4] are extensions of classic FAs and FTs that make their application more practical. The transition labels are represented by algebra. For instances, intervals ($'a'-'z'$), boolean algebras ($x \% 2 == 0$), or others. This symbolic way is more succinct and its support for infinite alphabet extend the expressive power of FAs and FTs.
@@ -608,7 +608,7 @@ The concatenation of the two SFTs is shown in Figure \ref{fig-rearranged-automat
 
 \subsection{Experiments}
 
-We have implemented a prototype of the string solver to support the replacement operation based on CertiStr[1], which is called CertiStr-R in this paper. 
+We have implemented a prototype of the string solver to support the replacement operation based on CertiStr[1], which is called CertiStr-R in this paper.
 
 CertiStr-R supports two kinds of replacement operations: (1) \texttt{str.replace s p r}, where the pattern \texttt{p} is a string and (2) \texttt{str.replace\_re s p r}, where the pattern \texttt{p} is a regular expression. 
 

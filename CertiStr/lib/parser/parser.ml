@@ -49,6 +49,29 @@ let rec reg2Str (c : strConstrain) =
   | OTHER -> "Other"
   | _ -> "Error"
 
+let str2Reg s =
+  if s = "" then Regex.empty
+  else
+    let r = Regex.chr (String.sub s 0 1) in
+    String.fold_left
+      (fun r c -> Regex.seq r (Regex.chr (String.make 1 c)))
+      r
+      (String.sub s 1 (String.length s - 1))
+
+exception UnsupportedReg of string
+
+let rec reg2reg (c : strConstrain) =
+  match c with
+  | Name s -> Regex.chr s
+  | Concat (sl, sr) -> Regex.seq (reg2reg sl) (reg2reg sr)
+  | Union (sl, sr) -> Regex.alt (reg2reg sl) (reg2reg sr)
+  | RegEx s -> str2Reg (String.sub s 1 (String.length s - 2))
+  | Star s -> Regex.star (reg2reg s)
+  | Plus s -> Regex.plus (reg2reg s)
+  | Range (s1, s2) -> Regex.chr (s1 ^ "-" ^ s2)
+  | OTHER -> raise (UnsupportedReg "OTHER")
+  | _ -> raise (UnsupportedReg "ERROR")
+
 let rec print_str_constraint fmt sc =
   match sc with
   | Name name -> Format.fprintf fmt "%s" name
@@ -101,7 +124,10 @@ let rec term_str_constraint (tm : Std.Expr.term) =
   | {term_descr; _} -> (
     match term_descr with
     | Var var -> Some (Name (var_name var))
-    | Cst cst -> Some (cst_name cst)
+    | Cst cst ->
+        if String.compare (term_str tm) "allchar" == 0 then
+          Option.some (Range ("0X0", "0XFFFFFFFF"))
+        else Some (cst_name cst)
     | App (op, _, args) -> (
       match term_str op with
       | "in_re" ->
@@ -142,10 +168,7 @@ let rec term_str_constraint (tm : Std.Expr.term) =
             (Range
                ( String.sub (term_str (List.nth args 0)) 1 1
                , String.sub (term_str (List.nth args 1)) 1 1 ) )
-      | _ ->
-          Format.fprintf Format.std_formatter "[%s] %d\n" (term_str op)
-            (List.length args) ;
-          Some OTHER )
+      | _ -> Some OTHER )
     | _ -> None )
 
 module State = Dolmen_loop.State
