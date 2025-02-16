@@ -2,18 +2,10 @@
 
 (declare-fun a () String)
 (declare-fun b () String)
-(declare-fun c () String)
-(declare-fun d () String)
-(declare-fun e () String)
-(declare-fun f () String)
-(declare-fun g () String)
-(declare-fun i () String)
 
-
-(assert (= a (str.++ b c)))
-(assert (= b (str.++ d e)))
-(assert (= d (str.++ f g)))
-(assert (= i (str.++ a b)))
+(assert (= a "ITP2024"))
+(assert (= b "ITP2023"))
+(assert (= b (str.replace a "2024" "2023")))
 
 (check-sat)
 (get-model)

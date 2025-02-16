@@ -50,7 +50,7 @@ let rec reg2Str (c : strConstrain) =
   | _ -> "Error"
 
 let str2Reg s =
-  if s = "" then Regex.empty
+  if s = "" then Regex.eps
   else
     let r = Regex.chr (String.sub s 0 1) in
     String.fold_left

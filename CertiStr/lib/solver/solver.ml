@@ -90,13 +90,17 @@ let rec genStrConstraints (constraints : Parser.strConstrain list) =
                 match x with None -> Some [nfa] | Some l -> Some (nfa :: l) )
               reR )
       | Parser.StrEq (Name lhs, Str s) ->
+          let s' = String.sub s 1 (String.length s - 2) in
+          let reg =
+            if String.compare s' "" = 0 then Regex.eps else Parser.str2Reg s'
+          in
           ( Forward.SS.add lhs reS
           , reC
           , Forward.ConcatR.update lhs
               (fun x ->
                 match x with
-                | None -> Some [Regex.compile (Parser.str2Reg s)]
-                | Some l -> Some (Regex.compile (Parser.str2Reg s) :: l) )
+                | None -> Some [Regex.compile reg]
+                | Some l -> Some (Regex.compile reg :: l) )
               reR )
       | _ -> raise (UnsupportError "Currently only StrEq and In_Re supported")
       )

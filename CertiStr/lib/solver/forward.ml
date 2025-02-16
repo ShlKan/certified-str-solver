@@ -263,10 +263,10 @@ let nft_from_replace pattern replacement =
     Regex.compile
       (Parser.str2Reg (String.sub pattern 1 (String.length pattern - 2)))
   in
+  let repStr = String.sub replacement 1 (String.length replacement - 2) in
   let rAuto =
-    Regex.compile
-      (Regex.parse
-         (String.sub replacement 1 (String.length replacement - 2)) )
+    if String.compare repStr "" == 0 then Regex.compile Regex.eps
+    else Regex.compile (Parser.str2Reg repStr)
   in
   let pStates = SNFA.gather_states pAuto in
   let max =
@@ -299,9 +299,6 @@ let nft_from_replace pattern replacement =
   let nftTrans =
     List.map (fun (p, ((l, i), q)) -> (p, ((l, Z.of_int i), q))) nftTrans
   in
-  (* List.iter (fun (p, ((l, i), q)) -> Format.printf "(%d, %d)\n" (Z.to_int
-     (Automata_lib.integer_of_nat p)) (Z.to_int (Automata_lib.integer_of_nat
-     q)) ) nftTrans ; *)
   let outputFun = outputFunc outputZ in
   nft_construct ([], (nftTrans, (nftInit, (nftAccepts, outputFun))))
 
@@ -349,13 +346,14 @@ let rec update_once l rm auto =
       | Replace _ -> raise (Unreachable "update_once")
       | ReplaceI (i, a, c) ->
           let nft = nft_from_replace a c in
-          let nfa =
-            nfa_product acc_auto
-              (nfa_normal
-                 (nfa_elim (nft_product nft (ConcatRI.find i rm) fmap fe)) )
+          let nft_res =
+            nfa_normal
+              (nfa_elim (nft_product nft (ConcatRI.find i rm) fmap fe))
           in
-          let _, (_, (_, f)) = nfa_destruct nfa in
-          if f = [] then ConcatRI.find i rm else nfa )
+          let _, (_, (_, f)) = nfa_destruct nft_res in
+          let nfa' = if f = [] then ConcatRI.find i rm else nft_res in
+          let nfa = nfa_product acc_auto nfa' in
+          nfa )
     auto l
 
 let rec update_auto var rc rm =

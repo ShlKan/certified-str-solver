@@ -39,7 +39,7 @@ String Analysis via Automata Manipulation with Logic Circuit Representation. CAV
 (declare-fun literal_25 () String)
 (declare-fun x_26 () String)
 (declare-fun sigmaStar_29 () String)
-(assert (= x_4 (str.replace sigmaStar_0 "\u{2f}\u{5b}\u{5e}\u{30}\u{2d}\u{39}\u{61}\u{2d}\u{7a}\u{5c}\u{2d}\u{5f}\u{2c}\u{5d}\u{2b}\u{2f}\u{69}" "")))
+(assert (= x_4 (str.replace sigmaStar_0 "\u{2f}\u{5b}\u{5e}\u{30}\u{2d}\u{39}\u{61}\u{2d}\u{7a}\u{5c}\u{2d}\u{5f}\u{2c}\u{5d}\u{2b}\u{2f}\u{69}" "a")))
 (assert (= literal_6 ""))
 (assert (= literal_5 ""))
 (assert (= x_11 (str.++ x_8 x_7)))

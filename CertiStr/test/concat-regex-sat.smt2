@@ -2,13 +2,10 @@
 
 (declare-fun a () String)
 (declare-fun b () String)
-(declare-fun c () String)
 
-(assert (= a (str.++ b c)))
-
-(assert (str.in_re a (re.++ (re.range "a" "z") (re.range "A" "Z"))))
-(assert (str.in_re b (re.range "a" "z")))
-(assert (str.in_re c (re.range "A" "Z")))
+(assert (= a "ITP2024"))
+(assert (= b "ITP1"))
+(assert (= b (str.replace a "2024" "")))
 
 (check-sat)
 (get-model)
