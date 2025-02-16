@@ -1,0 +1,7 @@
+(cram
+ (package CertiStr)
+ (deps
+  %{bin:CertiStr}
+  unsat.sh
+  (:smt2
+   (glob_files *.smt2))))

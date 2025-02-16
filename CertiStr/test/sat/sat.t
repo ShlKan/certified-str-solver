@@ -1,0 +1,3 @@
+  $ ./sat.sh
+  Success
+

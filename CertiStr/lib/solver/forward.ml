@@ -250,7 +250,7 @@ let connectTrans ends starts =
 let selfTrans states =
   List.fold_left
     (fun trans_s a ->
-      (a, ((Some [(Z.of_int 0, Z.of_int 255)], -2), a)) :: trans_s )
+      (a, ((Some [(Z.of_int 0, Z.of_int 65535)], -2), a)) :: trans_s )
     [] states
 
 let nft_construct nft =
@@ -421,7 +421,7 @@ let test_input rest refined rc rm =
     rm
 
 let rec forward_analysis rest refined rc rm =
-  (* test_input rest refined rc rm ; *)
+  (* test_input rest refined rc rm ;*)
   if List.is_empty rest then rm
   else
     let ready =

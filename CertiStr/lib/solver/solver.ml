@@ -16,6 +16,7 @@ let check_constraints (cons : Parser.strConstrain list) =
         match rhs with
         | Parser.Concat _ -> true
         | Parser.REPLACE (Name _, Str _, _) -> true
+        | Parser.REPLACE (Str _, Str _, _) -> true
         | Parser.Str _ -> true
         | _ -> Parser.print_str_cons c ; false )
       | _ -> false )
@@ -28,7 +29,9 @@ exception Unreachable of string
 let add_additional s =
   match s with
   | Parser.Str s ->
-      let nfa_from_reg = Regex.compile (Parser.str2Reg s) in
+      let nfa_from_reg =
+        Regex.compile (Parser.str2Reg (String.sub s 1 (String.length s - 2)))
+      in
       let new_var = Parser.Name ("tmp_" ^ string_of_int !count) in
       count := !count + 1 ;
       (new_var, Parser.IN_NFA (new_var, nfa_from_reg))
