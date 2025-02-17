@@ -142,7 +142,7 @@ Section 3 presents the Core operations of symbolic FTs.
 \section{Formalization of Symbolic FTs}
 
 
-We first present a pure mathematical form of FTs \cite{VeanesHLMB12Transducer}, which is independent of Isabelle's formalization. 
+We first present a pure mathematical form of SFTs \cite{VeanesHLMB12Transducer}, which is independent of Isabelle's formalization. 
 The central concept is the label theory, which characterizes the process by which output labels are derived from input labels.
 
 Let $\mathcal{U}$ be a multi-sorted carrier set or background universe, which is equipped with functions and relations over the elements. We use $\tau$ as a sort and $\mathcal{U}^\tau$ denotes the sub-universe of elements of type $\tau$. 
@@ -150,31 +150,75 @@ We have a special type $\mathbb{B}$ with $\mathcal{U}^\mathbb{B} = \{ \top, \bot
 
 A lambda term is defined as $\lambda x. t$ of the type $\tau_1 \rightarrow \tau_2$.
 When $\tau_2$ is $\mathbb{B}$, this lambda term is a predicate. Assume $\psi$ is a predicate. We write $a\in \llbracket\psi \rrbracket$ if $\psi~a=\top$. For the non-predicate lambda term, we view it as a function, which generates an output element of type $\tau_2$ with the input term of type $\tau_1$. 
+With these notations and the above definitions, we can define SFTs as follows.
 
 \begin{definition}[Symbolic Finite Transducer]
 \label{def-sft}
-   A Symbolic Transducer over $\tau_1\rightarrow \tau_2$ is a quadruple $(\mathcal{Q}, \Delta, \mathcal{I}, \mathcal{F})$, where 
+   A Symbolic Finite Transducer over $\tau_1\rightarrow \tau_2$ is a quadruple $\mathcal{T} = (\mathcal{Q}, \Delta, \mathcal{I}, \mathcal{F})$, where 
    \begin{itemize}
    \item $\mathcal{Q}$ is a finite set of states,
    \item $\mathcal{I}\subseteq \mathcal{Q}$ is the set of initial states,
    \item $\mathcal{F} \subseteq\mathcal{Q}$ is the set of accepting states,
-   \item $\Delta$ is the set of transition relations. Each element in $\Delta$ is of the form $(q, \phi, f, q') (\text{or written in } q\xrightarrow{\phi, f} q')$, where $q$ and $q'$ are the states in $\mathcal{Q}$.
-   $\phi$ is a predicate of type $\tau_1\rightarrow \mathbb{B}$.
-   $f$ is a lambda term of the type $\tau_1\rightarrow \tau_2$. We call it output function in the following.
+   \item $\Delta$ is the set of transition relations. Each element in $\Delta$ is of the form $(q, \psi, f, q') \text{ or}$ $\text{written in }q\xrightarrow{\psi, f} q'$, where $q$ and $q'$ are the states in $\mathcal{Q}$.
+   $\psi$ is a predicate of type $\tau_1\rightarrow \mathbb{B}$.
+   $f$ is a lambda term of the type $\tau_1\rightarrow \tau_2$. $f$ is called "output function".
    \end{itemize}
 
-For each transition $q\xrightarrow{\phi, f} q'$, if there exists an element $a\in \llbracket \phi \rrbracket$, where $a$ is called input,  then the application $f~a$ is the output.
+For each transition $q\xrightarrow{\phi, f} q'$, if there exists an element $a\in \llbracket \phi \rrbracket$, where $a$ is called an input,  then the application $(f~a)$ is the output.
    
 \end{definition}
 
-SFTs accept an input word and generate an output. This can be defined by runs of SFTs.
-An SFT run $\sigma$ is a sequence of $(q_0, \psi_0, f_0, q_1),(q_1, \psi_1, f_1, q_2),\ldots, (q_{n-1}, \psi_{n-1}, q_n)$ such that $q_0\in \mathcal{I}_T$ and $(q_i, 
-\psi_i, f_i, q_{i+1}), 0 \leq i \leq n-1$ is a transition in $\Delta_T$.
+SFTs accept an input word and generate an output. This can be defined by \emph{runs} of SFTs.
+An SFT run $\sigma$ is a sequence $(q_0, \psi_0, f_0, q_1),(q_1, \psi_1, f_1, q_2),\ldots, (q_{n-1}, \psi_{n-1}, q_n)$ such that $q_0\in \mathcal{I}$ and $(q_i, 
+\psi_i, f_i, q_{i+1}), 0 \leq i \leq n-1$ is a transition in $\Delta$.
 $\sigma$ is an accepting run when $q_n$ is an accepting state.
-For a word $w = a_0,\ldots, a_{n-1}$, it is accepted by $\sigma$ iff $a_i \in \llbracket\psi_i \rrbracket$ for $0 \leq i \leq n - 1$. Run $\sigma$ will generate an output sequence if $w$ is accepted by it, which is $w'= (f_0~a_0), \ldots (f_{n_1}~a_{n_1})$. We denote this operation as $\mathcal{N}~w = w'$.
+
+For a word $w = a_0,\ldots, a_{n-1}$, it is accepted by $\sigma$ iff $a_i \in \llbracket\psi_i \rrbracket$ for $0 \leq i \leq n - 1$. Run $\sigma$ will generate an output sequence if $w$ is accepted by it, which is $w'= (f_0~a_0), \ldots (f_{n_1}~a_{n_1})$. We call in the sequent:
+\begin{itemize}
+\item  $(a_0,(f_0~a_0)), \ldots, (a_{n-1},(f_{n-1}~a_{n-1}))$ a \emph{path},
+\item $a_0,\ldots,a_{n-1}$ the \emph{input} of the path and $(f_0~a_0), \ldots, (f_{n-1}~a_{n-1})$ the \emph{output} of the path.
+\end{itemize}
+
+If $a_0,\ldots,a_{n-1}$ is accepted by an accepting run in $\mathcal{T}$, we say that the path is an accepting path of $\mathcal{T}$.
+For a path $\pi$, we denote the input of $\pi$ as $in(\pi)$ and the output of $\pi$ as $out(\pi)$.
+%
+Given an SFT $\mathcal{T}$ and a word $w$, we define the operation product of $\mathcal{T}$ and $w$ (denoted as $\mathcal{T}\times\{w\}$) as the set of outputs generated by $\mathcal{T}$ with the input $w$. More precisely, 
+\[
+\mathcal{T}\times\{w\} = \{w'\mid \exists \pi.~\pi \text{ is an accepting path }\land in(\pi) = w \land out(\pi) = w'\}.
+\]
+
+To make the operation \emph{product} more general, we extend the operation to an SFT and a set of intput words represented by a regular language, which can be denoted as an NFA. More precisely,
+\[
+\mathcal{T}\times\{\mathcal{A}\} = \{w'\mid w.~w\in \mathcal{L}(\mathcal{A})\land w' = \mathcal{T}\times\{w\} \}, \text{where $\mathcal{L}(\mathcal{A})$ denotes the language of $\mathcal{A}$}.
+\] 
+
+\begin{figure}[hbt!]
+  \centering
+  \begin{tikzpicture}[shorten >=1pt, node distance=3.5cm, on grid, auto]
+    \node[state, initial] (q_0)   {$q_0$}; 
+    \node[state] (q_1) [right=of q_0] {$q_1$}; 
+    \node[state, accepting] (q_2) [right=of q_1] {$q_2$}; 
+ 
+    \path[->] 
+    (q_0) edge node {[$'\texttt{a}'-'\texttt{z}'$],$f_1$} (q_1)
+    (q_1) edge node {[$'\texttt{A}'-'\texttt{Z}'$],$f_2$} (q_2)
+    (q_1) edge[loop above] node {[$'\texttt{a}'-'\texttt{z}'$],$f_1$} (q_1)
+    (q_2) edge[loop above] node {[$'\texttt{A}'-'\texttt{Z}'$],$f_2$} (q_2);
+ \end{tikzpicture}
+    \caption{The formalization of $FTs$ in Isabelle/HOL}
+    \label{fig-example-ft}
+    \end{figure}   
+We now illustrate SFTs with an example in Figure \ref{fig-example-ft}. It accepts strings of the regular expression $/['\texttt{a}'-'\texttt{z}']+['\texttt{A}'-'\texttt{Z}']+/$. 
+It uses intervals $[i-j]$ as the input label, which is a predicate that returns true if the input letter is between $i$ and $j$.
+The function $f_1=\lambda x.~ \texttt{toUpper}(x)$ maps each lowercase letter to uppercase letter, and $f_2=\lambda x.~\texttt{toLower}(x)$ maps each uppercase letter to lowercase letter.
+Give an string "$\texttt{bigSMALL}$", the SFT will generate an output "$\texttt{BIGsmall}$". 
 
 
-\subsection{The Isabelle/HOL Formalization of SFT}
+
+
+
+
+\subsection{The Isabelle/HOL Formalization of SFTs}
 
 \begin{figure}[hbt!]
 	\begin{lstlisting}
@@ -216,7 +260,7 @@ We can easily model this operation using our formalization of NFTs with the foll
 
 We can see that the definition of transition labels in NFTs makes it is very easy to model the replacement operation.
 
-\section{The Key Operation of NFTs}
+\section{The Product Operation of NFTs}
 \label{sec-form-fts}
 
 Given an NFT $\mathcal{N}$ and a word $w$, it is crucial and interesting that the possible output words can be calculated. This is the operation, we want to formalize, but we will generalize this operation.
@@ -281,7 +325,8 @@ The transition relations $\Delta_e$ and $\Delta_e'$ are defined by splitting int
 
 $\Delta_e$ has two cases:(1) when $(p, (\text{None}, f),  q)$ is a transition in the NFT. Because the input can be empty ($\varepsilon$), therefore the NFA does not need to move. Therefore the product transtion just output of $f~\text{None}$. (2) when $(p, (Some~\sigma_1, f), q)$ is a transition in the NFT. This transition can only synchronize with the transitions in the NFA that have shared characters with $\sigma_1$. And the output is $F~f~(\sigma_1\cap\sigma_2)$, where $\sigma_2$ is the input label of the NFA. Similarly, $\Delta_e'$ has two cases too.
 
-In order to prove this abstract definition of product operation's correctness, we firstly formalize the outputs of an NFT regarding the input of an NFA. Figure \ref{fig-def-output} has two definitions: (1) \texttt{outputE} extracts the output (second element) from a path in the NFT. (2) \texttt{outputL} defines the set of all outputs of an NFT $\mathcal{T}$, when the input is in the  language $\mathcal{A}$.
+
+To establish the correctness of the abstract definition of the product operation, we first formalize the outputs of a Non-deterministic Finite Transducer (NFT) with respect to the input of a Non-deterministic Finite Automaton (NFA). Figure \ref{fig-def-output} presents two key definitions: (1) \texttt{outputE}, which extracts the sequence of outputs $o_1, \ldots, o_n$ from a given NFT path $(i_1, o_1), \ldots, (i_n, o_n)$; and (2) \texttt{outputL}, which represents the set of all possible outputs generated by an NFT $\mathcal{T}$ for the input language defined by an NFA $\mathcal{A}$.
 
 
 \begin{figure}[hbt!]
