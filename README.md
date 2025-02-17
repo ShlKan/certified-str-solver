@@ -21,8 +21,7 @@ You must install the branch in my repo.
 We use `dune` to manage the project. To build, jump into the [CertiStr]{CertiStr} folder and run `dune build`. 
 To test (cram test), run `dune runtest`.
 
-The automatically generated OCaml code for SFTs from Isabelle can be found in [Generated Code](CertiStr/lib/automata
-/Automata_lib.ml)
+The automatically generated OCaml code for SFTs from Isabelle can be found in [Generated Code](CertiStr/lib/automata/Automata_lib.ml)
 
 
 
