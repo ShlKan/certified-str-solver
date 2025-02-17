@@ -303,6 +303,8 @@ let nft_from_replace pattern replacement =
   nft_construct ([], (nftTrans, (nftInit, (nftAccepts, outputFun))))
 
 type str_op =
+  | Tran of string
+  | TranI of int
   | Concat of string * string
   | ConcatI of int * int
   | Replace of string * string * string
@@ -319,7 +321,9 @@ let sub_list lsmall llarge =
           && List.exists (fun e' -> e2 = e') llarge
       | Concat _ -> raise (Unreachable "sub_list")
       | Replace _ -> raise (Unreachable "sub_list")
-      | ReplaceI (i, _, _) -> List.exists (fun e' -> i = e') llarge )
+      | ReplaceI (i, _, _) -> List.exists (fun e' -> i = e') llarge
+      | Tran _ -> raise (Unreachable "sub_list")
+      | TranI i -> List.exists (fun e' -> i = e') llarge )
     lsmall
 
 let fmap ff e =
@@ -353,7 +357,11 @@ let rec update_once l rm auto =
           let _, (_, (_, f)) = nfa_destruct nft_res in
           let nfa' = if f = [] then ConcatRI.find i rm else nft_res in
           let nfa = nfa_product acc_auto nfa' in
-          nfa )
+          nfa
+      | Tran _ -> raise (Unreachable "update_once")
+      | TranI i ->
+          let nfa = ConcatRI.find i rm in
+          nfa_product acc_auto nfa )
     auto l
 
 let rec update_auto var rc rm =

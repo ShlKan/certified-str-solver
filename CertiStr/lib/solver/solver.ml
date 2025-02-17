@@ -18,6 +18,7 @@ let check_constraints (cons : Parser.strConstrain list) =
         | Parser.REPLACE (Name _, Str _, _) -> true
         | Parser.REPLACE (Str _, Str _, _) -> true
         | Parser.Str _ -> true
+        | Parser.Name _ -> true
         | _ -> Parser.print_str_cons c ; false )
       | _ -> false )
     cons
@@ -105,6 +106,15 @@ let rec genStrConstraints (constraints : Parser.strConstrain list) =
                 | None -> Some [Regex.compile reg]
                 | Some l -> Some (Regex.compile reg :: l) )
               reR )
+      | Parser.StrEq (Name lhs, Name rhs) ->
+          ( Forward.SS.add lhs (Forward.SS.add rhs reS)
+          , Forward.ConcatC.update lhs
+              (fun x ->
+                match x with
+                | None -> Some [Tran rhs]
+                | Some l -> Some (Tran rhs :: l) )
+              reC
+          , reR )
       | _ -> raise (UnsupportError "Currently only StrEq and In_Re supported")
       )
 
@@ -148,6 +158,8 @@ let rec genPair ls l =
   | Replace (a, p, r) :: rs -> ReplaceI (get_index a l, p, r) :: genPair rs l
   | ConcatI (a, b) :: rs -> ConcatI (a, b) :: genPair rs l
   | ReplaceI (a, p, r) :: rs -> ReplaceI (a, p, r) :: genPair rs l
+  | Tran s :: rs -> TranI (get_index s l) :: genPair rs l
+  | TranI i :: rs -> TranI i :: genPair rs l
 
 let rec out_mapc s l =
   match s with
