@@ -88,7 +88,7 @@ Finite-State Automata (FAs) and Finite-State Transducers (FTs) are integral comp
 One limitation of traditional finite-state models is that transition labels are typically restricted to single characters from a finite alphabet. For example, a transition is often represented as $q \xrightarrow{a} q'$, where $a$ is a single character. However, in real-world applications, the alphabet of a FA or FT can be vast or even \emph{infinite}. This conventional approach to defining transitions can lead to a phenomenon known as transition explosion, where the number of transitions becomes unmanageably large.
 
 
-A more pragmatic approach involves the formalization of symbolic FAs [1] and FTs [2], wherein transition labels are symbolic and potentially infinite. While the formalization of symbolic FAs has been comprehensively explored in the work of [3], the formalization of symbolic FTs remains largely unexplored. This gap presents additional challenges in establishing the correctness and applicability of such formalizations.
+A more pragmatic approach involves the formalization of symbolic FAs [1] and FTs [2], wherein transition labels are symbolic and potentially infinite. While the formalization of symbolic FAs has been comprehensively explored in the work of \cite{cpp/KanLRS22}, the formalization of symbolic FTs remains largely unexplored. This gap presents additional challenges in establishing the correctness and applicability of such formalizations.
 
 In this paper, we endeavor to address this gap by presenting a formalization of symbolic transducers within the Isabelle/HOL framework. This formalization is refinement-based and is designed to be extensible with various symbolic representations of transition labels. To evaluate its effectiveness and efficiency, we applied this formalization to an SMT string solver for modeling replacement operations. The experimental results demonstrate that the formalized symbolic transducer can efficiently solve string constraints.
 
@@ -142,8 +142,8 @@ Section 3 presents the Core operations of symbolic FTs.
 \section{Formalization of Symbolic FTs}
 
 
-We first present a mathematical form of FTs, which is independent of Isabelle's formalization. 
-The key is the label theory, which defines how do output labels generated from input labels.
+We first present a pure mathematical form of FTs \cite{VeanesHLMB12Transducer}, which is independent of Isabelle's formalization. 
+The central concept is the label theory, which characterizes the process by which output labels are derived from input labels.
 
 Let $\mathcal{U}$ be a multi-sorted carrier set or background universe, which is equipped with functions and relations over the elements. We use $\tau$ as a sort and $\mathcal{U}^\tau$ denotes the sub-universe of elements of type $\tau$. 
 We have a special type $\mathbb{B}$ with $\mathcal{U}^\mathbb{B} = \{ \top, \bot\}$, which corresponds to the boolean type. Assume $\mathbb{N}$ is the set of elements of the sort natural numbers.
@@ -176,7 +176,7 @@ For a word $w = a_0,\ldots, a_{n-1}$, it is accepted by $\sigma$ iff $a_i \in \l
 
 \subsection{The Isabelle/HOL Formalization of SFT}
 
-\begin{figure}[t]
+\begin{figure}[hbt!]
 	\begin{lstlisting}
 record (|$'q,$||$~'a,$| |$'b$|) |$\mathbf{NFT}$| =
 	|$\mathcal{Q}_T$| :: "|$'q$| set"
@@ -281,7 +281,7 @@ The transition relations $\Delta_e$ and $\Delta_e'$ are defined by splitting int
 
 $\Delta_e$ has two cases:(1) when $(p, (\text{None}, f),  q)$ is a transition in the NFT. Because the input can be empty ($\varepsilon$), therefore the NFA does not need to move. Therefore the product transtion just output of $f~\text{None}$. (2) when $(p, (Some~\sigma_1, f), q)$ is a transition in the NFT. This transition can only synchronize with the transitions in the NFA that have shared characters with $\sigma_1$. And the output is $F~f~(\sigma_1\cap\sigma_2)$, where $\sigma_2$ is the input label of the NFA. Similarly, $\Delta_e'$ has two cases too.
 
-In order to prove this abstract definition of product operation's correctness, we firstly formalize the outputs of an NFT regarding the input of an NFA. Figure \ref{fig-def-output} has two definitions: (1) \texttt{outputE} extracts the output (second element) from a path. (2) \texttt{outputL} defines the set of all outputs of an NFT $\mathcal{T}$, when the input is in the  language $\mathcal{A}$.
+In order to prove this abstract definition of product operation's correctness, we firstly formalize the outputs of an NFT regarding the input of an NFA. Figure \ref{fig-def-output} has two definitions: (1) \texttt{outputE} extracts the output (second element) from a path in the NFT. (2) \texttt{outputL} defines the set of all outputs of an NFT $\mathcal{T}$, when the input is in the  language $\mathcal{A}$.
 
 
 \begin{figure}[hbt!]
@@ -620,4 +620,5 @@ The limitation of CertiStr-R is that it does not support \texttt{replace\_all} a
 \section{Conclusion}
 
 
+\bibliography{literature}
 \end{document}
