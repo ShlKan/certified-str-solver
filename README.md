@@ -4,21 +4,21 @@ CertiStr is a certified string solver developed by [Isabelle proof assistant](ht
 
 ## Isabelle Code
 
-All the formalizations and proofs can be found [isabelle_code](isabelle_code).
-The proofs related to Symblic Finite Transducers (SFT) have been upgraded to [Isabelle 2024](https://isabelle.in.tum.de/)
-There are still some other proofs have not been upgraded.
+All the formalizations and proofs can be found in [isabelle_code](isabelle_code).
+The proofs related to Symbolic Finite Transducers (SFT) have been upgraded to [Isabelle 2024](https://isabelle.in.tum.de/)
+There are still some other proofs that have not been upgraded.
 
-To run the proofs of SFTs, open the file `isabelle_code/Automata/implementation/RBT_CodeExport.thy`
+To run the proofs of SFTs, open the theory `isabelle_code/Automata/implementation/RBT_CodeExport.thy`
 
 
 ## Compile CertiStr
 
-CertiStr's front-end (not certified) is developed base on (1) [dolmen](https://github.com/Gbury/dolmen) and (2)
+CertiStr's front-end (not certified) is developed based on (1) [dolmen](https://github.com/Gbury/dolmen) and (2)
 [ocaml-re-nfa](https://github.com/ShlKan/ocaml-re-nfa).
-Note that The original [ocaml-re-nfa](https://github.com/yallop/ocaml-re-nfa) does not support symbolic finiate automata.
+Note that The original [ocaml-re-nfa](https://github.com/yallop/ocaml-re-nfa) does not support symbolic finite automata.
 You must install the branch in my repo.
 
-We use `dune` to manage the projet. To build, run `dune build`. To test (cram test), run `dune runtest`.
+We use `dune` to manage the project. To build, run `dune build`. To test (cram test), run `dune runtest`.
 
 
 
