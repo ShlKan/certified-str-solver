@@ -27,7 +27,7 @@ type strConstrain =
   | IN_RE of strConstrain * strConstrain
   | IN_NFA of strConstrain * Nfa.nfa
   | RegEx of string
-  | REPLACE of strConstrain * strConstrain * string
+  | REPLACE of strConstrain * strConstrain * strConstrain
   | StrEq of strConstrain * strConstrain
   | Concat of strConstrain * strConstrain
   | Range of string * string
@@ -84,7 +84,7 @@ let rec print_str_constraint fmt sc =
   | RegEx reg -> Format.fprintf fmt "%s" reg
   | REPLACE (s, p, r) ->
       Format.fprintf fmt "str.replace %a %a %s" print_str_constraint s
-        print_str_constraint p r
+        print_str_constraint p (reg2Str r)
   | StrEq (lhs, rhs) ->
       Format.fprintf fmt "%a = %a\n" print_str_constraint lhs
         print_str_constraint rhs
@@ -94,8 +94,8 @@ let rec print_str_constraint fmt sc =
   | Union (lhs, rhs) ->
       Format.fprintf fmt "str.union %a %a" print_str_constraint lhs
         print_str_constraint rhs
-  | Star cons -> Format.fprintf fmt "str.+ %a" print_str_constraint cons
-  | Plus cons -> Format.fprintf fmt "str.* %a" print_str_constraint cons
+  | Star cons -> Format.fprintf fmt "str.* %a" print_str_constraint cons
+  | Plus cons -> Format.fprintf fmt "str.+ %a" print_str_constraint cons
   | Range (s1, s2) -> Format.fprintf fmt "str.range %s %s" s1 s2
   | Str s -> Format.fprintf fmt "%s" s
   | OTHER -> Format.fprintf fmt "OTHER\n"
@@ -140,7 +140,13 @@ let rec term_str_constraint (tm : Std.Expr.term) =
             (REPLACE
                ( Option.get (term_str_constraint (List.nth args 0))
                , Option.get (term_str_constraint (List.nth args 1))
-               , term_str (List.nth args 2) ) )
+               , Option.get (term_str_constraint (List.nth args 2)) ) )
+      | "replace_re" ->
+          Option.some
+            (REPLACE
+               ( Option.get (term_str_constraint (List.nth args 0))
+               , Option.get (term_str_constraint (List.nth args 1))
+               , Option.get (term_str_constraint (List.nth args 2)) ) )
       | "++" ->
           Option.some
             (Concat

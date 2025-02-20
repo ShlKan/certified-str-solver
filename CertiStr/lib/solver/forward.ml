@@ -258,15 +258,37 @@ let nft_construct nft =
     (nFA_states_nat, linorder_nat)
     (equal_Z, linorder_Z) linorder_Z linorder_Z nft
 
+type id_or_str = RmId of int | RmStr of string
+
+type str_op =
+  | Tran of string
+  | TranI of int
+  | Concat of string * string
+  | ConcatI of int * int
+  | Replace of string * Parser.strConstrain * Parser.strConstrain
+  | ReplaceI of int * Parser.strConstrain * Parser.strConstrain
+
 let nft_from_replace pattern replacement =
   let pAuto =
-    Regex.compile
-      (Parser.str2Reg (String.sub pattern 1 (String.length pattern - 2)))
+    match pattern with
+    | Parser.Str s ->
+        Regex.compile (Parser.str2Reg (String.sub s 1 (String.length s - 2)))
+    | Parser.RegEx s ->
+        Regex.compile (Parser.str2Reg (String.sub s 1 (String.length s - 2)))
+    | reg -> Regex.compile (Parser.reg2reg reg)
   in
-  let repStr = String.sub replacement 1 (String.length replacement - 2) in
   let rAuto =
-    if String.compare repStr "" == 0 then Regex.compile Regex.eps
-    else Regex.compile (Parser.str2Reg repStr)
+    Regex.compile
+      ( match replacement with
+      | Parser.Str s ->
+          if String.compare (String.sub s 1 (String.length s - 2)) "" == 0
+          then Regex.eps
+          else Parser.str2Reg (String.sub s 1 (String.length s - 2))
+      | Parser.RegEx s ->
+          if String.compare (String.sub s 1 (String.length s - 2)) "" == 0
+          then Regex.eps
+          else Parser.str2Reg (String.sub s 1 (String.length s - 2))
+      | reg -> Parser.reg2reg reg )
   in
   let pStates = SNFA.gather_states pAuto in
   let max =
@@ -301,14 +323,6 @@ let nft_from_replace pattern replacement =
   in
   let outputFun = outputFunc outputZ in
   nft_construct ([], (nftTrans, (nftInit, (nftAccepts, outputFun))))
-
-type str_op =
-  | Tran of string
-  | TranI of int
-  | Concat of string * string
-  | ConcatI of int * int
-  | Replace of string * string * string
-  | ReplaceI of int * string * string
 
 exception Unreachable of string
 
@@ -416,7 +430,9 @@ let test_input rest refined rc rm =
       | e :: s' ->
           ( match e with
           | ConcatI (i, j) -> Format.printf "(%d, %d)" i j
-          | ReplaceI (i, p, s) -> Format.printf "(replace %d %s %s)" i p s
+          | ReplaceI (i, p, s) ->
+              Format.printf "(replace %d %s %s)" i (Parser.reg2Str p)
+                (Parser.reg2Str s)
           | _ -> Format.printf "Unreachable" ) ;
           Format.printf "\n" )
     rc ;

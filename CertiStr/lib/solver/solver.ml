@@ -15,8 +15,7 @@ let check_constraints (cons : Parser.strConstrain list) =
       | Parser.StrEq (_, rhs) -> (
         match rhs with
         | Parser.Concat _ -> true
-        | Parser.REPLACE (Name _, Str _, _) -> true
-        | Parser.REPLACE (Str _, Str _, _) -> true
+        | Parser.REPLACE (_, _, _) -> true
         | Parser.Str _ -> true
         | Parser.Name _ -> true
         | _ -> Parser.print_str_cons c ; false )
@@ -44,16 +43,11 @@ let convertRE2NFA (cons : Parser.strConstrain) =
       let nfa_from_reg = Regex.compile (Parser.reg2reg rhs) in
       [Parser.IN_NFA (lhs, nfa_from_reg)]
   | StrEq (lhs, REPLACE (s, p, r)) -> (
-      let pp =
-        match p with
-        | Str s -> Parser.Str s
-        | _ -> Parser.Str (Parser.reg2Str p)
-      in
-      match s with
-      | Parser.Str _ ->
-          let v1, cons1 = add_additional s in
-          [cons1; StrEq (lhs, Parser.REPLACE (v1, pp, r))]
-      | _ -> [StrEq (lhs, Parser.REPLACE (s, pp, r))] )
+    match s with
+    | Parser.Str _ ->
+        let v1, cons1 = add_additional s in
+        [cons1; StrEq (lhs, Parser.REPLACE (v1, p, r))]
+    | _ -> [StrEq (lhs, Parser.REPLACE (s, p, r))] )
   | _ -> [cons]
 
 let normalStrConstraints (cons : Parser.strConstrain list) =
@@ -82,8 +76,26 @@ let rec genStrConstraints (constraints : Parser.strConstrain list) =
           , Forward.ConcatC.update lhs
               (fun x ->
                 match x with
-                | None -> Some [Replace (s, p, r)]
-                | Some l -> Some (Replace (s, p, r) :: l) )
+                | None -> Some [Replace (s, Str p, r)]
+                | Some l -> Some (Replace (s, Str p, r) :: l) )
+              reC
+          , reR )
+      | Parser.StrEq (Name lhs, REPLACE (Name s, RegEx p, r)) ->
+          ( Forward.SS.add lhs (Forward.SS.add s reS)
+          , Forward.ConcatC.update lhs
+              (fun x ->
+                match x with
+                | None -> Some [Replace (s, RegEx p, r)]
+                | Some l -> Some (Replace (s, RegEx p, r) :: l) )
+              reC
+          , reR )
+      | Parser.StrEq (Name lhs, REPLACE (Name s, reg, r)) ->
+          ( Forward.SS.add lhs (Forward.SS.add s reS)
+          , Forward.ConcatC.update lhs
+              (fun x ->
+                match x with
+                | None -> Some [Replace (s, reg, r)]
+                | Some l -> Some (Replace (s, reg, r) :: l) )
               reC
           , reR )
       | Parser.IN_NFA (Name lhs, nfa) ->

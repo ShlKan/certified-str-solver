@@ -515,6 +515,7 @@ The \emph{Refine\_Monadic} framework provides a way to refine the data structure
 %
 In our formalization, we refine the data structure of sets to red-black trees.
 
+We extend CertiStr \cite{cpp/KanLRS22} not only to support SFTs but also $\varepsilon$SFA, including the conversion from $\varepsilon$SFA to SFA and the the correctness of the conversion. 
 
 
 
@@ -536,55 +537,53 @@ A replacement operation has the following form: $\texttt{replace}(\texttt{str}, 
 
 The semantics of the replacement operation can be described in two cases: (1) if there are a substring in \texttt{str} that match \texttt{pattern}, then replace it with \texttt{replacement}. (2) If there are no matches, then the result is \texttt{str} itself.
 
-The first case can be modeled by SFTs. We illustrate this case by an example. Given a replacement operation $\texttt{replace}(s, $"$[0-9]+$"$, $"$\text{ITP}$"$)$, we can model this operation by an SFT.
-
-There are three steps to model this operation:
+The first case can be modeled by SFTs. We illustrate this case by an example. Given a replacement operation $\texttt{replace}(s, $\texttt{/[0-9]+/}$, $"$\texttt{NUM}$"$)$, which means replacing a occurrence of the substring that matches the regular expression $\texttt{/[0-9]+/}$ with the string"\texttt{NUM}".
+We model this replacement operation by an SFT with the following 3 steps:
 
 \begin{enumerate}
-  \item Generate an SFA from the regular expression "$[0-9]+$". Adding output functions to the transitions of the SFA that output empty symbol (\texttt{None}) to make it an SFT.
-  \item Generate an SNFA from the replacement string "$"$\text{ITP}$"$". Note that a single string is also a regular expression. Add input labels and output functions to the transitions of the SNFA to make it an SFT.
+  \item Generate an SFA from the regular expression $\texttt{/[0-9]+/}$. Adding output functions to the transitions of the SFA that output empty string (\texttt{None}) to make it an SFT.
+  \item Generate an SNFA from the replacement string "\texttt{NUM}". Note that a single string is also a regular expression. Add input labels and output functions to the transitions of the SNFA to make it an SFT.
   \item Concatenate the two SFTs and add preceding and succeeding self-loop transitions to make it accept the whole input string.
 \end{enumerate}
 
-We explain it step by step by the example.
 
 \noindent\emph{Step 1.}
-The SNFA corresponding to the regular expression "$[0-9]+$" is shown in Figure \ref{fig-snfa-pattern}. On the left side is the SNFA and on the right side is the corresponding SFT. The function \texttt{f} is the output function that outputs empty symbol. It can be defined as $\texttt{f} = \lambda x.~\texttt{None}$. 
+The SFA corresponding to the regular expression "$\texttt{/[0-9]+/}$" is shown in Figure \ref{fig-snfa-pattern}. On the left side is the SFA and on the right side is the corresponding SFT. The function $\texttt{f} = \lambda x.~\texttt{None}$ is the output function that outputs empty string. 
 
 
 
 
 
 \begin{figure}[h] \centering
-\begin{tikzpicture}[shorten >=1pt, node distance=1.5cm, auto]
+\begin{tikzpicture}[shorten >=1pt, node distance=1.8cm, auto]
   \node[state, initial] (q0)   {$q_0$}; 
   \node[state, accepting] (q1) [right=of q0] {$q_1$}; 
 
    \path[->] 
-   (q0) edge [bend left] node {[0-9]} (q1)
-   (q1) edge [loop above] node {[0-9]} (q1);
+   (q0) edge [bend left] node {\texttt{[0-9]}} (q1)
+   (q1) edge [loop above] node {\texttt{[0-9]}} (q1);
 
   \node[state, initial] (q0') [right=4cm of q1] {$q_0'$}; 
   \node[state, accepting] (q1') [right=of q0'] {$q_1'$}; 
 
    \path[->] 
-   (q0') edge [bend left] node {[0-9]/\texttt{f}} (q1')
-   (q1') edge [loop above] node {[0-9]/\texttt{f}} (q1');
+   (q0') edge [bend left] node {\texttt{[0-9]}/$\texttt{f}$} (q1')
+   (q1') edge [loop above] node {\texttt{[0-9]}/$\texttt{f}$} (q1');
 \end{tikzpicture}
-\caption{The SFA for "$[0-9]+$" duplicated}
+\caption{Corresponding SFA and SFT for \texttt{/[0-9]+/}}
 \label{fig-snfa-pattern}
 \end{figure}
 
 \noindent\emph{Step 2.}
-The SNFA corresponding to the replacement string "\text{ITP}" is shown in Figure \ref{fig-snfa-replacement}. On the left side is the SFA and on the right side is the corresponding SFT. The function \texttt{g} is the output function that outputs the characters in the replacement string. It can be defined as (the ascii code of $'I'$, $'T'$, $'P'$ are 73, 84, 80 respectively):
+The SNFA corresponding to the replacement string "\texttt{NUM}" is shown in Figure \ref{fig-snfa-replacement}. On the left side is the SFA and on the right side is the corresponding SFT. The function \texttt{g} is the output function that outputs the characters in the replacement string. \texttt{g} is defined as:
 \[
-\texttt{g} = \lambda~i~x.~\texttt{match }~i~ with~ 1 \rightarrow [(73, 73)] ~|~ 2 \rightarrow [(84, 84)] ~|~ 3 \rightarrow [(80, 80)] ~|~ \_ ~\rightarrow \texttt{None}
+\texttt{g} = \lambda~i~x.~\texttt{match }~i~ with~ 1 \rightarrow [(78, 78)] ~|~ 2 \rightarrow [(85, 85)] ~|~ 3 \rightarrow [(77, 77)] ~|~ \_ ~\rightarrow \texttt{None}
 \]
-
+Note that the ASCII code of  $\texttt{'N'}$, $\texttt{'U'}$, $\texttt{'M'}$ are 78, 85, 77 respectively.
 
 
 \begin{figure}[h] \centering
-\begin{tikzpicture}[shorten >=1pt, node distance=1.5cm, auto]
+\begin{tikzpicture}[shorten >=1pt, node distance=1.8cm, auto]
   % Original NFA for "ITP"
   \node[state, initial] (q0)   {$q_0$}; 
   \node[state] (q1) [right=of q0] {$q_1$}; 
@@ -592,9 +591,9 @@ The SNFA corresponding to the replacement string "\text{ITP}" is shown in Figure
   \node[state, accepting] (q3) [right=of q2] {$q_3$}; 
 
   \path[->] 
-  (q0) edge node {I} (q1)
-  (q1) edge node {T} (q2)
-  (q2) edge node {P} (q3);
+  (q0) edge node {\texttt{N}} (q1)
+  (q1) edge node {\texttt{U}} (q2)
+  (q2) edge node {\texttt{M}} (q3);
 
   % Duplicate NFA for "ITP" on the right
   \node[state, initial] (q0') [right=4cm of q1] {$q_0'$}; 
@@ -605,29 +604,29 @@ The SNFA corresponding to the replacement string "\text{ITP}" is shown in Figure
   \path[->] 
   (q0') edge node {\texttt{None}/\texttt{g 1}} (q1')
   (q1') edge node {\texttt{None}/\texttt{g 2}} (q2')
-  (q2') edge node {\texttt{None}/\texttt{g 3}} (q3');
+  (q2') edge node[below] {\texttt{None}/\texttt{g 3}} (q3');
 \end{tikzpicture}
-\caption{The SFA for "$"\text{ITP}"$" duplicated}
+\caption{Corresponding SFA and SFT for "\texttt{NUM}"}
 \label{fig-snfa-replacement}
 \end{figure}
 
 
 \noindent\emph{Step 3.}
-The concatenation of the two SFTs is shown in Figure \ref{fig-rearranged-automata}. It contains two minor steps: (1) add a transtion (\texttt{None}/\texttt{f}) from each accepting state of the first SFT to the initial state of the second SFT. (2) add the preceding and succeeding transitions to make it accept the whole input string.
+The concatenation of the two SFTs in Fig. \ref{fig-snfa-pattern} and Fig. \ref{fig-snfa-replacement} is shown in Figure \ref{fig-rearranged-automata}. It contains two minor steps: (1) add a transtion (\texttt{None}/\texttt{f}) from each accepting state of the first SFT to the initial state of the second SFT. (2) add the preceding and succeeding transitions to make it accept the whole input string.
 
 \begin{figure}[h] \centering
-  \begin{tikzpicture}[shorten >=1pt, node distance=1.5cm, auto]
+  \begin{tikzpicture}[shorten >=1pt, node distance=1.8cm, auto]
     % Second automaton from the first figure
     \node[state, initial] (q0') {$q_0'$}; 
     \node[state] (q1') [right=of q0'] {$q_1'$}; 
   
      \path[->] 
-     (q0') edge [bend left] node {[0-9]/\texttt{f}} (q1')
-     (q1') edge [loop above] node {[0-9]/\texttt{f}} (q1')
+     (q0') edge [bend left] node {\texttt{[0-9]}/$\texttt{f}$} (q1')
+     (q1') edge [loop above] node {\texttt{[0-9]}/$\texttt{f}$} (q1')
      (q0') edge [loop below] node {\texttt{None}/\texttt{f}} (q0');
   
     % Second automaton from the second figure
-    \node[state] (q0'') [right=4cm of q1'] {$q_0''$}; 
+    \node[state] (q0'') [right=3cm of q1'] {$q_0''$}; 
     \node[state] (q1'') [right=of q0''] {$q_1''$}; 
     \node[state] (q2'') [below=of q0''] {$q_2''$}; 
     \node[state, accepting] (q3'') [right=of q2''] {$q_3''$}; 
@@ -639,26 +638,30 @@ The concatenation of the two SFTs is shown in Figure \ref{fig-rearranged-automat
     (q3'') edge [loop below] node {\texttt{None}/\texttt{f}} (q3'')
     (q1') edge node {\texttt{None}/\texttt{f}} (q0'');
   \end{tikzpicture}
-  \caption{The SFT for the replacement operation $\texttt{replace}(s, $"$[0-9]+$"$, $"$\text{ITP}$"$)$}
+  \caption{The SFT for the replacement operation $\texttt{replace}(s, $\texttt{/[0-9]+/}$, $\text{NUM}$)$}
   \label{fig-rearranged-automata}
   \end{figure}
 
   With this SFT, we can compute the forward image of the replacement operation.
-  Let $s' = \texttt{replace}(s, $"$[0-9]+$"$, $"$\text{ITP}$"$)$ be a string constraint and we want to compute the domain of $s'$ regarding this replacement operation.
-  Assume the SFT generated from this replacement operation is $\mathcal{T}$ and the string $s$'s domain ranges over an SFA $\mathcal{A}$. The foward image of this replacement operation is $\mathcal{T}~\mathcal{A}$. Therefore, the domain of $s'$ is $\mathcal{T}~\mathcal{A}$.
+  Let $s' = \texttt{replace}(s,~$\texttt{/[0-9]+/}$,~\text{"}$\texttt{NUM}$\text{"})$ be a string constraint and we want to compute the value range of $s'$ regarding this replacement operation.
+  Assume the SFT generated from this replacement operation is $\mathcal{T}$ and the string variable $s$'s values ranges over an SFA $\mathcal{A}$. The foward image of this replacement operation is $\mathcal{T}\times \mathcal{A}$. It also means that the value of $s$' must ranges over this image.
 
 
+  \emph{Compare with the semantics of SMTLIB.} SMTLIB's replacement's semantics is not exactly the same as the semantics  in this paper. In SMTLIB, the single replacement operation is defined as replace the \emph{first} occurrence of the substring that matches the pattern with the replacement string. Our semantics is not limited to the \emph{first} occurrence.
 
+  From replacement operation modeling above, we can see that our SFT's formalization with the support of empty string for input labels and output functions make it easy to model the replacement operation.
+  However,
+  The power of our SFT's formalization is not fully explored in the string solver as the transition labels and output functions are simple. For other applications, the transition labels and output functions can indeed support more complex modelings.
 
 
 \subsection{Experiments}
 
-We have implemented a prototype of the string solver to support the replacement operation based on CertiStr[1], which is called CertiStr-R in this paper.
+We have implemented a prototype of the string solver to support the replacement operation based on CertiStr \cite{cpp/KanLRS22} \footnote{The code is available at \url{https://github.com/ShlKan/certified-str-solver}}, which is called CertiStrR in this paper.
+We select a benchmark from the SMT-LIB \cite{smtlib_benchmarks} to test the effective and efficiency of CertiStrR. The benchmark contains 100 string constraints. 
 
-CertiStr-R supports two kinds of replacement operations: (1) \texttt{str.replace s p r}, where the pattern \texttt{p} is a string and (2) \texttt{str.replace\_re s p r}, where the pattern \texttt{p} is a regular expression. 
+CertiStr-R supports two kinds of SMT-LIB's replacement operations: (1) \texttt{str.replace s p r}, where the pattern \texttt{p} is a string and (2) \texttt{str.replace\_re s p r}, where the pattern \texttt{p} is a regular expression. 
 
 
-The limitation of CertiStr-R is that it does not support \texttt{replace\_all} and \texttt{replace\_re\_all}. CertiStr-R is possible to extend in the future. Another limitation is that the semantics of \texttt{replace} and \texttt{replace\_re} are different from the definition in SMTLIB.
 
 \section{Related Work}
 
