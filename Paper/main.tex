@@ -19,7 +19,32 @@
 \usetikzlibrary{intersections}
 \usetikzlibrary{automata}
 \usetikzlibrary{positioning}
+\usepackage{booktabs}
 %\graphicspath{{./graphics/}}%helpful if your graphic files are in another directory
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstdefinelanguage{SMTLIB}{
+  morekeywords={set-logic, declare-fun, assert, check-sat, get-model},
+  sensitive=true,
+  morecomment=[l];,
+  morestring=[b]"
+}
+\lstset{
+  language=SMTLIB,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{green!50!black},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  stepnumber=1,
+  numbersep=5pt,
+  backgroundcolor=\color{gray!10},
+  frame=single,
+  breaklines=true,
+  captionpos=b,
+  showstringspaces=false
+}
 
 \bibliographystyle{plainurl}% the mandatory bibstyle
 
@@ -187,9 +212,9 @@ Given an SFT $\mathcal{T}$ and a word $w$, we define the operation product of $\
 \mathcal{T}\times\{w\} = \{w'\mid \exists \pi.~\pi \text{ is an accepting path }\land in(\pi) = w \land out(\pi) = w'\}.
 \]
 
-To make the operation \emph{product} more general, we extend the operation to an SFT and a set of intput words represented by a regular language, which can be denoted as an NFA. More precisely,
+To make the operation \emph{product} more general, we extend the operation to an SFT and a set of intput words represented by a regular language, which can be denoted as an NFA $\mathcal{A}$. More precisely,
 \[
-\mathcal{T}\times\{\mathcal{A}\} = \{w'\mid w.~w\in \mathcal{L}(\mathcal{A})\land w' = \mathcal{T}\times\{w\} \}, \text{where $\mathcal{L}(\mathcal{A})$ denotes the language of $\mathcal{A}$}.
+\mathcal{T}\times \mathcal{A} = \{w'\mid w.~w\in \mathcal{L}(\mathcal{A})\land w' = \mathcal{T}\times\{w\} \}, \text{where $\mathcal{L}(\mathcal{A})$ denotes the language of $\mathcal{A}$}.
 \] 
 
 \begin{figure}[hbt!]
@@ -209,16 +234,19 @@ To make the operation \emph{product} more general, we extend the operation to an
     \label{fig-example-ft}
     \end{figure}   
 We now illustrate SFTs with an example in Figure \ref{fig-example-ft}. It accepts strings of the regular expression $/['\texttt{a}'-'\texttt{z}']+['\texttt{A}'-'\texttt{Z}']+/$. 
-It uses intervals $[i-j]$ as the input label, which is a predicate that returns true if the input letter is between $i$ and $j$.
+It uses intervals $[i-j]$ as the input label, which is a predicate as $[i-j] = \lambda x.~ i \leq x \leq j$.
 The function $f_1=\lambda x.~ \texttt{toUpper}(x)$ maps each lowercase letter to uppercase letter, and $f_2=\lambda x.~\texttt{toLower}(x)$ maps each uppercase letter to lowercase letter.
 Give an string "$\texttt{bigSMALL}$", the SFT will generate an output "$\texttt{BIGsmall}$". 
 
+The transition labels can be more complex. For instance, it can be a predicate over integers as: $\lambda x.~ x >0 \land x \text{ mod } 2 = 0$. This symbolic label corresponds to the set of even natural numbers.
 
 
 
 
 
 \subsection{The Isabelle/HOL Formalization of SFTs}
+
+We have seen the diversity of the transition labels in the examples. To make the transition labels more flexible, our formalization of SFTs should be extensible. We will illustrate how can we leverage the refinement framework in Isabelle/HOL to achieve this goal.
 
 \begin{figure}[hbt!]
 	\begin{lstlisting}
@@ -387,9 +415,10 @@ There are a collection interfaces for intervals.
 \end{enumerate}
 
 We define a canonical form for intervals to facilitate the proof. An interval $[i_1, j_1), \ldots, (i_n, j_n)]$ is in canonical form if 
-(1) $i_k \leq j_k, 1 \leq k \leq n$,
-(2) $j_k\leq i_{k+1}, 1 \leq k < n$.
+(1) $i_k \leq j_k, \text{ for } 1 \leq k \leq n$,
+(2) $j_k\leq i_{k+1}, \text{ for } 1 \leq k < n$.
 All the interval operations are proved to keep the canonical form after the operation if the input intervals are in canonical form.
+Canonical form not only simplifies the proof, but also improves the performance of interval operations.
 
 
 
@@ -457,7 +486,7 @@ The challenging part is how to compute the transition sets. It is illustrated in
 (2) \texttt{subtrans\_comp}: handles the case that the transition in the SFT is not $\varepsilon$-transition.
 
 We elaborate only on the function \texttt{subtrans\_comp} in Fig. \ref{fig-def-subtrans_comp}. The other function is similar. 
-This function traverses the transitions SFA's transitions $\texttt{T}$. If it find the a transtion $(q1, \alpha', q1')\in \texttt{T}$ satisfies the following condition:
+This function traverses the transitions SFA's transitions $\texttt{T}$. If it find a transtion $(q_1, \alpha', q_1')\in \texttt{T}$ satisfies the following condition:
 $\alpha \cap \alpha' \neq \emptyset$ (Checked by \texttt{nemptyIs}),
 it started to compute the non-$\varepsilon$-transitions set $\texttt{D1}$ and the $\varepsilon$-transitions set $\texttt{D2}$ by checking whether the output set of $\alpha \cap \alpha'$ is empty or not.
 
@@ -657,10 +686,48 @@ The concatenation of the two SFTs in Fig. \ref{fig-snfa-pattern} and Fig. \ref{f
 \subsection{Experiments}
 
 We have implemented a prototype of the string solver to support the replacement operation based on CertiStr \cite{cpp/KanLRS22} \footnote{The code is available at \url{https://github.com/ShlKan/certified-str-solver}}, which is called CertiStrR in this paper.
-We select a benchmark from the SMT-LIB \cite{smtlib_benchmarks} to test the effective and efficiency of CertiStrR. The benchmark contains 100 string constraints. 
+%
+CertiStr-R supports two kinds of SMT-LIB's replacement operations: (1) \texttt{str.replace s p r}, where the pattern \texttt{p} is a string and (2) \texttt{str.replace\_re s p r}, where the pattern \texttt{p} is a regular expression. Listing \ref{lst-smtlib-code} shows an example of the SMT-LIB code corresponding to the replacement operation $\texttt{replace}(s,~$\texttt{/[0-9]+/}$,~\text{"}$\texttt{NUM}$\text{"})$ that we illustrated in Section \ref{sec-app-str-solver}. The constants are satisfiable because the 
+string \texttt{a} can be fully matched by the regular expression \texttt{/[0-9]+/} and then replaced by "\texttt{NUM}".
+\begin{lstlisting}[language=SMTLIB, caption={Example SMT-LIB Code}, label={lst-smtlib-code}]
+  (set-logic QF_S)
+  (declare-fun a () String)
+  (declare-fun b () String)
+  (assert (= a "2025"))
+  (assert (= b "NUM"))
+  (assert (= b (str.replace_re a (re.+ (re.range "0" "9")) "NUM")))
+  (check-sat)
+  \end{lstlisting}
 
-CertiStr-R supports two kinds of SMT-LIB's replacement operations: (1) \texttt{str.replace s p r}, where the pattern \texttt{p} is a string and (2) \texttt{str.replace\_re s p r}, where the pattern \texttt{p} is a regular expression. 
+We select benchmarks from the SMT-LIB 2024 \cite{smtlib_benchmarks} to test the effective and efficiency of CertiStrR. The benchmarks contain mainly from QF\_S and QF\_SLIA. The benchmarks are devided into 2 groups: (1) tests with \texttt{str.replace} and (2) tests with \texttt{str.replace\_re}. Because CertiStrR currently has a limited front-end to support all SMT-LIB operations. We remove the operations that are not supported by CertiStrR, for example, the operation \texttt{or}. Totally the benchmark contains 300 tests.
 
+
+\begin{table}[h]
+  \centering
+  \begin{tabular}{lcccc}
+      \toprule
+      & \textbf{Result} & \textbf{Time} & \textbf{Memory} & \textbf{Number of Tests} \\
+      \midrule
+      \texttt{str.replace} & & & & \\
+      \texttt{str.replace\_re} & & & & \\
+      \bottomrule
+  \end{tabular}
+  \caption{Performance metrics for string operations}
+  \label{tab:string_operations}
+\end{table}
+
+Among all these tests, the test that consumes the most time is 2s.
+
+
+TODO: 
+(1) The complicated model.
+(2) which test consume the most time.
+(3) which test consume the least time. 
+
+
+
+
+\subsection{Effort of Certified Development}
 
 
 \section{Related Work}
