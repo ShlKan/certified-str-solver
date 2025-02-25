@@ -688,18 +688,20 @@ The concatenation of the two SFTs in Fig. \ref{fig-snfa-pattern} and Fig. \ref{f
 We have implemented a prototype of the string solver to support the replacement operation based on CertiStr \cite{cpp/KanLRS22} \footnote{The code is available at \url{https://github.com/ShlKan/certified-str-solver}}, which is called CertiStrR in this paper.
 %
 CertiStr-R supports two kinds of SMT-LIB's replacement operations: (1) \texttt{str.replace s p r}, where the pattern \texttt{p} is a string and (2) \texttt{str.replace\_re s p r}, where the pattern \texttt{p} is a regular expression. Listing \ref{lst-smtlib-code} shows an example of the SMT-LIB code corresponding to the replacement operation $\texttt{replace}(s,~$\texttt{/[0-9]+/}$,~\text{"}$\texttt{NUM}$\text{"})$ that we illustrated in Section \ref{sec-app-str-solver}. The constants are satisfiable because the 
-string \texttt{a} can be fully matched by the regular expression \texttt{/[0-9]+/} and then replaced by "\texttt{NUM}".
+substring "\texttt{2025}" in \texttt{a} can be matched by the regular expression \texttt{/[0-9]+/} and then replaced by "\texttt{NUM}".
 \begin{lstlisting}[language=SMTLIB, caption={Example SMT-LIB Code}, label={lst-smtlib-code}]
   (set-logic QF_S)
   (declare-fun a () String)
   (declare-fun b () String)
-  (assert (= a "2025"))
-  (assert (= b "NUM"))
+  (assert (= a "2024,2025"))
+  (assert (= b "2024,NUM"))
   (assert (= b (str.replace_re a (re.+ (re.range "0" "9")) "NUM")))
   (check-sat)
   \end{lstlisting}
 
-We select benchmarks from the SMT-LIB 2024 \cite{smtlib_benchmarks} to test the effective and efficiency of CertiStrR. The benchmarks contain mainly from QF\_S and QF\_SLIA. The benchmarks are devided into 2 groups: (1) tests with \texttt{str.replace} and (2) tests with \texttt{str.replace\_re}. Because CertiStrR currently has a limited front-end to support all SMT-LIB operations. We remove the operations that are not supported by CertiStrR, for example, the operation \texttt{or}. Totally the benchmark contains 300 tests.
+
+
+We select benchmarks from the SMT-LIB 2024 \cite{smtlib_benchmarks} to test the effective and efficiency of CertiStrR. The benchmarks contain mainly from QF\_S and QF\_SLIA. The benchmarks are devided into 2 groups: (1) tests with \texttt{str.replace} and (2) tests with \texttt{str.replace\_re}. Because CertiStrR currently has a limited front-end to support all SMT-LIB operations. We rewrite the operations that are not supported by CertiStrR, for example, \texttt{(assert (and c1 c2))} is rewritten as two separate \texttt{(assert c1)} and \texttt{(assert c2)} when \texttt{c1} and \texttt{c2} are string constraints. 
 
 
 \begin{table}[h]
