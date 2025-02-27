@@ -686,9 +686,13 @@ The concatenation of the two SFTs in Fig. \ref{fig-snfa-pattern} and Fig. \ref{f
 \subsection{Experiments}
 
 We have implemented a prototype of the string solver to support the replacement operation based on CertiStr \cite{cpp/KanLRS22} \footnote{The code is available at \url{https://github.com/ShlKan/certified-str-solver}}, which is called CertiStrR in this paper.
+The frontend of CertiStrR is not certified and implemented with the dolmen \cite{dolmen} library (An OCaml library of SMTLIB parser) and ocaml-re-nfa \cite{ocaml-re-nfa} library (An OCaml library to construct an NFA from a regular expression).
+
 %
-CertiStr-R supports two kinds of SMT-LIB's replacement operations: (1) \texttt{str.replace s p r}, where the pattern \texttt{p} is a string and (2) \texttt{str.replace\_re s p r}, where the pattern \texttt{p} is a regular expression. Listing \ref{lst-smtlib-code} shows an example of the SMT-LIB code corresponding to the replacement operation $\texttt{replace}(s,~$\texttt{/[0-9]+/}$,~\text{"}$\texttt{NUM}$\text{"})$ that we illustrated in Section \ref{sec-app-str-solver}. The constants are satisfiable because the 
+CertiStr-R supports two kinds of SMT-LIB's replacement operations: (1) \texttt{str.replace s p r}, where the pattern \texttt{p} is a string and (2) \texttt{str.replace\_re s p r}, where the pattern \texttt{p} is a regular expression. Listing \ref{lst-smtlib-code} shows an example of the SMT-LIB code corresponding to the replacement operation $\texttt{replace}(s,~$\texttt{/[0-9]+/}$,~\text{"}$\texttt{NUM}$\text{"})$ that we illustrated in Section \ref{sec-app-str-solver}. The constraints are satisfiable because the 
 substring "\texttt{2025}" in \texttt{a} can be matched by the regular expression \texttt{/[0-9]+/} and then replaced by "\texttt{NUM}".
+
+
 \begin{lstlisting}[language=SMTLIB, caption={Example SMT-LIB Code}, label={lst-smtlib-code}]
   (set-logic QF_S)
   (declare-fun a () String)
@@ -699,37 +703,62 @@ substring "\texttt{2025}" in \texttt{a} can be matched by the regular expression
   (check-sat)
   \end{lstlisting}
 
+  As we discussed in Section \ref{sec-app-str-solver}, our replacement semantics is not exactly the same as SMTLIB's standard semantics.
+If we run the SMT solver CVC5 \cite{cvc5} with the example code in Listing \ref{lst-smtlib-code}, the result is UNSAT. Because CVC5 only matches the first occurrence of the pattern.
 
 
-We select benchmarks from the SMT-LIB 2024 \cite{smtlib_benchmarks} to test the effective and efficiency of CertiStrR. The benchmarks contain mainly from QF\_S and QF\_SLIA. The benchmarks are devided into 2 groups: (1) tests with \texttt{str.replace} and (2) tests with \texttt{str.replace\_re}. Because CertiStrR currently has a limited front-end to support all SMT-LIB operations. We rewrite the operations that are not supported by CertiStrR, for example, \texttt{(assert (and c1 c2))} is rewritten as two separate \texttt{(assert c1)} and \texttt{(assert c2)} when \texttt{c1} and \texttt{c2} are string constraints. 
+We select benchmarks from the SMT-LIB 2024 \cite{smtlib_benchmarks} to test the effective and efficiency of CertiStrR. The benchmarks contain mainly from QF\_S and QF\_SLIA. The benchmarks are devided into 2 groups: (1) tests with \texttt{str.replace} and (2) tests with \texttt{str.replace\_re}. Because CertiStrR currently has a limited front-end to support all SMT-LIB operations. We rewrite the operations that are not supported by CertiStrR, for example, \texttt{(assert (and c1 c2))} is rewritten as two separate \texttt{(assert c1)} and \texttt{(assert c2)} when \texttt{c1} and \texttt{c2} are string constraints that CertiStrR supports. 
+
+% replace_re
+% Average real time: 0.37 seconds
+% Total number of real entries: 98
+% Average user time: 0.35 seconds
+% Total number of user entries: 98
+% Average sys time: 0.01 seconds
+% Total number of sys entries: 98
+% Total number of SAT entries: 61
+% Total number of UNSAT entries: 4
+% Total number of inconclusive entries: 30
+
+% replace_str   
+% Average real time: 0.27 seconds
+% Total number of real entries: 323
+% Average user time: 0.25 seconds
+% Total number of user entries: 323
+% Average sys time: 0.01 seconds
+% Total number of sys entries: 323
+% Total number of SAT entries: 315
+% Total number of UNSAT entries: 173
+% Total number of inconclusive entries: 8
 
 
 \begin{table}[h]
   \centering
-  \begin{tabular}{lcccc}
+  \begin{tabular}{lccccc}
       \toprule
-      & \textbf{Result} & \textbf{Time} & \textbf{Memory} & \textbf{Number of Tests} \\
+      & \textbf{SAT} & \textbf{UNSAT} & \textbf{Inconclusive} & \textbf{Time} & \textbf{Number of Tests} \\
       \midrule
-      \texttt{str.replace} & & & & \\
-      \texttt{str.replace\_re} & & & & \\
+      \texttt{replace\_str} & 142 & 173 & 8 & 0.27 & 323\\
+      \texttt{replace\_re} & 57 & 4 & 30 & 0.37 & 98\\
       \bottomrule
   \end{tabular}
   \caption{Performance metrics for string operations}
   \label{tab:string_operations}
 \end{table}
 
-Among all these tests, the test that consumes the most time is 2s.
+The experiments were conducted on a laptop equipped with an Apple M4 processor, featuring 24 GB of memory. The timelimit for each test is $1$ minutes. We split the tests into 2 groups: (1) tests with \texttt{str.replace} (\texttt{replace\_str}, 323 tests) and (2) tests with \texttt{str.replace\_re} (\texttt{replace\_re}, 98 tests). The average time of \texttt{replace\_str} is 0.27 seconds and the average time of \texttt{replace\_re} is 0.37 seconds. The test results are classified into 3 categories: (1) SAT, (2) UNSAT, and (3) Inconclusive.
+The result inconclusive means that the solver cannot prove the result. This does not mean the the test runs out of time. It means the solver cannot prove the result with the current forward-propagation algorithm used by CertiStr \cite{cpp/KanLRS22}. Forward-propagation algorithm cannot decide the result if the constraints do not satisfy tree-property, even after the forward-propagation all variables's domain are not empty as illustrated in CertiStr \cite{cpp/KanLRS22}.
 
-
-TODO: 
-(1) The complicated model.
-(2) which test consume the most time.
-(3) which test consume the least time. 
-
-
-
+After analyzing the tests that consume more time than others. We found the replacement operation modeling itself is efficient. The time consumption of is mainly from the automata accumulation during the forward-propagation algorithm. For instance, given the constraints as follows: 
+\[
+x=x_1\texttt{++}x_2;~x = \texttt{replace}(x_3, p, r);~x = x_4;~x = \texttt{replace}(x, p_1, r_1);
+\]
+where \texttt{++} is the concatenation operation. As the varible $x$ appears many times on the left-hand side of the constraints, the forward-propagation algorithm will accumulate the automata of $x_1\texttt{++}x_2$, \texttt{replace}($x_3, p, r$), $x_4$, and \texttt{replace}($x, p_1, r_1$) to $x$ during the forward-propagation. Each accumulation will perform the product operation with the previous automata. The complexity of the product operation is $O(n^2)$ in the worst case, where $n$ is the size of the automata. This leads to state explosion.
 
 \subsection{Effort of Certified Development}
+
+We discuss the effort of certified development in this subsection.
+The effort of certified development is mainly from the following two aspects: (1) the abstract level Formalization of SFTs and (2) the low-level refinement of the SFTs to efficient data structure.
 
 
 \section{Related Work}

@@ -1,0 +1,1940 @@
+  $ ./benchmark.sh
+  Test (./lan_replace101.smt2):
+  
+  real	0m1.582s
+  user	0m1.562s
+  sys	0m0.012s
+  SAT
+  Test (./lan_replace11.smt2):
+  
+  real	0m1.601s
+  user	0m1.563s
+  sys	0m0.018s
+  SAT
+  Test (./lan_replace26.smt2):
+  
+  real	0m1.548s
+  user	0m1.529s
+  sys	0m0.013s
+  SAT
+  Test (./lan_replace35.smt2):
+  
+  real	0m1.690s
+  user	0m1.618s
+  sys	0m0.020s
+  SAT
+  Test (./lan_replace54.smt2):
+  
+  real	0m1.571s
+  user	0m1.526s
+  sys	0m0.013s
+  SAT
+  Test (./lan_replace63.smt2):
+  
+  real	0m1.549s
+  user	0m1.525s
+  sys	0m0.015s
+  SAT
+  Test (./lan_replace77.smt2):
+  
+  real	0m1.553s
+  user	0m1.531s
+  sys	0m0.014s
+  SAT
+  Test (./lan_replace80.smt2):
+  
+  real	0m1.550s
+  user	0m1.531s
+  sys	0m0.012s
+  SAT
+  Test (./slog_stranger_145_sink.smt2):
+  
+  real	0m0.021s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_147_sink.smt2):
+  
+  real	0m0.021s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_149_sink.smt2):
+  
+  real	0m0.021s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_150_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_151_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_153_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_1615_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_1620_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_1622_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_1624_sink.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_1626_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_1629_sink.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_1631_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_1632_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_1635_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_1638_sink.smt2):
+  
+  real	0m0.021s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_1641_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./slog_stranger_1642_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_1643_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.006s
+  inconclusive
+  Test (./slog_stranger_1820_sink.smt2):
+  
+  real	0m0.023s
+  user	0m0.012s
+  sys	0m0.007s
+  UNSAT
+  Test (./slog_stranger_1821_sink.smt2):
+  
+  real	0m0.021s
+  user	0m0.010s
+  sys	0m0.007s
+  inconclusive
+  Test (./slog_stranger_1822_sink.smt2):
+  
+  real	0m0.021s
+  user	0m0.010s
+  sys	0m0.007s
+  inconclusive
+  Test (./slog_stranger_1828_sink.smt2):
+  
+  real	0m0.022s
+  user	0m0.011s
+  sys	0m0.006s
+  inconclusive
+  Test (./slog_stranger_1830_sink.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_1835_sink.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.007s
+  UNSAT
+  Test (./slog_stranger_1836_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.007s
+  UNSAT
+  Test (./slog_stranger_1837_sink.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  UNSAT
+  Test (./slog_stranger_1838_sink.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  UNSAT
+  Test (./slog_stranger_1839_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.007s
+  UNSAT
+  Test (./slog_stranger_1840_sink.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  UNSAT
+  Test (./slog_stranger_1841_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_1856_sink.smt2):
+  
+  real	0m0.022s
+  user	0m0.011s
+  sys	0m0.007s
+  inconclusive
+  Test (./slog_stranger_2204_sink.smt2):
+  
+  real	0m0.041s
+  user	0m0.013s
+  sys	0m0.013s
+  UNSAT
+  Test (./slog_stranger_252_sink.smt2):
+  
+  real	0m0.051s
+  user	0m0.015s
+  sys	0m0.015s
+  UNSAT
+  Test (./slog_stranger_2728_sink.smt2):
+  
+  real	0m0.029s
+  user	0m0.011s
+  sys	0m0.010s
+  UNSAT
+  Test (./slog_stranger_2852_sink.smt2):
+  
+  real	0m0.026s
+  user	0m0.010s
+  sys	0m0.010s
+  UNSAT
+  Test (./slog_stranger_2884_sink.smt2):
+  
+  real	0m0.027s
+  user	0m0.011s
+  sys	0m0.010s
+  SAT
+  Test (./slog_stranger_2886_sink.smt2):
+  
+  real	0m0.030s
+  user	0m0.013s
+  sys	0m0.009s
+  SAT
+  Test (./slog_stranger_2891_sink.smt2):
+  
+  real	0m0.026s
+  user	0m0.011s
+  sys	0m0.009s
+  SAT
+  Test (./slog_stranger_30_sink.smt2):
+  
+  real	0m0.049s
+  user	0m0.032s
+  sys	0m0.011s
+  SAT
+  Test (./slog_stranger_32_sink.smt2):
+  
+  real	0m0.109s
+  user	0m0.090s
+  sys	0m0.012s
+  SAT
+  Test (./slog_stranger_343_sink.smt2):
+  
+  real	0m0.036s
+  user	0m0.023s
+  sys	0m0.008s
+  SAT
+  Test (./slog_stranger_346_sink.smt2):
+  
+  real	0m0.036s
+  user	0m0.023s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_3786_sink.smt2):
+  
+  real	0m0.021s
+  user	0m0.009s
+  sys	0m0.007s
+  inconclusive
+  Test (./slog_stranger_38_sink.smt2):
+  
+  real	0m0.040s
+  user	0m0.028s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_39_sink.smt2):
+  
+  real	0m0.114s
+  user	0m0.093s
+  sys	0m0.009s
+  UNSAT
+  Test (./slog_stranger_4062_sink.smt2):
+  
+  real	0m0.024s
+  user	0m0.011s
+  sys	0m0.007s
+  inconclusive
+  Test (./slog_stranger_40_sink.smt2):
+  
+  real	0m0.101s
+  user	0m0.087s
+  sys	0m0.008s
+  SAT
+  Test (./slog_stranger_4158_sink.smt2):
+  
+  real	0m0.023s
+  user	0m0.011s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_4200_sink.smt2):
+  
+  real	0m0.022s
+  user	0m0.011s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_4237_sink.smt2):
+  
+  real	0m0.022s
+  user	0m0.011s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_4267_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_4308_sink.smt2):
+  
+  real	0m0.022s
+  user	0m0.011s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_4312_sink.smt2):
+  
+  real	0m0.022s
+  user	0m0.011s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_4319_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_4595_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_46_sink.smt2):
+  
+  real	0m0.039s
+  user	0m0.027s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_48_sink.smt2):
+  
+  real	0m0.098s
+  user	0m0.086s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_519_sink.smt2):
+  
+  real	0m0.021s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_520_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./slog_stranger_521_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./slog_stranger_523_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_525_sink.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./slog_stranger_526_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_527_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_528_sink.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./slog_stranger_529_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_530_sink.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./slog_stranger_531_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_532_sink.smt2):
+  
+  real	0m0.021s
+  user	0m0.009s
+  sys	0m0.007s
+  inconclusive
+  Test (./slog_stranger_534_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_535_sink.smt2):
+  
+  real	0m0.021s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_536_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_538_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_539_sink.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_54_sink.smt2):
+  
+  real	0m0.039s
+  user	0m0.027s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_56_sink.smt2):
+  
+  real	0m0.096s
+  user	0m0.084s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_60_sink.smt2):
+  
+  real	0m0.021s
+  user	0m0.009s
+  sys	0m0.007s
+  UNSAT
+  Test (./slog_stranger_62_sink.smt2):
+  
+  real	0m0.040s
+  user	0m0.028s
+  sys	0m0.007s
+  SAT
+  Test (./slog_stranger_64_sink.smt2):
+  
+  real	0m0.097s
+  user	0m0.084s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace0.smt2):
+  
+  real	0m0.031s
+  user	0m0.019s
+  sys	0m0.007s
+  UNSAT
+  Test (./str_replace1.smt2):
+  
+  real	0m0.035s
+  user	0m0.023s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace10.smt2):
+  
+  real	0m0.020s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace100.smt2):
+  
+  real	0m0.275s
+  user	0m0.258s
+  sys	0m0.011s
+  UNSAT
+  Test (./str_replace101.smt2):
+  
+  real	0m0.047s
+  user	0m0.026s
+  sys	0m0.012s
+  UNSAT
+  Test (./str_replace102.smt2):
+  
+  real	0m0.292s
+  user	0m0.238s
+  sys	0m0.021s
+  UNSAT
+  Test (./str_replace103.smt2):
+  
+  real	0m0.024s
+  user	0m0.011s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace104.smt2):
+  
+  real	0m0.573s
+  user	0m0.546s
+  sys	0m0.016s
+  UNSAT
+  Test (./str_replace105.smt2):
+  
+  real	0m0.237s
+  user	0m0.221s
+  sys	0m0.011s
+  UNSAT
+  Test (./str_replace106.smt2):
+  
+  real	0m0.244s
+  user	0m0.221s
+  sys	0m0.013s
+  UNSAT
+  Test (./str_replace107.smt2):
+  
+  real	0m0.244s
+  user	0m0.219s
+  sys	0m0.015s
+  UNSAT
+  Test (./str_replace108.smt2):
+  
+  real	0m0.207s
+  user	0m0.187s
+  sys	0m0.011s
+  UNSAT
+  Test (./str_replace109.smt2):
+  
+  real	0m0.250s
+  user	0m0.224s
+  sys	0m0.013s
+  UNSAT
+  Test (./str_replace11.smt2):
+  
+  real	0m1.659s
+  user	0m1.604s
+  sys	0m0.021s
+  SAT
+  Test (./str_replace110.smt2):
+  
+  real	0m0.240s
+  user	0m0.224s
+  sys	0m0.011s
+  UNSAT
+  Test (./str_replace111.smt2):
+  
+  real	0m0.237s
+  user	0m0.221s
+  sys	0m0.011s
+  UNSAT
+  Test (./str_replace112.smt2):
+  
+  real	0m0.222s
+  user	0m0.207s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace113.smt2):
+  
+  real	0m0.948s
+  user	0m0.925s
+  sys	0m0.016s
+  UNSAT
+  Test (./str_replace114.smt2):
+  
+  real	0m0.235s
+  user	0m0.219s
+  sys	0m0.011s
+  UNSAT
+  Test (./str_replace115.smt2):
+  
+  real	0m0.222s
+  user	0m0.208s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace116.smt2):
+  
+  real	0m0.279s
+  user	0m0.263s
+  sys	0m0.010s
+  UNSAT
+  Test (./str_replace117.smt2):
+  
+  real	0m0.275s
+  user	0m0.258s
+  sys	0m0.011s
+  UNSAT
+  Test (./str_replace118.smt2):
+  
+  real	0m0.227s
+  user	0m0.212s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace119.smt2):
+  
+  real	0m0.038s
+  user	0m0.026s
+  sys	0m0.007s
+  UNSAT
+  Test (./str_replace12.smt2):
+  
+  real	0m0.025s
+  user	0m0.013s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace120.smt2):
+  
+  real	0m0.033s
+  user	0m0.021s
+  sys	0m0.007s
+  UNSAT
+  Test (./str_replace121.smt2):
+  
+  real	0m1.158s
+  user	0m1.085s
+  sys	0m0.028s
+  UNSAT
+  Test (./str_replace122.smt2):
+  
+  real	0m0.221s
+  user	0m0.205s
+  sys	0m0.010s
+  UNSAT
+  Test (./str_replace123.smt2):
+  
+  real	0m0.279s
+  user	0m0.263s
+  sys	0m0.010s
+  UNSAT
+  Test (./str_replace124.smt2):
+  
+  real	0m0.241s
+  user	0m0.226s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace125.smt2):
+  
+  real	0m0.222s
+  user	0m0.206s
+  sys	0m0.010s
+  UNSAT
+  Test (./str_replace126.smt2):
+  
+  real	0m2.025s
+  user	0m1.974s
+  sys	0m0.029s
+  UNSAT
+  Test (./str_replace127.smt2):
+  
+  real	0m0.252s
+  user	0m0.210s
+  sys	0m0.013s
+  UNSAT
+  Test (./str_replace128.smt2):
+  
+  real	0m0.272s
+  user	0m0.256s
+  sys	0m0.010s
+  UNSAT
+  Test (./str_replace129.smt2):
+  
+  real	0m1.789s
+  user	0m1.752s
+  sys	0m0.030s
+  UNSAT
+  Test (./str_replace13.smt2):
+  
+  real	0m0.035s
+  user	0m0.023s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace130.smt2):
+  
+  real	0m0.023s
+  user	0m0.011s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace131.smt2):
+  
+  real	0m0.220s
+  user	0m0.206s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace132.smt2):
+  
+  real	0m0.273s
+  user	0m0.257s
+  sys	0m0.010s
+  UNSAT
+  Test (./str_replace133.smt2):
+  
+  real	0m0.277s
+  user	0m0.260s
+  sys	0m0.011s
+  UNSAT
+  Test (./str_replace134.smt2):
+  
+  real	0m0.237s
+  user	0m0.222s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace135.smt2):
+  
+  real	0m0.191s
+  user	0m0.176s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace136.smt2):
+  
+  real	0m0.928s
+  user	0m0.907s
+  sys	0m0.015s
+  UNSAT
+  Test (./str_replace137.smt2):
+  
+  real	0m0.223s
+  user	0m0.208s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace138.smt2):
+  
+  real	0m0.275s
+  user	0m0.260s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace139.smt2):
+  
+  real	0m0.356s
+  user	0m0.299s
+  sys	0m0.016s
+  UNSAT
+  Test (./str_replace14.smt2):
+  
+  real	0m0.042s
+  user	0m0.027s
+  sys	0m0.009s
+  SAT
+  Test (./str_replace140.smt2):
+  
+  real	0m0.038s
+  user	0m0.022s
+  sys	0m0.008s
+  UNSAT
+  Test (./str_replace141.smt2):
+  
+  real	0m0.234s
+  user	0m0.214s
+  sys	0m0.012s
+  UNSAT
+  Test (./str_replace142.smt2):
+  
+  real	0m0.024s
+  user	0m0.012s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace143.smt2):
+  
+  real	0m0.033s
+  user	0m0.020s
+  sys	0m0.008s
+  UNSAT
+  Test (./str_replace144.smt2):
+  
+  real	0m0.035s
+  user	0m0.023s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace145.smt2):
+  
+  real	0m0.038s
+  user	0m0.026s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace146.smt2):
+  
+  real	0m0.021s
+  user	0m0.009s
+  sys	0m0.007s
+  UNSAT
+  Test (./str_replace147.smt2):
+  
+  real	0m0.020s
+  user	0m0.009s
+  sys	0m0.007s
+  UNSAT
+  Test (./str_replace148.smt2):
+  
+  real	0m0.020s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace149.smt2):
+  
+  real	0m0.021s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace15.smt2):
+  
+  real	0m0.037s
+  user	0m0.025s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace150.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace151.smt2):
+  
+  real	0m0.021s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace152.smt2):
+  
+  real	0m0.021s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace153.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace154.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace155.smt2):
+  
+  real	0m0.038s
+  user	0m0.026s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace156.smt2):
+  
+  real	0m0.023s
+  user	0m0.012s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace157.smt2):
+  
+  real	0m0.032s
+  user	0m0.021s
+  sys	0m0.007s
+  UNSAT
+  Test (./str_replace158.smt2):
+  
+  real	0m0.023s
+  user	0m0.012s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace159.smt2):
+  
+  real	0m0.026s
+  user	0m0.014s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace16.smt2):
+  
+  real	0m0.022s
+  user	0m0.010s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace160.smt2):
+  
+  real	0m0.036s
+  user	0m0.024s
+  sys	0m0.007s
+  UNSAT
+  Test (./str_replace161.smt2):
+  
+  real	0m0.026s
+  user	0m0.014s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace162.smt2):
+  
+  real	0m0.024s
+  user	0m0.012s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace163.smt2):
+  
+  real	0m0.024s
+  user	0m0.012s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace164.smt2):
+  
+  real	0m0.024s
+  user	0m0.012s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace165.smt2):
+  
+  real	0m0.023s
+  user	0m0.011s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace166.smt2):
+  
+  real	0m0.597s
+  user	0m0.565s
+  sys	0m0.019s
+  UNSAT
+  Test (./str_replace167.smt2):
+  
+  real	0m0.285s
+  user	0m0.256s
+  sys	0m0.016s
+  UNSAT
+  Test (./str_replace168.smt2):
+  
+  real	0m0.242s
+  user	0m0.222s
+  sys	0m0.012s
+  UNSAT
+  Test (./str_replace169.smt2):
+  
+  real	0m0.245s
+  user	0m0.223s
+  sys	0m0.012s
+  UNSAT
+  Test (./str_replace17.smt2):
+  
+  real	0m1.652s
+  user	0m1.591s
+  sys	0m0.028s
+  SAT
+  Test (./str_replace170.smt2):
+  
+  real	0m0.211s
+  user	0m0.191s
+  sys	0m0.012s
+  UNSAT
+  Test (./str_replace171.smt2):
+  
+  real	0m0.245s
+  user	0m0.221s
+  sys	0m0.014s
+  UNSAT
+  Test (./str_replace172.smt2):
+  
+  real	0m0.246s
+  user	0m0.231s
+  sys	0m0.010s
+  UNSAT
+  Test (./str_replace173.smt2):
+  
+  real	0m0.267s
+  user	0m0.241s
+  sys	0m0.015s
+  UNSAT
+  Test (./str_replace174.smt2):
+  
+  real	0m0.227s
+  user	0m0.211s
+  sys	0m0.010s
+  UNSAT
+  Test (./str_replace175.smt2):
+  
+  real	0m0.945s
+  user	0m0.920s
+  sys	0m0.018s
+  UNSAT
+  Test (./str_replace176.smt2):
+  
+  real	0m0.276s
+  user	0m0.239s
+  sys	0m0.013s
+  UNSAT
+  Test (./str_replace177.smt2):
+  
+  real	0m0.222s
+  user	0m0.205s
+  sys	0m0.011s
+  UNSAT
+  Test (./str_replace178.smt2):
+  
+  real	0m0.285s
+  user	0m0.263s
+  sys	0m0.012s
+  UNSAT
+  Test (./str_replace179.smt2):
+  
+  real	0m0.274s
+  user	0m0.257s
+  sys	0m0.012s
+  UNSAT
+  Test (./str_replace18.smt2):
+  
+  real	0m0.032s
+  user	0m0.021s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace180.smt2):
+  
+  real	0m0.226s
+  user	0m0.210s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace181.smt2):
+  
+  real	0m0.037s
+  user	0m0.025s
+  sys	0m0.007s
+  UNSAT
+  Test (./str_replace182.smt2):
+  
+  real	0m0.033s
+  user	0m0.021s
+  sys	0m0.007s
+  UNSAT
+  Test (./str_replace183.smt2):
+  
+  real	0m1.177s
+  user	0m1.097s
+  sys	0m0.038s
+  UNSAT
+  Test (./str_replace184.smt2):
+  
+  real	0m0.220s
+  user	0m0.204s
+  sys	0m0.010s
+  UNSAT
+  Test (./str_replace185.smt2):
+  
+  real	0m0.266s
+  user	0m0.249s
+  sys	0m0.011s
+  UNSAT
+  Test (./str_replace186.smt2):
+  
+  real	0m0.245s
+  user	0m0.227s
+  sys	0m0.011s
+  UNSAT
+  Test (./str_replace187.smt2):
+  
+  real	0m0.247s
+  user	0m0.218s
+  sys	0m0.013s
+  UNSAT
+  Test (./str_replace188.smt2):
+  
+  real	0m0.021s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace189.smt2):
+  
+  real	0m2.095s
+  user	0m2.011s
+  sys	0m0.042s
+  UNSAT
+  Test (./str_replace19.smt2):
+  
+  real	0m0.042s
+  user	0m0.026s
+  sys	0m0.009s
+  SAT
+  Test (./str_replace190.smt2):
+  
+  real	0m0.235s
+  user	0m0.214s
+  sys	0m0.012s
+  UNSAT
+  Test (./str_replace191.smt2):
+  
+  real	0m0.273s
+  user	0m0.256s
+  sys	0m0.011s
+  UNSAT
+  Test (./str_replace192.smt2):
+  
+  real	0m2.003s
+  user	0m1.867s
+  sys	0m0.047s
+  UNSAT
+  Test (./str_replace193.smt2):
+  
+  real	0m0.023s
+  user	0m0.011s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace194.smt2):
+  
+  real	0m0.218s
+  user	0m0.205s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace195.smt2):
+  
+  real	0m0.267s
+  user	0m0.252s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace196.smt2):
+  
+  real	0m0.275s
+  user	0m0.262s
+  sys	0m0.008s
+  UNSAT
+  Test (./str_replace197.smt2):
+  
+  real	0m0.233s
+  user	0m0.218s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace198.smt2):
+  
+  real	0m0.186s
+  user	0m0.172s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace199.smt2):
+  
+  real	0m0.922s
+  user	0m0.903s
+  sys	0m0.013s
+  UNSAT
+  Test (./str_replace2.smt2):
+  
+  real	0m0.036s
+  user	0m0.025s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace20.smt2):
+  
+  real	0m0.038s
+  user	0m0.027s
+  sys	0m0.006s
+  SAT
+  Test (./str_replace200.smt2):
+  
+  real	0m0.219s
+  user	0m0.205s
+  sys	0m0.008s
+  UNSAT
+  Test (./str_replace201.smt2):
+  
+  real	0m0.268s
+  user	0m0.254s
+  sys	0m0.008s
+  UNSAT
+  Test (./str_replace202.smt2):
+  
+  real	0m0.270s
+  user	0m0.255s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace203.smt2):
+  
+  real	0m0.032s
+  user	0m0.020s
+  sys	0m0.006s
+  UNSAT
+  Test (./str_replace204.smt2):
+  
+  real	0m0.222s
+  user	0m0.205s
+  sys	0m0.010s
+  UNSAT
+  Test (./str_replace205.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./str_replace206.smt2):
+  
+  real	0m0.022s
+  user	0m0.011s
+  sys	0m0.006s
+  SAT
+  Test (./str_replace207.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./str_replace208.smt2):
+  
+  real	0m0.024s
+  user	0m0.011s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace209.smt2):
+  
+  real	0m0.034s
+  user	0m0.021s
+  sys	0m0.008s
+  UNSAT
+  Test (./str_replace21.smt2):
+  
+  real	0m0.040s
+  user	0m0.027s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace210.smt2):
+  
+  real	0m0.023s
+  user	0m0.011s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace211.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./str_replace212.smt2):
+  
+  real	0m0.022s
+  user	0m0.011s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace213.smt2):
+  
+  real	0m0.031s
+  user	0m0.019s
+  sys	0m0.007s
+  UNSAT
+  Test (./str_replace214.smt2):
+  
+  real	0m1.545s
+  user	0m1.527s
+  sys	0m0.010s
+  SAT
+  Test (./str_replace215.smt2):
+  
+  real	0m0.025s
+  user	0m0.011s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace216.smt2):
+  
+  real	0m0.032s
+  user	0m0.019s
+  sys	0m0.007s
+  UNSAT
+  Test (./str_replace217.smt2):
+  
+  real	0m0.033s
+  user	0m0.022s
+  sys	0m0.006s
+  SAT
+  Test (./str_replace218.smt2):
+  
+  real	0m0.036s
+  user	0m0.025s
+  sys	0m0.006s
+  SAT
+  Test (./str_replace219.smt2):
+  
+  real	0m0.036s
+  user	0m0.025s
+  sys	0m0.006s
+  SAT
+  Test (./str_replace22.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./str_replace220.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./str_replace221.smt2):
+  
+  real	0m1.559s
+  user	0m1.542s
+  sys	0m0.012s
+  SAT
+  Test (./str_replace222.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./str_replace223.smt2):
+  
+  real	0m0.030s
+  user	0m0.019s
+  sys	0m0.006s
+  UNSAT
+  Test (./str_replace224.smt2):
+  
+  real	0m0.033s
+  user	0m0.022s
+  sys	0m0.006s
+  SAT
+  Test (./str_replace225.smt2):
+  
+  real	0m0.036s
+  user	0m0.025s
+  sys	0m0.006s
+  SAT
+  Test (./str_replace226.smt2):
+  
+  real	0m0.036s
+  user	0m0.025s
+  sys	0m0.006s
+  SAT
+  Test (./str_replace228.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./str_replace229.smt2):
+  
+  real	0m1.542s
+  user	0m1.521s
+  sys	0m0.012s
+  SAT
+  Test (./str_replace23.smt2):
+  
+  real	0m0.020s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace230.smt2):
+  
+  real	0m0.030s
+  user	0m0.019s
+  sys	0m0.007s
+  UNSAT
+  Test (./str_replace231.smt2):
+  
+  real	0m0.033s
+  user	0m0.022s
+  sys	0m0.006s
+  SAT
+  Test (./str_replace232.smt2):
+  
+  real	0m0.036s
+  user	0m0.025s
+  sys	0m0.006s
+  SAT
+  Test (./str_replace233.smt2):
+  
+  real	0m0.036s
+  user	0m0.025s
+  sys	0m0.006s
+  SAT
+  Test (./str_replace234.smt2):
+  
+  real	0m0.018s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./str_replace235.smt2):
+  
+  real	0m1.542s
+  user	0m1.529s
+  sys	0m0.008s
+  SAT
+  Test (./str_replace24.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./str_replace25.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./str_replace26.smt2):
+  
+  real	0m0.548s
+  user	0m0.532s
+  sys	0m0.011s
+  UNSAT
+  Test (./str_replace27.smt2):
+  
+  real	0m0.233s
+  user	0m0.219s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace28.smt2):
+  
+  real	0m0.231s
+  user	0m0.211s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace29.smt2):
+  
+  real	0m0.222s
+  user	0m0.206s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace3.smt2):
+  
+  real	0m0.037s
+  user	0m0.025s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace30.smt2):
+  
+  real	0m0.183s
+  user	0m0.171s
+  sys	0m0.008s
+  UNSAT
+  Test (./str_replace31.smt2):
+  
+  real	0m0.220s
+  user	0m0.207s
+  sys	0m0.008s
+  UNSAT
+  Test (./str_replace32.smt2):
+  
+  real	0m0.229s
+  user	0m0.216s
+  sys	0m0.008s
+  UNSAT
+  Test (./str_replace33.smt2):
+  
+  real	0m0.227s
+  user	0m0.214s
+  sys	0m0.008s
+  UNSAT
+  Test (./str_replace34.smt2):
+  
+  real	0m0.217s
+  user	0m0.204s
+  sys	0m0.008s
+  UNSAT
+  Test (./str_replace35.smt2):
+  
+  real	0m0.935s
+  user	0m0.916s
+  sys	0m0.013s
+  UNSAT
+  Test (./str_replace36.smt2):
+  
+  real	0m0.235s
+  user	0m0.220s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace37.smt2):
+  
+  real	0m0.225s
+  user	0m0.209s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace38.smt2):
+  
+  real	0m0.274s
+  user	0m0.261s
+  sys	0m0.008s
+  UNSAT
+  Test (./str_replace39.smt2):
+  
+  real	0m0.271s
+  user	0m0.258s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace4.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./str_replace40.smt2):
+  
+  real	0m0.216s
+  user	0m0.204s
+  sys	0m0.008s
+  UNSAT
+  Test (./str_replace41.smt2):
+  
+  real	0m0.037s
+  user	0m0.025s
+  sys	0m0.007s
+  UNSAT
+  Test (./str_replace42.smt2):
+  
+  real	0m0.032s
+  user	0m0.021s
+  sys	0m0.006s
+  UNSAT
+  Test (./str_replace43.smt2):
+  
+  real	0m1.051s
+  user	0m1.025s
+  sys	0m0.017s
+  UNSAT
+  Test (./str_replace44.smt2):
+  
+  real	0m0.217s
+  user	0m0.203s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace45.smt2):
+  
+  real	0m0.264s
+  user	0m0.250s
+  sys	0m0.008s
+  UNSAT
+  Test (./str_replace46.smt2):
+  
+  real	0m0.233s
+  user	0m0.219s
+  sys	0m0.008s
+  UNSAT
+  Test (./str_replace47.smt2):
+  
+  real	0m0.227s
+  user	0m0.211s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace48.smt2):
+  
+  real	0m1.969s
+  user	0m1.938s
+  sys	0m0.022s
+  UNSAT
+  Test (./str_replace49.smt2):
+  
+  real	0m0.215s
+  user	0m0.202s
+  sys	0m0.008s
+  UNSAT
+  Test (./str_replace5.smt2):
+  
+  real	0m1.543s
+  user	0m1.530s
+  sys	0m0.008s
+  SAT
+  Test (./str_replace50.smt2):
+  
+  real	0m0.264s
+  user	0m0.251s
+  sys	0m0.008s
+  UNSAT
+  Test (./str_replace51.smt2):
+  
+  real	0m1.811s
+  user	0m1.768s
+  sys	0m0.021s
+  UNSAT
+  Test (./str_replace52.smt2):
+  
+  real	0m0.023s
+  user	0m0.011s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace53.smt2):
+  
+  real	0m0.217s
+  user	0m0.203s
+  sys	0m0.008s
+  UNSAT
+  Test (./str_replace54.smt2):
+  
+  real	0m0.276s
+  user	0m0.259s
+  sys	0m0.010s
+  UNSAT
+  Test (./str_replace55.smt2):
+  
+  real	0m0.268s
+  user	0m0.252s
+  sys	0m0.010s
+  UNSAT
+  Test (./str_replace56.smt2):
+  
+  real	0m0.244s
+  user	0m0.226s
+  sys	0m0.011s
+  UNSAT
+  Test (./str_replace57.smt2):
+  
+  real	0m0.189s
+  user	0m0.172s
+  sys	0m0.011s
+  UNSAT
+  Test (./str_replace58.smt2):
+  
+  real	0m0.957s
+  user	0m0.929s
+  sys	0m0.018s
+  UNSAT
+  Test (./str_replace59.smt2):
+  
+  real	0m0.221s
+  user	0m0.207s
+  sys	0m0.008s
+  UNSAT
+  Test (./str_replace6.smt2):
+  
+  real	0m0.031s
+  user	0m0.019s
+  sys	0m0.007s
+  UNSAT
+  Test (./str_replace60.smt2):
+  
+  real	0m0.268s
+  user	0m0.254s
+  sys	0m0.010s
+  UNSAT
+  Test (./str_replace61.smt2):
+  
+  real	0m0.269s
+  user	0m0.253s
+  sys	0m0.010s
+  UNSAT
+  Test (./str_replace62.smt2):
+  
+  real	0m0.034s
+  user	0m0.021s
+  sys	0m0.008s
+  UNSAT
+  Test (./str_replace63.smt2):
+  
+  real	0m0.226s
+  user	0m0.210s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace64.smt2):
+  
+  real	0m0.049s
+  user	0m0.016s
+  sys	0m0.011s
+  SAT
+  Test (./str_replace65.smt2):
+  
+  real	0m0.564s
+  user	0m0.539s
+  sys	0m0.016s
+  UNSAT
+  Test (./str_replace66.smt2):
+  
+  real	0m0.258s
+  user	0m0.221s
+  sys	0m0.013s
+  UNSAT
+  Test (./str_replace67.smt2):
+  
+  real	0m0.220s
+  user	0m0.205s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace68.smt2):
+  
+  real	0m0.222s
+  user	0m0.208s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace69.smt2):
+  
+  real	0m0.183s
+  user	0m0.169s
+  sys	0m0.008s
+  UNSAT
+  Test (./str_replace7.smt2):
+  
+  real	0m0.034s
+  user	0m0.022s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace70.smt2):
+  
+  real	0m0.218s
+  user	0m0.204s
+  sys	0m0.008s
+  UNSAT
+  Test (./str_replace71.smt2):
+  
+  real	0m0.230s
+  user	0m0.216s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace72.smt2):
+  
+  real	0m0.234s
+  user	0m0.219s
+  sys	0m0.010s
+  UNSAT
+  Test (./str_replace73.smt2):
+  
+  real	0m0.241s
+  user	0m0.213s
+  sys	0m0.011s
+  UNSAT
+  Test (./str_replace74.smt2):
+  
+  real	0m0.956s
+  user	0m0.933s
+  sys	0m0.016s
+  UNSAT
+  Test (./str_replace75.smt2):
+  
+  real	0m0.236s
+  user	0m0.221s
+  sys	0m0.010s
+  UNSAT
+  Test (./str_replace76.smt2):
+  
+  real	0m0.226s
+  user	0m0.211s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace77.smt2):
+  
+  real	0m0.284s
+  user	0m0.261s
+  sys	0m0.014s
+  UNSAT
+  Test (./str_replace78.smt2):
+  
+  real	0m0.359s
+  user	0m0.301s
+  sys	0m0.020s
+  UNSAT
+  Test (./str_replace79.smt2):
+  
+  real	0m0.259s
+  user	0m0.221s
+  sys	0m0.017s
+  UNSAT
+  Test (./str_replace8.smt2):
+  
+  real	0m0.038s
+  user	0m0.025s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace80.smt2):
+  
+  real	0m0.040s
+  user	0m0.026s
+  sys	0m0.008s
+  UNSAT
+  Test (./str_replace81.smt2):
+  
+  real	0m0.034s
+  user	0m0.022s
+  sys	0m0.007s
+  UNSAT
+  Test (./str_replace82.smt2):
+  
+  real	0m1.170s
+  user	0m1.099s
+  sys	0m0.036s
+  UNSAT
+  Test (./str_replace83.smt2):
+  
+  real	0m0.233s
+  user	0m0.209s
+  sys	0m0.012s
+  UNSAT
+  Test (./str_replace84.smt2):
+  
+  real	0m0.274s
+  user	0m0.256s
+  sys	0m0.011s
+  UNSAT
+  Test (./str_replace85.smt2):
+  
+  real	0m0.231s
+  user	0m0.216s
+  sys	0m0.010s
+  UNSAT
+  Test (./str_replace86.smt2):
+  
+  real	0m0.224s
+  user	0m0.209s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace87.smt2):
+  
+  real	0m2.006s
+  user	0m1.955s
+  sys	0m0.032s
+  UNSAT
+  Test (./str_replace88.smt2):
+  
+  real	0m0.239s
+  user	0m0.218s
+  sys	0m0.011s
+  UNSAT
+  Test (./str_replace89.smt2):
+  
+  real	0m0.299s
+  user	0m0.271s
+  sys	0m0.013s
+  UNSAT
+  Test (./str_replace9.smt2):
+  
+  real	0m0.037s
+  user	0m0.025s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace90.smt2):
+  
+  real	0m1.850s
+  user	0m1.790s
+  sys	0m0.035s
+  UNSAT
+  Test (./str_replace91.smt2):
+  
+  real	0m0.022s
+  user	0m0.011s
+  sys	0m0.007s
+  SAT
+  Test (./str_replace92.smt2):
+  
+  real	0m0.218s
+  user	0m0.203s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace93.smt2):
+  
+  real	0m0.268s
+  user	0m0.253s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace94.smt2):
+  
+  real	0m0.267s
+  user	0m0.251s
+  sys	0m0.010s
+  UNSAT
+  Test (./str_replace95.smt2):
+  
+  real	0m0.231s
+  user	0m0.216s
+  sys	0m0.009s
+  UNSAT
+  Test (./str_replace96.smt2):
+  
+  real	0m0.185s
+  user	0m0.172s
+  sys	0m0.008s
+  UNSAT
+  Test (./str_replace97.smt2):
+  
+  real	0m0.962s
+  user	0m0.925s
+  sys	0m0.022s
+  UNSAT
+  Test (./str_replace98.smt2):
+  
+  real	0m0.251s
+  user	0m0.209s
+  sys	0m0.013s
+  UNSAT
+  Test (./str_replace99.smt2):
+  
+  real	0m0.264s
+  user	0m0.249s
+  sys	0m0.009s
+  UNSAT
+

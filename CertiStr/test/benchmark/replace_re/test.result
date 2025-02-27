@@ -1,0 +1,597 @@
+  $ ./benchmark.sh
+  Test (./lan_replace0.smt2):
+  
+  real	0m0.034s
+  user	0m0.017s
+  sys	0m0.008s
+  SAT
+  Test (./lan_replace1.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace10.smt2):
+  
+  real	0m0.056s
+  user	0m0.044s
+  sys	0m0.007s
+  SAT
+  Test (./lan_replace100.smt2):
+  
+  real	0m0.020s
+  user	0m0.007s
+  sys	0m0.007s
+  SAT
+  Test (./lan_replace102.smt2):
+  Fatal error: exception Parser.UnsupportedReg("OTHER")
+  
+  real	0m0.017s
+  user	0m0.007s
+  sys	0m0.006s
+  
+  Test (./lan_replace103.smt2):
+  
+  real	0m0.018s
+  user	0m0.007s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace104.smt2):
+  
+  real	0m0.020s
+  user	0m0.007s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace105.smt2):
+  
+  real	0m0.018s
+  user	0m0.007s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace106.smt2):
+  
+  real	0m0.054s
+  user	0m0.043s
+  sys	0m0.007s
+  SAT
+  Test (./lan_replace107.smt2):
+  
+  real	0m0.027s
+  user	0m0.016s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace108.smt2):
+  
+  real	0m0.085s
+  user	0m0.073s
+  sys	0m0.007s
+  SAT
+  Test (./lan_replace12.smt2):
+  
+  real	0m0.028s
+  user	0m0.016s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace13.smt2):
+  
+  real	0m0.018s
+  user	0m0.007s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace14.smt2):
+  
+  real	0m0.018s
+  user	0m0.007s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace15.smt2):
+  
+  real	0m0.018s
+  user	0m0.007s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace16.smt2):
+  
+  real	0m0.086s
+  user	0m0.074s
+  sys	0m0.007s
+  SAT
+  Test (./lan_replace17.smt2):
+  Fatal error: exception Parser.UnsupportedReg("OTHER")
+  
+  real	0m0.018s
+  user	0m0.007s
+  sys	0m0.006s
+  
+  Test (./lan_replace18.smt2):
+  
+  real	0m0.056s
+  user	0m0.045s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace19.smt2):
+  
+  real	0m0.029s
+  user	0m0.017s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace2.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace20.smt2):
+  
+  real	0m0.088s
+  user	0m0.076s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace21.smt2):
+  
+  real	0m0.022s
+  user	0m0.008s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace22.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace23.smt2):
+  
+  real	0m0.023s
+  user	0m0.008s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace24.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace25.smt2):
+  
+  real	0m0.022s
+  user	0m0.009s
+  sys	0m0.007s
+  SAT
+  Test (./lan_replace27.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace28.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace29.smt2):
+  
+  real	0m0.018s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace3.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace30.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace31.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace32.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace33.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace34.smt2):
+  
+  real	0m0.021s
+  user	0m0.010s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace36.smt2):
+  
+  real	0m0.021s
+  user	0m0.009s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace37.smt2):
+  
+  real	0m0.023s
+  user	0m0.009s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace38.smt2):
+  
+  real	0m0.022s
+  user	0m0.009s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace39.smt2):
+  
+  real	0m0.020s
+  user	0m0.009s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace4.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace40.smt2):
+  
+  real	0m0.020s
+  user	0m0.009s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace41.smt2):
+  
+  real	0m0.021s
+  user	0m0.010s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace42.smt2):
+  
+  real	0m0.020s
+  user	0m0.010s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace43.smt2):
+  
+  real	0m0.022s
+  user	0m0.011s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace44.smt2):
+  
+  real	0m0.019s
+  user	0m0.007s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace45.smt2):
+  
+  real	0m8.302s
+  user	0m8.116s
+  sys	0m0.112s
+  UNSAT
+  Test (./lan_replace46.smt2):
+  
+  real	0m8.490s
+  user	0m8.263s
+  sys	0m0.125s
+  UNSAT
+  Test (./lan_replace47.smt2):
+  
+  real	0m8.398s
+  user	0m8.171s
+  sys	0m0.104s
+  UNSAT
+  Test (./lan_replace48.smt2):
+  
+  real	0m8.475s
+  user	0m8.270s
+  sys	0m0.116s
+  UNSAT
+  Test (./lan_replace5.smt2):
+  
+  real	0m0.063s
+  user	0m0.045s
+  sys	0m0.009s
+  SAT
+  Test (./lan_replace50.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.007s
+  inconclusive
+  Test (./lan_replace51.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace52.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace53.smt2):
+  
+  real	0m0.023s
+  user	0m0.011s
+  sys	0m0.007s
+  SAT
+  Test (./lan_replace55.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.007s
+  SAT
+  Test (./lan_replace56.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.007s
+  SAT
+  Test (./lan_replace57.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace58.smt2):
+  
+  real	0m0.022s
+  user	0m0.008s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace59.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace6.smt2):
+  
+  real	0m0.026s
+  user	0m0.016s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace60.smt2):
+  
+  real	0m0.018s
+  user	0m0.008s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace61.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace62.smt2):
+  
+  real	0m0.020s
+  user	0m0.009s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace64.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace65.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace66.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace67.smt2):
+  Fatal error: exception Parser.UnsupportedReg("OTHER")
+  
+  real	0m0.018s
+  user	0m0.006s
+  sys	0m0.006s
+  
+  Test (./lan_replace68.smt2):
+  
+  real	0m0.055s
+  user	0m0.044s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace69.smt2):
+  
+  real	0m0.023s
+  user	0m0.009s
+  sys	0m0.008s
+  inconclusive
+  Test (./lan_replace7.smt2):
+  
+  real	0m0.089s
+  user	0m0.074s
+  sys	0m0.008s
+  SAT
+  Test (./lan_replace70.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace71.smt2):
+  
+  real	0m0.020s
+  user	0m0.009s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace72.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace73.smt2):
+  
+  real	0m0.027s
+  user	0m0.016s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace74.smt2):
+  
+  real	0m0.087s
+  user	0m0.075s
+  sys	0m0.007s
+  SAT
+  Test (./lan_replace75.smt2):
+  
+  real	0m0.021s
+  user	0m0.010s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace76.smt2):
+  Fatal error: exception Parser.UnsupportedReg("OTHER")
+  
+  real	0m0.018s
+  user	0m0.007s
+  sys	0m0.006s
+  
+  Test (./lan_replace78.smt2):
+  
+  real	0m0.055s
+  user	0m0.044s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace79.smt2):
+  
+  real	0m0.028s
+  user	0m0.016s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace8.smt2):
+  
+  real	0m0.021s
+  user	0m0.010s
+  sys	0m0.007s
+  SAT
+  Test (./lan_replace81.smt2):
+  
+  real	0m0.097s
+  user	0m0.080s
+  sys	0m0.008s
+  SAT
+  Test (./lan_replace82.smt2):
+  
+  real	0m0.022s
+  user	0m0.008s
+  sys	0m0.007s
+  SAT
+  Test (./lan_replace84.smt2):
+  
+  real	0m0.021s
+  user	0m0.008s
+  sys	0m0.007s
+  SAT
+  Test (./lan_replace85.smt2):
+  Fatal error: exception Parser.UnsupportedReg("OTHER")
+  
+  real	0m0.024s
+  user	0m0.009s
+  sys	0m0.009s
+  
+  Test (./lan_replace86.smt2):
+  
+  real	0m0.063s
+  user	0m0.047s
+  sys	0m0.008s
+  SAT
+  Test (./lan_replace87.smt2):
+  
+  real	0m0.030s
+  user	0m0.017s
+  sys	0m0.007s
+  SAT
+  Test (./lan_replace88.smt2):
+  
+  real	0m0.089s
+  user	0m0.075s
+  sys	0m0.008s
+  SAT
+  Test (./lan_replace89.smt2):
+  
+  real	0m0.020s
+  user	0m0.008s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace9.smt2):
+  Fatal error: exception Parser.UnsupportedReg("OTHER")
+  
+  real	0m0.018s
+  user	0m0.007s
+  sys	0m0.006s
+  
+  Test (./lan_replace91.smt2):
+  
+  real	0m0.018s
+  user	0m0.008s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace92.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  inconclusive
+  Test (./lan_replace93.smt2):
+  Fatal error: exception Parser.UnsupportedReg("OTHER")
+  
+  real	0m0.017s
+  user	0m0.007s
+  sys	0m0.006s
+  
+  Test (./lan_replace94.smt2):
+  
+  real	0m0.021s
+  user	0m0.010s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace95.smt2):
+  
+  real	0m0.056s
+  user	0m0.045s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace96.smt2):
+  
+  real	0m0.028s
+  user	0m0.016s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace97.smt2):
+  
+  real	0m0.019s
+  user	0m0.008s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace98.smt2):
+  
+  real	0m0.018s
+  user	0m0.007s
+  sys	0m0.006s
+  SAT
+  Test (./lan_replace99.smt2):
+  
+  real	0m0.102s
+  user	0m0.087s
+  sys	0m0.009s
+  SAT
+
