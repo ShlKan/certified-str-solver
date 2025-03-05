@@ -1,4 +1,4 @@
-\documentclass[a4paper,UKenglish,cleveref, autoref, thm-restate]{lipics-v2021}
+\documentclass[a4paper,UKenglish,cleveref, autoref, anonymous, thm-restate]{lipics-v2021}
 %This is a template for producing LIPIcs articles. 
 %See lipics-v2021-authors-guidelines.pdf for further information.
 %for A4 paper format use option "a4paper", for US-letter use option "letterpaper"
@@ -108,14 +108,13 @@ Interactive Theorem Proving (ITP 2025)}
 
 %TODO mandatory: add short abstract of the document
 \begin{abstract}
-Finite-State Automata (FAs) and Finite-State Transducers (FTs) are integral components in the domains of programming languages and software engineering. Regular expressions, which are often implemented using FAs, play a pivotal role in languages such as JavaScript and Python. FTs extend the capabilities of FAs by allowing transformations of input strings into output strings, thus providing a more expressive framework for operations that involve both recognition and transformation. Despite the popularity of formalizing FAs and FTs within proof assistants like Coq and Isabelle/HOL, these formalizations frequently fall short in terms of applicability to real-world scenarios.
+Finite-state Automata (FAs) are fundamental components in the domains of programming languages. For instance, regular expressions, which are pivotal in languages such as JavaScript and Python, are frequently implemented using FAs.
+%
+Finite-state Transducers (FTs) extend the capabilities of FAs by enabling the transformation of input strings into output strings, thereby providing a more expressive framework for operations that encompass both recognition and transformation. Despite the widespread adoption of formalizing FAs and FTs within proof assistants such as Coq and Isabelle/HOL, these formalizations often fall short in terms of applicability to real-world scenarios. A significant limitation of classical finite-state models is that transition labels are typically confined to a single character from a finite alphabet. However, in practical applications, the alphabet of an FA or FT can be extensive or even \emph{infinite}. This classical approach to formalizing transitions can result in transition explosion, leading to critical performance bottlenecks of FA operations.
 
-One limitation of traditional finite-state models is that transition labels are typically restricted to single characters from a finite alphabet. For example, a transition is often represented as $q \xrightarrow{a} q'$, where $a$ is a single character. However, in real-world applications, the alphabet of a FA or FT can be vast or even \emph{infinite}. This conventional approach to defining transitions can lead to a phenomenon known as transition explosion, where the number of transitions becomes unmanageably large.
-
-
-A more pragmatic approach involves the formalization of symbolic FAs [1] and FTs [2], wherein transition labels are symbolic and potentially infinite. While the formalization of symbolic FAs has been comprehensively explored in the work of \cite{cpp/KanLRS22}, the formalization of symbolic FTs remains largely unexplored. This gap presents additional challenges in establishing the correctness and applicability of such formalizations.
-
-In this paper, we endeavor to address this gap by presenting a formalization of symbolic transducers within the Isabelle/HOL framework. This formalization is refinement-based and is designed to be extensible with various symbolic representations of transition labels. To evaluate its effectiveness and efficiency, we applied this formalization to an SMT string solver for modeling replacement operations. The experimental results demonstrate that the formalized symbolic transducer can efficiently solve string constraints.
+A more pragmatic approach involves the formalization of symbolic FAs \cite{cav/DAntoniV17} and FTs \cite{VeanesHLMB12Transducer}, where transition labels are symbolic and potentially infinite. While the formalization of symbolic FAs has been explored in the work of CertiStr \cite{cpp/KanLRS22}, the formalization of symbolic FTs in interactive proof assistants remains largely unexplored due to the increased complexity challenges.
+%
+In this paper, we aim to formalize symbolic FTs within the Isabelle/HOL framework. This formalization is refinement-based and is designed to be extensible with various symbolic representations of transition labels. To assess its performance, we applied the formalized symbolic FTs to an SMT string solver for modeling replacement operations. The experimental results indicate that the formalized symbolic transducer can efficiently solve string constraints.
 
 
 \end{abstract}
@@ -123,58 +122,61 @@ In this paper, we endeavor to address this gap by presenting a formalization of 
 \section{Introduction}
 \label{sec:introduction}
 
-Automata and Transducers are crucial concepts in formal languages and have widely applications in programming languages and software engineering. For instance, [1] has shown the correspondence between  regular expressions in modern regular expressions and variants of FAs and FTs. Other industrial usage of FAs and FTs is AWS access control polices checking.
+Finite-state Automata (FA) and Finite-state Transducers (FT) are fundamental constructs in the theory of formal languages, with extensive applications in programming languages and software engineering. For example, recent advancements in string solvers, as demonstrated by \cite{pacmpl/ChenFHHHKLRW22}, have illustrated the relationship between regular expressions in modern programming languages and various forms of FAs and FTs. Additionally, FAs and FTs find significant industrial applications, such as in the verification of AWS access control policies \cite{DBLP:conf/fmcad/BackesBCDGLRTV18}.
 
 
-Even though there various  formalization of FAs and FTs in Coq, Isabelle, and other proof assistants. They are mainly based on classic definitions of FAs and FTs.  There some drawbacks when come to practical applications. (1) transition labels are 
-non-symbolic and usually finite.
-A classic and normal definition of a transition is $q\xrightarrow{a}q'$, where $a$ is a character in an finite alphabet.  This simple way will yield transition explosions. 
-For instance, if the alphabet $\Sigma$ is of the size $10,000$, then a transition from $q$ to $q'$ that accept any characters in $\Sigma$ need to split into $10,000$ transitions. Automata product in this way will be very inefficient. Moreover, 
-The alphabet are usually finite. For practical applications, infinite alphabet are often necessary. For instance, if the alphabet is all integers. 
+Even though there are various formalizations of FAs and FTs in interactive proof assistants such as Isabelle \cite{isabelle-homepage} and Coq \cite{coq-homepage}, these are predominantly based on classical definitions. However, these traditional approaches present certain limitations when applied to practical scenarios. One significant drawback is that transition labels are typically non-symbolic and finite. A conventional transition is represented as $q\xrightarrow{a}q'$, where $a$ is a character from a finite alphabet. This simplistic representation can lead to a phenomenon known as transition explosion. For example, if the alphabet $\Sigma$ encompasses the entire Unicode range, which is common in modern programming languages, it consists of $\texttt{0x10FFFF}$ distinct characters. Defining a transition from state $q$ to $q'$ that accepts any character in $\Sigma$ would require splitting into $\texttt{0x10FFFF}$ individual transitions, rendering the product of two FAs highly inefficient. Furthermore, in practical applications, it is often necessary to consider infinite alphabets, such as the set of all integers.
 
 
 
-Symbolic FAs and FTs [2,3,4] are extensions of classic FAs and FTs that make their application more practical. The transition labels are represented by algebra. For instances, intervals ($'a'-'z'$), boolean algebras ($x \% 2 == 0$), or others. This symbolic way is more succinct and its support for infinite alphabet extend the expressive power of FAs and FTs.
-
-Formalizing FAs and FTs in Isabelle/HOL, Coq, and other proof assists are more challenging compare with formalizing classic ones. Moreover, how to make the formalization extensible is also an important point to think, because, symbolic FAs and FTs support different algebras symbolic representations. For new algebra representations, we do not want repeat some proof works.
+Symbolic Finite Automata (SFA) and Symbolic Finite-state Transducers (SFT) \cite{cav/DAntoniV17, VeanesHLMB12Transducer} represent advanced extensions of classic Finite Automata (FAs) and Finite-state Transducers (FTs), enhancing their applicability in practical scenarios. These symbolic models utilize transition labels defined by boolean algebras, allowing for more expressive representations. For example, a transition label might be specified as an interval ($'\texttt{a}'-'\texttt{z}'$), encompassing all characters from $'\texttt{a}'$ to $'\texttt{z}'$, or as an arithmetic condition ($x \% 2 = 0$), denoting all even numbers. This symbolic approach not only provides a more succinct representation but also supports infinite alphabets, thereby extending the expressive capabilities of FAs and FTs.
 
 
-Fortunately, symbolic FAs has been formalized in Isabelle/HOL [certistr] and experiments in [certistr] illustrates the efficiency and effective of symbolic FAs. Unfortunately FTs are not formalized yet.  FTs are more powerful and expressive than symbolic FAs. For instance, when FTs are support, replacement operation in modern programming languages, such as Javascript, python and others can be modelled as FTs. And CertiStr can be extended to support replacement operations.
+The formalization of transition labels in SFAs and SFTs presents significant challenges within interactive proof assistants. Two fundamental considerations arise: first, the representation of transition labels must be sufficiently expressive to accommodate diverse boolean algebras; second, the formalization framework must be designed with extensibility in mind to facilitate the incorporation of new boolean algebras while minimizing redundant proof efforts.
 
-In this paper, we formalize symbolic FTs based on symbolic FAs. In order to solve the potential extension problem of FTs to support additional transition label theories, the formalization is refinement-based, in which at the abstraction level, transition labels are modeled as a general concept: sets. We can project any theory to sets. \emph{extend this}.
-The most important operation that we formalized and proved is the application operation on an input language.  More precisely, given an FA $\mathcal{A}$ (to represent a regular language) as the input language and a FT $\mathcal{T}$, the application operation $\mathcal{F}~\mathcal{A}$ is the  of output languages of FT after receiving the input language 
 
-In the next refinement level, the states and transitions are stored in efficient data structure based on Isabelle/HOL refinement framework [2].
-For transition labels, we implemented an interval algebra, which are efficient for creating, checking, interaction.
-%
-In the future the refinement of transition label from sets to other algebras instead of intervals can be done easily by implementing the common interfaces with interval algebras.
 
-We highlight our formulization with the following points.
-(1) Efficiency, the algebraic representation
-support compressed storage of transition labels and efficiency checking
-of membership.
-(2) Extensible, the refinement based formulization allows the extension
-of the SNFA to support different theories of transition labels.
+
+Prior work has successfully formalized symbolic FAs within Isabelle/HOL through CertiStr \cite{cpp/KanLRS22}, demonstrating both the efficiency and effectiveness of symbolic FAs in practice. However, the formalization of FTs remains an open challenge, primarily due to their inherent complexity in two aspects: the formalization of transition labels and the specification of transition output functions. FTs constitute a significantly more expressive and powerful theoretical framework compared to symbolic FAs, as evidenced by their capability to model complex string transformations such as replacement operations.
+Furthermore, the seminal work of \cite{VeanesHLMB12Transducer} demonstrates the broad applicability of SFTs across diverse domains, including security-critical applications such as cross-site scripting (XSS) prevention, image transformation operations, and privacy-preserving location data processing.
+
+
+ 
+In this work, we present a comprehensive formalization of symbolic FTs that builds upon the formalization of symbolic FAs. To address the extensibility challenges inherent in supporting diverse transition label theories, we adopt a refinement-based approach. At the abstraction level, transition labels are formalized through the fundamental mathematical concept of \emph{sets}. This abstraction facilitates subsequent refinement to various boolean algebras, including intervals and arithmetic conditions, while maintaining theoretical consistency.
+
+The key operation of our formalization is the product operation between an SFT and an input regular language. Specifically, given an SFA $\mathcal{A}$ representing a regular language and an SFT $\mathcal{T}$, we define the product operation $\mathcal{T} \times\mathcal{A}$ that characterizes the set of output languages generated by $\mathcal{T}$ when processing inputs from the language recognized by $\mathcal{A}$.
+
+
+Leveraging the data refinement framework \cite{DBLP:conf/itp/Lammich13} formalized in Isabelle/HOL, we implement an efficient representation of states and transitions using sophisticated data structures such as hashmaps and red-black trees. Furthermore, we develop a comprehensive interval algebra that provides efficient operations for creation, verification, and manipulation of intervals, thereby facilitating the implementation of replacement operations within our string solver framework. 
+
+
+In summary, Our formalization makes two primary contributions. First, we achieve computational efficiency through an algebraic representation that enables compressed storage of transition labels. Second, our refinement-based formalization framework demonstrates significant extensibility, facilitating the incorporation of diverse theories of transition labels.
+
+
 
 The paper is organized as follows.
-Section 2 presents the formalization of symbolic FTs.
-Section 3 presents the Core operations of symbolic FTs.
-
+Section \ref{sec:formalization} presents the formalization of symbolic FTs.
+Section \ref{sec:product-operation} presents the product operation of symbolic FTs in the abstraction level.
+Section \ref{sec_alg_refinement} presents the refinement of the product operation in Isabelle/HOL.
+Section \ref{sec-app-str-solver} presents the application of SFTs in the modeling of replacement operations in string solvers.
+Section \ref{sec:related-work} presents the related work.
+Section \ref{sec:conclusion} concludes the paper. 
 
 
 
 
 \section{Formalization of Symbolic FTs}
+\label{sec:formalization}
 
 
-We first present a pure mathematical form of SFTs \cite{VeanesHLMB12Transducer}, which is independent of Isabelle's formalization. 
-The central concept is the label theory, which characterizes the process by which output labels are derived from input labels.
+We begin by presenting a mathematical definition of SFTs \cite{VeanesHLMB12Transducer}, abstracting from the specific implementation details of Isabelle/HOL. The foundational concept underlying this formalization is the label theory, which characterizes the process by which output labels are derived from input labels.
+
 
 Let $\mathcal{U}$ be a multi-sorted carrier set or background universe, which is equipped with functions and relations over the elements. We use $\tau$ as a sort and $\mathcal{U}^\tau$ denotes the sub-universe of elements of type $\tau$. 
-We have a special type $\mathbb{B}$ with $\mathcal{U}^\mathbb{B} = \{ \top, \bot\}$, which corresponds to the boolean type. Assume $\mathbb{N}$ is the set of elements of the sort natural numbers.
+We have a special type $\mathbb{B}$ with $\mathcal{U}^\mathbb{B} = \{ \top, \bot\}$, which corresponds to the boolean type. 
 
-A lambda term is defined as $\lambda x. t$ of the type $\tau_1 \rightarrow \tau_2$.
-When $\tau_2$ is $\mathbb{B}$, this lambda term is a predicate. Assume $\psi$ is a predicate. We write $a\in \llbracket\psi \rrbracket$ if $\psi~a=\top$. For the non-predicate lambda term, we view it as a function, which generates an output element of type $\tau_2$ with the input term of type $\tau_1$. 
+A lambda term is defined as $\lambda x.~t$ of type $\tau_1 \rightarrow \tau_2$.
+When $\tau_2$ is $\mathbb{B}$, this lambda term is a predicate. Let $\phi$ be a predicate. We write $a\in \llbracket\phi \rrbracket$ if $\phi~a=\top$. For non-predicate lambda terms, we view them as functions that generate output elements of type $\tau_2$ given input terms of type $\tau_1$. 
 With these notations and the above definitions, we can define SFTs as follows.
 
 \begin{definition}[Symbolic Finite Transducer]
@@ -184,9 +186,9 @@ With these notations and the above definitions, we can define SFTs as follows.
    \item $\mathcal{Q}$ is a finite set of states,
    \item $\mathcal{I}\subseteq \mathcal{Q}$ is the set of initial states,
    \item $\mathcal{F} \subseteq\mathcal{Q}$ is the set of accepting states,
-   \item $\Delta$ is the set of transition relations. Each element in $\Delta$ is of the form $(q, \psi, f, q') \text{ or}$ $\text{written in }q\xrightarrow{\psi, f} q'$, where $q$ and $q'$ are the states in $\mathcal{Q}$.
-   $\psi$ is a predicate of type $\tau_1\rightarrow \mathbb{B}$.
-   $f$ is a lambda term of the type $\tau_1\rightarrow \tau_2$. $f$ is called "output function".
+   \item $\Delta$ is the set of transition relations. Each element in $\Delta$ is of the form $(q, \phi, f, q')$ or written as $q\xrightarrow{\phi, f} q'$, where $q$ and $q'$ are states in $\mathcal{Q}$.
+   $\phi$ is a predicate of type $\tau_1\rightarrow \mathbb{B}$.
+   $f$ is a lambda term of type $\tau_1\rightarrow \tau_2$. $f$ is called an \emph{output function}.
    \end{itemize}
 
 For each transition $q\xrightarrow{\phi, f} q'$, if there exists an element $a\in \llbracket \phi \rrbracket$, where $a$ is called an input,  then the application $(f~a)$ is the output.
@@ -194,27 +196,27 @@ For each transition $q\xrightarrow{\phi, f} q'$, if there exists an element $a\i
 \end{definition}
 
 SFTs accept an input word and generate an output. This can be defined by \emph{runs} of SFTs.
-An SFT run $\sigma$ is a sequence $(q_0, \psi_0, f_0, q_1),(q_1, \psi_1, f_1, q_2),\ldots, (q_{n-1}, \psi_{n-1}, q_n)$ such that $q_0\in \mathcal{I}$ and $(q_i, 
-\psi_i, f_i, q_{i+1}), 0 \leq i \leq n-1$ is a transition in $\Delta$.
+An SFT run $\sigma$ is a sequence $(q_0, \phi_0, f_0, q_1),(q_1, \phi_1, f_1, q_2),\ldots, (q_{n-1}, \phi_{n-1}, f_{n-1}, q_n)$ such that $q_0\in \mathcal{I}$ and $(q_i, 
+\phi_i, f_i, q_{i+1}), 0 \leq i \leq n-1$ is a transition in $\Delta$.
 $\sigma$ is an accepting run when $q_n$ is an accepting state.
 
-For a word $w = a_0,\ldots, a_{n-1}$, it is accepted by $\sigma$ iff $a_i \in \llbracket\psi_i \rrbracket$ for $0 \leq i \leq n - 1$. Run $\sigma$ will generate an output sequence if $w$ is accepted by it, which is $w'= (f_0~a_0), \ldots (f_{n_1}~a_{n_1})$. We call in the sequent:
+For a word $w = a_0,\ldots, a_{n-1}$, it is accepted by $\sigma$ if and only if $a_i \in \llbracket\phi_i \rrbracket$ for $0 \leq i \leq n - 1$. When $w$ is accepted, run $\sigma$ generates an output sequence $w'= f_0~a_0, \ldots, f_{n-1}~a_{n-1}$. We define:
 \begin{itemize}
 \item  $(a_0,(f_0~a_0)), \ldots, (a_{n-1},(f_{n-1}~a_{n-1}))$ a \emph{trace},
 \item $a_0,\ldots,a_{n-1}$ the \emph{input} of the trace and $(f_0~a_0), \ldots, (f_{n-1}~a_{n-1})$ the \emph{output} of the trace.
 \end{itemize}
 
 If $a_0,\ldots,a_{n-1}$ is accepted by an accepting run in $\mathcal{T}$, we say that the trace is an accepting trace of $\mathcal{T}$.
-For a trace $\pi$, we denote the input of $\pi$ as $in(\pi)$ and the output of $\pi$ as $out(\pi)$.
+For a trace $\pi$, we denote its input as $\mathit{in}(\pi)$ and its output as $\mathit{out}(\pi)$.
 %
-Given an SFT $\mathcal{T}$ and a word $w$, we define the operation product of $\mathcal{T}$ and $w$ (denoted as $\mathcal{T}\times\{w\}$) as the set of outputs generated by $\mathcal{T}$ with the input $w$. More precisely, 
+Given an SFT $\mathcal{T}$ and a word $w$, we define the \emph{product} operation of $\mathcal{T}$ and $w$ (denoted as $\mathcal{T}\times\{w\}$) as the set of outputs generated by $\mathcal{T}$ with input $w$. More precisely, 
 \[
-\mathcal{T}\times\{w\} = \{w'\mid \exists \pi.~\pi \text{ is an accepting trace }\land in(\pi) = w \land out(\pi) = w'\}.
+\mathcal{T}\times\{w\} = \{w'\mid \exists \pi.~\pi \text{ is an accepting trace of } \mathcal{T} \land in(\pi) = w \land out(\pi) = w'\}.
 \]
 
-To make the operation \emph{product} more general, we extend the operation to an SFT and a set of intput words represented by a regular language, which can be denoted as an NFA $\mathcal{A}$. More precisely,
+To make the operation \emph{product} more general, we extend the operation to an SFT and a set of input words represented by a regular language, which can be denoted by an NFA $\mathcal{A}$. More precisely,
 \[
-\mathcal{T}\times \mathcal{A} = \{w'\mid w.~w\in \mathcal{L}(\mathcal{A})\land w' = \mathcal{T}\times\{w\} \}, \text{where $\mathcal{L}(\mathcal{A})$ denotes the language of $\mathcal{A}$}.
+\mathcal{T}\times \mathcal{A} = \{w'\mid \exists w.~w\in \mathcal{L}(\mathcal{A})\land w' \in \mathcal{T}\times\{w\}\}, \text{ where }\mathcal{L}(\mathcal{A})\text{ denotes the language of }\mathcal{A}.
 \] 
 
 \begin{figure}[hbt!]
@@ -230,15 +232,14 @@ To make the operation \emph{product} more general, we extend the operation to an
     (q_1) edge[loop above] node {[$'\texttt{a}'-'\texttt{z}'$],$f_1$} (q_1)
     (q_2) edge[loop above] node {[$'\texttt{A}'-'\texttt{Z}'$],$f_2$} (q_2);
  \end{tikzpicture}
-    \caption{The formalization of $FTs$ in Isabelle/HOL}
+    \caption{An example of SFT}
     \label{fig-example-ft}
     \end{figure}   
-We now illustrate SFTs with an example in Figure \ref{fig-example-ft}. It accepts strings of the regular expression $/['\texttt{a}'-'\texttt{z}']+['\texttt{A}'-'\texttt{Z}']+/$. 
-It uses intervals $[i-j]$ as the input label, which is a predicate as $[i-j] = \lambda x.~ i \leq x \leq j$.
-The function $f_1=\lambda x.~ \texttt{toUpper}(x)$ maps each lowercase letter to uppercase letter, and $f_2=\lambda x.~\texttt{toLower}(x)$ maps each uppercase letter to lowercase letter.
-Give an string "$\texttt{bigSMALL}$", the SFT will generate an output "$\texttt{BIGsmall}$". 
 
-The transition labels can be more complex. For instance, it can be a predicate over integers as: $\lambda x.~ x >0 \land x \text{ mod } 2 = 0$. This symbolic label corresponds to the set of even natural numbers.
+    Figure \ref{fig-example-ft} illustrates an SFT that accepts strings matching the regular expression $/['\texttt{a}'-'\texttt{z}']+['\texttt{A}'-'\texttt{Z}']+/$. The transition labels utilize intervals of the form $[i\text{-}j]$, which are interpreted as predicates $\lambda x.~i \leq x \leq j$. The output functions $f_1$ and $f_2$ perform case transformations: $f_1 = \lambda x.~\texttt{toUpper}(x)$ converts lowercase letters to uppercase, while $f_2 = \lambda x.~\texttt{toLower}(x)$ performs the inverse operation. For example, given the input string \texttt{"bigSMALL"}, this SFT produces the output \texttt{"BIGsmall"}.
+
+
+%The transition labels can be more complex. For instance, it can be a predicate over integers as: $\lambda x.~ x >0 \land x \text{ mod } 2 = 0$. This symbolic label corresponds to the set of even natural numbers.
 
 
 
@@ -246,83 +247,77 @@ The transition labels can be more complex. For instance, it can be a predicate o
 
 \subsection{The Isabelle/HOL Formalization of SFTs}
 
-We have seen the diversity of the transition labels in the examples. To make the transition labels more flexible, our formalization of SFTs should be extensible. We will illustrate how can we leverage the refinement framework in Isabelle/HOL to achieve this goal.
+As we have discussed the diversity of transition labels in Section \ref{sec:introduction}, we now present an extensible formalization of SFTs that accommodates this variety. Our approach leverages the refinement framework (Refine\_Monadic \cite{Refine_Monadic-AFP}) in Isabelle/HOL to achieve the flexibility and extensibility of transition labels modeling.
 
 \begin{figure}[hbt!]
 	\begin{lstlisting}
 record (|$'q,$||$~'a,$| |$'b$|) |$\mathbf{NFT}$| =
-	|$\mathcal{Q}_T$| :: "|$'q$| set"
-	|$\Delta_T$| :: "(|$'q,$||$~'a,$| |$'b$|) LTTS"
-	|$\mathcal{I}_T$| :: "|$'q$| set"
-	|$\mathcal{F}_T$| :: "|$'q$| set"
+	|$\mathcal{Q}$| :: "|$'q$| set"
+	|$\Delta$| :: "(|$'q,$||$~'a,$| |$'b$|) LTTS"
+	|$\mathcal{I}$| :: "|$'q$| set"
+	|$\mathcal{F}$| :: "|$'q$| set"
         |$\mathcal{M}$| :: "|$'b\Rightarrow 'a$| Tlabel"
         
 type_synonym |$('q, 'a, 'b)$| LTTS = "|$('q \times ('a \text{ set option }\times b) \times 'q)$| set"
 
-type_synonym |$'a$| Tlabel = "|$'a \text{ option} \Rightarrow 'a$ set"
+type_synonym |$'a$| Tlabel = "|$'a \text{ option}~\Rightarrow~'b$ set option"
 	\end{lstlisting}
 \caption{The formalization of $FTs$ in Isabelle/HOL}
 \label{fig-def-FT}
 \end{figure}
 
-Figure \ref{fig-def-FT} shows our formalization of SFTs in Isabelle / HOL. The elements $\mathcal{Q}$, $\mathcal{I}$, and $\mathcal{F}$ are intuitive when referring to Definition \ref{def-sft}. However, the transitions are not exactly the same. 
+Figure \ref{fig-def-FT} presents our formalization of SFTs in Isabelle/HOL. While the elements $\mathcal{Q}$, $\mathcal{I}$, and $\mathcal{F}$ directly correspond to their counterparts in Definition \ref{def-sft}, the transition relations are not exactly the same.
 %
-The set of transitions is defined by \texttt{LTTS} ( which is short for Labeled Transducer Transition System). Each transition is defined as $'q \times ('a \text{ set option }\times b) \times 'q$. There are some design decisions, which are made to make the FT formalization more abstract and flexible.
+The transition relations are formalized through \texttt{LTTS} (Labeled Transducer Transition System), where each transition is represented as a triple $'q \times ('a \text{ set option }\times b) \times 'q$. This representation reflects several key design decisions aimed at enhancing the abstraction and flexibility of our SFT formalization.
 
-Firstly, $'a \text{ set option }$ is the input type of the transition, it accepts a set of elements of type $'a$ or \texttt{None} regarding the semantics of the type \texttt{option}. 
-Accepting a set of $'a$ elements aims to express the same but more abstract semantics of the input labels in Definition \ref{def-sft}, in which an input label is a predicate. A predicate's semantics as introduced before represents a set of elements that make the predicate true. But predicates have various different forms. For instance, the interval $[1, 9]$ is a predicate that contains all elements $e$ between $1$ and $9$, i.e., $1 \leq e \leq 9$. The predicate $\lambda x : \mathbb{N}.~ x \text{ mod } 2 = 0$ denotes the set of even natural numbers. All these different forms of labels are abstracted as sets in the formalization.
 
+Firstly, $'a \text{ set option }$ is the input type of the transition, it accepts a set of elements of type $'a$ or $\texttt{None}$ corresponding to empty string $\varepsilon$. 
+Accepting a set of $'a$ elements aims to express the same but more abstract semantics of the input labels in Definition \ref{def-sft}, in which an input label is a predicate. A predicate's semantics as introduced before represents a set of elements that make the predicate true. But predicates have various different forms. For instance, the interval $[1, 9]$ represents the set $\{e \mid 1 \leq e \leq 9\}$. The predicate $\lambda x \colon \mathbb{N}.~ x \text{ mod } 2 = 0$ denotes the set of even natural numbers. All these different forms of labels are abstracted as sets in our formalization.
 %
-The value $\texttt{None}$ is used to denote $\varepsilon$-move, that is, it accepts nothing but may still output some elements. This design makes it easier model real world applications in FTs. We will show an example after introducing the output functions. 
+The value $\texttt{None}$ represents the empty string $\varepsilon$ in our formalization, indicating a transition that consumes no input but may still produce output elements. This design choice facilitates the modeling of real-world applications in SFTs, as we will demonstrate in our application to string solvers.
 
-The second element of type $'b$ is the \emph{indexes} of the output functions.  $\mathcal{M}$ maps each of these indexes to an output function. The output function, defined by \texttt{Tlabel} maps a single input element to a set of output elements instead of single one. The reason is to allow FTs output non-deterministically, which means that the output may randomly or according to some criteria select one of the element in the set to output.
+The second element of type $'b$ serves as an index into the output function space. The mapping $\mathcal{M}$ associates each index with a specific output function. These output functions, formalized by \texttt{Tlabel}, map a single input element to a set of possible output elements rather than to a single element. This design enables non-deterministic output behavior, where the transducer may select any element from the output set randomly or according to specified criteria. Additionally, output functions can produce the empty string $\varepsilon$ by returning $\texttt{None}$, providing further flexibility in transition behavior.
 
-Now let us look at an example. In some modern programming languages, there are support for replacement operations : $\texttt{replace}(\texttt{str}, \texttt{pattern}, \texttt{replacement})$. This operation replaces the first occurrence of the substring  in \texttt{str} that matches \texttt{pattern} (which usually a regular expression) with the string \texttt{replacement}). 
-We can easily model this operation using our formalization of NFTs with the following steps:
-\begin{itemize}
-\item Step 1, construct a corresponding NFA from \texttt{pattern}).
-\item Step 2, convert each transition label for transducers by adding a function that maps each input character to empty, that is, generate nothing.
-\item Step 3, Add a new accepting state, and redirect existing accepting states to the new accepting state and transition label as $(\texttt{None}, \lambda x. \texttt{replacement})$.
-\item Step 4, unlabel previous accepting states as non-accepting states. 
-\end{itemize}
+%Now let us look at an example. In some modern programming languages, there are support for replacement operations : $\texttt{replace}(\texttt{str}, \texttt{pattern}, \texttt{replacement})$. This operation replaces the first occurrence of the substring  in \texttt{str} that matches \texttt{pattern} (which usually a regular expression) with the string \texttt{replacement}). 
+%We can easily model this operation using our formalization of NFTs with the following steps:
+%\begin{itemize}
+%\item Step 1, construct a corresponding NFA from \texttt{pattern}).
+%\item Step 2, convert each transition label for transducers by adding a function that maps each input character to empty, that is, generate nothing.
+%\item Step 3, Add a new accepting state, and redirect existing accepting states to the new accepting state and transition label as $(\texttt{None}, \lambda x. \texttt{replacement})$.
+%\item Step 4, unlabel previous accepting states as non-accepting states. 
+%\end{itemize}
 
-We can see that the definition of transition labels in NFTs makes it is very easy to model the replacement operation.
+%We can see that the definition of transition labels in NFTs makes it is very easy to model the replacement operation.
 
 \section{The Product Operation of NFTs}
-\label{sec-form-fts}
+\label{sec:product-operation}
 
-Given an NFT $\mathcal{N}$ and a word $w$, it is crucial and interesting that the possible output words can be calculated. This is the operation, we want to formalize, but we will generalize this operation.
-
-Instead of calculating the outputs for a single word, the operation calculates the outputs for a set of input words. Single word input is a special case with the set contains exactly only one element.
-
-The set of input words is modeled as a regular language. To be more precise, let $\mathcal{N}$ be an NFT, and $\mathcal{A}$ be an NFA. We define the operation $\texttt{PRODUCT} ~\mathcal{N}~\mathcal{A} = \{w'\mid w\in \mathcal{L}(\mathcal{A})\text{ and } w' = \mathcal{N}~\mathcal{A}\}$, where $\mathcal{L}(\mathcal{A})$ denotes the language of NFA $\mathcal{A}$.
-
-
-But there is one thing we need to consider, as our NFT formalization accepts $\varepsilon$-transitions, the output NFAs may contain $\varepsilon$-transitions as well. Unfortunately, [CertiStr] does not formalize $\varepsilon-$NFA. We formalize symbolic $\varepsilon-$NFA and the conversion from $\varepsilon-$NFA to NFA. We only present the definitions of $\varepsilon-$NFA and NFA in this paper. The more details including correctness proofs can be found in the Isabelle code. 
+In this section, we formalize the product operation between an SFT $\mathcal{T}$ and an NFA $\mathcal{A}$, denoted as $\mathcal{T} \times \mathcal{A}$ in Section \ref{sec:formalization}. An additional consideration in this operation is the presence of $\varepsilon$-transitions in our SFT formalization, which implies that the resulting automata may also contain $\varepsilon$-transitions. Since CertiStr \cite{cpp/KanLRS22} does not include a formalization of automata with $\varepsilon$-transitions ($\varepsilon$NFAs), we extend the framework with a formalization of symbolic $\varepsilon$NFAs (denoted as $\varepsilon$SFA) and provide a verified conversion to standard SFAs. In this paper, we present the core definitions of both $\varepsilon$NFAs and NFAs, while the complete formalization, including correctness proofs, is available in our Isabelle development.
 
 \begin{figure}[hbt!]
 	\begin{lstlisting}
-record (|$'q,$||$~'a$|) |$\mathbf{NFA}$| =
+record (|$'q,$||$~'a$|) |$\texttt{NFA}$| =
 	|$\mathcal{Q}$| :: "|$'q$| set"
 	|$\Delta$| :: "(|$'q,$||$~'a$|) LTS"
 	|$\mathcal{I}$| :: "|$'q$| set"
 	|$\mathcal{F}$| :: "|$'q$| set"
 
-record (|$'q,$||$~'a$|) |$\mathbf{eNFA}$| =
-	|$\mathcal{Q}_e$| :: "|$'q$| set"
-	|$\Delta_e$| :: "(|$'q,$||$~'a$|) LTS"
-        |$\Delta_e'$| :: "|$('q * 'q)$| set"
-	|$\mathcal{I}_e$| :: "|$'q$| set"
-	|$\mathcal{F}_e$| :: "|$'q$| set"
+record (|$'q,$||$~'a$|) |$\texttt{eNFA}$| =
+	|$\mathcal{Q}$| :: "|$'q$| set"
+	|$\Delta$| :: "(|$'q,$||$~'a$|) LTS"
+	|$\Delta'$| :: "|$('q * 'q)$| set"
+	|$\mathcal{I}$| :: "|$'q$| set"
+	|$\mathcal{F}$| :: "|$'q$| set"
 
 type_synonym |$('q, 'a)$| LTS = "|$'q \times 'a \text{ set }\times 'q$|"    
 	\end{lstlisting}
-\caption{The formalization of $\varepsilon-$NFA and NFA in Isabelle/HOL}
+\caption{The formalization of $\varepsilon$NFA and SFA in Isabelle/HOL}
 \label{fig-def-FAs}
 \end{figure}
 
-Figure \ref{fig-def-FAs} shows the definitions of NFA and $\varepsilon-$NFA.
-The record type \texttt{eNFA} corresponds to $\varepsilon-$NFA. $\Delta_e$ is same as $\Delta$ in \texttt{NFA}. $\varepsilon$-transitions are defined by $\Delta_e'$.  Now we are ready to present the operation \emph{Product}. Let $\mathcal{T}$ be an SFT and  $\mathcal{A}$ be an NFA. The output language generated by $\mathcal{T}$ with the input language $\mathcal{A}$ is an an \texttt{eNFA} $\mathcal{A}'$. 
+Figure \ref{fig-def-FAs} presents the formalization of both SFAs and $\varepsilon$SFAs using Isabelle/HOL record types \texttt{NFA} and \texttt{eNFA}, respectively. The $\varepsilon$SFA formalization extends the standard SFA structure by introducing $\Delta'$, which captures $\varepsilon$-transitions as pairs of states, while maintaining the same labeled transition relation $\Delta$ as in standard SFAs.
+
+Having established these foundational definitions, we can now formalize the product operation. 
 
 \begin{figure}[hbt!]
 	\begin{lstlisting}
@@ -761,9 +756,27 @@ We discuss the effort of certified development in this subsection.
 The effort of certified development is mainly from the following two aspects: (1) the abstract level Formalization of SFTs and (2) the low-level refinement of the SFTs to efficient data structure.
 
 
+\begin{table}[h]
+  \centering
+  \begin{tabular}{lccc}
+      \toprule
+      & \textbf{Definitions} & \textbf{Lemmas} & \textbf{Proofs} \\
+      \midrule
+      Abstract & & & \\
+      Implementation & & & \\
+      \bottomrule
+  \end{tabular}
+  \caption{Overview of the effort of certified development}
+  \label{tab:abstract_impl}
+\end{table}
+
+
 \section{Related Work}
+\label{sec:related-work}
+
 
 \section{Conclusion}
+\label{sec:conclusion}
 
 
 \bibliography{literature}
