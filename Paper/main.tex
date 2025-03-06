@@ -98,7 +98,7 @@ Interactive Theorem Proving (ITP 2025)}
 \lstset{
 	basicstyle=\ttfamily,
 	keywordstyle=\color{blue}\bfseries,
-	keywords={definition,if,then,else, where, record, fun, lemma, type_synonym, fixes, assumes, shows},
+	keywords={definition,if,then,else, where, record, fun, lemma, type_synonym, fixes, shows, assumes, shows},
 	escapeinside={|}{|}
 }
 
@@ -251,12 +251,12 @@ As we have discussed the diversity of transition labels in Section \ref{sec:intr
 
 \begin{figure}[hbt!]
 	\begin{lstlisting}
-record (|$'q,$||$~'a,$| |$'b$|) |$\mathbf{NFT}$| =
-	|$\mathcal{Q}$| :: "|$'q$| set"
-	|$\Delta$| :: "(|$'q,$||$~'a,$| |$'b$|) LTTS"
-	|$\mathcal{I}$| :: "|$'q$| set"
-	|$\mathcal{F}$| :: "|$'q$| set"
-        |$\mathcal{M}$| :: "|$'b\Rightarrow 'a$| Tlabel"
+record (|$'q,$||$~'a,$| |$'b$|) |$\texttt{NFT}$| =
+	|$\mathcal{Q}_t$| :: "|$'q$| set"
+	|$\Delta_t$| :: "(|$'q,$||$~'a,$| |$'b$|) LTTS"
+	|$\mathcal{I}_t$| :: "|$'q$| set"
+	|$\mathcal{F}_t$| :: "|$'q$| set"
+        |$\mathcal{M}_t$| :: "|$'b\Rightarrow 'a$| Tlabel"
         
 type_synonym |$('q, 'a, 'b)$| LTTS = "|$('q \times ('a \text{ set option }\times b) \times 'q)$| set"
 
@@ -266,7 +266,7 @@ type_synonym |$'a$| Tlabel = "|$'a \text{ option}~\Rightarrow~'b$ set option"
 \label{fig-def-FT}
 \end{figure}
 
-Figure \ref{fig-def-FT} presents our formalization of SFTs in Isabelle/HOL. While the elements $\mathcal{Q}$, $\mathcal{I}$, and $\mathcal{F}$ directly correspond to their counterparts in Definition \ref{def-sft}, the transition relations are not exactly the same.
+Figure \ref{fig-def-FT} presents our formalization of SFTs in Isabelle/HOL. While the elements $\mathcal{Q}_t$, $\mathcal{I}_t$, and $\mathcal{F}_t$ directly correspond to their counterparts ($\mathcal{Q}$, $\mathcal{I}$, and $\mathcal{F}$) in Definition \ref{def-sft}, the transition relations are not exactly the same.
 %
 The transition relations are formalized through \texttt{LTTS} (Labeled Transducer Transition System), where each transition is represented as a triple $'q \times ('a \text{ set option }\times b) \times 'q$. This representation reflects several key design decisions aimed at enhancing the abstraction and flexibility of our SFT formalization.
 
@@ -292,7 +292,7 @@ The second element of type $'b$ serves as an index into the output function spac
 \section{The Product Operation of NFTs}
 \label{sec:product-operation}
 
-In this section, we formalize the product operation between an SFT $\mathcal{T}$ and an NFA $\mathcal{A}$, denoted as $\mathcal{T} \times \mathcal{A}$ in Section \ref{sec:formalization}. An additional consideration in this operation is the presence of $\varepsilon$-transitions in our SFT formalization, which implies that the resulting automata may also contain $\varepsilon$-transitions. Since CertiStr \cite{cpp/KanLRS22} does not include a formalization of automata with $\varepsilon$-transitions ($\varepsilon$NFAs), we extend the framework with a formalization of symbolic $\varepsilon$NFAs (denoted as $\varepsilon$SFA) and provide a verified conversion to standard SFAs. In this paper, we present the core definitions of both $\varepsilon$NFAs and NFAs, while the complete formalization, including correctness proofs, is available in our Isabelle development.
+In this section, we formalize the product operation between an SFT $\mathcal{T}$ and an SFA $\mathcal{A}$, denoted as $\mathcal{T} \times \mathcal{A}$ in Section \ref{sec:formalization}. An additional consideration in this operation is the presence of $\varepsilon$-transitions in our SFT formalization, which implies that the resulting automata may also contain $\varepsilon$-transitions. Since CertiStr \cite{cpp/KanLRS22} does not include a formalization of automata with $\varepsilon$-transitions ($\varepsilon$NFAs), we extend the framework with a formalization of symbolic $\varepsilon$NFAs (denoted as $\varepsilon$SFA) and provide a verified conversion to standard SFAs. In this paper, we present only the definitions of  $\varepsilon$SFAs and SFAs, while the complete formalization, including correctness proofs, is available in our Isabelle development.
 
 \begin{figure}[hbt!]
 	\begin{lstlisting}
@@ -303,11 +303,11 @@ record (|$'q,$||$~'a$|) |$\texttt{NFA}$| =
 	|$\mathcal{F}$| :: "|$'q$| set"
 
 record (|$'q,$||$~'a$|) |$\texttt{eNFA}$| =
-	|$\mathcal{Q}$| :: "|$'q$| set"
-	|$\Delta$| :: "(|$'q,$||$~'a$|) LTS"
-	|$\Delta'$| :: "|$('q * 'q)$| set"
-	|$\mathcal{I}$| :: "|$'q$| set"
-	|$\mathcal{F}$| :: "|$'q$| set"
+	|$\mathcal{Q}_e$| :: "|$'q$| set"
+	|$\Delta_e$| :: "(|$'q,$||$~'a$|) LTS"
+	|$\Delta_e'$| :: "|$('q * 'q)$| set"
+	|$\mathcal{I}_e$| :: "|$'q$| set"
+	|$\mathcal{F}_e$| :: "|$'q$| set"
 
 type_synonym |$('q, 'a)$| LTS = "|$'q \times 'a \text{ set }\times 'q$|"    
 	\end{lstlisting}
@@ -315,7 +315,7 @@ type_synonym |$('q, 'a)$| LTS = "|$'q \times 'a \text{ set }\times 'q$|"
 \label{fig-def-FAs}
 \end{figure}
 
-Figure \ref{fig-def-FAs} presents the formalization of both SFAs and $\varepsilon$SFAs using Isabelle/HOL record types \texttt{NFA} and \texttt{eNFA}, respectively. The $\varepsilon$SFA formalization extends the standard SFA structure by introducing $\Delta'$, which captures $\varepsilon$-transitions as pairs of states, while maintaining the same labeled transition relation $\Delta$ as in standard SFAs.
+Figure \ref{fig-def-FAs} presents the formalization of both SFAs and $\varepsilon$SFAs using Isabelle/HOL record types \texttt{NFA} and \texttt{eNFA}, respectively. The $\varepsilon$SFA formalization extends the standard SFA structure by introducing $\Delta_e'$, which captures $\varepsilon$-transitions as pairs of states, while maintaining the same labeled transition relation $\Delta$ as in standard SFAs.
 
 Having established these foundational definitions, we can now formalize the product operation. 
 
@@ -343,17 +343,40 @@ definition productT :: |$"('q,'a,'b,'c)"$| NFT |$\Rightarrow$| ('q,'a) NFA |$\Ri
 \label{fig-def-FTProd}
 \end{figure}
 
-Figure \ref{fig-def-FTProd} depicts the abstract level formalization for the product of an SFT and an NFA. The parameters $\mathcal{T}$ and $\mathcal{A}$ are intuitive. But we need to explain the role of \texttt{F}. The output function is of type "$'a \Rightarrow 'b \text{set option}$", which applies to a single element of the type $'a$. $\texttt{F}$ extends this function to apply it to a set of elements. More precisely, let $f$ be an output function, the semantics of $\texttt{F}$ is defined as $\texttt{F}~f~A=\bigcup_{a\in A} (\text{if }f~a= \text{Some }S \texttt{ then } S \texttt{ else } \emptyset)$.
-The transition relations $\Delta_e$ and $\Delta_e'$ are defined by splitting into two cases, whether the transitions in SFTs are $\varepsilon$-transitions or not.
+Figure \ref{fig-def-FTProd} depicts the abstract level formalization for the product of an SFT and an SFA. The parameters $\mathcal{T}$ and $\mathcal{A}$ are an SFT and an SFA, respectively. But we need to explain the role of $\text{\texttt{F}}$. The output function $f$ for each transition in $\Delta_t$ is of type "$'a\;\text{option} \Rightarrow 'b\;\text{set option}$", which applies to a \emph{single} element of type $'a$ or $\varepsilon$. $\text{\texttt{F}}$ extends $f$ to apply it to a set of elements. More precisely, let $f$ be an output function, the semantics of $\text{\texttt{F}}$ is defined as 
 
-$\Delta_e$ has two cases:(1) when $(p, (\text{None}, f),  q)$ is a transition in the NFT. Because the input can be empty ($\varepsilon$), therefore the NFA does not need to move. Therefore the product transtion just output of $f~\text{None}$. (2) when $(p, (Some~\sigma_1, f), q)$ is a transition in the NFT. This transition can only synchronize with the transitions in the NFA that have shared characters with $\sigma_1$. And the output is $F~f~(\sigma_1\cap\sigma_2)$, where $\sigma_2$ is the input label of the NFA. Similarly, $\Delta_e'$ has two cases too.
+\[\texttt{F}~f~A=\bigcup_{a\in A} (\text{if }f~a= \text{Some }S \texttt{ then } S \texttt{ else } \emptyset)\].
+
+The transition relations $\Delta_e$ and $\Delta_e'$ are determinted by considering two distinct cases based on the nature of transitions in the SFT: $\varepsilon$-transitions and non-$\varepsilon$-transitions. In both cases, the transition labels in the resulting $\varepsilon$SFA are derived from the composition of the SFT's output function and the SFA's input labels:
+For transitions in $\Delta_e$, 
+
+\begin{enumerate}
+\item When $(p, (\text{None}, f), q)$ is a transition in $\Delta_t$, the input character is $\varepsilon$. Consequently, the SFA remains in its current state, and the product transition produces the output $(f~\text{None})$.
+
+\item When $(p, (\text{Some}~\sigma_1, f), q)$ is a transition in $\Delta_t$, synchronization is possible only with SFA transitions that share characters with $\sigma_1$. The resulting output is $F~f~(\sigma_1\cap\sigma_2)$, where $\sigma_2$ represents the input label of the corresponding SFA transition.
+\end{enumerate}
+
+The transitions in $\Delta_e'$ follow a similar pattern with analogous cases for $\varepsilon$ and non-$\varepsilon$ transitions.
+
+To establish the correctness specification of the product operation, we begin by formalizing the concept of SFT \emph{traces} as introduced in Definition \ref{def-sft}. In our formalization, traces are represented by the type $('a\;\text{option} \times 'b\;\text{option})\;\texttt{list}$, as shown in Figure \ref{fig-def-output}.
+%
+Given a trace $\pi$, we define two key projection functions:
+(1) \texttt{inputE}, which corresponds to $\text{in}(\pi)$ and extracts the input sequence
+(2) \texttt{outputE}, which corresponds to $\text{out}(\pi)$ and extracts the output sequence.
+
+The definition \texttt{outputL} generalizes \texttt{outputE} to characterize the set of all possible outputs that an SFT $\mathcal{T}$ can generate when processing inputs from the language accepted by the SFA $\mathcal{A}$. The reachability of a trace $\pi$ between states $q$ and $q'$ in an SFT $\mathcal{T}$ is verified by the predicate $\texttt{LTTS\_reachable}~\Delta_t~M~q~\pi~q'$.
 
 
-To establish the correctness of the abstract definition of the product operation, we first formalize the outputs of a Non-deterministic Finite Transducer (NFT) with respect to the input of a Non-deterministic Finite Automaton (NFA). Figure \ref{fig-def-output} presents two key definitions: (1) \texttt{outputE}, which extracts the sequence of outputs $o_1, \ldots, o_n$ from a given NFT path $(i_1, o_1), \ldots, (i_n, o_n)$; and (2) \texttt{outputL}, which represents the set of all possible outputs generated by an NFT $\mathcal{T}$ for the input language defined by an NFA $\mathcal{A}$.
+
 
 
 \begin{figure}[hbt!]
 	\begin{lstlisting}
+fun inputE :: |$('a\;\text{option}\;\times\;'b\;\text{option})\;\text{list}\;\Rightarrow\;'a\;\text{list}$| where
+  "inputE [] = []" |$\mid$|
+  "inputE ((Some a, |$\_$|) |$\#$| l) = a |$\#$| (inputE l)" |$\mid$|
+  "inputE ((None, |$\_$|) |$\#$| l) = (inputE l)"
+
 fun outputE :: "|$('a \text{ option} \times 'b \text{ option}) \text{ list} \Rightarrow 'b \text{ list}$|" where
   "outputE [] = []" |$\mid$|
   "outputE ((_, Some a) # l) = a # (outputE l)" |$\mid$|
@@ -362,8 +385,8 @@ fun outputE :: "|$('a \text{ option} \times 'b \text{ option}) \text{ list} \Rig
 definition outputL :: "|$('q, 'a, 'b, 'c)\text{  NFT} \Rightarrow $|
             |$ ('c \Rightarrow ('a, 'b)\text{  Tlabel}) \Rightarrow 
                                ('q, 'a) \text{ NFA\_rec} \Rightarrow 'b\text{ list set}$|" where
-  "outputL |$\mathcal{T}$| M |$\mathcal{A}$| = {outputE |$\pi~\mid~\pi~q~q'$|. |$q\in \mathcal{I}_T~\mathcal{T} \land q' \in \mathcal{F}_T~\mathcal{T} \land$|
-                |$ \text{LTTS\_reachable }(\Delta_T~\mathcal{T})~\text{M}~q~\pi~q'\land \text{inputE }\pi\in \mathcal{L}~\mathcal{A}$|}" 
+  "outputL |$\mathcal{T}$| M |$\mathcal{A}$| = {outputE |$\pi~\mid~\pi~q~q'$|. |$q\in \mathcal{I}_t~\mathcal{T} \land q' \in \mathcal{F}_t~\mathcal{T} \land$|
+                |$ \text{LTTS\_reachable }(\Delta_t~\mathcal{T})~\text{M}~q~\pi~q'\land \text{inputE }\pi\in \mathcal{L}~\mathcal{A}$|}" 
 	\end{lstlisting}
 \caption{The formalization of $\varepsilon-$NFA and NFA in Isabelle/HOL}
 \label{fig-def-output}
@@ -378,51 +401,50 @@ lemma productT_correct:
       and F_ok2: "|$\forall~f~s.~\text{F }f~s = $|
             |$\text{Some }(\cup \{\text{the }(f (\text{ Some }e))\mid e. e \in s \land f~(\text{Some }e) \neq \text{ None}\})$|"
       and wfTA: "NFT_wf |$\mathcal{T}~\land \text{ NFA } \mathcal{A}$|"
-    shows "|$\mathcal{L}_e$| (productT |$\mathcal{T}~\mathcal{A}$| F) = outputL |$\mathcal{T}~(\mathcal{M}~\mathcal{T})~\mathcal{A}$|"
+    |$\textcolor{blue}{\text{shows}}$| "|$\mathcal{L}_e$| (productT |$\mathcal{T}~\mathcal{A}$| F) = outputL |$\mathcal{T}~(\mathcal{M}~\mathcal{T})~\mathcal{A}$|"
 
 	\end{lstlisting}
 \caption{The formalization of $\varepsilon-$NFA and NFA in Isabelle/HOL}
 \label{fig-def-product-correct}
 \end{figure}
 
-Figure \ref{fig-def-product-correct} shows the correctness of the product operation and Figure \ref{fig-def-output} contains the definitions of \texttt{outputE} and \texttt{outputL} that are used in Lemma \texttt{productT\_correct}.
-The two assumptions define the constraints of the function \texttt{F}.
-The conclusion in \textcolor{blue}{\texttt{show}} illustrates 
-that the language equivalence between the production definition and mathematical semantics.
+Figure \ref{fig-def-product-correct} presents Lemma \texttt{productT\_correct}, which establishes the correctness of the product operation. The lemma's assumptions, \texttt{F\_ok1} and \texttt{F\_ok2}, specify the essential properties of function \texttt{F}. The conclusion, marked by \textcolor{blue}{\texttt{shows}}, demonstrates that the language of the constructed $\varepsilon$SFA ($\mathcal{L}_e$ denotes the language of $\varepsilon$SFA) from $\mathcal{T} \times \mathcal{A}$ coincides with the mathematical semantics defined by \texttt{outputL}, thereby establishing semantic preservation of the product construction.
 
 \section{Algorithm Level Refinement}
 \label{sec_alg_refinement}
-In Section \ref{sec-form-fts}, we give an abstract definition of NFT's product operation. In this section, we present the possible way to compute the Product from programming language's perspective.
-In this level, we will also refine the transition labels from \emph{sets} to interval algebra.
+Having established the abstract definition of the SFT product operation in Section \ref{sec:product-operation}, we now present its algorithmic refinement. This section introduces an efficient implementation of the product construction and refines the abstract representation of transition labels to a concrete interval algebra, enabling practical computation.
+
 
 \subsection{Intervals}
-An interval is defined as a pair $(i, j)$, which corresponds to the set $\{e \mid e \geq i \land e \leq j\}$. In our formalization, we extends the interval definition to a list, that is $[(i_1, j_1), \ldots, (i_n, j_n)]$, which corresponds to the set $\bigcup_{1\leq k\leq n}\{e \mid i_k \leq e \leq i_n\}$. This definition enables us to merge more transitions in NFAs. Moreover, when an interval operation produces more than two intervals, we do not need to split the intervals. For instance, the interval result of $(1, 5) - (3, 4)$ (the difference between the interval $[1, 5]$ and $[3, 4]$) is equivalent to $[(1, 2), (5, 5)]$.
+
+An interval is defined as a pair $(i, j)$ representing the set $\{e \mid i \leq e \leq j\}$. To achieve greater expressiveness, our formalization extends this notion to interval lists of the form $[(i_1, j_1), \ldots, (i_n, j_n)]$, which denote the set $\bigcup_{1\leq k\leq n}\{e \mid i_k \leq e \leq j_k\}$. This generalization offers two key advantages: it enables more compact representation of transitions in SFAs and SFTs through merging, and it allows for efficient handling of interval operations without unnecessary splitting. For example, the set difference between intervals $[1, 5]$ and $[3, 4]$ can be directly represented as the interval list $[(1, 2), (5, 5)]$.
 
 
-In the sequent, intervals always mean interval lists.
-There are a collection interfaces for intervals. 
+Throughout the following discussion, we use the term "interval" to refer to interval lists. Our formalization provides a collection of interval operations through the following interface:
+
 \begin{enumerate}
-  \item $\texttt{semI}~i$, formalize the semantics of an interval as a set, that is $\texttt{semI }(i,j) = \{e \mid e \geq i \land e \leq j\}$.
-  \item $\texttt{emptyI}~i$, checks the emptiness of an interval.
-   \item $\texttt{nemptyI}~i$, checks the non-emptiness of an interval.
-  \item $\texttt{intersectIs}~i_1~i_2$, computes the intersection of two intervals.
-  \item $\texttt{diffIs}~i_1~i_2$, computes the intervals difference, that is the interval corresponds to the set $\texttt{semI}(i_1)-\texttt{semI}(i_2)$.
+  \item $\texttt{semI}~i$: Defines the semantic interpretation of an interval as a set. For an interval $(i,j)$, $\texttt{semI}~(i,j) = \{e \mid i \leq e \leq j\}$.
+  \item $\texttt{emptyI}~i$: Tests whether an interval represents an empty set, i.e., whether $\texttt{semI}~i = \emptyset$.
+  \item $\texttt{nemptyI}~i$: Tests whether an interval represents a non-empty set, i.e., whether $\texttt{semI}~i \neq \emptyset$.
+  \item $\texttt{intersectIs}~i_1~i_2$: Computes the intersection of two intervals, yielding an interval $i$ such that $\texttt{semI}~i = \texttt{semI}~i_1 \cap \texttt{semI}~i_2$.
+  \item $\texttt{diffIs}~i_1~i_2$: Computes the set difference of two intervals, yielding an interval $i$ such that $\texttt{semI}~i = \texttt{semI}~i_1 \setminus \texttt{semI}~i_2$.
 \end{enumerate}
 
-We define a canonical form for intervals to facilitate the proof. An interval $[i_1, j_1), \ldots, (i_n, j_n)]$ is in canonical form if 
-(1) $i_k \leq j_k, \text{ for } 1 \leq k \leq n$,
-(2) $j_k\leq i_{k+1}, \text{ for } 1 \leq k < n$.
-All the interval operations are proved to keep the canonical form after the operation if the input intervals are in canonical form.
-Canonical form not only simplifies the proof, but also improves the performance of interval operations.
+
+To facilitate formal reasoning and optimize performance, we introduce a canonical form for interval. An interval $[(i_1, j_1), \ldots, (i_n, j_n)]$ is in canonical form if it satisfies two key properties:
+\begin{enumerate}
+  \item Each $(i_k, j_k)$ is well-formed: $i_k \leq j_k$ for all $k \in \{1,\ldots,n\}$
+  \item Intervals are ordered and non-overlapping: $j_k < i_{k+1}$ for all $k \in \{1,\ldots,n-1\}$
+\end{enumerate}
+
+We prove that all interval operations preserve canonical form when applied to canonically-formed inputs. This invariant serves two purposes: it simplifies formal proofs by eliminating the need to reason about malformed or overlapping intervals, and it enables more efficient implementations of interval operations by reducing the number of cases to consider.
 
 
 
+\subsection{Algorithmic Implementation of the Product Operation}
 
-\subsection{Algorithm of Product Computation.}
+In this subsection, we present the algorithmic implementation of the product operation between an SFT and an SFA\footnote{For clarity of presentation, we show a simplified version of the Isabelle/HOL implementation while preserving the essential algorithmic structure.}. Figure \ref{fig-compute-nft-product} illustrates the core algorithm \texttt{productT\_impl}, which is implemented using the \emph{Refine\_Monadic} framework. The operation \texttt{prods\_imp}, shown in Figure \ref{fig-def-prods_imp}, computes the Cartesian product of two state sets. This function employs the \texttt{FOREACH} construct, a higher-order iteration operator analogous to OCaml's \texttt{Set.fold}. Specifically, given a set $S$, a function $f$ of type $'a \Rightarrow 'b \Rightarrow 'b$, and an initial accumulator $I$ of type $'b$, the expression $\texttt{FOREACH}~S~f~I$ systematically applies $f$ to each element in $S$, accumulating results in a principled manner.
 
-Fig. \ref{fig-compute-nft-product} illustrates the product computation of a SFT and an SFA. \footnote{To make it easier to understand, the Isabelle code presented in this section is not exactly the same as the real one.}
-\texttt{prods\_imp} computes the product of two sets. It is illustrated in \ref{fig-def-prods_imp}. We use the constructs from \emph{Refine\_Monadic}. \texttt{prods\_imp} itself is intuitive: the nested two loops traverse all possible combination of states in the states. 
-The \texttt{FOREACH} construct in \emph{Refine\_Monadic} is similar to OCaml's \texttt{Set.fold}. $\texttt{FOREACH}~S~f~I$ traverses all elements in $S$ and applies $f$ of type $'a \Rightarrow 'b \Rightarrow 'b$ to each element. $I$ is the initial value of type $'b$.
 
 
 
@@ -476,9 +498,13 @@ definition trans_comp_imp where
 \label{fig-def-prods-imp}
 \end{figure}
 
-The challenging part is how to compute the transition sets. It is illustrated in Fig. \ref{fig-def-prods-imp}. The function \texttt{trans\_comp\_imp} traverses the transitions in the SFT and it calls two the following two functions to compute the synchronized transitions:
-(1) \texttt{subtrans\_comp\_$\varepsilon$}: handles the case that the transition in the SFT is $\varepsilon$-transition.
-(2) \texttt{subtrans\_comp}: handles the case that the transition in the SFT is not $\varepsilon$-transition.
+A central algorithmic challenge in our implementation lies in the computation of transition sets. As shown in Figure \ref{fig-def-prods-imp}, we implement this computation through the function \texttt{trans\_comp\_imp}, which computes the synchronization of transitions between the SFT and SFA. This function decomposes the synchronization process into two distinct cases, each handled by a specialized function:
+
+\begin{enumerate}
+  \item \texttt{subtrans\_comp\_$\varepsilon$}: Processes $\varepsilon$-transitions in the SFT, where transitions consume no input but may produce output
+  \item \texttt{subtrans\_comp}: Processes standard transitions in the SFT, where both input consumption and output generation may occur
+\end{enumerate}
+
 
 We elaborate only on the function \texttt{subtrans\_comp} in Fig. \ref{fig-def-subtrans_comp}. The other function is similar. 
 This function traverses the transitions SFA's transitions $\texttt{T}$. If it find a transtion $(q_1, \alpha', q_1')\in \texttt{T}$ satisfies the following condition:
