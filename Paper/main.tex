@@ -48,7 +48,7 @@
 
 \bibliographystyle{plainurl}% the mandatory bibstyle
 
-\title{Certified Symbolic Transducer with the Application of String Solver} %TODO Please add
+\title{Certified Symbolic Transducer with Applications in String Solving} %TODO Please add
 
 %\titlerunning{Dummy short title} %TODO optional, please use if title is longer than one line
 
@@ -276,7 +276,7 @@ Accepting a set of $'a$ elements aims to express the same but more abstract sema
 %
 The value $\texttt{None}$ represents the empty string $\varepsilon$ in our formalization, indicating a transition that consumes no input but may still produce output elements. This design choice facilitates the modeling of real-world applications in SFTs, as we will demonstrate in our application to string solvers.
 
-The second element of type $'b$ serves as an index into the output function space. The mapping $\mathcal{M}$ associates each index with a specific output function. These output functions, formalized by \texttt{Tlabel}, map a single input element to a set of possible output elements rather than to a single element. This design enables non-deterministic output behavior, where the transducer may select any element from the output set randomly or according to specified criteria. Additionally, output functions can produce the empty string $\varepsilon$ by returning $\texttt{None}$, providing further flexibility in transition behavior.
+The second element of type $'b$ serves as an index into the output function space. The mapping $\mathcal{M}_t$ associates each index with a specific output function. These output functions, formalized by \texttt{Tlabel}, map a single input element to a set of possible output elements rather than to a single element. This design enables non-deterministic output behavior, where the transducer may select any element from the output set randomly or according to specified criteria. Additionally, output functions can produce the empty string $\varepsilon$ by returning $\texttt{None}$, providing further flexibility in transition behavior.
 
 %Now let us look at an example. In some modern programming languages, there are support for replacement operations : $\texttt{replace}(\texttt{str}, \texttt{pattern}, \texttt{replacement})$. This operation replaces the first occurrence of the substring  in \texttt{str} that matches \texttt{pattern} (which usually a regular expression) with the string \texttt{replacement}). 
 %We can easily model this operation using our formalization of NFTs with the following steps:
@@ -443,7 +443,11 @@ We prove that all interval operations preserve canonical form when applied to ca
 
 \subsection{Algorithmic Implementation of the Product Operation}
 
-In this subsection, we present the algorithmic implementation of the product operation between an SFT and an SFA\footnote{For clarity of presentation, we show a simplified version of the Isabelle/HOL implementation while preserving the essential algorithmic structure.}. Figure \ref{fig-compute-nft-product} illustrates the core algorithm \texttt{productT\_impl}, which is implemented using the \emph{Refine\_Monadic} framework. The operation \texttt{prods\_imp}, shown in Figure \ref{fig-def-prods_imp}, computes the Cartesian product of two state sets. This function employs the \texttt{FOREACH} construct, a higher-order iteration operator analogous to OCaml's \texttt{Set.fold}. Specifically, given a set $S$, a function $f$ of type $'a \Rightarrow 'b \Rightarrow 'b$, and an initial accumulator $I$ of type $'b$, the expression $\texttt{FOREACH}~S~f~I$ systematically applies $f$ to each element in $S$, accumulating results in a principled manner.
+In this subsection, we present the algorithmic implementation of the product operation between an SFT and an SFA\footnote{For clarity of presentation, we show a simplified version of the Isabelle/HOL implementation while preserving the essential algorithmic structure.}. 
+%
+Figure \ref{fig-compute-nft-product} illustrates the core algorithm \texttt{productT\_impl}, which is implemented using the \emph{Refine\_Monadic} framework. Note that in the implementation, there are some new operations: \texttt{nfa\_states}, \texttt{nfa\_trans}, \texttt{nfa\_initial}, \texttt{nfa\_accepting}, and \texttt{nft\_tranfun}. There are corresponding to the states, transitions, initial states, accepting states, and output function mapping of the SFT.
+
+The operation \texttt{prods\_imp}, shown in Figure \ref{fig-def-prods_imp}, computes the Cartesian product of two state sets. This function employs the \texttt{FOREACH} construct, a higher-order iteration operator analogous to OCaml's \texttt{Set.fold}. Specifically, given a set $S$, a function $f$ of type $'a \Rightarrow 'b \Rightarrow 'b$, and an initial accumulator $I$ of type $'b$, the expression $\texttt{FOREACH}~S~f~I$ systematically applies $f$ to each element in $S$, accumulating results in a principled manner.
 
 
 
@@ -485,11 +489,11 @@ definition prods_imp where
 \begin{figure}[hbt!]
 	\begin{lstlisting}
 definition trans_comp_imp where
-  "trans_comp_imp M F T1 T2 Q =
+  "trans_comp_imp M F fe T1 T2 Q =
     FOREACH {t. t |$\in$| T1}
       (|$\lambda$| (q, (|$\alpha$|, f), q|$'$|) (D1, D2). 
         (if (|$\alpha$| = None) then 
-          (subtrans_comp_|$\varepsilon$| M q  f q|$'$| F T2 D1 D2)
+          (subtrans_comp_|$\varepsilon$| M q f q|$'$| F fe T2 D1 D2)
         else 
           (subtrans_comp M q (the |$\alpha$|) f q|$'$| F T2 D1 D2)
       )) (|$\emptyset$|, |$\emptyset$|)"
@@ -506,16 +510,12 @@ A central algorithmic challenge in our implementation lies in the computation of
 \end{enumerate}
 
 
-We elaborate only on the function \texttt{subtrans\_comp} in Fig. \ref{fig-def-subtrans_comp}. The other function is similar. 
-This function traverses the transitions SFA's transitions $\texttt{T}$. If it find a transtion $(q_1, \alpha', q_1')\in \texttt{T}$ satisfies the following condition:
-$\alpha \cap \alpha' \neq \emptyset$ (Checked by \texttt{nemptyIs}),
-it started to compute the non-$\varepsilon$-transitions set $\texttt{D1}$ and the $\varepsilon$-transitions set $\texttt{D2}$ by checking whether the output set of $\alpha \cap \alpha'$ is empty or not.
 
 
 \begin{figure}[hbt!]
 	\begin{lstlisting}
-definition subtrans_comp_imp where
-  "subtrans_comp_imp M q |$\alpha$| f q|$'$| F fe T D1 D2 =
+definition subtrans_comp where
+  "subtrans_comp M q |$\alpha$| f q|$'$| F fe T D1 D2 =
     FOREACH
       {t. t |$\in$| T} (|$\lambda$| (q1, |$\alpha'$|, q1|$'$|) (D1, D2).
         (if (nemptyIs (intersectIs |$\alpha$| |$\alpha'$|)) then do {
@@ -524,7 +524,7 @@ definition subtrans_comp_imp where
             let |$\alpha_i$| = (the (F (M f) (intersectIs |$\alpha$| |$\alpha'$|))) in
             ({(q,q1) |$\alpha_i$| (q|$'$|,q1|$'$|)} |$\cup$| D1)
             else RETURN D1);
-          D2 |$\leftarrow$| (if (M f) (intersectIs |$\alpha$| |$\alpha'$|) |$\neq$| |$\emptyset$| then 
+          D2 |$\leftarrow$| (if fe (M f) (intersectIs |$\alpha$| |$\alpha'$|) |$\neq$| |$\emptyset$| then 
             RETURN (((q,q1), (q|$'$|,q1|$'$|)) |$\cup$| D2) else RETURN D2);
           RETURN (D1, D2)
         }
@@ -535,37 +535,42 @@ definition subtrans_comp_imp where
     \end{figure}
 
 
- 
+    We now present the implementation of \texttt{subtrans\_comp} in detail, as shown in Figure \ref{fig-def-subtrans_comp} (the implementation of \texttt{subtrans\_comp\_$\varepsilon$} follows analogous principles). This function systematically processes transitions in the SFA, represented by the set \texttt{T}. For each transition $(q_1, \alpha', q_1')\in \texttt{T}$, the function performs two key operations when the intersection of input labels is non-empty ($\alpha \cap \alpha' \neq \emptyset$, verified using \texttt{nemptyIs}):
+
+    \begin{enumerate}
+      \item Computes non-$\varepsilon$-transitions ($\texttt{D1}$): When the output function applied to the intersection $\alpha \cap \alpha'$ yields a non-empty set, a new transition is added to $\texttt{D1}$ with the computed output label.
+      \item Generates $\varepsilon$-transitions ($\texttt{D2}$): When there exists an input in the intersection $\alpha \cap \alpha'$ that produces an empty string (verified by checking if $\texttt{M}~f$ maps any element to \texttt{None}. It is implemented by \texttt{fe}), a corresponding $\varepsilon$-transition is added to $\texttt{D2}$.
+    \end{enumerate}
+    
 
   \begin{figure}[hbt!]
     \begin{lstlisting}
   lemma productT_imp_correct:
-  assumes finite_TT: "|$\text{finite } (\Delta_T~\mathcal{T})$|"    
+  assumes finite_TT: "|$\text{finite } (\Delta_t~\mathcal{T})$|"    
       and finite_TA: "|$\text{finite } (\Delta~\mathcal{A})$|"
       and finite_Q: "|$\text{finite } (\mathcal{Q}~\mathcal{A})$|"
-      and finite_TQ: "|$\text{finite } (\mathcal{Q}_T~\mathcal{T})$|"
+      and finite_TQ: "|$\text{finite } (\mathcal{Q}_t~\mathcal{T})$|"
       and finite_I: "|$\text{finite } (\mathcal{I}~\mathcal{A})$|"
-      and finite_TI: "|$\text{finite } (\mathcal{I}_T~\mathcal{T})$|"
+      and finite_TI: "|$\text{finite } (\mathcal{I}_t~\mathcal{T})$|"
       and finite_F: "|$\text{finite } (\mathcal{F}~\mathcal{A})$|"
-      and finite_TF: "|$\text{finite } (\mathcal{F}_T~\mathcal{T})$|"
+      and finite_TF: "|$\text{finite } (\mathcal{F}_t~\mathcal{T})$|"
   shows "|$\text{productT\_imp } \mathcal{T}~\mathcal{A}~F~\text{fe} \leq \text{SPEC } (\lambda A.~A = \text{productT } \mathcal{T}~\mathcal{A}~F)$|"
   \end{lstlisting}
   \caption{The refinement of the product computation}
   \label{fig-def-productT_imp_correct}
   \end{figure}
 
-  To prove the correctness of the product computation introduced above, we just need to show that the product result of \texttt{productT\_imp} in Fig. \ref{fig-def-prods_imp} is a refinement of the product result of \texttt{productT} in Figure \ref{fig-compute-nft-product}. This refinement specification is illustrated in Figure \ref{fig-def-productT_imp_correct}. The proof is under the framework of \emph{Refine\_Monadic}. The specification $\mathbf{C} \leq\texttt{SPEC}~\mathbf{A}$ means that $\mathbf{C}$ is an element in the set $\mathbf{A}$. In Fig. \ref{fig-def-productT_imp_correct}, "$\lambda A.~A = \text{productT } \mathcal{T}~\mathcal{A}~F$" specifies a set of elements $A$, such that $A$ equals to $\texttt{productT}~\mathcal{T}~\mathcal{A}~F$. 
-  The specification will force us to prove the result $\varepsilon$-NFAs of \texttt{productT\_imp}  and \texttt{productT} have the same sets of initial states, transition relations, $\varepsilon$-transitions, and accepting states.
+  The correctness of the product computation is established through a refinement proof, demonstrating that \texttt{productT\_imp} (Figure \ref{fig-compute-nft-product}) correctly implements the abstract specification \texttt{productT} (Figure \ref{fig-def-FTProd}). This refinement relationship is formally specified in Figure \ref{fig-def-productT_imp_correct}, where we leverage the \emph{Refine\_Monadic} framework's data refinement.
 
-\subsection{Refinement to Efficient Data Structure}
+  The refinement is expressed through the relation $\mathbf{C} \leq \texttt{SPEC}~\mathbf{A}$, which asserts that the concrete implementation $\mathbf{C}$ is an element of the abstract specification $\mathbf{A}$. More precisely,  the concrete implementation must produce an SFA that is structurally equivalent to the one produced by the abstract algorithm \texttt{productT}.
 
-The last subsection shows the way to compute the product of two NFAs and the transition labels have been refined to interval algebra. But it still uses the data structure of sets in Isabelle/HOL. 
+  To establish this equivalence, we must prove that the SFAs produced by \texttt{productT\_imp} and \texttt{productT} are identical in all essential components:
+  initial state sets, transition relations, $\varepsilon$-transition sets, accepting state sets.
 
-The \emph{Refine\_Monadic} framework provides a way to refine the data structure of sets to more efficient data structure, such as red-black trees. The basic idea is to provide a set of \emph{set} operations on the refined data structure and prove the refinement relation between the operations on the refined data structure and the operations on the abstract data structure.
-%
-In our formalization, we refine the data structure of sets to red-black trees.
 
-We extend CertiStr \cite{cpp/KanLRS22} not only to support SFTs but also $\varepsilon$SFA, including the conversion from $\varepsilon$SFA to SFA and the the correctness of the conversion. 
+The implementation of \texttt{productT\_imp} follows \emph{Refine\_Monadic} framework's interfaces for sets to store states and transition relations. 
+The \emph{Refine\_Monadic} framework provides a way to automatically refine these interfaces to more efficient data structure, such as red-black trees or hashmaps. 
+In our formalization, we refine the sets of storing states and transitions to red-black trees.
 
 
 
@@ -575,30 +580,41 @@ We extend CertiStr \cite{cpp/KanLRS22} not only to support SFTs but also $\varep
 
 \section{An Application to String Solver}
 \label{sec-app-str-solver}
-In this section, we will show how to use the formalized symbolic transducer to solve the string constraints with replacement operations.
 
-CertiStr is an existing string solver based on SFAs. However, due to the limitation of SFAs, it cannot solve the string constraints with replacement operations. CertiStr is based on forward-propagations. We will not elaborate and repeat the idea of forward-propagation in this paper. In this section, we only focus on how to model the replacement operation in SFTs.
+In this section, we demonstrate the practical application of our formalized SFTs to string constraint solving, specifically focusing on replacement operations. While CertiStr \cite{cpp/KanLRS22} provides a verified framework for string constraint solving using SFAs, its capabilities are inherently limited by the expressiveness of SFAs. In particular, SFAs cannot directly model string transformation operations such as replacement.
+
+Our string solver is based on CertiStr \cite{cpp/KanLRS22} by extending it with the modeling of replacement operations. CertiStr exploits forward-propagation to solve the string constraints. Our SFT modeling for replacement operations can seamlessly be integrated into CertiStr's forward-propagation framework.
+
 
 
 \subsection{Modeling the Replacement Operation}
 
 
-A replacement operation has the following form: $\texttt{replace}(\texttt{str}, \texttt{pattern}, \texttt{replacement})$. This operation replaces the occurrence of the substring in \texttt{str} that matches \texttt{pattern} with \texttt{replacement}. \texttt{str} and \texttt{replacement} are strings and \texttt{pattern} is a regular expression.
+The string replacement operation, denoted as $\texttt{replace}(\texttt{str}, \texttt{pattern}, \texttt{replacement})$, is a fundamental string transformation that takes three parameters:
+\begin{itemize}
+  \item $\texttt{str}$: The input string to be transformed
+  \item $\texttt{pattern}$: A regular expression defining the matching criteria
+  \item $\texttt{replacement}$: The string to be substituted for matched substrings
+\end{itemize}
 
-The semantics of the replacement operation can be described in two cases: (1) if there are a substring in \texttt{str} that match \texttt{pattern}, then replace it with \texttt{replacement}. (2) If there are no matches, then the result is \texttt{str} itself.
+The semantics of the replacement operation can be formally characterized by two distinct cases:
+\begin{enumerate}
+  \item When there exists at least one substring $s'$ in \texttt{str} such that $s'$ matches $\texttt{pattern}$, then $s'$ is replaced with \texttt{replacement}.
+  \item When no substring of \texttt{str} matches $\texttt{pattern}$, the operation returns \texttt{str} unchanged.
+\end{enumerate}
 
-The first case can be modeled by SFTs. We illustrate this case by an example. Given a replacement operation $\texttt{replace}(s, $\texttt{/[0-9]+/}$, $"$\texttt{NUM}$"$)$, which means replacing a occurrence of the substring that matches the regular expression $\texttt{/[0-9]+/}$ with the string"\texttt{NUM}".
+The first case can be modeled by SFTs. We illustrate this case by an example. Given a replacement operation $\texttt{replace}(s, $\texttt{/[0-9]+/}$, $"$\texttt{NUM}$"$)$, which means replacing a occurrence of the substring that matches the regular expression $\texttt{/[0-9]+/}$ with the string "\texttt{NUM}".
 We model this replacement operation by an SFT with the following 3 steps:
 
 \begin{enumerate}
-  \item Generate an SFA from the regular expression $\texttt{/[0-9]+/}$. Adding output functions to the transitions of the SFA that output empty string (\texttt{None}) to make it an SFT.
-  \item Generate an SNFA from the replacement string "\texttt{NUM}". Note that a single string is also a regular expression. Add input labels and output functions to the transitions of the SNFA to make it an SFT.
-  \item Concatenate the two SFTs and add preceding and succeeding self-loop transitions to make it accept the whole input string.
+  \item First, construct an SFA that recognizes the regular expression pattern $\texttt{/[0-9]+/}$. Transform this SFA into an SFT by augmenting each transition with an output function $f = \lambda x.~\texttt{None}$ that produces the empty string. 
+  \item Second, construct an SFA that accepts the replacement string "\texttt{NUM}". Since a constant string can be viewed as a specialized regular expression, we can construct its SFA representation. Convert this SNFA into an SFT by adding $\varepsilon$-transitions  and appropriate output functions that emit the characters of "\texttt{NUM}" in sequence.
+  \item Finally, compose the two SFTs through concatenation and augment the resulting transducer with self-loop transitions at the initial and final states. These additional transitions, labeled with $\Sigma$ (the set of all characters in the alphabet) and empty output function, enable the SFT to process arbitrary prefixes and suffixes of the input string while preserving the replacement behavior on matched substrings.
 \end{enumerate}
 
 
 \noindent\emph{Step 1.}
-The SFA corresponding to the regular expression "$\texttt{/[0-9]+/}$" is shown in Figure \ref{fig-snfa-pattern}. On the left side is the SFA and on the right side is the corresponding SFT. The function $\texttt{f} = \lambda x.~\texttt{None}$ is the output function that outputs empty string. 
+Figure \ref{fig-snfa-pattern} illustrates the construction of the pattern-matching component. The left side shows the SFA that recognizes the regular expression $\texttt{/[0-9]+/}$, while the right side presents its transformation into an SFT. This transformation is achieved by augmenting each transition with the output function $\texttt{f} = \lambda x.~\texttt{None}$, which consistently produces the empty string, effectively "consuming" the matched digits without generating output.
 
 
 
@@ -625,11 +641,17 @@ The SFA corresponding to the regular expression "$\texttt{/[0-9]+/}$" is shown i
 \end{figure}
 
 \noindent\emph{Step 2.}
-The SNFA corresponding to the replacement string "\texttt{NUM}" is shown in Figure \ref{fig-snfa-replacement}. On the left side is the SFA and on the right side is the corresponding SFT. The function \texttt{g} is the output function that outputs the characters in the replacement string. \texttt{g} is defined as:
+Figure \ref{fig-snfa-replacement} depicts the automata for the replacement string "\texttt{NUM}". The left side shows the SFA that accepts this constant string, while the right side presents its SFT transformation. The transformation employs an indexed output function \texttt{g} that emits characters of the replacement string sequentially:
 \[
-\texttt{g} = \lambda~i~x.~\texttt{match }~i~ with~ 1 \rightarrow [(78, 78)] ~|~ 2 \rightarrow [(85, 85)] ~|~ 3 \rightarrow [(77, 77)] ~|~ \_ ~\rightarrow \texttt{None}
+\texttt{g} = \lambda~i~x.~\texttt{match}~i~\texttt{with}~
+\begin{cases}
+1 \mapsto [(78, 78)] & \text{(ASCII for 'N')} \\
+2 \mapsto [(85, 85)] & \text{(ASCII for 'U')} \\
+3 \mapsto [(77, 77)] & \text{(ASCII for 'M')} \\
+\_ \mapsto \texttt{None}
+\end{cases}
 \]
-Note that the ASCII code of  $\texttt{'N'}$, $\texttt{'U'}$, $\texttt{'M'}$ are 78, 85, 77 respectively.
+This function maps transition indices to their corresponding character outputs, using ASCII codes to represent the string "\texttt{NUM}" character by character.
 
 
 \begin{figure}[h] \centering
@@ -662,7 +684,11 @@ Note that the ASCII code of  $\texttt{'N'}$, $\texttt{'U'}$, $\texttt{'M'}$ are 
 
 
 \noindent\emph{Step 3.}
-The concatenation of the two SFTs in Fig. \ref{fig-snfa-pattern} and Fig. \ref{fig-snfa-replacement} is shown in Figure \ref{fig-rearranged-automata}. It contains two minor steps: (1) add a transtion (\texttt{None}/\texttt{f}) from each accepting state of the first SFT to the initial state of the second SFT. (2) add the preceding and succeeding transitions to make it accept the whole input string.
+Figure \ref{fig-rearranged-automata} presents the complete SFT construction, obtained by composing the pattern-matching SFT (Fig. \ref{fig-snfa-pattern}) with the replacement-generating SFT (Fig. \ref{fig-snfa-replacement}). The composition process involves two key modifications:
+\begin{enumerate}
+  \item Connect the two SFTs by adding $\varepsilon$-transitions (labeled with \texttt{None}/\texttt{f}) from each accepting state of the pattern-matching SFT to the initial state of the replacement-generating SFT
+  \item Augment the resulting transducer with self-loop transitions at both ends, labeled with $\Sigma/\texttt{f}$, where $\Sigma$ represents the full alphabet. These transitions enable the SFT to process arbitrary input prefixes and suffixes while preserving the matched substring for replacement
+\end{enumerate}
 
 \begin{figure}[h] \centering
   \begin{tikzpicture}[shorten >=1pt, node distance=1.8cm, auto]
@@ -673,7 +699,7 @@ The concatenation of the two SFTs in Fig. \ref{fig-snfa-pattern} and Fig. \ref{f
      \path[->] 
      (q0') edge [bend left] node {\texttt{[0-9]}/$\texttt{f}$} (q1')
      (q1') edge [loop above] node {\texttt{[0-9]}/$\texttt{f}$} (q1')
-     (q0') edge [loop below] node {\texttt{None}/\texttt{f}} (q0');
+     (q0') edge [loop below] node {$\Sigma$/$\texttt{f}$} (q0');
   
     % Second automaton from the second figure
     \node[state] (q0'') [right=3cm of q1'] {$q_0''$}; 
@@ -685,33 +711,34 @@ The concatenation of the two SFTs in Fig. \ref{fig-snfa-pattern} and Fig. \ref{f
     (q0'') edge node {\texttt{None}/\texttt{g 1}} (q1'')
     (q1'') edge node {\texttt{None}/\texttt{g 2}} (q2'')
     (q2'') edge node {\texttt{None}/\texttt{g 3}} (q3'')
-    (q3'') edge [loop below] node {\texttt{None}/\texttt{f}} (q3'')
+    (q3'') edge [loop below] node {$\Sigma$/$\texttt{f}$} (q3'')
     (q1') edge node {\texttt{None}/\texttt{f}} (q0'');
   \end{tikzpicture}
   \caption{The SFT for the replacement operation $\texttt{replace}(s, $\texttt{/[0-9]+/}$, $\text{NUM}$)$}
   \label{fig-rearranged-automata}
   \end{figure}
 
-  With this SFT, we can compute the forward image of the replacement operation.
-  Let $s' = \texttt{replace}(s,~$\texttt{/[0-9]+/}$,~\text{"}$\texttt{NUM}$\text{"})$ be a string constraint and we want to compute the value range of $s'$ regarding this replacement operation.
-  Assume the SFT generated from this replacement operation is $\mathcal{T}$ and the string variable $s$'s values ranges over an SFA $\mathcal{A}$. The foward image of this replacement operation is $\mathcal{T}\times \mathcal{A}$. It also means that the value of $s$' must ranges over this image.
+
+  Having constructed the SFT, we can now compute the forward image of the replacement operation. Consider the string constraint $s' = \texttt{replace}(s,~\texttt{/[0-9]+/},~\text{"}\texttt{NUM}\text{"})$, where we aim to characterize the possible values of $s'$. Let $\mathcal{T}$ denote the constructed SFT modeling the replacement operation, and let $\mathcal{A}$ be the SFA representing the domain of possible values for the input string $s$. The forward image of this replacement operation is given by the product $\mathcal{T} \times \mathcal{A}$, which precisely captures the set of all possible output strings that can be produced by applying the replacement operation to any input string accepted by $\mathcal{A}$.
+  Our string solver uses this forward image to do forward propagation for further string solving.
+
+  \emph{Comparison with SMT-LIB Semantics.} It is important to note that our formalization differs from the standard SMT-LIB semantics for the replacement operation. In SMT-LIB, the \texttt{str.replace} operation is defined to replace only the \emph{first} occurrence of a substring matching the given pattern. In contrast, our semantics allows for a more general interpretation where any matching substring may be replaced. 
 
 
-  \emph{Compare with the semantics of SMTLIB.} SMTLIB's replacement's semantics is not exactly the same as the semantics  in this paper. In SMTLIB, the single replacement operation is defined as replace the \emph{first} occurrence of the substring that matches the pattern with the replacement string. Our semantics is not limited to the \emph{first} occurrence.
-
-  From replacement operation modeling above, we can see that our SFT's formalization with the support of empty string for input labels and output functions make it easy to model the replacement operation.
-  However,
-  The power of our SFT's formalization is not fully explored in the string solver as the transition labels and output functions are simple. For other applications, the transition labels and output functions can indeed support more complex modelings.
 
 
 \subsection{Experiments}
 
-We have implemented a prototype of the string solver to support the replacement operation based on CertiStr \cite{cpp/KanLRS22} \footnote{The code is available at \url{https://github.com/ShlKan/certified-str-solver}}, which is called CertiStrR in this paper.
-The frontend of CertiStrR is not certified and implemented with the dolmen \cite{dolmen} library (An OCaml library of SMTLIB parser) and ocaml-re-nfa \cite{ocaml-re-nfa} library (An OCaml library to construct an NFA from a regular expression).
+We have implemented CertiStrR, an extension of the Certified String Solver CertiStr \cite{cpp/KanLRS22}, to support string replacement operations\footnote{The implementation is available at \url{https://github.com/ShlKan/certified-str-solver}}. While the core solving algorithm maintains the certification guarantees of CertiStr, the frontend components are implemented using established non-certified  OCaml libraries: dolmen \cite{dolmen} for SMT-LIB parsing and ocaml-re-nfa \cite{ocaml-re-nfa} for regular expression to NFA conversion. 
 
+CertiStrR implements two kinds of SMT-LIB's replacement operations:
+\texttt{str.replace s p r}: a string-based replacement where pattern \texttt{p} is a constant string. \texttt{str.replace\_re s p r}: a regular expression-based replacement where pattern \texttt{p} is a regular expression
+
+Listing \ref{lst-smtlib-code} demonstrates the regular expression variant through an example that replaces numeric sequences with the string "\texttt{NUM}". The constraints are satisfiable because the input string \texttt{a} = "\texttt{2024,2025}" contains a substring "\texttt{2025}" that matches the regular expression \texttt{re.+ (re.range "0" "9")} (equivalent to \texttt{/[0-9]+/}), and replacing this match with "\texttt{NUM}" yields the expected output string \texttt{b} = "\texttt{2024,NUM}".
 %
-CertiStr-R supports two kinds of SMT-LIB's replacement operations: (1) \texttt{str.replace s p r}, where the pattern \texttt{p} is a string and (2) \texttt{str.replace\_re s p r}, where the pattern \texttt{p} is a regular expression. Listing \ref{lst-smtlib-code} shows an example of the SMT-LIB code corresponding to the replacement operation $\texttt{replace}(s,~$\texttt{/[0-9]+/}$,~\text{"}$\texttt{NUM}$\text{"})$ that we illustrated in Section \ref{sec-app-str-solver}. The constraints are satisfiable because the 
-substring "\texttt{2025}" in \texttt{a} can be matched by the regular expression \texttt{/[0-9]+/} and then replaced by "\texttt{NUM}".
+
+As discussed in the previous subsection, our replacement semantics differs from the SMT-LIB standard semantics.
+When we run the SMT solver CVC5 \cite{cvc5} with the example code in Listing \ref{lst-smtlib-code}, the result is UNSAT because CVC5 only matches the first occurrence of the pattern.
 
 
 \begin{lstlisting}[language=SMTLIB, caption={Example SMT-LIB Code}, label={lst-smtlib-code}]
@@ -724,11 +751,8 @@ substring "\texttt{2025}" in \texttt{a} can be matched by the regular expression
   (check-sat)
   \end{lstlisting}
 
-  As we discussed in Section \ref{sec-app-str-solver}, our replacement semantics is not exactly the same as SMTLIB's standard semantics.
-If we run the SMT solver CVC5 \cite{cvc5} with the example code in Listing \ref{lst-smtlib-code}, the result is UNSAT. Because CVC5 only matches the first occurrence of the pattern.
 
-
-We select benchmarks from the SMT-LIB 2024 \cite{smtlib_benchmarks} to test the effective and efficiency of CertiStrR. The benchmarks contain mainly from QF\_S and QF\_SLIA. The benchmarks are devided into 2 groups: (1) tests with \texttt{str.replace} and (2) tests with \texttt{str.replace\_re}. Because CertiStrR currently has a limited front-end to support all SMT-LIB operations. We rewrite the operations that are not supported by CertiStrR, for example, \texttt{(assert (and c1 c2))} is rewritten as two separate \texttt{(assert c1)} and \texttt{(assert c2)} when \texttt{c1} and \texttt{c2} are string constraints that CertiStrR supports. 
+  We evaluate CertiStrR using benchmarks from SMT-LIB 2024 \cite{smtlib_benchmarks}, focusing on the QF\_S and QF\_SLIA logic fragments. The benchmarks are divided into two categories based on the replacement operations: (1) string-based replacement (\texttt{str.replace}) and (2) regular expression-based replacement (\texttt{str.replace\_re}). Due to CertiStrR's current front-end limitations in supporting the full SMT-LIB specification, we preprocess certain operations. For instance, conjunctive assertions of the form \texttt{(assert (and c1 c2))} are decomposed into separate assertions \texttt{(assert c1)} and \texttt{(assert c2)} when \texttt{c1} and \texttt{c2} are string constraints supported by CertiStrR.
 
 % replace_re
 % Average real time: 0.37 seconds
@@ -767,26 +791,30 @@ We select benchmarks from the SMT-LIB 2024 \cite{smtlib_benchmarks} to test the 
   \label{tab:string_operations}
 \end{table}
 
-The experiments were conducted on a laptop equipped with an Apple M4 processor, featuring 24 GB of memory. The timelimit for each test is $1$ minutes. We split the tests into 2 groups: (1) tests with \texttt{str.replace} (\texttt{replace\_str}, 323 tests) and (2) tests with \texttt{str.replace\_re} (\texttt{replace\_re}, 98 tests). The average time of \texttt{replace\_str} is 0.27 seconds and the average time of \texttt{replace\_re} is 0.37 seconds. The test results are classified into 3 categories: (1) SAT, (2) UNSAT, and (3) Inconclusive.
-The result inconclusive means that the solver cannot prove the result. This does not mean the the test runs out of time. It means the solver cannot prove the result with the current forward-propagation algorithm used by CertiStr \cite{cpp/KanLRS22}. Forward-propagation algorithm cannot decide the result if the constraints do not satisfy tree-property, even after the forward-propagation all variables's domain are not empty as illustrated in CertiStr \cite{cpp/KanLRS22}.
+The experimental evaluation was conducted on a laptop with an Apple M4 processor and 24 GB of memory, with a time limit of one minute per test. 
+The results show average execution times of 0.27 seconds for \texttt{str.replace} and 0.37 seconds for \texttt{str.replace\_re} operations. Test outcomes were classified into three categories: SAT (satisfiable), UNSAT (unsatisfiable), and Inconclusive.
+%
+An "Inconclusive" result indicates that the solver cannot determine satisfiability, not due to timeout but rather due to inherent limitations of the forward-propagation algorithm inherited from CertiStr \cite{cpp/KanLRS22}. Specifically, when the string constraints do not satisfy the tree property, the forward-propagation algorithm may be unable to reach a definitive conclusion, even when the variable domains remain non-empty after propagation.
 
-After analyzing the tests that consume more time than others. We found the replacement operation modeling itself is efficient. The time consumption of is mainly from the automata accumulation during the forward-propagation algorithm. For instance, given the constraints as follows: 
+
+
+Our performance analysis revealed that while the SFT-based replacement operation modeling is efficient, the primary computational bottleneck stems from automata accumulation during forward-propagation. Consider the following constraint system:
 \[
-x=x_1\texttt{++}x_2;~x = \texttt{replace}(x_3, p, r);~x = x_4;~x = \texttt{replace}(x, p_1, r_1);
+x = x_1\texttt{++}x_2;~x = \texttt{replace}(x_3, p, r);~x = x_4;~x = \texttt{replace}(x, p_1, r_1);
 \]
-where \texttt{++} is the concatenation operation. As the varible $x$ appears many times on the left-hand side of the constraints, the forward-propagation algorithm will accumulate the automata of $x_1\texttt{++}x_2$, \texttt{replace}($x_3, p, r$), $x_4$, and \texttt{replace}($x, p_1, r_1$) to $x$ during the forward-propagation. Each accumulation will perform the product operation with the previous automata. The complexity of the product operation is $O(n^2)$ in the worst case, where $n$ is the size of the automata. This leads to state explosion.
+where \texttt{++} denotes string concatenation. The variable $x$ appears multiple times on the left-hand side of the equations, causing the forward-propagation algorithm to accumulate automata representations for each constraint: $x_1\texttt{++}x_2$, \texttt{replace}($x_3, p, r$), $x_4$, and \texttt{replace}($x, p_1, r_1$). Each accumulation step requires computing the product of the current automaton with the previous result. Given that the product operation has a worst-case complexity of $O(n^2)$, where $n$ represents the automaton size, this repeated accumulation can lead to state and transition explosion.
+
 
 \subsection{Effort of Certified Development}
 
-We discuss the effort of certified development in this subsection.
-The effort of certified development is mainly from the following two aspects: (1) the abstract level Formalization of SFTs and (2) the low-level refinement of the SFTs to efficient data structure.
-
+We discuss the effort of certified SFT development in this subsection.
+Table \ref{tab:abstract_impl} provides an overview. The abstract-level development means all formalizations in Section \ref{sec:product-operation}. The implementation-level development means all formalizations in Section \ref{sec_alg_refinement}.
 
 \begin{table}[h]
   \centering
   \begin{tabular}{lccc}
       \toprule
-      & \textbf{Definitions} & \textbf{Lemmas} & \textbf{Proofs} \\
+      & \textbf{Definitions} & \textbf{Lemmas} & \textbf{Proofs} (lines of code) \\
       \midrule
       Abstract & & & \\
       Implementation & & & \\
