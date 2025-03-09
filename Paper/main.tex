@@ -850,10 +850,11 @@ Beyond string theories, certification efforts in SMT solving have extended to ot
 \section{Conclusion}
 \label{sec:conclusion}
 
-In this paper, we present the first formalization of SFTs in the proof assistant Isabelle/HOL. The formalization features flexible interfaces for easily modeling different applications by supporting $\varepsilon$-transitions for both input and output, and extensive to different boolean algebras such as intervals, arithmetic operations, among others by leveraging the refinement framework. 
-In order to assess the effciency and effectiveness of our formalization, we have implemented CertiStrR, an extension of the Certified String Solver CertiStr \cite{cpp/KanLRS22}, to support string replacement operations and evaluated it on a set of benchmarks from SMT-LIB 2024 \cite{smtlib_benchmarks}. The experimental results show that our formalization is efficient and effective. Even though we only illustrate the application of our formalization of SFTs in string solvers, out extensible framework on transition labels is applicable to other domains such as program verification.
+In this paper, we have presented the first formalization of Symbolic Finite Transducers (SFTs) in the proof assistant Isabelle/HOL. Our formalization provides flexible interfaces that facilitate diverse applications through two key features: support for $\varepsilon$-transitions in both input and output, and extensibility to various boolean algebras (including intervals and arithmetic operations) via the refinement framework.
 
-In the future, we plan to extend our symbolic formalization to different variant SFTs. For example, attaching priority to transtions so that we can model the standard semantics of replacement operations in SMT-LIB. 
+To demonstrate the practical utility of our formalization, we developed CertiStrR, an extension of the Certified String Solver CertiStr \cite{cpp/KanLRS22}. This implementation adds support for string replacement operations and has been evaluated on benchmarks from SMT-LIB 2024 \cite{smtlib_benchmarks}. The experimental results confirm both the efficiency and effectiveness of our approach. While we focused on string solving applications, our extensible framework for transition labels is broadly applicable to other domains, including program verification.
+
+Future work includes extending our symbolic formalization to handle variants of SFTs. One particularly promising direction is the addition of transition priorities, which would enable precise modeling of SMT-LIB's standard semantics for replacement operations.
 
 
 
