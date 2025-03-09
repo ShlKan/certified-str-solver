@@ -729,7 +729,9 @@ Figure \ref{fig-rearranged-automata} presents the complete SFT construction, obt
 
 \subsection{Experiments}
 
-We have implemented CertiStrR, an extension of the Certified String Solver CertiStr \cite{cpp/KanLRS22}, to support string replacement operations\footnote{The implementation is available at \url{https://github.com/ShlKan/certified-str-solver}}. While the core solving algorithm maintains the certification guarantees of CertiStr, the frontend components are implemented using established non-certified  OCaml libraries: dolmen \cite{dolmen} for SMT-LIB parsing and ocaml-re-nfa \cite{ocaml-re-nfa} for regular expression to NFA conversion. 
+We have implemented CertiStrR, an extension of the Certified String Solver CertiStr \cite{cpp/KanLRS22}, to support string replacement operations
+%\footnote{The implementation is available at \url{https://github.com/ShlKan/certified-str-solver}}. 
+While the core solving algorithm maintains the certification guarantees of CertiStr, the frontend components are implemented using established non-certified  OCaml libraries: dolmen \cite{dolmen} for SMT-LIB parsing and ocaml-re-nfa \cite{ocaml-re-nfa} for regular expression to NFA conversion. 
 
 CertiStrR implements two kinds of SMT-LIB's replacement operations:
 \texttt{str.replace s p r}: a string-based replacement where pattern \texttt{p} is a constant string. \texttt{str.replace\_re s p r}: a regular expression-based replacement where pattern \texttt{p} is a regular expression
@@ -808,7 +810,8 @@ where \texttt{++} denotes string concatenation. The variable $x$ appears multipl
 \subsection{Effort of Certified Development}
 
 We discuss the effort of certified SFT development in this subsection.
-Table \ref{tab:abstract_impl} provides an overview. The abstract-level development means all formalizations in Section \ref{sec:product-operation}. The implementation-level development means all formalizations in Section \ref{sec_alg_refinement}.
+Table \ref{tab:abstract_impl} provides an overview. The abstract-level development means all formalizations in Section \ref{sec:formalization} and  \ref{sec:product-operation}, including SFTs and $\varepsilon$SFAs . The implementation-level development means all formalizations in Section \ref{sec_alg_refinement} including the refinement of the product operation. The last row corresponds to the effort of the interval formalization. The most difficult part is the correctness proof of the product operation at the abstract level.
+Interval formalization complexity dramatic increase in CertiStrR compared to the interval formalization in CertiStr \cite{cpp/KanLRS22} due to the extension of intervals to a list.
 
 \begin{table}[h]
   \centering
@@ -816,8 +819,9 @@ Table \ref{tab:abstract_impl} provides an overview. The abstract-level developme
       \toprule
       & \textbf{Definitions} & \textbf{Lemmas} & \textbf{Proofs} (lines of code) \\
       \midrule
-      Abstract & & & \\
-      Implementation & & & \\
+      Abstract-level & 17 & 21 & 3274 \\
+      Implementation-level & 51 & 43 & 2700 \\
+      Interval & 15 & 29 & 1500 \\
       \bottomrule
   \end{tabular}
   \caption{Overview of the effort of certified development}
@@ -828,9 +832,29 @@ Table \ref{tab:abstract_impl} provides an overview. The abstract-level developme
 \section{Related Work}
 \label{sec:related-work}
 
+Symbolic Automata and Transducers \cite{cav/DAntoniV17,VeanesHLMB12Transducer,popl/VeanesHLMB12, popl/DAntoniV14, entcs/DAntoniKW18, sofsem/TammV18} represent a significant advancement in automata theory, offering improved efficiency in operations and enhanced expressiveness through algebraic theories that support infinite alphabets. This symbolic framework has been progressively extended to accommodate more complex structures: symbolic tree transducers \cite{ershov/VeanesB11} handle hierarchical data structures, while symbolic pushdown automata \cite{cav/DAntoniA14} manage nested word structures. Recent developments have further expanded the scope of symbolic techniques to include B\"{u}chi automata and omega-regular languages \cite{pacmpl/VeanesBEZ25}, enabling verification of infinite-state systems and analysis of non-terminating computations.
+
+The efficiency, scalability, and expressive power of symbolic automata and transducers have led to their widespread adoption in numerous real-world applications. These applications span diverse domains, including: constraint solving for program analysis \cite{lpar/VeanesBM10}, security-critical sanitizer analysis for web applications \cite{uss/HooimeijerLMSV11}, runtime verification of system behaviors \cite{osdi/YaseenABCL20}, and automated program inversion for software transformation \cite{pldi/HuD17}. Each application leverages the symbolic approach's ability to handle complex patterns and infinite alphabets efficiently.
+
+While classical automata theories have been extensively formalized in interactive theorem provers \cite{Tuerk-NFA, Lammich2014TheCA, Peter14, cpp/DoczkalKS13}, with some work on transducer formalization \cite{afp/LochmannFSTS21}, the symbolic variants of automata and transducers remain largely unexplored in formal verification. To our knowledge, CertiStr \cite{cpp/KanLRS22} represents the only existing work on symbolic automata formalization in a proof assistant. Our work advances this frontier by extending the formal treatment to both SFTs and $\varepsilon$SFAs.
+
+
+A significant application of our certified transducer framework is in string constraint solving, a field that has seen intensive research development over the past decade. While our work provides formal verification guarantees, there exists a rich ecosystem of non-certified string solvers, each with distinct capabilities: Kaluza \cite{Berkeley-JavaScript} specializes in JavaScript analysis, CVC5 \cite{cvc5}, Z3-str3 \cite{Z3-str3} builds on the Z3 framework, S3P \cite{DBLP:conf/ccs/TrinhCJ14}, Ostrich \cite{pacmpl/ChenFHHHKLRW22}, and SLOTH \cite{HJLRV18}.
+We believe that our work will benefit the community by providing a formal foundation for string solvers.
+
+
+
+Beyond string theories, certification efforts in SMT solving have extended to other domains. Notable among these is the work by Shi et al. \cite{DBLP:conf/cav/ShiFLTWY20}, who developed a certified SMT solver for quantifier-free bit-vector theory, demonstrating the broader applicability of formal verification in automated reasoning.
+
 
 \section{Conclusion}
 \label{sec:conclusion}
+
+In this paper, we present the first formalization of SFTs in the proof assistant Isabelle/HOL. The formalization features flexible interfaces for easily modeling different applications by supporting $\varepsilon$-transitions for both input and output, and extensive to different boolean algebras such as intervals, arithmetic operations, among others by leveraging the refinement framework. 
+In order to assess the effciency and effectiveness of our formalization, we have implemented CertiStrR, an extension of the Certified String Solver CertiStr \cite{cpp/KanLRS22}, to support string replacement operations and evaluated it on a set of benchmarks from SMT-LIB 2024 \cite{smtlib_benchmarks}. The experimental results show that our formalization is efficient and effective. Even though we only illustrate the application of our formalization of SFTs in string solvers, out extensible framework on transition labels is applicable to other domains such as program verification.
+
+In the future, we plan to extend our symbolic formalization to different variant SFTs. For example, attaching priority to transtions so that we can model the standard semantics of replacement operations in SMT-LIB. 
+
 
 
 \bibliography{literature}
