@@ -10,6 +10,12 @@ There are still some other proofs that have not been upgraded.
 
 To run the proofs of SFTs, open the theory `isabelle_code/Automata/implementation/RBT_CodeExport.thy`
 
+1. The abstract-level transducer is defined in [Transducer_new.thy](isabelle_code/Automata/Transducer_new.thy).
+2. The implementation-level transducer is defined in [Transducer_Impl_new.thy](isabelle_code/Automata/implementation/Transducer_Impl_new.thy).
+3. The abstract-level epsilon-SFA is defined in [NFA_epsilon.thy](isabelle_code/Automata/NFA_epsilon.thy).
+4. The implementation-level epsilon-SFA is defined in [Epsilon_Elim_Imp.thy](isabelle_code/Automata/implementation/Epsilon_Elim_Imp.thy).
+5. Interval is defined in [Interval.thy](isabelle_code/Automata/Interval.thy).
+
 
 ## Compile CertiStr
 
