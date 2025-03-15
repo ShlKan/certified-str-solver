@@ -21,8 +21,8 @@ To run the proofs of SFTs, open the theory `isabelle_code/Automata/implementatio
 
 CertiStr's front-end (not certified) is developed based on (1) [dolmen](https://github.com/Gbury/dolmen) and (2)
 [ocaml-re-nfa (my branch)](https://github.com/ShlKan/ocaml-re-nfa).
-Note that The original [ocaml-re-nfa](https://github.com/yallop/ocaml-re-nfa) does not support symbolic finite automata.
-You must install the branch in my repo.
+Note that, the original [ocaml-re-nfa](https://github.com/yallop/ocaml-re-nfa) does not support symbolic finite automata.
+You must install the branch in my repo (`opam install [path to ocaml-re-nfa]`).
 
 We use `dune` to manage the project. To build, jump into the [CertiStr](CertiStr) folder and run `dune build`. 
 To test (cram test), run `dune runtest`.
