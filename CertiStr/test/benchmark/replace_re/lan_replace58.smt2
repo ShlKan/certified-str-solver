@@ -62,11 +62,9 @@ Target solver: SLENT
 
 (assert (= x_1 sigmaStar_safe_49))
 
-(assert (= x_2 x_1))
-
 (assert (= x_2 sigmaStar_050))
 
-(assert (= x_7 (str.replace_re x_2 (re.++ re.allchar (re.++ (re.+ (str.to_re "d" )) re.allchar)) "_$1.") ))
+(assert (= x_7 (str.replace_re x_1 (re.++ re.allchar (re.++ (re.* (str.to_re "d" )) re.allchar)) "abcd_$1.") ))
 
 
 

@@ -80,9 +80,6 @@ Target solver: SLENT
 
 
 
-(assert (= x_12 (str.++ x_11 x_2)))
-
-
 
 
 (assert (= x_14 (str.++ x_12 literal_13)))

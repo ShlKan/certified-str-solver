@@ -58,7 +58,6 @@ Target solver: SLENT
 (declare-fun tmp_0 () String)
 (assert (= tmp_0 (str.++ atkPtn atk_sigmaStar_2)))
 (assert (= atk_sink (str.++ atk_sigmaStar_1 tmp_0)))
-(assert (= x_1 sigmaStar_safe_48))
 
 (assert (= x_1 sigmaStar_safe_49))
 
@@ -66,7 +65,7 @@ Target solver: SLENT
 
 (assert (= x_2 sigmaStar_050))
 
-(assert (= x_7 (str.replace_re x_2 (re.++ re.allchar (re.++ (re.+ (str.to_re "d" )) re.allchar)) "_$1.") ))
+(assert (= x_7 (str.replace_re sigmaStar_safe_48 (re.* (re.union (re.range "0" "9") (re.union (re.range "a" "z") (re.range "A" "Z")))) "_$1.") ))
 
 
 

@@ -66,24 +66,13 @@ Target solver: SLENT
 
 (assert (= x_2 sigmaStar_050))
 
-(assert (= x_7 (str.replace_re x_2 (re.++ re.allchar (re.++ (re.+ (str.to_re "d" )) re.allchar)) "_$1.") ))
+(assert (= x_7 (str.replace_re x_2 (re.++ re.allchar (re.++ (re.+ (str.to_re "d" )) (re.++ (re.union (str.to_re "j") (re.union (str.to_re "|") (str.to_re "J"))) (re.++ (re.union (str.to_re "a") (re.union (str.to_re "|") (str.to_re "A"))) (re.++ (re.union (str.to_re "v") (re.union (str.to_re "|") (str.to_re "V"))) (re.++ (re.union (str.to_re "a") (re.union (str.to_re "|") (str.to_re "A"))) (re.++ (re.union (str.to_re "s") (re.union (str.to_re "|") (str.to_re "S"))) (re.++ (re.union (str.to_re "c") (re.union (str.to_re "|") (str.to_re "C"))) (re.++ (re.union (str.to_re "r") (re.union (str.to_re "|") (str.to_re "R"))) (re.++ (re.union (str.to_re "i") (re.union (str.to_re "|") (str.to_re "I"))) (re.++ (re.union (str.to_re "p") (re.union (str.to_re "|") (str.to_re "P"))) (re.++ (re.union (str.to_re "t") (re.union (str.to_re "|") (str.to_re "T"))) (str.to_re ":"))))))))))))) "_$1.") ))
 
 
 
 (assert (= x_9 (str.++ literal_8 x_7)))
 
-
-
-
 (assert (= x_11 (str.++ x_9 literal_10)))
-
-
-
-
-(assert (= x_12 (str.++ x_11 x_2)))
-
-
-
 
 (assert (= x_14 (str.++ x_12 literal_13)))
 

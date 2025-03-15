@@ -37,7 +37,7 @@ Target solver: SLENT
 (declare-fun tmp_0 () String)
 (assert (= tmp_0 (str.++ atkPtn atk_sigmaStar_2)))
 (assert (= atk_sink (str.++ atk_sigmaStar_1 tmp_0)))
-(assert (= x_7 (str.replace_re sigmaStar_048 (re.inter re.allchar (re.* re.allchar) ) "") ))
+(assert (= x_7 (str.replace_re sigmaStar_048 (re.++ re.allchar (re.* re.allchar) ) "") ))
 
 
 
