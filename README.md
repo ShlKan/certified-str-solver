@@ -30,6 +30,15 @@ To test (cram test), run `dune runtest`.
 The automatically generated OCaml code for SFTs from Isabelle can be found in [Generated Code](CertiStr/lib/automata/Automata_lib.ml)
 
 
+**Note that:**
+
+The semantics of the replacement operation of our certified string solver is different from standard SMT-LIB semantics.
+Therefore, the results of running the tests and benchmarks in the repo may differ from other string solvers, such as CVC5 and Z3.
+
+Given the following string replacement operation:
+`str.replace_re a (re.+ (re.range "0" "9")) "NUM"` 
+1. The standard SMT-LIB semantics will replace the **first** occurrence of the pattern `(re.+ (re.range "0" "9"))` in `a`.
+2. The semantics in CertiStr are not limited to the first occurrence. 
 
 ## Papers
 1. [Shuanglong Kan, Anthony Widjaja Lin, Philipp Rümmer, Micha Schrader:
