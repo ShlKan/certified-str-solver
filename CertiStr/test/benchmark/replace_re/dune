@@ -1,7 +1,0 @@
-(cram
- (package CertiStr)
- (deps
-  %{bin:CertiStr}
-  benchmark.sh
-  (:smt2
-   (glob_files *.smt2))))
