@@ -1,11 +1,3 @@
-(*  Title:       Deterministic Finite Automata
-    Authors:     Shuanglong Kan <shuanglong@cs.uni-kl.de>
-                 Thomas Tuerk <tuerk@in.tum.de>
-                 Petra Dietrich <petra@ecs.vuw.ac.nz>
-
-    using Peter Lammich <peter.lammich@uni-muenster.de> work on
-    Finite state machines
-*)
 
 (* Deterministic Finite Automata *)
 

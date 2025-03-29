@@ -137,8 +137,9 @@ lemma productT_wf:
 lemma productT_correct:
   fixes \<T> \<A> F
   assumes F_ok1: "\<forall> f s. (\<forall> e \<in> s. f (Some e) = None) \<longleftrightarrow> F f s = None"
-      and F_ok2: "\<forall> f s. F f s = Some (\<Union> {the (f (Some e))| e. e \<in> s \<and> 
-                                                   f (Some e) \<noteq> None})"
+      and F_ok2: "\<forall> f s. F f s \<noteq> None \<longrightarrow> 
+                      F f s = Some (\<Union> {S| e S. e \<in> s \<and> 
+                                                   f (Some e) = Some S})"
       and wfTA: "NFT_wf \<T> \<and> NFA \<A>"
     shows "\<L>e (productT \<T> \<A> F) = outputL \<T> (\<M> \<T>) \<A>"
   unfolding \<L>e_def outputL_def NFAe_accept_def
@@ -713,16 +714,18 @@ proof
                        F ((\<M> \<T>) f) (\<sigma>1 \<inter> \<sigma>2) = Some \<sigma>"
                 by auto
               from F_ok2 this
-              have "F ((\<M> \<T>) f) (\<sigma>1 \<inter> \<sigma>2) = 
-                      Some (\<Union> {the ((\<M> \<T>) f (Some e)) |e. e \<in> \<sigma>1 \<inter> \<sigma>2 \<and> 
-                    (\<M> \<T>) f (Some e) \<noteq> None})"
-                by auto
+              have \<sigma>11: "F ((\<M> \<T>) f) (\<sigma>1 \<inter> \<sigma>2) = 
+                      Some (\<Union> {S |e S. e \<in> \<sigma>1 \<inter> \<sigma>2 \<and> 
+                    (\<M> \<T>) f (Some e) = Some S})"
+                by blast        
               from this p1 
-              obtain b where
-              b_def: "b \<in> \<sigma>1 \<inter> \<sigma>2 \<and> a \<in> the ((\<M> \<T>) f (Some b))" 
-                using F_ok1 F_ok2 by auto
+              obtain b S where
+              b_def: "b \<in> \<sigma>1 \<inter> \<sigma>2 \<and> a \<in> S \<and> (\<M> \<T>) f (Some b) = Some S" 
+                using F_ok1 F_ok2
+                using \<sigma>12f_def by auto
+              from this b_def \<sigma>11
               have "matcht (Some \<sigma>1, f) (Some b, Some a) (\<M> \<T>)"
-                using F_ok1 F_ok2 by auto
+                by simp
               from \<pi>_def \<sigma>12f_def b_def this
                    LTTS_reachable.simps(2)
                    [of "\<Delta>T \<T>" "(\<M> \<T>)" "fst qi" "(Some b, Some a)" \<pi> "fst q'"]
@@ -978,14 +981,23 @@ proof
            from False branch
            obtain \<sigma>1 \<sigma>2 f where \<sigma>12f_def:
         "(fst qi, (Some \<sigma>1, f), fst qj) \<in> \<Delta>T \<T> \<and>
-         (snd qi, \<sigma>2, snd qj) \<in> \<Delta> \<A> \<and> \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> F ((\<M> \<T>) f) (\<sigma>1 \<inter> \<sigma>2) = Some \<sigma>"
-             by auto
-           
-           from \<sigma>12f_def p1 F_ok2
-           obtain c where c_def: "c \<in> \<sigma>1 \<inter> \<sigma>2 \<and> aa \<in> the ((\<M> \<T>) f (Some c)) "
-             using disjoint_iff_not_equal inf.idem by auto
+         (snd qi, \<sigma>2, snd qj) \<in> \<Delta> \<A> \<and> \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> 
+            F ((\<M> \<T>) f) (\<sigma>1 \<inter> \<sigma>2) = Some \<sigma>"
+             by auto 
+           from this F_ok2 
+           have goal_1: "\<sigma> = (\<Union> {uu. \<exists>e S. uu = S \<and> e \<in> \<sigma>1 \<inter> \<sigma>2 \<and> 
+                          ((\<M> \<T>) f) (Some e) = Some S})"
+             by fastforce
+           from p1
+           have "aa \<in> \<sigma>"
+             by simp
+           from this \<sigma>12f_def p1 F_ok2 F_ok1 goal_1
+           obtain c S where c_def: "c \<in> \<sigma>1 \<inter> \<sigma>2 \<and> 
+                    (\<M> \<T>) f (Some c) = Some S \<and> aa \<in> S"
+             using disjoint_iff_not_equal inf.idem 
+             by blast
+           from this \<sigma>12f_def F_ok2
            have "matcht (Some \<sigma>1, f) (Some c, Some aa) (\<M> \<T>)"
-             unfolding matcht.simps
              using F_ok1 F_ok2 by auto
            from this \<sigma>12f_def \<pi>_def c_def LTTS_reachable.simps(2)
                               [of "\<Delta>T \<T>" "(\<M> \<T>)""fst qi" "(Some c, Some aa)" \<pi> "fst q'"]
@@ -1206,10 +1218,12 @@ proof
             obtain \<sigma> f where \<sigma>_def: "\<alpha> = (Some \<sigma>, f)"
               using \<alpha>_branch by blast
 
+            from q''_def
             obtain si where 
             si_def: "fst a = Some si \<and> si \<in> \<sigma>" 
-              using F_ok1 F_ok2 by auto
-           
+              using F_ok1 F_ok2 
+              by (metis (no_types, opaque_lifting) \<sigma>_def fst_eqD matche.elims(2) 
+                        matche.simps(2) matcht.elims(2) not_Some_eq)
             from p1 LTS_is_reachable.simps(2)[of "\<Delta> \<A>" q1 si "inputE \<pi>" q1']
               obtain q2 \<sigma>' where 
               q2\<sigma>_def: "si \<in> \<sigma>' \<and> (q1, \<sigma>', q2) \<in> \<Delta> \<A> \<and> 
@@ -1266,8 +1280,9 @@ proof
               have "si \<in> \<sigma> \<inter> \<sigma>'" 
                 by auto
               from this F_ok2 so_def
-              have so_in: "so \<in> the (F ((\<M> \<T>) f) (\<sigma> \<inter> \<sigma>'))"
-                 using F_ok1 all_not_in_conv by auto
+              have so_in: "\<exists> S. so \<in> S \<and> (F ((\<M> \<T>) f) (\<sigma> \<inter> \<sigma>')) = Some S"
+                using F_ok1 all_not_in_conv 
+                by (smt (verit) UnionI mem_Collect_eq)
 
               from q2\<sigma>_def q''_def
               have head_reach: "((q,q1), the (F ((\<M> \<T>) f) (\<sigma> \<inter> \<sigma>')), (q'', q2)) \<in> \<Delta>e (productT \<T> \<A> F)"
@@ -1285,7 +1300,8 @@ proof
               have s3: "so \<in> the (F ((\<M> \<T>) f) (\<sigma> \<inter> \<sigma>')) \<and>
                         ((q,q1), the (F ((\<M> \<T>) f) (\<sigma> \<inter> \<sigma>')), (q'', q2)) 
                             \<in> \<Delta>e (productT \<T> \<A> F)"
-                using head_reach so_in by blast
+                using head_reach so_in 
+                by force
 
               from ind_hyp[of "outputE \<pi>" q'' q2]
               have s4: "LTS_is_reachable_epsilon (\<Delta>e (productT \<T> \<A> F)) 

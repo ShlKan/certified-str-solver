@@ -1,6 +1,3 @@
-(*  
-    Authors:     Shuanglong Kan <shuanglong@uni-kl.de>        
-*)
 
 theory Forward_Analysis_Impl
 

@@ -1,7 +1,4 @@
 
-(*  Author: Shuanglong Kan <kanshuanglong@outlook.com> *)
-
-
 section \<open> Abstract Forward Analysis \<close>
 
 theory Forward_Analysis

@@ -1,7 +1,3 @@
-(*  
-    Authors:     Shuanglong Kan <shuanglong@uni-kl.de>           
-*)
-
 theory Forward_Analysis_Correct
 
 imports "../Forward_Analysis" "Forward_Analysis_Impl" "HOL-Library.Tree"

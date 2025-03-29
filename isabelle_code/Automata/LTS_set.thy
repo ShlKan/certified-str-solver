@@ -1,8 +1,3 @@
-(*  
-    Authors:     Shuanglong Kan <shuanglong@uni-kl.de>
-                 Thomas Tuerk <tuerk@in.tum.de>             
-*)
-
 (* Labeled transition systems *)
 
 theory LTS_set

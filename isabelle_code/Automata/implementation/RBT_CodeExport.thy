@@ -1,7 +1,3 @@
-(*  
-    Authors:     Shuanglong Kan <shuanglong@uni-kl.de>
-                 Thomas Tuerk <tuerk@in.tum.de>             
-*)
 
 section \<open> Export Code with RBTs \<close>
 

@@ -1,1 +1,0 @@
-Certified String Solver

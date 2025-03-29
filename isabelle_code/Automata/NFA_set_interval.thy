@@ -1,8 +1,3 @@
-(*  Title:       Nondeterministic Finite Automata 
-    Authors:     Shuanglong Kan <shuanglong@uni-kl.de>
-                 Thomas Tuerk <tuerk@in.tum.de>             
-                 Petra Dietrich <petra@ecs.vuw.ac.nz>
-*)
 
 (* Nondeterministic Finite Automata *)
 
