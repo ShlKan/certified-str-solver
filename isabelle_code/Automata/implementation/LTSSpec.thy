@@ -2,7 +2,7 @@ section \<open> Interface for Labelled Transition Systems \<close>
 
 theory LTSSpec
   imports Main 
-          "Collections.Iterator" Interval
+          "Collections.Iterator" Bool_Algebra
 
 begin
 (* type_synonym ('V,'W,'L) lts_\<alpha> = "'L \<Rightarrow> ('V * 'W set * 'V) set" *)

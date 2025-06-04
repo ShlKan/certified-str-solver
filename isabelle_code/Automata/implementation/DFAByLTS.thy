@@ -3,7 +3,7 @@ theory DFAByLTS
                                       
 imports "Collections.Collections" "HOL.Enum"
       "../../General/Accessible_Impl"
-  LTSSpec LTSGA NFA_interval_Spec LTS_Impl Interval
+  LTSSpec LTSGA NFA_interval_Spec LTS_Impl Bool_Algebra
   
 
 begin
@@ -11,74 +11,116 @@ begin
 
 subsection \<open> Locales for NFAs and a common locale \<close>
 
-locale automaton_by_lts_interval_syntax = 
+locale automaton_by_lts_bool_algebra_syntax = 
   s: StdSetDefs s_ops   (* Set operations on states *) +
   l: StdSetDefs l_ops   (* Set operations on labels *) +
   lt: StdSetDefs lt_ops   (* Set operations on labels *) +
-  d: StdCommonLTSDefs d_ops elemIs  (* An LTS *) 
+  d: StdCommonLTSDefs d_ops elem_op  (* An LTS *) +
+  iv: bool_algebra sem empty_op noempty_op 
+                   intersect_op diff_op elem_op canonical_op
   for s_ops::"('q::{NFA_states},'q_set,_) set_ops_scheme"
   and l_ops::"('a:: linorder,'a_set ,_) set_ops_scheme"
-  and lt_ops::"(('a \<times> 'a) list, 'ai_set ,_) set_ops_scheme"
-  and d_ops::"('q, ('a \<times> 'a) list,'a,'d,_) common_lts_ops_scheme" 
+  and lt_ops::"('b, 'ai_set ,_) set_ops_scheme"
+  and d_ops::"('q, 'b,'a,'d,_) common_lts_ops_scheme" 
+  and sem :: "'b \<Rightarrow> 'a set"
+  and empty_op :: "'b \<Rightarrow> bool"
+  and noempty_op :: "'b \<Rightarrow> bool"
+  and intersect_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
+  and diff_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
+  and elem_op :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
+  and canonical_op :: "'b \<Rightarrow> bool"
 
 
-locale automaton_by_lts_interval_defs = automaton_by_lts_interval_syntax
-      s_ops l_ops lt_ops d_ops + 
+locale automaton_by_lts_bool_algebra_defs = automaton_by_lts_bool_algebra_syntax
+      s_ops l_ops lt_ops d_ops sem empty_op noempty_op 
+                   intersect_op diff_op elem_op canonical_op + 
   s: StdSet s_ops (* Set operations on states *) +
   l: StdSet l_ops (* Set operations on labels *) +
   lt: StdSet lt_ops   (* Set operations on labels *) +
-  d: StdCommonLTS d_ops elemIs (* An LTS *) 
+  d: StdCommonLTS d_ops elem_op (* An LTS *) + 
+  iv: bool_algebra sem empty_op noempty_op 
+                   intersect_op diff_op elem_op canonical_op
   for s_ops::"('q::{NFA_states},'q_set,_) set_ops_scheme"
   and l_ops::"('a :: linorder,'a_set ,_) set_ops_scheme"
-  and lt_ops::"(('a \<times> 'a) list, 'ai_set ,_) set_ops_scheme"
-  and d_ops::"('q,('a \<times> 'a) list,'a,'d,_) common_lts_ops_scheme" 
+  and lt_ops::"('b, 'ai_set ,_) set_ops_scheme"
+  and d_ops::"('q, 'b,'a,'d,_) common_lts_ops_scheme" 
+  and sem :: "'b \<Rightarrow> 'a set"
+  and empty_op :: "'b \<Rightarrow> bool"
+  and noempty_op :: "'b \<Rightarrow> bool"
+  and intersect_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
+  and diff_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
+  and elem_op :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
+  and canonical_op :: "'b \<Rightarrow> bool"
 
 
-locale nfa_by_lts_interval_defs = automaton_by_lts_interval_defs s_ops l_ops lt_ops d_ops + 
+locale nfa_by_lts_bool_algebra_defs = automaton_by_lts_bool_algebra_defs 
+  s_ops l_ops lt_ops d_ops sem empty_op noempty_op 
+                   intersect_op diff_op elem_op canonical_op + 
   s: StdSet s_ops (* Set operations on states *) +
   l: StdSet l_ops (* Set operations on labels *) +
   lt: StdSet lt_ops   (* Set operations on labels *) +
-  d: StdLTS d_ops elemIs (* An LTS *) 
+  d: StdLTS d_ops elem_op (* An LTS *) +
+  iv: bool_algebra sem empty_op noempty_op 
+                   intersect_op diff_op elem_op canonical_op
   for s_ops::"('q :: {NFA_states},'q_set,_) set_ops_scheme"
   and l_ops::"('a ::linorder,'a_set,_) set_ops_scheme"
-  and lt_ops::"(('a \<times> 'a) list, 'ai_set ,_) set_ops_scheme"
-  and d_ops::"('q,('a \<times> 'a) list,'a,'d,_) lts_ops_scheme"
+  and lt_ops::"('b, 'ai_set ,_) set_ops_scheme"
+  and d_ops::"('q, 'b,'a,'d,_) lts_ops_scheme"
+  and sem :: "'b \<Rightarrow> 'a set"
+  and empty_op :: "'b \<Rightarrow> bool"
+  and noempty_op :: "'b \<Rightarrow> bool"
+  and intersect_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
+  and diff_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
+  and elem_op :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
+  and canonical_op :: "'b \<Rightarrow> bool"
 
 
-lemma nfa_by_lts_interval_defs___sublocale :
-  "nfa_by_lts_interval_defs s_ops l_ops lt_ops d_ops \<Longrightarrow>
-   automaton_by_lts_interval_defs s_ops l_ops lt_ops d_ops"
-  unfolding nfa_by_lts_interval_defs_def automaton_by_lts_interval_defs_def
+lemma nfa_by_lts_bool_algebra_defs___sublocale :
+  "nfa_by_lts_bool_algebra_defs s_ops l_ops lt_ops d_ops sem empty_op noempty_op 
+                   intersect_op diff_op elem_op canonical_op \<Longrightarrow>
+   automaton_by_lts_bool_algebra_defs s_ops l_ops lt_ops d_ops sem empty_op noempty_op 
+                   intersect_op diff_op elem_op canonical_op"
+  unfolding nfa_by_lts_bool_algebra_defs_def automaton_by_lts_bool_algebra_defs_def
   by (simp add: StdLTS_sublocale)
 
 lemma nfa_by_lts_defs___sublocale :
-  "nfa_by_lts_interval_defs s_ops l_ops lt_ops d_ops \<Longrightarrow>
-   automaton_by_lts_interval_defs s_ops l_ops lt_ops d_ops"
-  unfolding nfa_by_lts_interval_defs_def automaton_by_lts_interval_defs_def
+  "nfa_by_lts_bool_algebra_defs s_ops l_ops lt_ops d_ops sem empty_op noempty_op 
+                   intersect_op diff_op elem_op canonical_op  \<Longrightarrow>
+   automaton_by_lts_bool_algebra_defs s_ops l_ops lt_ops d_ops sem empty_op noempty_op 
+                   intersect_op diff_op elem_op canonical_op"
+  unfolding nfa_by_lts_bool_algebra_defs_def automaton_by_lts_bool_algebra_defs_def
   by (simp add: StdLTS_sublocale)
 
-locale nfa_dfa_by_lts_interval_defs = 
+locale nfa_dfa_by_lts_bool_algebra_defs = 
   s: StdSet s_ops (* Set operations on states *) +
   ss: StdSet ss_ops (* Set operations on states *) +
   l: StdSet l_ops (* Set operations on labels *) +
   lt: StdSet lt_ops   (* Set operations on labels *) +
-  d_nfa: StdLTS d_nfa_ops elemIs (* An LTS *) +
-  dd_nfa: StdLTS dd_nfa_ops elemIs (* An LTS *)
+  d_nfa: StdLTS d_nfa_ops elem_op (* An LTS *) +
+  dd_nfa: StdLTS dd_nfa_ops elem_op (* An LTS *) +
+  iv: bool_algebra sem empty_op noempty_op 
+                   intersect_op diff_op elem_op canonical_op
   for s_ops::"('q::{NFA_states},'q_set,_) set_ops_scheme"
   and ss_ops::"('q \<times> 'q,'qq_set,_) set_ops_scheme"
   and l_ops::"('a::linorder, 'a_set ,_) set_ops_scheme"
-  and lt_ops::"(('a::linorder \<times> 'a) list, 'ai_set ,_) set_ops_scheme"
-  and d_nfa_ops::"('q,('a::linorder \<times> 'a) list,'a,'d_nfa,_) lts_ops_scheme"
-  and dd_nfa_ops::"('q \<times> 'q,('a::linorder \<times> 'a) list,'a,'dd_nfa,_) lts_ops_scheme"
+  and lt_ops::"('b, 'ai_set ,_) set_ops_scheme"
+  and d_nfa_ops::"('q, 'b,'a,'d_nfa,_) lts_ops_scheme"
+  and dd_nfa_ops::"('q \<times> 'q,'b, 'a,'dd_nfa,_) lts_ops_scheme"
+   and sem :: "'b \<Rightarrow> 'a set"
+  and empty_op :: "'b \<Rightarrow> bool"
+  and noempty_op :: "'b \<Rightarrow> bool"
+  and intersect_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
+  and diff_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
+  and elem_op :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
+  and canonical_op :: "'b \<Rightarrow> bool"
 
-
-sublocale nfa_dfa_by_lts_interval_defs < 
-          nfa: nfa_by_lts_interval_defs 
+sublocale nfa_dfa_by_lts_bool_algebra_defs < 
+          nfa: nfa_by_lts_bool_algebra_defs 
           s_ops l_ops lt_ops d_nfa_ops by unfold_locales
 
 
 
-context automaton_by_lts_interval_syntax
+context automaton_by_lts_bool_algebra_syntax
 begin
 
 definition nfa_states :: "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
@@ -86,8 +128,8 @@ definition nfa_states :: "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \<R
 lemma [simp]: "nfa_states (Q, D, I, F) = Q" by (simp add: nfa_states_def)
 
 
-fun interval_to_set :: "'q \<times> ('a \<times> 'a) list \<times> 'q \<Rightarrow> 'q \<times> 'a set \<times> 'q"  where
-    "interval_to_set (q, s, q') = (q, semIs s, q')"
+fun ba_to_set :: "'q \<times> 'b \<times> 'q \<Rightarrow> 'q \<times> 'a set \<times> 'q"  where
+    "ba_to_set (q, s, q') = (q, sem s, q')"
 
 definition nfa_trans :: 
         "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'd" where
@@ -142,7 +184,7 @@ definition nfa_\<alpha> :: "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \
   where
   "nfa_\<alpha> A =
    \<lparr> \<Q> = s.\<alpha> (nfa_states A), 
-     \<Delta> = interval_to_set ` (d.\<alpha> (nfa_trans A)),
+     \<Delta> = ba_to_set ` (d.\<alpha> (nfa_trans A)),
      \<I> = s.\<alpha> (nfa_initial A), 
      \<F> = s.\<alpha> (nfa_accepting A) \<rparr>"
 
@@ -158,7 +200,7 @@ definition nfa_invar_NFA' :: "'q_set \<times>  'd \<times> 'q_set \<times> 'q_se
 
 end
 
-context automaton_by_lts_interval_defs
+context automaton_by_lts_bool_algebra_defs
 begin
 
 lemma nfa_by_map_correct [simp]:
@@ -179,7 +221,7 @@ end
 
 
 
-context automaton_by_lts_interval_defs
+context automaton_by_lts_bool_algebra_defs
 begin
 
 fun rename_states_gen_impl where
@@ -189,19 +231,23 @@ fun rename_states_gen_impl where
 
 
 lemma rename_states_impl_correct :
-assumes wf_target: "nfa_by_lts_interval_defs s_ops' l_ops lt_ops d_ops'"
+  assumes wf_target: "nfa_by_lts_bool_algebra_defs s_ops' l_ops lt_ops d_ops'
+                   sem empty_op noempty_op 
+                   intersect_op diff_op elem_op canonical_op"
 assumes im_OK: "set_image s.\<alpha> s.invar (set_op_\<alpha> s_ops') (set_op_invar s_ops') im"
 assumes im2_OK: "lts_image d.\<alpha> d.invar (clts_op_\<alpha> d_ops') (clts_op_invar d_ops') im2"
 shows "nfa_rename_states nfa_\<alpha> nfa_invar_NFA
-           (automaton_by_lts_interval_syntax.nfa_\<alpha> s_ops' d_ops')
-           (automaton_by_lts_interval_syntax.nfa_invar_NFA s_ops' d_ops')
+           (automaton_by_lts_bool_algebra_syntax.nfa_\<alpha> s_ops' d_ops' sem)
+           (automaton_by_lts_bool_algebra_syntax.nfa_invar_NFA s_ops' d_ops' sem)
            (rename_states_gen_impl im im2)"
 proof (intro nfa_rename_states.intro 
              nfa_rename_states_axioms.intro
-             automaton_by_lts_interval_defs.nfa_by_map_correct)
-  show "automaton_by_lts_interval_defs s_ops l_ops lt_ops d_ops" 
-  by (fact automaton_by_lts_interval_defs_axioms)
-  show "automaton_by_lts_interval_defs s_ops' l_ops lt_ops d_ops'" 
+             automaton_by_lts_bool_algebra_defs.nfa_by_map_correct)
+  show "automaton_by_lts_bool_algebra_defs s_ops l_ops lt_ops d_ops  sem empty_op noempty_op 
+                   intersect_op diff_op elem_op canonical_op" 
+  by (fact automaton_by_lts_bool_algebra_defs_axioms)
+  show "automaton_by_lts_bool_algebra_defs s_ops' l_ops lt_ops d_ops'  sem empty_op noempty_op 
+                   intersect_op diff_op elem_op canonical_op" 
     by (intro nfa_by_lts_defs___sublocale wf_target)
   fix n f
   assume invar: "nfa_invar_NFA n"
@@ -209,36 +255,32 @@ proof (intro nfa_rename_states.intro
         by (cases n, blast)
 
   interpret s': StdSet s_ops' using wf_target 
-        unfolding nfa_by_lts_interval_defs_def by simp
-  interpret d': StdLTS d_ops' elemIs using wf_target 
-        unfolding nfa_by_lts_interval_defs_def by simp
+        unfolding nfa_by_lts_bool_algebra_defs_def by simp
+  interpret d': StdLTS d_ops' elem_op using wf_target 
+        unfolding nfa_by_lts_bool_algebra_defs_def by simp
   interpret im: set_image s.\<alpha> s.invar s'.\<alpha> s'.invar im by fact
   interpret im2: lts_image d.\<alpha> d.invar d'.\<alpha> d'.invar im2 by fact
 
   from invar have invar_weak: "nfa_invar n" and wf: "NFA (nfa_\<alpha> n)"
     unfolding nfa_invar_NFA_def by simp_all
 
-  let ?nfa_\<alpha>' = "automaton_by_lts_interval_syntax.nfa_\<alpha> s_ops' d_ops'"
-  let ?nfa_invar' = "automaton_by_lts_interval_syntax.nfa_invar s_ops' d_ops'"
-  let ?nfa_invar_NFA' = "automaton_by_lts_interval_syntax.nfa_invar_NFA s_ops' d_ops'"
-  thm im.image_correct
-  from invar_weak
+  let ?nfa_\<alpha>' = "automaton_by_lts_bool_algebra_syntax.nfa_\<alpha> s_ops' d_ops' sem"
+  let ?nfa_invar' = "automaton_by_lts_bool_algebra_syntax.nfa_invar s_ops' d_ops'"
+  let ?nfa_invar_NFA' = "automaton_by_lts_bool_algebra_syntax.nfa_invar_NFA s_ops' d_ops'"
   have "?nfa_invar' (rename_states_gen_impl im im2 n f) \<and>
         ?nfa_\<alpha>' (rename_states_gen_impl im im2 n f) = 
          NFA_rename_states (nfa_\<alpha> n) f"
     
-    apply (simp add: automaton_by_lts_interval_syntax.nfa_invar_def 
-                     automaton_by_lts_interval_syntax.nfa_\<alpha>_def
-                     automaton_by_lts_interval_syntax.nfa_selectors_def
+    apply (simp add: automaton_by_lts_bool_algebra_syntax.nfa_invar_def 
+                     automaton_by_lts_bool_algebra_syntax.nfa_\<alpha>_def
+                     automaton_by_lts_bool_algebra_syntax.nfa_selectors_def
                       NFA_rename_states_def 
                      im.image_correct im2.lts_image_correct)
-    apply (simp add: semIs_def)
-    thm automaton_by_lts_interval_syntax.nfa_\<alpha>_def
     apply (simp add: image_iff)
     apply (simp add: set_eq_iff)
     apply auto 
     apply (metis (no_types, lifting) Pair_inject 
-           automaton_by_lts_interval_syntax.interval_to_set.simps)
+           automaton_by_lts_bool_algebra_syntax.ba_to_set.simps)
   proof -
     fix aa a ac b 
     assume p1: "\<forall>x. (x \<in> aa) = (x \<in> semIs ac)" and
