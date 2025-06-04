@@ -866,9 +866,8 @@ proof
                 by auto
               from this p2 wfTA NFA_def
               have s1: "snd qj \<in> \<Q> \<A>"
-                apply auto
-                by (simp add: NFA.\<Delta>_consistent)
-              from p1
+              by (metis sndI)
+               from p1
               have qja'eq: "qj = a'" by simp
               from p3 
               have "((\<exists>p p'.
