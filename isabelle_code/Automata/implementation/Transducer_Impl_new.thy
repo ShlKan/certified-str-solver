@@ -11,13 +11,13 @@ type_synonym 'a TlabelI = "('a \<times> 'a) list option \<times>
 
 
 
-locale transducer_code = automaton_by_lts_interval_defs
+locale transducer_code = automaton_by_lts_bool_algebra_defs
   s_ops l_ops lt_ops d_ops +
   s: StdSet s_ops (* Set operations on states *) +
   l: StdSet l_ops (* Set operations on labels *) +
   lt: StdSet lt_ops   (* Set operations on labels *) +
   llt: StdSet llt_ops   (* Set operations on labels *) +
-  d: StdLTS d_ops elemIs (* An LTS *) +
+  d: StdLTS d_ops elem_op (* An LTS *) +
   dt: StdLTS dt_ops "\<lambda> _ _. True" (* An LTS *) +
   ddt: StdLTS ddt_ops "\<lambda> _ _. True" (* An LTS *) +
   ss: StdSet ss_ops (* Set operations on states *)  +
@@ -27,12 +27,12 @@ locale transducer_code = automaton_by_lts_interval_defs
   and ss_ops::"('q \<times> 'q,'qq_set,_) set_ops_scheme"
   and ssd_ops::"(('q \<times> 'q) \<times> ('q \<times> 'q),'qqqq_set,_) set_ops_scheme"
   and l_ops::"('a ::linorder, 'a_set ,_) set_ops_scheme"
-  and lt_ops::"(('a \<times> 'a) list, 'ai_set ,_) set_ops_scheme"
-  and llt_ops::"(('c \<times> 'c) list, 'ac_set ,_) set_ops_scheme"
+  and lt_ops::"('b, 'ai_set ,_) set_ops_scheme"
+  and llt_ops::"('c, 'ac_set ,_) set_ops_scheme"
   and m_ops :: "('q, 'q_set, 'qqset_m, 'more) map_ops_scheme"
-  and ddt_ops::"('q \<times> 'q,('a \<times> 'a) list,'a,'ddt,_) lts_ops_scheme"
-  and d_ops::"('q,('a \<times> 'a) list,'a,'d,_) lts_ops_scheme"
-  and dt_ops::"('q, ('a \<times> 'a) list option \<times> 'b ,'a,'dt,_) lts_ops_scheme"
+  and ddt_ops::"('q \<times> 'q, 'b,'a,'ddt,_) lts_ops_scheme"
+  and d_ops::"('q, 'b,'a,'d,_) lts_ops_scheme"
+  and dt_ops::"('q, 'b option \<times> 'b ,'a,'dt,_) lts_ops_scheme"
 
 begin
 
