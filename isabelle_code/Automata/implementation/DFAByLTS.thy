@@ -2912,17 +2912,17 @@ subsection \<open> concatenation \<close>
 
 definition tri_union_iterator where 
    "tri_union_iterator 
-      (it_1:: 'q1 \<Rightarrow> (('a \<times> 'a) list \<times> 'q1, '\<sigma>) set_iterator)
-      (it_2:: 'q1 \<Rightarrow> (('a \<times> 'a) list \<times> 'q1, '\<sigma>) set_iterator)
-      (it_3:: 'q1 \<Rightarrow> (('a \<times> 'a) list \<times> 'q1, '\<sigma>) set_iterator) = 
+      (it_1:: 'q1 \<Rightarrow> ('b \<times> 'q1, '\<sigma>) set_iterator)
+      (it_2:: 'q1 \<Rightarrow> ('b \<times> 'q1, '\<sigma>) set_iterator)
+      (it_3:: 'q1 \<Rightarrow> ('b \<times> 'q1, '\<sigma>) set_iterator) = 
     (\<lambda> q. set_iterator_union (it_1 q) (set_iterator_union (it_2 q) (it_3 q)))"
 
 
 
 lemma tri_union_iterator_correct :
-fixes D1 :: "('q \<times> ('a \<times> 'a) list \<times> 'q) set"
-fixes D2 :: "('q \<times> ('a \<times> 'a) list \<times> 'q) set"
-fixes D3 :: "('q \<times> ('a \<times> 'a) list \<times> 'q) set"
+fixes D1 :: "('q \<times> 'b \<times> 'q) set"
+fixes D2 :: "('q \<times> 'b \<times> 'q) set"
+fixes D3 :: "('q \<times> 'b \<times> 'q) set"
 assumes it_1_OK: "set_iterator_genord (it_1 q1) 
                   {(a , q1'). (q1, a, q1') \<in> D1} (\<lambda> _ _. True)" and
         it_2_OK: "set_iterator_genord (it_2 q1) 
@@ -2983,7 +2983,7 @@ definition concat_impl_aux where
     (I2' AA2))))"
 
 lemma concat_impl_aux_correct:
-assumes const_OK: "nfa_construct_no_enc \<alpha>3 invar3 const"
+assumes const_OK: "nfa_construct_no_enc \<alpha>3 invar3 const sem canonical_op"
     and nfa_1_OK: "nfa \<alpha>1 invar1"
     and nfa_2_OK: "nfa \<alpha>2 invar2"
     and f_inj_on: "\<And>n1 n2. inj_on f (\<Q> (\<alpha>1 n1) \<union> \<Q> (\<alpha>2 n2))"
@@ -2995,22 +2995,22 @@ assumes const_OK: "nfa_construct_no_enc \<alpha>3 invar3 const"
     and FP21_OK: "\<And>n1 n2 q. invar1 n1 \<Longrightarrow> q \<in> \<Q> (\<alpha>1 n1) \<Longrightarrow> invar2 n2 \<Longrightarrow>
                     \<Q> (\<alpha>1 n1) \<inter> \<Q> (\<alpha>2 n2) = {} \<Longrightarrow> \<not> FP2 n2 q"
     and \<alpha>1_\<Delta>: "\<And> n1. invar1 n1 \<Longrightarrow>
-                      \<exists> D1.{(q, semIs a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (\<alpha>1 n1)
+                      \<exists> D1.{(q, sem a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (\<alpha>1 n1)
                               \<and> finite D1"
     and \<alpha>2_\<Delta>: "\<And> n2. invar2 n2 \<Longrightarrow> 
-                      \<exists> D2.{(q, semIs a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (\<alpha>2 n2)
+                      \<exists> D2.{(q, sem a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (\<alpha>2 n2)
                               \<and> finite D2"
-    and it_1_OK: "\<And> q n1 D1.{(q, semIs a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (\<alpha>1 n1)
+    and it_1_OK: "\<And> q n1 D1.{(q, sem a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (\<alpha>1 n1)
       \<Longrightarrow> finite D1   
       \<Longrightarrow> invar1 n1 \<Longrightarrow> (set_iterator_genord (it_1 n1 q)
                                {(a, q'). (q, a, q') \<in> D1}) (\<lambda>_ _.True)" 
-    and it_2_OK: "\<And> q n2 D2.{(q, semIs a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (\<alpha>2 n2) 
+    and it_2_OK: "\<And> q n2 D2.{(q, sem a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (\<alpha>2 n2) 
       \<Longrightarrow> finite D2
       \<Longrightarrow> invar2 n2 \<Longrightarrow> set_iterator_genord (it_2 n2 q)
                                {(a2, q'). (q, a2, q') \<in> D2} (\<lambda>_ _.True) \<and> 
-                    {(q, semIs a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (\<alpha>2 n2)"
+                    {(q, sem a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (\<alpha>2 n2)"
     and it_12_OK: "\<And> q n1 n2 D1 D2.
-          {(q, semIs a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (\<alpha>1 n1)
+          {(q, sem a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (\<alpha>1 n1)
       \<Longrightarrow> finite D1 
       \<Longrightarrow> invar1 n1 \<Longrightarrow> invar2 n2 \<Longrightarrow> 
           set_iterator_genord (it_3 n1 (FP1 n1) (I2' n2) q)
@@ -3018,8 +3018,8 @@ assumes const_OK: "nfa_construct_no_enc \<alpha>3 invar3 const"
                         \<and> q' \<in> \<I> (\<alpha>2 n2)} 
              (\<lambda>_ _.True)"
     and inj_12: "\<And> q n1 n2 D1 D2. 
-      {(q, semIs a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (\<alpha>1 n1) \<and> finite D1 \<Longrightarrow> 
-      {(q, semIs a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (\<alpha>2 n2) \<and> finite D2 \<Longrightarrow>
+      {(q, sem a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (\<alpha>1 n1) \<and> finite D1 \<Longrightarrow> 
+      {(q, sem a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (\<alpha>2 n2) \<and> finite D2 \<Longrightarrow>
       invar1 n1 \<Longrightarrow> invar2 n2 \<Longrightarrow>
      (\<forall>(q, a, q')
    \<in>{(q, a, q').
@@ -3032,7 +3032,7 @@ assumes const_OK: "nfa_construct_no_enc \<alpha>3 invar3 const"
              (q, a, q'') \<in> D1 \<and>
              q'' \<in> \<F> (\<alpha>1 n1) \<and>
              q' \<in> \<I> (\<alpha>2 n2)}}.
-     canonicalIs a)"
+     canonical_op a)"
 shows "nfa_concat \<alpha>1 invar1 \<alpha>2 invar2 \<alpha>3 invar3
        (concat_impl_aux c_inter c_nempty
            const f it_1 it_2 it_3 I1 I2 I1' F1' I2' FP1 FP2)"
@@ -3055,7 +3055,7 @@ proof (intro nfa_concat.intro
     by simp
   from \<alpha>1_\<Delta> invar_1
   obtain D1 where 
-    \<alpha>1_\<Delta>_eq: "{(q, semIs a, q')| q a q'. (q, a ,q') \<in> D1} = \<Delta> (\<alpha>1 n1)" and 
+    \<alpha>1_\<Delta>_eq: "{(q, sem a, q')| q a q'. (q, a ,q') \<in> D1} = \<Delta> (\<alpha>1 n1)" and 
     finite_D1: "finite D1"
     by meson
 
@@ -3066,7 +3066,7 @@ proof (intro nfa_concat.intro
 
   from \<alpha>2_\<Delta> invar_2
   obtain D2 where 
-    \<alpha>2_\<Delta>_eq: "{(q, semIs a, q')| q a q'. (q, a ,q') \<in> D2} = \<Delta> (\<alpha>2 n2)" and 
+    \<alpha>2_\<Delta>_eq: "{(q, sem a, q')| q a q'. (q, a ,q') \<in> D2} = \<Delta> (\<alpha>2 n2)" and 
     finite_D2: "finite D2"
     by meson
 
@@ -3083,7 +3083,7 @@ proof (intro nfa_concat.intro
 
   from \<alpha>1_\<Delta>_eq \<alpha>2_\<Delta>_eq finite_D1 finite_D2 
   have
-    \<alpha>12_\<Delta>_eq : "{(q, semIs a, q')| q a q'. (q, a, q') \<in> ?D12} = 
+    \<alpha>12_\<Delta>_eq : "{(q, sem a, q')| q a q'. (q, a, q') \<in> ?D12} = 
                  {(q, a, q')| q a q'' q'.  (q, a, q'') \<in> \<Delta> (\<alpha>1 n1)
                         \<and> q'' \<in> \<F> (\<alpha>1 n1) 
                         \<and> q' \<in> \<I> (\<alpha>2 n2)}"
@@ -3093,11 +3093,11 @@ proof (intro nfa_concat.intro
        fix q ab q'' q'
        assume a1: "q'' \<in> \<F> (\<alpha>1 n1)"
        assume a2: "(q, ab, q'') \<in> \<Delta> (\<alpha>1 n1)"
-       assume " {(q, semIs a, q') |q a q'. (q, a, q') \<in> D1} =
+       assume " {(q, sem a, q') |q a q'. (q, a, q') \<in> D1} =
                   NFA_set_interval.NFA_rec.\<Delta> (\<alpha>1 n1)"
-       then have "\<exists>b c ba. (q, ab, q'') = (b, semIs c, ba) \<and> (b, c, ba) \<in> D1"
+       then have "\<exists>b c ba. (q, ab, q'') = (b, sem c, ba) \<and> (b, c, ba) \<in> D1"
          using a2 by blast
-       then show "\<exists>a. ab = semIs a \<and>
+       then show "\<exists>a. ab = sem a \<and>
            (\<exists>q''. (q, a, q'') \<in> D1 \<and> q'' \<in> NFA_set_interval.NFA_rec.\<F> (\<alpha>1 n1))"
           using a1 by blast
       qed
@@ -3334,11 +3334,11 @@ qed
     by auto
 
   from \<alpha>1_\<Delta>_eq \<alpha>2_\<Delta>_eq
-  have D_\<A>: "{(q, semIs a, q') |q a q'. (q, a, q') \<in> ?D} =
+  have D_\<A>: "{(q, sem a, q') |q a q'. (q, a, q') \<in> ?D} =
         \<Delta> (NFA_concatenation (\<alpha>1 n1) (\<alpha>2 n2))" 
     apply (simp add: NFA_concatenation_def)
-    apply (subgoal_tac "\<Delta> (\<alpha>1 n1) = {(q, semIs a, q') |q a q'. (q, a, q') \<in> D1} \<and>
-                        \<Delta> (\<alpha>2 n2) = {(q, semIs a, q') |q a q'. (q, a, q') \<in> D2}")
+    apply (subgoal_tac "\<Delta> (\<alpha>1 n1) = {(q, sem a, q') |q a q'. (q, a, q') \<in> D1} \<and>
+                        \<Delta> (\<alpha>2 n2) = {(q, sem a, q') |q a q'. (q, a, q') \<in> D2}")
     apply simp
     apply fast
     by simp
@@ -3495,10 +3495,10 @@ qed qed
   thm nfa_construct_no_enc.nfa_construct_no_enc_correct [OF const_OK 
         AA'_wf f_inj_on' dist_II set_II finite_D  ]
   from  \<alpha>1_\<Delta>_eq finite_D1
-  have pp1: "{(q, semIs a, q') |q a q'. (q, a, q') \<in> D1} = \<Delta> (\<alpha>1 n1) \<and> finite D1"
+  have pp1: "{(q, sem a, q') |q a q'. (q, a, q') \<in> D1} = \<Delta> (\<alpha>1 n1) \<and> finite D1"
     by simp
   from  \<alpha>2_\<Delta>_eq finite_D2
-  have pp2: "{(q, semIs a, q') |q a q'. (q, a, q') \<in> D2} = \<Delta> (\<alpha>2 n2) \<and> finite D2"
+  have pp2: "{(q, sem a, q') |q a q'. (q, a, q') \<in> D2} = \<Delta> (\<alpha>2 n2) \<and> finite D2"
     by simp
   
   note  inj_12' =  inj_12[OF pp1 pp2 invar_1 invar_2]
@@ -3513,7 +3513,7 @@ qed qed
              (q, a, q'') \<in> D1 \<and>
              q'' \<in> NFA_set_interval.NFA_rec.\<F> (\<alpha>1 n1) \<and>
              q' \<in> NFA_set_interval.NFA_rec.\<I> (\<alpha>2 n2)}}.
-     canonicalIs a
+     canonical_op a
   " by simp
  note construct_correct = 
         nfa_construct_no_enc.nfa_construct_no_enc_correct [OF const_OK 
@@ -3545,7 +3545,7 @@ definition concat_rename_impl_aux where
 lemma concat_rename_impl_aux_correct:
   fixes \<alpha>1 :: "('q,'a::linorder,'nfa) nfa_\<alpha>"
     and \<alpha>2 :: "('q,'a::linorder,'nfa) nfa_\<alpha>"
-assumes const_OK: "nfa_construct_no_enc \<alpha>3 invar3 const"
+assumes const_OK: "nfa_construct_no_enc \<alpha>3 invar3 const sem canonical_op"
     and nfa_1_OK: "nfa \<alpha>1' invar1'"
     and nfa_2_OK: "nfa \<alpha>2' invar2'"
     and nfa_1_OK': "nfa \<alpha>1 invar1 \<and> 
@@ -3566,22 +3566,22 @@ assumes const_OK: "nfa_construct_no_enc \<alpha>3 invar3 const"
     and FP21_OK: "\<And>n1 n2 q. invar1 n1 \<Longrightarrow> q \<in> \<Q> (\<alpha>1 n1) \<Longrightarrow> invar2 n2 \<Longrightarrow>
                     \<Q> (\<alpha>1 n1) \<inter> \<Q> (\<alpha>2 n2) = {} \<Longrightarrow> \<not> FP2 n2 q"
     and \<alpha>1_\<Delta>: "\<And> n1. invar1 n1 \<Longrightarrow>
-                      \<exists> D1.{(q, semIs a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (\<alpha>1 n1)
+                      \<exists> D1.{(q, sem a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (\<alpha>1 n1)
                               \<and> finite D1"
     and \<alpha>2_\<Delta>: "\<And> n2. invar2 n2 \<Longrightarrow> 
-                      \<exists> D2.{(q, semIs a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (\<alpha>2 n2)
+                      \<exists> D2.{(q, sem a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (\<alpha>2 n2)
                               \<and> finite D2"
-    and it_1_OK: "\<And> q n1 D1.{(q, semIs a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (\<alpha>1 n1)
+    and it_1_OK: "\<And> q n1 D1.{(q, sem a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (\<alpha>1 n1)
       \<Longrightarrow> finite D1   
       \<Longrightarrow> invar1 n1 \<Longrightarrow> (set_iterator_genord (it_1 n1 q)
                                {(a, q'). (q, a, q') \<in> D1}) (\<lambda>_ _.True)" 
-    and it_2_OK: "\<And> q n2 D2.{(q, semIs a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (\<alpha>2 n2) 
+    and it_2_OK: "\<And> q n2 D2.{(q, sem a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (\<alpha>2 n2) 
       \<Longrightarrow> finite D2
       \<Longrightarrow> invar2 n2 \<Longrightarrow> set_iterator_genord (it_2 n2 q)
                                {(a2, q'). (q, a2, q') \<in> D2} (\<lambda>_ _.True) \<and> 
-                    {(q, semIs a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (\<alpha>2 n2)"
+                    {(q, sem a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (\<alpha>2 n2)"
     and it_12_OK: "\<And> q n1 n2 D1 D2.
-          {(q, semIs a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (\<alpha>1 n1)
+          {(q, sem a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (\<alpha>1 n1)
       \<Longrightarrow> finite D1 
       \<Longrightarrow> invar1 n1 \<Longrightarrow> invar2 n2 \<Longrightarrow> 
           set_iterator_genord (it_3 n1 (FP1 n1) (I2' n2) q)
@@ -3589,8 +3589,8 @@ assumes const_OK: "nfa_construct_no_enc \<alpha>3 invar3 const"
                         \<and> q' \<in> \<I> (\<alpha>2 n2)} 
              (\<lambda>_ _.True)"
     and inj_12: "\<And> q n1 n2 D1 D2. 
-      {(q, semIs a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (\<alpha>1 n1) \<and> finite D1 \<Longrightarrow> 
-      {(q, semIs a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (\<alpha>2 n2) \<and> finite D2 \<Longrightarrow>
+      {(q, sem a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (\<alpha>1 n1) \<and> finite D1 \<Longrightarrow> 
+      {(q, sem a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (\<alpha>2 n2) \<and> finite D2 \<Longrightarrow>
       invar1 n1 \<Longrightarrow> invar2 n2 \<Longrightarrow>
       (\<forall>(q, a, q')
    \<in>{(q, a, q').
@@ -3603,7 +3603,7 @@ assumes const_OK: "nfa_construct_no_enc \<alpha>3 invar3 const"
              (q, a, q'') \<in> D1 \<and>
              q'' \<in> NFA_set_interval.NFA_rec.\<F> (\<alpha>1 n1) \<and>
              q' \<in> NFA_set_interval.NFA_rec.\<I> (\<alpha>2 n2)}}.
-     canonicalIs a)"
+     canonical_op a)"
 shows "nfa_concat_rename \<alpha>1' invar1' \<alpha>2' invar2' \<alpha>3 invar3
     (concat_rename_impl_aux c_inter c_nempty
      const f it_1 it_2 it_3 I1 I2 I1' F1' I2' FP1 FP2 rename1 rename2) f1 f2"
@@ -3612,7 +3612,7 @@ proof -
     by auto
   thm concat_impl_aux_correct
   note th1 =  concat_impl_aux_correct
-      [of \<alpha>3 invar3 const \<alpha>1 invar1 \<alpha>2 invar2 f I1 c_nempty c_inter
+      [of \<alpha>3 invar3 const sem canonical_op \<alpha>1 invar1 \<alpha>2 invar2 f I1 c_nempty c_inter
           I1' F1' I2 FP2 it_1 it_2 it_3  FP1 I2',  
       OF const_OK ]  const_OK nfa_1_OK' nfa_2_OK' f_inj_on
   from th1 I1_OK I1'_F1'_OK I2_OK FP2_OK FP21_OK 
