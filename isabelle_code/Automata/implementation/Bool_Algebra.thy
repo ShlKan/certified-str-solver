@@ -32,6 +32,8 @@ locale bool_algebra =
     elem_sem: "elem_intervals a s \<equiv>  (a \<in> sem_intervals s)"
 begin 
 
+
+
 end
 
 end
