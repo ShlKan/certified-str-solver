@@ -3714,8 +3714,8 @@ subsection \<open> boolean combinations \<close>
 
 
 definition product_iterator where
-  "product_iterator (it_1::'q1 \<Rightarrow> (('a \<times> 'a) list \<times> 'q1, '\<sigma>) set_iterator)
-     (it_2::'q2 \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> (('a \<times> 'a) list \<times> 'q2, '\<sigma>) set_iterator) = (\<lambda>(q1, q2).
+  "product_iterator (it_1::'q1 \<Rightarrow> ('b \<times> 'q1, '\<sigma>) set_iterator)
+     (it_2::'q2 \<Rightarrow> 'b \<Rightarrow> ('b \<times> 'q2, '\<sigma>) set_iterator) = (\<lambda>(q1, q2).
      set_iterator_image (\<lambda>((a1, q1'), (a2, q2')).((a1, a2), (q1', q2'))) 
      (set_iterator_product (it_1 q1) 
      (\<lambda>aq. it_2 q2 (fst aq))))"
@@ -3737,8 +3737,8 @@ lemma product_iterator_alt_def :
 
 
 lemma product_iterator_correct :
-fixes D1 :: "('q1 \<times> ('a \<times> 'a) list \<times> 'q1) set"
-fixes D2 :: "('q2 \<times> ('a \<times> 'a) list \<times> 'q2) set"
+fixes D1 :: "('q1 \<times> 'b \<times> 'q1) set"
+fixes D2 :: "('q2 \<times> 'b \<times> 'q2) set"
 assumes it_1_OK: "set_iterator_genord (it_1 q1) 
                   {(a , q1'). (q1, a, q1') \<in> D1} (\<lambda>_ _.True)"
     and it_2_OK: "\<And>a. 
@@ -3787,9 +3787,6 @@ proof -
 qed
 
 
-text \<open> AA1: an automaton
-       AA2: an automaton
-         A: \<Sigma>  \<close> 
 
 definition bool_comb_impl_aux where
 "bool_comb_impl_aux const f it_1 it_2 I I' FP FP' =
@@ -3805,7 +3802,7 @@ definition nfa_normal where
 
 
 lemma bool_comb_impl_aux_correct:
-assumes const_OK: "nfa_construct_no_enc_prod \<alpha>3 invar3 const"
+assumes const_OK: "nfa_construct_no_enc_prod \<alpha>3 invar3 const sem canonical_op"
     and nfa_1_OK: "nfa \<alpha>1 invar1"
     and nfa_2_OK: "nfa \<alpha>2 invar2"
     and f_inj_on: "\<And>n1 n2. inj_on f (\<Q> (\<alpha>1 n1) \<times> \<Q> (\<alpha>2 n2))"
@@ -3814,23 +3811,23 @@ assumes const_OK: "nfa_construct_no_enc_prod \<alpha>3 invar3 const"
     and FP1_OK: "\<And>n1 q. invar1 n1 \<Longrightarrow> q \<in> \<Q> (\<alpha>1 n1) \<Longrightarrow> FP1 n1 q \<longleftrightarrow> (q \<in> \<F> (\<alpha>1 n1))"
     and FP2_OK: "\<And>n2 q. invar2 n2 \<Longrightarrow> q \<in> \<Q> (\<alpha>2 n2) \<Longrightarrow> FP2 n2 q \<longleftrightarrow> (q \<in> \<F> (\<alpha>2 n2))"
     and \<alpha>1_\<Delta>: "\<And> n1. invar1 n1 \<Longrightarrow> 
-                      \<exists> D1.{(q, semIs a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (\<alpha>1 n1)
+                      \<exists> D1.{(q, sem a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (\<alpha>1 n1)
                               \<and> finite D1"
     and \<alpha>2_\<Delta>: "\<And> n2. invar2 n2 \<Longrightarrow> 
-                      \<exists> D2.{(q, semIs a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (\<alpha>2 n2)
+                      \<exists> D2.{(q, sem a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (\<alpha>2 n2)
                               \<and> finite D2"
-    and it_1_OK: "\<And> q n1 D1. {(q, semIs a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (\<alpha>1 n1)
+    and it_1_OK: "\<And> q n1 D1. {(q, sem a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (\<alpha>1 n1)
       \<Longrightarrow> finite D1   
       \<Longrightarrow> invar1 n1 \<Longrightarrow> (set_iterator_genord (it_1 n1 q)
                                {(a, q'). (q, a, q') \<in> D1}) (\<lambda>_ _.True)" 
-    and it_2_OK: "\<And>q n2 a D2. {(q, semIs a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (\<alpha>2 n2) 
+    and it_2_OK: "\<And>q n2 a D2. {(q, sem a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (\<alpha>2 n2) 
       \<Longrightarrow> finite D2 \<Longrightarrow>  
               invar2 n2 \<Longrightarrow> set_iterator_genord (it_2 n2 q a)
                                {(a2, q'). (q, a2, q') \<in> D2} (\<lambda>_ _.True) \<and> 
-                    {(q, semIs a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (\<alpha>2 n2)"
+                    {(q, sem a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (\<alpha>2 n2)"
     and sem_OK: "\<And> n1 n2 D1 D2. 
-      {(q, semIs a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (\<alpha>1 n1) \<Longrightarrow>
-      {(q, semIs a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (\<alpha>2 n2) \<Longrightarrow>
+      {(q, sem a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (\<alpha>1 n1) \<Longrightarrow>
+      {(q, sem a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (\<alpha>2 n2) \<Longrightarrow>
       invar1 n1 \<Longrightarrow> invar2 n2 \<Longrightarrow>
       \<forall>q a b q'.
      (q, (a, b), q')
@@ -3838,7 +3835,7 @@ assumes const_OK: "nfa_construct_no_enc_prod \<alpha>3 invar3 const"
          (q, a, q')
          \<in> {((q1, q2), (a1, a2), q1', q2') |q1 a1 q1' q2 a2 q2'.
              (q1, a1, q1') \<in> D1 \<and> (q2, a2, q2') \<in> D2}} \<longrightarrow>
-     canonicalIs a \<and> canonicalIs b"
+     canonical_op a \<and> canonical_op b"
 
 shows "nfa_bool_comb \<alpha>1 invar1 \<alpha>2 invar2 \<alpha>3 invar3
        (bool_comb_impl_aux const f it_1 it_2 I1 I2 FP1 FP2)"
@@ -3855,7 +3852,7 @@ proof (intro nfa_bool_comb.intro
 
   from \<alpha>1_\<Delta> invar_1
   obtain D1 where 
-    \<alpha>1_\<Delta>_eq: "{(q, semIs a, q')| q a q'. (q, a ,q') \<in> D1} = \<Delta> (\<alpha>1 n1)" and 
+    \<alpha>1_\<Delta>_eq: "{(q, sem a, q')| q a q'. (q, a ,q') \<in> D1} = \<Delta> (\<alpha>1 n1)" and 
     finite_D1: "finite D1"
     by meson
 
@@ -3866,7 +3863,7 @@ proof (intro nfa_bool_comb.intro
 
   from \<alpha>2_\<Delta> invar_2
   obtain D2 where 
-    \<alpha>2_\<Delta>_eq: "{(q, semIs a, q')| q a q'. (q, a ,q') \<in> D2} = \<Delta> (\<alpha>2 n2)" and 
+    \<alpha>2_\<Delta>_eq: "{(q, sem a, q')| q a q'. (q, a ,q') \<in> D2} = \<Delta> (\<alpha>2 n2)" and 
     finite_D2: "finite D2"
     by meson
 
@@ -3946,11 +3943,11 @@ proof (intro nfa_bool_comb.intro
       by auto
   qed
 
-  have D_\<A>: "{(q, semIs (fst a) \<inter> semIs (snd a), q') |q a q'. (q, a, q') \<in> ?D} =
+  have D_\<A>: "{(q, sem (fst a) \<inter> sem (snd a), q') |q a q'. (q, a, q') \<in> ?D} =
   \<Delta> (bool_comb_NFA bc (\<alpha>1 n1) (\<alpha>2 n2))" 
     apply (simp add: LTS_product_def)
   proof -
-    show "{((a, b), semIs aa \<inter> semIs ba, ab, bb) |a b aa ba ab bb.
+    show "{((a, b), sem aa \<inter> sem ba, ab, bb) |a b aa ba ab bb.
      (a, aa, ab) \<in> D1 \<and> (b, ba, bb) \<in> D2} =
     {((p, q), \<sigma>1 \<inter> \<sigma>2, p', q') |p p' \<sigma>1 \<sigma>2 q q'.
      (p, \<sigma>1, p') \<in> NFA_set_interval.NFA_rec.\<Delta> (\<alpha>1 n1) \<and>
@@ -3958,25 +3955,25 @@ proof (intro nfa_bool_comb.intro
       apply (simp only: set_eq_iff)
       proof
       fix x
-      show "(x \<in> {((a, b), semIs aa \<inter> semIs ba, ab, bb) |a b aa ba ab bb.
+      show "(x \<in> {((a, b), sem aa \<inter> sem ba, ab, bb) |a b aa ba ab bb.
                (a, aa, ab) \<in> D1 \<and> (b, ba, bb) \<in> D2}) =
          (x \<in> {((p, q), \<sigma>1 \<inter> \<sigma>2, p', q') |p p' \<sigma>1 \<sigma>2 q q'.
                 (p, \<sigma>1, p') \<in> NFA_set_interval.NFA_rec.\<Delta> (\<alpha>1 n1) \<and>
                 (q, \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> (\<alpha>2 n2)})"
       proof  
         {
-      assume pre1: "x \<in> {((a, b), semIs aa \<inter> semIs ba, ab, bb) |a b aa ba ab bb.
+      assume pre1: "x \<in> {((a, b), sem aa \<inter> sem ba, ab, bb) |a b aa ba ab bb.
           (a, aa, ab) \<in> D1 \<and> (b, ba, bb) \<in> D2}"
       from this obtain a b aa ab ac bc where
                D1_in: "(a, aa, ac) \<in> D1" and
                D2_in: "(b, ab, bc) \<in> D2" and 
-               x_in:   "x = ((a, b), semIs aa \<inter> semIs ab, ac, bc)" by auto
+               x_in:   "x = ((a, b), sem aa \<inter> sem ab, ac, bc)" by auto
       from D1_in D2_in \<alpha>2_\<Delta>_eq \<alpha>1_\<Delta>_eq 
             obtain p \<sigma>1 p' q \<sigma>2 q' where
            "(p,\<sigma>1,p') \<in> \<Delta> (\<alpha>1 n1)" and 
-           "(p,\<sigma>1,p') = (a, semIs aa, ac)" and
+           "(p,\<sigma>1,p') = (a, sem aa, ac)" and
            "(q,\<sigma>2,q') \<in> \<Delta> (\<alpha>2 n2)" and 
-           "(q,\<sigma>2,q') = (b, semIs ab, bc)"
+           "(q,\<sigma>2,q') = (b, sem ab, bc)"
         by fast
       from this pre1  D1_in D2_in x_in \<alpha>2_\<Delta>_eq \<alpha>1_\<Delta>_eq
       show
@@ -3995,12 +3992,12 @@ proof (intro nfa_bool_comb.intro
       from  n1_in \<alpha>2_\<Delta>_eq \<alpha>1_\<Delta>_eq n2_in \<alpha>2_\<Delta>_eq \<alpha>1_\<Delta>_eq 
         obtain a b aa ab ac bc where
                "(a, aa, ac) \<in> D1" and
-               "(a, semIs aa, ac) = (p,\<sigma>1,p')" and
+               "(a, sem aa, ac) = (p,\<sigma>1,p')" and
                "(b, ab, bc) \<in> D2" and 
-               "(b, semIs ab, bc) = (q,\<sigma>2,q')" 
+               "(b, sem ab, bc) = (q,\<sigma>2,q')" 
         by (smt mem_Collect_eq old.prod.exhaust)    
     from this pre2 \<alpha>2_\<Delta>_eq \<alpha>1_\<Delta>_eq n1_in n2_in x_in 
-      show con2: "x \<in> {((a, b), semIs aa \<inter> semIs ba, ab, bb) |a b aa ba ab bb.
+      show con2: "x \<in> {((a, b), sem aa \<inter> sem ba, ab, bb) |a b aa ba ab bb.
           (a, aa, ab) \<in> D1 \<and> (b, ba, bb) \<in> D2}" by auto
     }
   qed qed qed
@@ -4060,7 +4057,7 @@ proof (intro nfa_bool_comb.intro
 qed
 
 
-context nfa_dfa_by_lts_interval_defs 
+context nfa_dfa_by_lts_bool_algebra_defs 
 begin
 
   fun rename_states_impl where
@@ -4076,7 +4073,7 @@ schematic_goal rename_states_code:
 
 fun nfa_construct_reachable where
   "nfa_construct_reachable qm_ops it A = 
-   nfa.NFA_construct_reachable_interval_impl_code qm_ops id
+   nfa.NFA_construct_reachable_ba_impl_code qm_ops id
    (s.to_list (nfa.nfa_initial A))
    (\<lambda> q. s.memb q (nfa.nfa_accepting A)) (it (nfa.nfa_trans A))
   "
@@ -4085,14 +4082,14 @@ schematic_goal nfa_construct_reachable_code :
   "nfa_construct_reachable qm_ops it (Q2, D2, I2, F2) = ?XXX1"
 unfolding nfa_construct_reachable.simps 
             nfa.nfa_selectors_def  snd_conv fst_conv
-            nfa.NFA_construct_reachable_interval_impl_code_def 
+            nfa.NFA_construct_reachable_ba_impl_code_def 
  by (rule refl)+
 
   fun bool_comb_gen_impl where
     "bool_comb_gen_impl qm_ops it_1_nfa it_2_nfa
        A' bc =
         (bool_comb_impl_aux
-         (nfa.NFA_construct_reachable_prod_interval_impl_code qm_ops) id 
+         (nfa.NFA_construct_reachable_prod_ba_impl_code qm_ops) id 
           (\<lambda>A. it_1_nfa (nfa.nfa_trans A)) (\<lambda>A. it_2_nfa (nfa.nfa_trans A))
            (\<lambda>A. (s.to_list (nfa.nfa_initial A))) 
             (\<lambda>A. (s.to_list (nfa.nfa_initial A))) 
@@ -4106,7 +4103,7 @@ schematic_goal bool_comb_gen_impl_code :
   unfolding bool_comb_gen_impl.simps 
             bool_comb_impl_aux_def product_iterator_alt_def
             nfa.nfa_selectors_def  snd_conv fst_conv
-            nfa.NFA_construct_reachable_prod_interval_impl_code_def 
+            nfa.NFA_construct_reachable_prod_ba_impl_code_def 
  by (rule refl)+
 
 fun bool_comb_impl where
@@ -4121,11 +4118,11 @@ schematic_goal bool_comb_impl_code :
  by (rule refl)+
 
 
-definition (in nfa_dfa_by_lts_interval_defs) nfa_dfa_invar where
+definition (in nfa_dfa_by_lts_bool_algebra_defs) nfa_dfa_invar where
      "nfa_dfa_invar n = (nfa.nfa_invar_NFA' n)"
 
 
-definition (in nfa_dfa_by_lts_interval_defs) nfa_dfa_\<alpha> where
+definition (in nfa_dfa_by_lts_bool_algebra_defs) nfa_dfa_\<alpha> where
      "nfa_dfa_\<alpha> n = (nfa.nfa_\<alpha> n)"
 
 
@@ -4149,18 +4146,18 @@ assumes qm_ops_OK: "StdMap qm_ops"
     and it_1_nfa_OK: "lts_succ_label_it d_nfa.\<alpha> d_nfa.invar it_1_nfa"
     and it_2_nfa_OK: "lts_succ_it d_nfa.\<alpha> d_nfa.invar it_2_nfa" 
     and \<Delta>_\<A>1: "\<And> n1. nfa.nfa_invar_NFA' n1 \<Longrightarrow> 
-          \<exists>D1. {(q, semIs a, q')| q a q'. (q, a, q') \<in> D1} = \<Delta> (nfa.nfa_\<alpha> n1) \<and>
+          \<exists>D1. {(q, sem a, q')| q a q'. (q, a, q') \<in> D1} = \<Delta> (nfa.nfa_\<alpha> n1) \<and>
                finite D1"
     and \<Delta>_\<A>2: "\<And> n2. nfa.nfa_invar_NFA' n2 \<Longrightarrow> 
-          \<exists>D2. {(q, semIs a, q')| q a q'. (q, a, q') \<in> D2} = \<Delta> (nfa.nfa_\<alpha> n2) \<and>
+          \<exists>D2. {(q, sem a, q')| q a q'. (q, a, q') \<in> D2} = \<Delta> (nfa.nfa_\<alpha> n2) \<and>
                finite D2"
-    and \<Delta>_it_ok1: "\<And> q D1 n1. {(q, semIs a, q') |q a q'. (q, a, q') \<in> D1} = 
+    and \<Delta>_it_ok1: "\<And> q D1 n1. {(q, sem a, q') |q a q'. (q, a, q') \<in> D1} = 
        \<Delta> (nfa.nfa_\<alpha> n1) \<Longrightarrow>
        finite D1 \<Longrightarrow>
        nfa.nfa_invar_NFA' n1 \<Longrightarrow>
        set_iterator_genord (it_1_nfa (nfa.nfa_trans n1) q) {(a, q'). (q, a, q') \<in> D1}
         (\<lambda>_ _. True)"
-    and \<Delta>_it_ok2: "\<And> q D2 n2 a. {(q, semIs a, q') |q a q'. (q, a, q') \<in> D2} = 
+    and \<Delta>_it_ok2: "\<And> q D2 n2 a. {(q, sem a, q') |q a q'. (q, a, q') \<in> D2} = 
        \<Delta> (nfa.nfa_\<alpha> n2) \<Longrightarrow>
        finite D2 \<Longrightarrow>
        nfa.nfa_invar_NFA' n2 \<Longrightarrow>
@@ -4169,8 +4166,8 @@ assumes qm_ops_OK: "StdMap qm_ops"
         (\<lambda>_ _. True)"
 
      and sem_OK: "\<And> n1 n2 D1 D2. 
-      {(q, semIs a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (nfa.nfa_\<alpha> n1) \<Longrightarrow>
-      {(q, semIs a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (nfa.nfa_\<alpha> n2) \<Longrightarrow>
+      {(q, sem a, q')| q a q'. (q,a,q') \<in> D1} = \<Delta> (nfa.nfa_\<alpha> n1) \<Longrightarrow>
+      {(q, sem a, q')| q a q'. (q,a,q') \<in> D2} = \<Delta> (nfa.nfa_\<alpha> n2) \<Longrightarrow>
       nfa.nfa_invar_NFA' n1 \<Longrightarrow> nfa.nfa_invar_NFA' n2 \<Longrightarrow>
       \<forall>q a b q'.
      (q, (a, b), q')
@@ -4178,7 +4175,7 @@ assumes qm_ops_OK: "StdMap qm_ops"
          (q, a, q')
          \<in> {((q1, q2), (a1, a2), q1', q2') |q1 a1 q1' q2 a2 q2'.
              (q1, a1, q1') \<in> D1 \<and> (q2, a2, q2') \<in> D2}} \<longrightarrow>
-     canonicalIs a \<and> canonicalIs b"
+     canonical_op a \<and> canonical_op b"
     
 shows "nfa_bool_comb_same nfa_dfa_\<alpha> nfa_dfa_invar 
        (bool_comb_gen_impl qm_ops it_1_nfa it_2_nfa)"
@@ -4225,7 +4222,6 @@ proof (intro nfa_bool_comb_same.intro
         apply (insert \<Delta>_\<A>1 \<Delta>_\<A>2 \<Delta>_it_ok1 \<Delta>_it_ok2 sem_OK)
         apply (simp)
         defer
-        using intersectIs_correct
         by (simp_all add: 
               nfa.nfa_trans_def
               set_iterator_def nfa.nfa_\<alpha>_def nfa.nfa_initial_def
@@ -4241,18 +4237,18 @@ lemma bool_comb_impl_correct :
     and it_1_nfa_OK: "lts_succ_label_it d_nfa.\<alpha> d_nfa.invar it_1_nfa"
     and it_2_nfa_OK: "lts_succ_it d_nfa.\<alpha> d_nfa.invar it_2_nfa"
     and \<Delta>_\<A>1: "\<And> n1. nfa.nfa_invar_NFA' n1 \<Longrightarrow> 
-          \<exists>D1. {(q, semIs a, q')| q a q'. (q, a, q') \<in> D1} = \<Delta> (nfa.nfa_\<alpha> n1) \<and>
+          \<exists>D1. {(q, sem a, q')| q a q'. (q, a, q') \<in> D1} = \<Delta> (nfa.nfa_\<alpha> n1) \<and>
                finite D1"
     and \<Delta>_\<A>2: "\<And> n2. nfa.nfa_invar_NFA' n2 \<Longrightarrow> 
-          \<exists>D2. {(q, semIs a, q')| q a q'. (q, a, q') \<in> D2} = \<Delta> (nfa.nfa_\<alpha> n2) \<and>
+          \<exists>D2. {(q, sem a, q')| q a q'. (q, a, q') \<in> D2} = \<Delta> (nfa.nfa_\<alpha> n2) \<and>
                finite D2"
-    and \<Delta>_it_ok1: "\<And> q D1 n1. {(q, semIs a, q') |q a q'. (q, a, q') \<in> D1} = 
+    and \<Delta>_it_ok1: "\<And> q D1 n1. {(q, sem a, q') |q a q'. (q, a, q') \<in> D1} = 
        \<Delta> (nfa.nfa_\<alpha> n1) \<Longrightarrow>
        finite D1 \<Longrightarrow>
        nfa.nfa_invar_NFA' n1 \<Longrightarrow>
        set_iterator_genord (it_1_nfa (nfa.nfa_trans n1) q) {(a, q'). (q, a, q') \<in> D1}
         (\<lambda>_ _. True)"
-    and \<Delta>_it_ok2: "\<And> q D2 n2 a. {(q, semIs a, q') |q a q'. (q, a, q') \<in> D2} = 
+    and \<Delta>_it_ok2: "\<And> q D2 n2 a. {(q, sem a, q') |q a q'. (q, a, q') \<in> D2} = 
        \<Delta> (nfa.nfa_\<alpha> n2) \<Longrightarrow>
        finite D2 \<Longrightarrow>
        nfa.nfa_invar_NFA' n2 \<Longrightarrow>
@@ -4260,8 +4256,8 @@ lemma bool_comb_impl_correct :
     {(a, q'). (q, a, q') \<in> D2}
         (\<lambda>_ _. True)" and
     sem_OK: "\<And>n1 n2 D1 D2.
-      {(q, semIs a, q') |q a q'. (q, a, q') \<in> D1} = \<Delta> (nfa.nfa_\<alpha> n1) \<Longrightarrow>
-      {(q, semIs a, q') |q a q'. (q, a, q') \<in> D2} = \<Delta> (nfa.nfa_\<alpha> n2) \<Longrightarrow>
+      {(q, sem a, q') |q a q'. (q, a, q') \<in> D1} = \<Delta> (nfa.nfa_\<alpha> n1) \<Longrightarrow>
+      {(q, sem a, q') |q a q'. (q, a, q') \<in> D2} = \<Delta> (nfa.nfa_\<alpha> n2) \<Longrightarrow>
       nfa.nfa_invar_NFA' n1 \<Longrightarrow>
       nfa.nfa_invar_NFA' n2 \<Longrightarrow>
       \<forall>q a b q'.
@@ -4270,7 +4266,7 @@ lemma bool_comb_impl_correct :
              (q, a, q')
              \<in> {((q1, q2), (a1, a2), q1', q2') |q1 a1 q1' q2 a2 q2'.
                  (q1, a1, q1') \<in> D1 \<and> (q2, a2, q2') \<in> D2}} \<longrightarrow>
-         canonicalIs a \<and> canonicalIs b"
+         canonical_op a \<and> canonical_op b"
 shows "nfa_bool_comb_same nfa_dfa_\<alpha> nfa_dfa_invar 
        (bool_comb_impl qm_ops it_1_nfa it_2_nfa)"
 proof (intro nfa_bool_comb_same.intro 
