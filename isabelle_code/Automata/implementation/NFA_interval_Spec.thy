@@ -36,25 +36,26 @@ type_synonym ('q,'a,'nfa) nfa_\<alpha> = "'nfa \<Rightarrow> ('q, 'a) NFA_rec"
                       NFA_construct___is_well_formed)
   end
 
-  type_synonym ('q,'a,'nfa) nfa_from_list_interval = 
-    "('q list \<times> ('q \<times> ('a \<times> 'a) list \<times> 'q) list 
+  type_synonym ('q, 'b, 'nfa) nfa_from_list_ba = 
+    "('q list \<times> ('q \<times> 'b \<times> 'q) list 
       \<times> 'q list \<times> 'q list) \<Rightarrow> 'nfa"
 
-  locale nfa_from_list_interval = nfa +
+  locale nfa_from_list_ba = nfa +
     constrains \<alpha> :: "('q,'a::linorder,'nfa) nfa_\<alpha>"
-    fixes wf :: "('q list \<times>  ('q \<times> ('a \<times> 'a) list \<times> 'q) list 
+    fixes wf :: "('q list \<times>  ('q \<times> 'b \<times> 'q) list 
       \<times> 'q list \<times> 'q list) \<Rightarrow> bool"
-    fixes from_interval :: "('q,'a,'nfa) nfa_from_list_interval"
-    assumes nfa_from_list_interval_correct:
-      "wf l \<Longrightarrow> invar (from_interval l)"  
-      "wf l \<Longrightarrow> \<alpha> (from_interval l) = NFA_construct_interval l"
+    fixes from_list_ba :: "('q,'b,'nfa) nfa_from_list_ba"
+    fixes sem :: "'b \<Rightarrow> 'a set"
+    assumes nfa_from_list_ba_correct:
+      "wf l \<Longrightarrow> invar (from_list_ba l)"  
+      "wf l \<Longrightarrow> \<alpha> (from_list_ba l) = NFA_construct_ba sem l"
   begin
-    lemma nfa_from_list_interval_correct___isomorphic :
-      "wf l \<Longrightarrow> invar (from_interval l)"
-      "wf l \<Longrightarrow> (\<forall> (q,d,q') \<in> set (fst (snd l)). finite (semIs d))  \<longrightarrow>
-         NFA_isomorphic_wf (\<alpha> (from_interval l)) (NFA_construct_interval l)"
+    lemma nfa_from_list_ba_correct___isomorphic :
+      "wf l \<Longrightarrow> invar (from_list_ba l)"
+      "wf l \<Longrightarrow> (\<forall> (q,d,q') \<in> set (fst (snd l)). finite (sem d))  \<longrightarrow>
+         NFA_isomorphic_wf (\<alpha> (from_list_ba l)) (NFA_construct_ba sem l)"
       apply auto
-      by (simp_all add: nfa_from_list_interval_correct 
+      by (simp_all add: nfa_from_list_ba_correct 
                         NFA_isomorphic_wf_def NFA_isomorphic_refl
                         NFA_construct_interval___is_well_formed)
       
@@ -240,22 +241,24 @@ end
 
 
 
-  type_synonym ('q2,'i,'a,'\<sigma>,'nfa) nfa_construct = 
+  type_synonym ('q2,'i,'b,'\<sigma>,'nfa) nfa_construct = 
     "('q2 \<Rightarrow> 'i) \<Rightarrow> 'q2 list \<Rightarrow>  ('q2 \<Rightarrow> bool) \<Rightarrow> 
-     ('q2 \<Rightarrow> (('a \<times> 'a) list \<times>'q2,'\<sigma>) set_iterator) \<Rightarrow> 'nfa"
+     ('q2 \<Rightarrow> ('b \<times>'q2,'\<sigma>) set_iterator) \<Rightarrow> 'nfa"
 
   locale nfa_construct_no_enc = nfa \<alpha> invar + set s_\<alpha> s_invar 
     for \<alpha> and invar and s_\<alpha> :: "'a_set \<Rightarrow> 'a::linorder set" and s_invar + 
     constrains \<alpha> :: "('q,'a,'nfa) nfa_\<alpha>"
-    fixes construct :: "('q2,'i,'a,'\<sigma>,'nfa) nfa_construct"
+    fixes construct :: "('q2,'i,'b,'\<sigma>,'nfa) nfa_construct"
+    and sem :: "'b \<Rightarrow> 'a set"
+    and canonical_op :: "'b \<Rightarrow> bool"
     assumes nfa_construct_no_enc_correct:
        "\<lbrakk>NFA (\<A>::('q2, 'a) NFA_rec); 
          inj_on f (\<Q> \<A>); 
          distinct I; 
          set I = \<I> \<A>;
          finite D;
-         \<forall> (q, a, q') \<in> D. canonicalIs a;
-         {(q, semIs a, q') | q a q'. (q, a, q') \<in> D} = (\<Delta> \<A>); 
+         \<forall> (q, a, q') \<in> D. canonical_op a;
+         {(q, sem a, q') | q a q'. (q, a, q') \<in> D} = (\<Delta> \<A>); 
          \<And>q. q \<in> \<Q> \<A> \<Longrightarrow> FP q \<longleftrightarrow> q \<in> \<F> \<A>;
          \<And>q. q \<in> \<Q> \<A> \<Longrightarrow> set_iterator (D_it q) 
               {(a, q'). (q, a, q') \<in> D}\<rbrakk> \<Longrightarrow> 
@@ -267,14 +270,16 @@ end
   
 
 
-  type_synonym ('q2,'i,'a,'\<sigma>,'nfa) nfa_construct_prod = 
+  type_synonym ('q2,'i,'b,'\<sigma>,'nfa) nfa_construct_prod = 
     "('q2 \<Rightarrow> 'i) \<Rightarrow> 'q2 list  \<Rightarrow> ('q2 \<Rightarrow> bool) \<Rightarrow> 
-     ('q2 \<Rightarrow> ((('a \<times> 'a) list \<times> ('a \<times> 'a) list) \<times>'q2,'\<sigma>) set_iterator) \<Rightarrow> 'nfa"
+     ('q2 \<Rightarrow> (('b \<times> 'b) \<times>'q2,'\<sigma>) set_iterator) \<Rightarrow> 'nfa"
 
     locale nfa_construct_no_enc_prod = nfa \<alpha> invar + set s_\<alpha> s_invar 
     for \<alpha> and invar and s_\<alpha> :: "'a_set \<Rightarrow> ('a:: linorder) set" and s_invar + 
     constrains \<alpha> :: "('q,'a,'nfa) nfa_\<alpha>"
-    fixes construct :: "('q2,'i,'a,'\<sigma>,'nfa) nfa_construct_prod"
+    fixes construct :: "('q2,'i,'b,'\<sigma>,'nfa) nfa_construct_prod"
+      and sem :: "'b \<Rightarrow> 'a set"
+      and canonical_op :: "'b \<Rightarrow> bool"
     assumes nfa_construct_no_enc_correct:
        "\<lbrakk>NFA (\<A>::('q2, 'a) NFA_rec); 
          inj_on f (\<Q> \<A>); 
@@ -283,8 +288,8 @@ end
          finite D;
          (\<forall>q a b q'.
          ((q, (a, b), q') \<in> {(q, a, q'). (q, a, q') \<in> D}) 
-                    \<longrightarrow> canonicalIs a \<and> canonicalIs b);
-         {(q, semIs (fst a) \<inter> semIs (snd a), q') | q a q'. (q,a,q') \<in> D} = (\<Delta> \<A>);  
+                    \<longrightarrow> canonical_op a \<and> canonical_op b);
+         {(q, sem (fst a) \<inter> sem (snd a), q') | q a q'. (q,a,q') \<in> D} = (\<Delta> \<A>);  
          \<And>q. q \<in> \<Q> \<A> \<Longrightarrow> FP q \<longleftrightarrow> q \<in> \<F> \<A>;
          \<And>q. set_iterator (D_it q) 
               {(a, q'). (q, a, q') \<in> D}\<rbrakk> \<Longrightarrow> 
@@ -297,13 +302,15 @@ end
     constrains \<alpha> :: "('q,'a,'nfa) nfa_\<alpha>" 
     fixes q2_\<alpha> :: "'q2_rep \<Rightarrow> 'q2" 
       and q2_invar :: "'q2_rep \<Rightarrow> bool" 
-      and construct :: "('q2_rep,'i,'a,'\<sigma>,'nfa) nfa_construct"
+      and construct :: "('q2_rep,'i,'b,'\<sigma>,'nfa) nfa_construct"
+      and sem :: "'b \<Rightarrow> 'a set"
+      and canonical_op :: "'b \<Rightarrow> bool"
     assumes nfa_construct_correct:
        "\<lbrakk>NFA (\<A>::('q2, 'a) NFA_rec); inj_on f (\<Q> \<A>);
          \<And>q. q2_invar q \<Longrightarrow> q2_\<alpha> q \<in> \<Q> \<A> \<Longrightarrow> ff q = (f (q2_\<alpha> q));
          distinct (map q2_\<alpha> I);
          finite (\<Delta> \<A>);
-         \<And>q.  \<forall> (a, q') \<in> (DS q). canonicalIs a ;
+         \<And>q.  \<forall> (a, q') \<in> (DS q). canonical_op a ;
          \<And>q.  q2_invar q \<Longrightarrow> q2_\<alpha> q \<in> \<Q> \<A> \<Longrightarrow> inj_on q2_\<alpha> {q'| a q'. (a, q') \<in> (DS q)} ;
          \<And>q. q \<in> set I \<Longrightarrow> q2_invar q; q2_\<alpha> ` (set I) = \<I> \<A>;
          \<And> q. \<lbrakk>q2_invar q; q2_\<alpha> q \<in> \<Q> \<A>\<rbrakk> \<Longrightarrow> FP q \<longleftrightarrow> q2_\<alpha> q \<in> \<F> \<A>;
@@ -311,7 +318,7 @@ end
           set_iterator
           (D_it q) {(a, q'). (a, q') \<in> (DS q)} \<and>
           {(a, q'). (q2_\<alpha> q, a, q') \<in> \<Delta> \<A>} = 
-           (\<lambda>(a, q'). (semIs a, q2_\<alpha> q')) ` (DS q) \<and>
+           (\<lambda>(a, q'). (sem a, q2_\<alpha> q')) ` (DS q) \<and>
                (\<forall>a q'. (a, q') \<in> (DS q) \<longrightarrow> q2_invar q') \<and>
                (\<forall>a q'. (a, q') \<in> (DS q) \<longrightarrow> (\<forall>q''. (a, q'') \<in> (DS q) 
                 \<longrightarrow> (q2_\<alpha> q' = q2_\<alpha> q'') = (q' = q'')))
@@ -326,14 +333,16 @@ end
     constrains \<alpha> :: "('q,'a,'nfa) nfa_\<alpha>" 
     fixes q2_\<alpha> :: "'q2_rep \<Rightarrow> 'q2" 
       and q2_invar :: "'q2_rep \<Rightarrow> bool" 
-      and construct :: "('q2_rep,'i,'a,'\<sigma>,'nfa) nfa_construct_prod"
+      and construct :: "('q2_rep,'i,'b,'\<sigma>,'nfa) nfa_construct_prod"
+      and sem :: "'b \<Rightarrow> 'a set"
+      and canonical_op :: "'b \<Rightarrow> bool"
     assumes nfa_construct_correct:
        "\<lbrakk>NFA (\<A>::('q2, 'a) NFA_rec); inj_on f (\<Q> \<A>);
          \<And>q. q2_invar q \<Longrightarrow> q2_\<alpha> q \<in> \<Q> \<A> \<Longrightarrow> ff q = (f (q2_\<alpha> q));
          distinct (map q2_\<alpha> I);
          finite D;
          finite (\<Delta> \<A>);
-         \<And>q a b q'. ((a,b), q') \<in> DS q \<longrightarrow> canonicalIs a \<and> canonicalIs b;
+         \<And>q a b q'. ((a,b), q') \<in> DS q \<longrightarrow> canonical_op a \<and> canonical_op b;
          {(q,  (fst a) \<inter>  (snd a), q') | q a q'. (q,a,q') \<in> D} = (\<Delta> \<A>);
          \<And>q. q \<in> set I \<Longrightarrow> q2_invar q; q2_\<alpha> ` (set I) = \<I> \<A>;
          \<And> q. \<lbrakk>q2_invar q; q2_\<alpha> q \<in> \<Q> \<A>\<rbrakk> \<Longrightarrow> FP q \<longleftrightarrow> q2_\<alpha> q \<in> \<F> \<A>;
@@ -342,7 +351,7 @@ end
           (D_it q) {(a, q'). (a, q') \<in> (DS q)} 
           \<and>
           {(a, q'). (q2_\<alpha> q, a, q') \<in> D} = 
-           (\<lambda>(a, q'). ((semIs (fst a), semIs (snd a)), q2_\<alpha> q')) ` (DS q) \<and>
+           (\<lambda>(a, q'). ((sem (fst a), sem (snd a)), q2_\<alpha> q')) ` (DS q) \<and>
                (\<forall>a q'. (a, q') \<in> (DS q) \<longrightarrow> q2_invar q') \<and>
                (\<forall>a q'. (a, q') \<in> (DS q) \<longrightarrow> (\<forall>q''. (a, q'') \<in> (DS q) 
                 \<longrightarrow> (q2_\<alpha> q' = q2_\<alpha> q'') = (q' = q'')))
@@ -354,8 +363,8 @@ end
 
 
   lemma nfa_construct_no_enc_default :
-    "nfa_construct \<alpha> invar  id (\<lambda>_. True) construct \<Longrightarrow>
-     nfa_construct_no_enc \<alpha> invar  construct"
+    "nfa_construct \<alpha> invar  id (\<lambda>_. True) construct sem canonical_op \<Longrightarrow>
+     nfa_construct_no_enc \<alpha> invar construct sem canonical_op"
     apply (simp add: nfa_construct_def 
                   nfa_construct_no_enc_def 
                   nfa_construct_no_enc_axioms_def
@@ -369,7 +378,7 @@ end
                           (\<forall>I. distinct I \<longrightarrow>
                                finite (NFA_rec.\<Delta> \<A>) \<longrightarrow>
                                       (\<forall>DS. (\<forall>q.
-   \<forall>x\<in>DS q. case x of (a, q') \<Rightarrow> canonicalIs a) \<longrightarrow>
+   \<forall>x\<in>DS q. case x of (a, q') \<Rightarrow> canonical_op a) \<longrightarrow>
                                             set I = NFA_set_interval.NFA_rec.\<I> \<A> \<longrightarrow>
                                             (\<forall>FP.
    (\<forall>q. q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow>
@@ -378,7 +387,7 @@ end
        (\<forall>q. q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow>
             set_iterator (D_it q) (DS q) \<and>
             {(a, q'). (q, a, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A>} =
-            (\<lambda>x. case x of (a, x) \<Rightarrow> (semIs a, x)) ` DS q) \<longrightarrow>
+            (\<lambda>x. case x of (a, x) \<Rightarrow> (sem a, x)) ` DS q) \<longrightarrow>
        invar (construct ff I FP D_it) \<and>
        NFA_set_interval.NFA_isomorphic_wf (\<alpha> (construct ff I FP D_it))
         (NFA_set_interval.NFA_remove_unreachable_states \<A>))))))))"
@@ -387,8 +396,8 @@ end
               (\<forall>I. distinct I \<longrightarrow>
                    set I = NFA_set_interval.NFA_rec.\<I> \<A> \<longrightarrow>
                    (\<forall>D. finite D \<longrightarrow>
-                               (\<forall>(q, a, q')\<in>D. canonicalIs a) \<longrightarrow>
-                               {(q, semIs a, q') |q a q'. (q, a, q') \<in> D} =
+                               (\<forall>(q, a, q')\<in>D. canonical_op a) \<longrightarrow>
+                               {(q, sem a, q') |q a q'. (q, a, q') \<in> D} =
                                NFA_set_interval.NFA_rec.\<Delta> \<A> \<longrightarrow>
                                (\<forall>FP. (\<forall>q. q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow>
                                           FP q = (q \<in> NFA_set_interval.NFA_rec.\<F> \<A>)) \<longrightarrow>
@@ -408,8 +417,8 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
        distinct I \<Longrightarrow>
        set I = NFA_set_interval.NFA_rec.\<I> \<A> \<Longrightarrow>
        finite D \<Longrightarrow>
-       \<forall>(q, a, q')\<in>D. canonicalIs a \<Longrightarrow>
-       {(q, semIs a, q') |q a q'. (q, a, q') \<in> D} = NFA_set_interval.NFA_rec.\<Delta> \<A> \<Longrightarrow>
+       \<forall>(q, a, q')\<in>D. canonical_op a \<Longrightarrow>
+       {(q, sem a, q') |q a q'. (q, a, q') \<in> D} = NFA_set_interval.NFA_rec.\<Delta> \<A> \<Longrightarrow>
        \<forall>q. q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow>
            FP q = (q \<in> NFA_set_interval.NFA_rec.\<F> \<A>) \<Longrightarrow>
        \<forall>q. q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow>
@@ -423,10 +432,10 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
              p4: "distinct I" and
              p5: "set I = \<I> \<A>" and
              p6: "finite D" and
-             p7: "{(q, semIs a, q') |q a q'. (q, a, q') \<in> D} = NFA_set_interval.NFA_rec.\<Delta> \<A>" and
+             p7: "{(q, sem a, q') |q a q'. (q, a, q') \<in> D} = NFA_set_interval.NFA_rec.\<Delta> \<A>" and
              p8: "\<forall>q. q \<in> \<Q> \<A> \<longrightarrow> FP q = (q \<in> \<F> \<A>)" and
              p9: "\<forall>q. q \<in> \<Q> \<A> \<longrightarrow> set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}" and
-             p10: "\<forall>(q, a, q')\<in>D. canonicalIs a"
+             p10: "\<forall>(q, a, q')\<in>D. canonical_op a"
 
       from this p1
       have "(\<forall>f. inj_on f (NFA_set_interval.NFA_rec.\<Q> \<A>) \<longrightarrow>
@@ -434,7 +443,7 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
                      (\<forall>I. distinct I \<longrightarrow>
                           finite (NFA_set_interval.NFA_rec.\<Delta> \<A>) \<longrightarrow>
                                  (\<forall>DS. (\<forall>q. \<forall>x\<in>DS q.
-  case x of (a, q') \<Rightarrow> canonicalIs a) \<longrightarrow>
+  case x of (a, q') \<Rightarrow> canonical_op a) \<longrightarrow>
                                        set I = NFA_set_interval.NFA_rec.\<I> \<A> \<longrightarrow>
                                        (\<forall>FP. (\<forall>q.
     q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> FP q = (q \<in> NFA_set_interval.NFA_rec.\<F> \<A>)) \<longrightarrow>
@@ -442,7 +451,7 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
     (\<forall>q. q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow>
          set_iterator (D_it q) (DS q) \<and>
          {(a, q'). (q, a, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A>} =
-         (\<lambda>x. case x of (a, x) \<Rightarrow> (semIs a, x)) ` DS q) \<longrightarrow>
+         (\<lambda>x. case x of (a, x) \<Rightarrow> (sem a, x)) ` DS q) \<longrightarrow>
     invar (construct ff I FP D_it) \<and>
     NFA_set_interval.NFA_isomorphic_wf (\<alpha> (construct ff I FP D_it))
      (NFA_set_interval.NFA_remove_unreachable_states \<A>)))))))"
@@ -453,7 +462,7 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
                      (\<forall>I. distinct I \<longrightarrow>
                           finite (NFA_set_interval.NFA_rec.\<Delta> \<A>) \<longrightarrow>
                                  (\<forall>DS. (\<forall>q. \<forall>x\<in>DS q.
-  case x of (a, q') \<Rightarrow> canonicalIs a) \<longrightarrow>
+  case x of (a, q') \<Rightarrow> canonical_op a) \<longrightarrow>
                                        set I = NFA_set_interval.NFA_rec.\<I> \<A> \<longrightarrow>
                                        (\<forall>FP. (\<forall>q.
     q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> FP q = (q \<in> NFA_set_interval.NFA_rec.\<F> \<A>)) \<longrightarrow>
@@ -461,7 +470,7 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
     (\<forall>q. q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow>
          set_iterator (D_it q) (DS q) \<and>
          {(a, q'). (q, a, q') \<in> NFA_set_interval.NFA_rec.\<Delta> \<A>} =
-         (\<lambda>x. case x of (a, x) \<Rightarrow> (semIs a, x)) ` DS q) \<longrightarrow>
+         (\<lambda>x. case x of (a, x) \<Rightarrow> (sem a, x)) ` DS q) \<longrightarrow>
     invar (construct ff I FP D_it) \<and>
     NFA_set_interval.NFA_isomorphic_wf (\<alpha> (construct ff I FP D_it))
      (NFA_set_interval.NFA_remove_unreachable_states \<A>))))))"
@@ -472,38 +481,38 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
                           (\<forall>I. distinct I \<longrightarrow>
                           finite (\<Delta> \<A>) \<longrightarrow>
                                  (\<forall>DS. (\<forall>q. \<forall>x\<in>DS q.
-  case x of (a, q') \<Rightarrow> canonicalIs a) \<longrightarrow>
+  case x of (a, q') \<Rightarrow> canonical_op a) \<longrightarrow>
                                      set I = \<I> \<A> \<longrightarrow>
                                      (\<forall>FP. (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow> FP q = (q \<in> \<F> \<A>)) \<longrightarrow>
                                            (\<forall>D_it.
    (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
         set_iterator (D_it q) (DS q) \<and>
-        {(a, q'). (q, a, q') \<in> \<Delta> \<A>} = (\<lambda>x. case x of (a, x) \<Rightarrow> (semIs a, x)) ` DS q) \<longrightarrow>
+        {(a, q'). (q, a, q') \<in> \<Delta> \<A>} = (\<lambda>x. case x of (a, x) \<Rightarrow> (sem a, x)) ` DS q) \<longrightarrow>
    invar (construct f  I FP D_it) \<and>
    NFA_isomorphic_wf (\<alpha> (construct f  I FP D_it))
     (NFA_remove_unreachable_states \<A>)))))"
         by simp
   from p6 p7 have finiteA: "finite (\<Delta> \<A>)"
-    apply (subgoal_tac "{(q, semIs a, q') |q a q'. (q, a, q') \<in> D} = 
-                        (\<lambda> (q, a, q'). (q, semIs a, q')) ` D")
-    using finite_imageI[OF p6, of "\<lambda> (q, a, q'). (q, semIs a, q')"]
+    apply (subgoal_tac "{(q, sem a, q') |q a q'. (q, a, q') \<in> D} = 
+                        (\<lambda> (q, a, q'). (q, sem a, q')) ` D")
+    using finite_imageI[OF p6, of "\<lambda> (q, a, q'). (q, sem a, q')"]
     apply simp
     apply (simp only: set_eq_iff)
   proof 
     fix x
-    assume p1: "\<forall>x. (x \<in> {(q, semIs a, q') |q a q'. (q, a, q') \<in> D}) =
+    assume p1: "\<forall>x. (x \<in> {(q, sem a, q') |q a q'. (q, a, q') \<in> D}) =
                 (x \<in> NFA_set_interval.NFA_rec.\<Delta> \<A>)"
-    show "(x \<in> \<Delta> \<A>) = (x \<in> (\<lambda>(q, a, q'). (q, semIs a, q')) ` D)"
+    show "(x \<in> \<Delta> \<A>) = (x \<in> (\<lambda>(q, a, q'). (q, sem a, q')) ` D)"
     proof
       { assume "x \<in> \<Delta> \<A>"
         from p1 this obtain q a q' where
-         "x = (q, semIs a, q') \<and> (q, a, q') \<in> D" by blast
+         "x = (q, sem a, q') \<and> (q, a, q') \<in> D" by blast
         from p1 this
-        show "x \<in> (\<lambda>(q, a, q'). (q, semIs a, q')) ` D"
+        show "x \<in> (\<lambda>(q, a, q'). (q, sem a, q')) ` D"
           by force 
       }
       {
-        assume "x \<in> (\<lambda>(q, a, q'). (q, semIs a, q')) ` D"
+        assume "x \<in> (\<lambda>(q, a, q'). (q, sem a, q')) ` D"
         from p1 this show "x \<in> \<Delta> \<A>"
           by fastforce 
       }
@@ -513,19 +522,19 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
     from p1 p2 p3 p4 p5 p6 p7 p8 p9  finiteA this have 
           cc1: "
                                  (\<And> DS. (\<forall>q. \<forall>x\<in>DS q.
-  case x of (a, q') \<Rightarrow> canonicalIs a) \<longrightarrow>
+  case x of (a, q') \<Rightarrow> canonical_op a) \<longrightarrow>
                 set I = \<I> \<A> \<longrightarrow>
                   (\<forall>FP. (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow> FP q = (q \<in> \<F> \<A>)) \<longrightarrow>
                     (\<forall>D_it.
    (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
         set_iterator (D_it q) (DS q) \<and>
-        {(a, q'). (q, a, q') \<in> \<Delta> \<A>} = (\<lambda>x. case x of (a, x) \<Rightarrow> (semIs a, x)) ` DS q) \<longrightarrow>
+        {(a, q'). (q, a, q') \<in> \<Delta> \<A>} = (\<lambda>x. case x of (a, x) \<Rightarrow> (sem a, x)) ` DS q) \<longrightarrow>
    invar (construct f I FP D_it) \<and>
    NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
     (NFA_remove_unreachable_states \<A>))))"
     by simp
   from p10 
-  have cc2: "\<forall>q. \<forall>x\<in>{(a, q'). (q, a, q') \<in> D}. case x of (a, q') \<Rightarrow> canonicalIs a"
+  have cc2: "\<forall>q. \<forall>x\<in>{(a, q'). (q, a, q') \<in> D}. case x of (a, q') \<Rightarrow> canonical_op a"
     by force
 
   from cc2 cc1[of "\<lambda> q. {(a, q'). (q, a, q') \<in> D}"]
@@ -536,7 +545,7 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
    (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
         set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D} \<and>
         {(a, q'). (q, a, q') \<in> \<Delta> \<A>} = (\<lambda>x. case x of (a, x) \<Rightarrow> 
-          (semIs a, x)) ` {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
+          (sem a, x)) ` {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
    invar (construct f I FP D_it) \<and>
    NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
     (NFA_remove_unreachable_states \<A>)))"
@@ -548,7 +557,7 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
    (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
         set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D} \<and>
         {(a, q'). (q, a, q') \<in> \<Delta> \<A>} = (\<lambda>x. case x of (a, x) \<Rightarrow> 
-          (semIs a, x)) ` {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
+          (sem a, x)) ` {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
    invar (construct f I FP D_it) \<and>
    NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
     (NFA_remove_unreachable_states \<A>)))"
@@ -559,7 +568,7 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
    (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
         set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D} \<and>
         {(a, q'). (q, a, q') \<in> \<Delta> \<A>} = (\<lambda>x. case x of (a, x) \<Rightarrow> 
-          (semIs a, x)) ` {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
+          (sem a, x)) ` {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
    invar (construct f I FP D_it) \<and>
    NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
     (NFA_remove_unreachable_states \<A>))"
@@ -569,7 +578,7 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
    (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
         set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D} \<and>
         {(a, q'). (q, a, q') \<in> \<Delta> \<A>} = (\<lambda>x. case x of (a, x) \<Rightarrow> 
-          (semIs a, x)) ` {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
+          (sem a, x)) ` {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
    invar (construct f I FP D_it) \<and>
    NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
     (NFA_remove_unreachable_states \<A>)"
@@ -578,14 +587,14 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
       have "(\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
        set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D} \<and>
        {(a, q'). (q, a, q') \<in> \<Delta> \<A>} =
-       (\<lambda>x. case x of (a, x) \<Rightarrow> (semIs a, x)) ` {(a, q'). (q, a, q') \<in> D})"
+       (\<lambda>x. case x of (a, x) \<Rightarrow> (sem a, x)) ` {(a, q'). (q, a, q') \<in> D})"
         apply (rule_tac allI)
       proof 
         fix q
         assume c1: "q \<in> \<Q> \<A>"
         from this show "set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D} \<and>
          {(a, q'). (q, a, q') \<in> \<Delta> \<A>} =
-         (\<lambda>x. case x of (a, x) \<Rightarrow> (semIs a, x)) ` {(a, q'). (q, a, q') \<in> D}"
+         (\<lambda>x. case x of (a, x) \<Rightarrow> (sem a, x)) ` {(a, q'). (q, a, q') \<in> D}"
           apply auto
           using p7 p9 c1 apply simp
         proof -
@@ -595,11 +604,11 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
                    p2: "(q, a, b) \<in> \<Delta> \<A>"
             from p7 this 
             obtain a' where
-            "(q, a', b) \<in> D \<and> a = semIs a'"
+            "(q, a', b) \<in> D \<and> a = sem a'"
               by blast
             from this p1 p2 p7
             show "(a, b) \<in> (\<lambda>x. case x of (a, x) \<Rightarrow> 
-                    (semIs a, x)) ` {(a, q'). (q, a, q') \<in> D}"
+                    (sem a, x)) ` {(a, q'). (q, a, q') \<in> D}"
               by auto
           }
           {
@@ -607,7 +616,7 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
             assume p1: "q \<in> \<Q> \<A>" and
                    p2: "(q, aa, ba) \<in> D"
             from this p7 
-            show "(q, semIs aa, ba)  \<in> \<Delta> \<A>"
+            show "(q, sem aa, ba)  \<in> \<Delta> \<A>"
               by blast
           }
         qed qed
@@ -619,8 +628,8 @@ q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow> set_iterator (D_it 
 qed qed qed
 
   lemma nfa_construct_no_enc_prod_default :
-    "nfa_construct_prod \<alpha> invar  id (\<lambda>_. True) construct \<Longrightarrow>
-     nfa_construct_no_enc_prod \<alpha> invar  construct"
+    "nfa_construct_prod \<alpha> invar  id (\<lambda>_. True) construct sem canonical_op \<Longrightarrow>
+     nfa_construct_no_enc_prod \<alpha> invar  construct sem canonical_op"
     apply (simp add: nfa_construct_prod_def 
                   nfa_construct_no_enc_prod_def 
                   nfa_construct_no_enc_prod_axioms_def
@@ -635,7 +644,7 @@ qed qed qed
                                (\<forall>D. finite D \<longrightarrow> 
                                            finite (NFA_set_interval.NFA_rec.\<Delta> \<A>) \<longrightarrow>
                                            (\<forall>DS.
-  (\<forall>q a b. (\<exists>q'. ((a, b), q') \<in> DS q) \<longrightarrow> canonicalIs a \<and> canonicalIs b) \<longrightarrow>
+  (\<forall>q a b. (\<exists>q'. ((a, b), q') \<in> DS q) \<longrightarrow> canonical_op a \<and> canonical_op b) \<longrightarrow>
   {(q, a \<inter> b, q') |q a b q'. (q, (a, b), q') \<in> D} = NFA_set_interval.NFA_rec.\<Delta> \<A> \<longrightarrow>
   set I = NFA_set_interval.NFA_rec.\<I> \<A> \<longrightarrow>
   (\<forall>FP. (\<forall>q. q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow>
@@ -644,7 +653,7 @@ qed qed qed
             (\<forall>q. q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow>
                  set_iterator (D_it q) (DS q) \<and>
                  {(a, q'). (q, a, q') \<in> D} =
-                 (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) ` DS q) \<longrightarrow>
+                 (\<lambda>x. case x of (a, x) \<Rightarrow> ((sem (fst a), sem (snd a)), x)) ` DS q) \<longrightarrow>
             invar (construct ff I FP D_it) \<and>
             NFA_set_interval.NFA_isomorphic_wf (\<alpha> (construct ff I FP D_it))
              (NFA_set_interval.NFA_remove_unreachable_states \<A>)))))))))"
@@ -655,8 +664,8 @@ qed qed qed
                    (\<forall>D. finite D \<longrightarrow>
                                (\<forall>q a b.
                                    (\<exists>q'. (q, (a, b), q') \<in> D) \<longrightarrow>
-                                   canonicalIs a \<and> canonicalIs b) \<longrightarrow>
-                               {(q, semIs a \<inter> semIs b, q') |q a b q'.
+                                   canonical_op a \<and> canonical_op b) \<longrightarrow>
+                               {(q, sem a \<inter> sem b, q') |q a b q'.
                                 (q, (a, b), q') \<in> D} =
                                NFA_set_interval.NFA_rec.\<Delta> \<A> \<longrightarrow>
                                (\<forall>FP. (\<forall>q. q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow>
@@ -677,8 +686,9 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
        distinct I \<Longrightarrow>
        set I = NFA_set_interval.NFA_rec.\<I> \<A> \<Longrightarrow>
        finite D \<Longrightarrow>
-       \<forall>q a b. (\<exists>q'. (q, (a, b), q') \<in> D) \<longrightarrow> canonicalIs a \<and> canonicalIs b \<Longrightarrow>
-       {(q, semIs a \<inter> semIs b, q') |q a b q'. (q, (a, b), q') \<in> D} =
+       \<forall>q a b. (\<exists>q'. (q, (a, b), q') \<in> D) \<longrightarrow> 
+        canonical_op a \<and> canonical_op b \<Longrightarrow>
+       {(q, sem a \<inter> sem b, q') |q a b q'. (q, (a, b), q') \<in> D} =
        NFA_set_interval.NFA_rec.\<Delta> \<A> \<Longrightarrow>
        \<forall>q. q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow>
            FP q = (q \<in> NFA_set_interval.NFA_rec.\<F> \<A>) \<Longrightarrow>
@@ -693,8 +703,9 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
              p4: "distinct I" and
              p5: "set I = \<I> \<A>" and
              p6: "finite D" and 
-             p11: "\<forall>q a b. (\<exists>q'. (q, (a, b), q') \<in> D) \<longrightarrow> canonicalIs a \<and> canonicalIs b" and
-             p7: "{(q, semIs a \<inter> semIs b, q') |q a b q'. (q, (a, b), q') \<in> D} =
+             p11: "\<forall>q a b. (\<exists>q'. (q, (a, b), q') \<in> D) \<longrightarrow> 
+                    canonical_op a \<and> canonical_op b" and
+             p7: "{(q, sem a \<inter> sem b, q') |q a b q'. (q, (a, b), q') \<in> D} =
     NFA_set_interval.NFA_rec.\<Delta> \<A>" and
              p8: "\<forall>q. q \<in> NFA_set_interval.NFA_rec.\<Q> \<A> \<longrightarrow>
         FP q = (q \<in> NFA_set_interval.NFA_rec.\<F> \<A>)" and
@@ -706,7 +717,7 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
                                (\<forall>D. finite D \<longrightarrow>
                                     finite (\<Delta> \<A>) \<longrightarrow>
                                     (\<forall>DS. (\<forall>q a b.
-   (\<exists>q'. ((a, b), q') \<in> DS q) \<longrightarrow> canonicalIs a \<and> canonicalIs b) \<longrightarrow>
+   (\<exists>q'. ((a, b), q') \<in> DS q) \<longrightarrow> canonical_op a \<and> canonical_op b) \<longrightarrow>
                                           {(q, a \<inter> b, q') |q a b q'.
                                            (q, (a, b), q') \<in> D} =
                                           \<Delta> \<A> \<longrightarrow>
@@ -717,7 +728,7 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
       (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
            set_iterator (D_it q) (DS q) \<and>
            {(a, q'). (q, a, q') \<in> D} =
-           (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) ` DS q) \<longrightarrow>
+           (\<lambda>x. case x of (a, x) \<Rightarrow> ((sem (fst a), sem (snd a)), x)) ` DS q) \<longrightarrow>
       invar (construct ff I FP D_it) \<and>
       NFA_isomorphic_wf (\<alpha> (construct ff I FP D_it))
        (NFA_remove_unreachable_states \<A>))))))))"
@@ -729,7 +740,7 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
                                     finite (\<Delta> \<A>) \<longrightarrow>
                                     (\<forall>DS. (\<forall>q a b.
                                 (\<exists>q'. ((a, b), q') \<in> DS q) \<longrightarrow>
-                                canonicalIs a \<and> canonicalIs b) \<longrightarrow>
+                                canonical_op a \<and> canonical_op b) \<longrightarrow>
                                           {(q, a \<inter> b, q') |q a b q'.
                                            (q, (a, b), q') \<in> D} =
                                           \<Delta> \<A> \<longrightarrow>
@@ -740,7 +751,7 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
       (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
            set_iterator (D_it q) (DS q) \<and>
            {(a, q'). (q, a, q') \<in> D} =
-           (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) ` DS q) \<longrightarrow>
+           (\<lambda>x. case x of (a, x) \<Rightarrow> ((sem (fst a), sem (snd a)), x)) ` DS q) \<longrightarrow>
       invar (construct ff I FP D_it) \<and>
       NFA_isomorphic_wf (\<alpha> (construct ff I FP D_it))
        (NFA_remove_unreachable_states \<A>)))))))"
@@ -752,7 +763,7 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
                                     finite (\<Delta> \<A>) \<longrightarrow>
                                     (\<forall>DS. (\<forall>q a b.
                                 (\<exists>q'. ((a, b), q') \<in> DS q) \<longrightarrow>
-                                canonicalIs a \<and> canonicalIs b) \<longrightarrow>
+                                canonical_op a \<and> canonical_op b) \<longrightarrow>
                                           {(q, a \<inter> b, q') |q a b q'.
                                            (q, (a, b), q') \<in> D} =
                                           \<Delta> \<A> \<longrightarrow>
@@ -763,7 +774,7 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
       (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
            set_iterator (D_it q) (DS q) \<and>
            {(a, q'). (q, a, q') \<in> D} =
-           (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) ` DS q) \<longrightarrow>
+           (\<lambda>x. case x of (a, x) \<Rightarrow> ((sem (fst a), sem (snd a)), x)) ` DS q) \<longrightarrow>
       invar (construct f  I FP D_it) \<and>
       NFA_isomorphic_wf (\<alpha> (construct f  I FP D_it))
        (NFA_remove_unreachable_states \<A>))))))"
@@ -774,7 +785,7 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
                                     finite (\<Delta> \<A>) \<longrightarrow>
                                     (\<forall>DS. (\<forall>q a b.
                                 (\<exists>q'. ((a, b), q') \<in> DS q) \<longrightarrow>
-                                canonicalIs a \<and> canonicalIs b) \<longrightarrow>
+                                canonical_op a \<and> canonical_op b) \<longrightarrow>
                                           {(q, a \<inter> b, q') |q a b q'.
                                            (q, (a, b), q') \<in> D} =
                                           \<Delta> \<A> \<longrightarrow>
@@ -785,32 +796,32 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
       (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
            set_iterator (D_it q) (DS q) \<and>
            {(a, q'). (q, a, q') \<in> D} =
-           (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) ` DS q) \<longrightarrow>
+           (\<lambda>x. case x of (a, x) \<Rightarrow> ((sem (fst a), sem (snd a)), x)) ` DS q) \<longrightarrow>
       invar (construct f I FP D_it) \<and>
       NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
        (NFA_remove_unreachable_states \<A>)))))"
      by simp
 
-   let ?D = "{(q, (semIs a, semIs b), q') | q a b q'. (q, (a, b), q') \<in> D}"
+   let ?D = "{(q, (sem a, sem b), q') | q a b q'. (q, (a, b), q') \<in> D}"
    have finite_D': "finite ?D"
      apply (subgoal_tac "
-      (\<lambda> (q, (a, b), q'). (q, (semIs a, semIs b), q')) `  D =
-      {(q, (semIs a, semIs b), q') |q a b q'. (q, (a, b), q') \<in> D}")
-     using finite_imageI[OF p6, of "\<lambda> (q, (a, b), q'). (q, (semIs a, semIs b), q')"]
+      (\<lambda> (q, (a, b), q'). (q, (sem a, sem b), q')) `  D =
+      {(q, (sem a, sem b), q') |q a b q'. (q, (a, b), q') \<in> D}")
+     using finite_imageI[OF p6, of "\<lambda> (q, (a, b), q'). (q, (sem a, sem b), q')"]
       apply simp
       apply (simp add: set_eq_iff)
      apply auto
    proof -
      fix a aa b ba ab bb
-     assume pr1: "\<forall>x. (x \<in> aa) = (x \<in> semIs ab)" and
-            pr2: "\<forall>x. (x \<in> b) = (x \<in> semIs bb)" and
+     assume pr1: "\<forall>x. (x \<in> aa) = (x \<in> sem ab)" and
+            pr2: "\<forall>x. (x \<in> b) = (x \<in> sem bb)" and
             pr3: "(a, (ab, bb), ba) \<in> D" 
-     from pr1 have cr1: "aa = semIs ab" by auto
-     from pr2 have cr2: "b = semIs bb" by auto
+     from pr1 have cr1: "aa = sem ab" by auto
+     from pr2 have cr2: "b = sem bb" by auto
      from cr1 cr2 pr3 show "(a, (aa, b), ba)
        \<in> (\<lambda>x. case x of
                (q, xa, xb) \<Rightarrow>
-                 (case xa of (a, b) \<Rightarrow> \<lambda>q'. (q, (semIs a, semIs b), q')) xb) `
+                 (case xa of (a, b) \<Rightarrow> \<lambda>q'. (q, (sem a, sem b), q')) xb) `
           D"  
        apply (simp add: if_splits)
        by force
@@ -820,7 +831,7 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
                                     finite (\<Delta> \<A>) \<longrightarrow>
                                     (\<forall>DS. (\<forall>q a b.
                                 (\<exists>q'. ((a, b), q') \<in> DS q) \<longrightarrow>
-                                canonicalIs a \<and> canonicalIs b) \<longrightarrow>
+                                canonical_op a \<and> canonical_op b) \<longrightarrow>
                                           {(q, a \<inter> b, q') |q a b q'.
                                            (q, (a, b), q') \<in> ?D} =
                                           \<Delta> \<A> \<longrightarrow>
@@ -831,17 +842,17 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
       (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
            set_iterator (D_it q) (DS q) \<and>
            {(a, q'). (q, a, q') \<in> ?D} =
-           (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) ` DS q) \<longrightarrow>
+           (\<lambda>x. case x of (a, x) \<Rightarrow> ((sem (fst a), sem (snd a)), x)) ` DS q) \<longrightarrow>
       invar (construct f I FP D_it) \<and>
       NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
        (NFA_remove_unreachable_states \<A>))))"
        by simp
   
   from p6 p7 have finiteA: "finite (\<Delta> \<A>)"
-    apply (subgoal_tac "{(q, semIs a \<inter> semIs b, q') |q a b q'.
+    apply (subgoal_tac "{(q, sem a \<inter> sem b, q') |q a b q'.
      (q, (a, b), q') \<in> D} = 
-                        (\<lambda> (q, (a , b), q'). (q, (semIs a) \<inter> (semIs b), q')) ` D")
-    using finite_imageI[OF p6, of "\<lambda> (q, (a , b), q'). (q, (semIs a) \<inter> (semIs b), q')"]
+                        (\<lambda> (q, (a , b), q'). (q, (sem a) \<inter> (sem b), q')) ` D")
+    using finite_imageI[OF p6, of "\<lambda> (q, (a , b), q'). (q, (sem a) \<inter> (sem b), q')"]
     apply simp
     apply (simp add: set_eq_iff)
     apply auto
@@ -853,14 +864,14 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
     from pt1 p7
     show " (a, aa, b)
        \<in> (\<lambda>x. case x of
-               (q, xa, xb) \<Rightarrow> (case xa of (a, b) \<Rightarrow> \<lambda>q'. (q, semIs a \<inter> semIs b, q')) xb) `
+               (q, xa, xb) \<Rightarrow> (case xa of (a, b) \<Rightarrow> \<lambda>q'. (q, sem a \<inter> sem b, q')) xb) `
           D"
       using image_iff by fastforce
   qed
     
   from p1 p2 p3 p4 p5 p6 p7 p8 p9 finiteA this pz1 have "
   (\<forall>DS. (\<forall>q a b.
-   (\<exists>q'. ((a, b), q') \<in> DS q) \<longrightarrow> canonicalIs a \<and> canonicalIs b) \<longrightarrow>
+   (\<exists>q'. ((a, b), q') \<in> DS q) \<longrightarrow> canonical_op a \<and> canonical_op b) \<longrightarrow>
                                           {(q, a \<inter> b, q') |q a b q'.
                                            (q, (a, b), q') \<in> ?D} =
                                           \<Delta> \<A> \<longrightarrow>
@@ -871,14 +882,14 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
       (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
            set_iterator (D_it q) (DS q) \<and>
            {(a, q'). (q, a, q') \<in> ?D} =
-           (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) ` DS q) \<longrightarrow>
+           (\<lambda>x. case x of (a, x) \<Rightarrow> ((sem (fst a), sem (snd a)), x)) ` DS q) \<longrightarrow>
       invar (construct f I FP D_it) \<and>
       NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
        (NFA_remove_unreachable_states \<A>))))"
     by simp
 
   from this have yu1:"(\<And>DS. (\<forall>q a b.
-   (\<exists>q'. ((a, b), q') \<in> DS q) \<longrightarrow> canonicalIs a \<and> canonicalIs b) \<longrightarrow>
+   (\<exists>q'. ((a, b), q') \<in> DS q) \<longrightarrow> canonical_op a \<and> canonical_op b) \<longrightarrow>
                                           {(q, a \<inter> b, q') |q a b q'.
                                            (q, (a, b), q') \<in> ?D} =
                                           \<Delta> \<A> \<longrightarrow>
@@ -889,7 +900,7 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
       (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
            set_iterator (D_it q) (DS q) \<and>
            {(a, q'). (q, a, q') \<in> ?D} =
-           (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) 
+           (\<lambda>x. case x of (a, x) \<Rightarrow> ((sem (fst a), sem (snd a)), x)) 
             ` DS q) \<longrightarrow>
       invar (construct f I FP D_it) \<and>
       NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
@@ -898,7 +909,7 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
   
   from p1 p2 p3 p4 p5 p6 p7 p8 p9 p11 yu1[of "\<lambda> q.{(a, q'). (q, a, q') \<in> D}"]
   have "(\<forall>q a b.
-  (\<exists>q'. ((a, b), q') \<in> {(a, q'). (q, a, q') \<in> D}) \<longrightarrow> canonicalIs a \<and> canonicalIs b) \<longrightarrow>
+  (\<exists>q'. ((a, b), q') \<in> {(a, q'). (q, a, q') \<in> D}) \<longrightarrow> canonical_op a \<and> canonical_op b) \<longrightarrow>
                                           {(q, a \<inter> b, q') |q a b q'.
                                            (q, (a, b), q') \<in> ?D} =
                                           \<Delta> \<A> \<longrightarrow>
@@ -909,7 +920,7 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
       (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
            set_iterator (D_it q) ({(a, q'). (q, a, q') \<in> D}) \<and>
            {(a, q'). (q, a, q') \<in> ?D} =
-           (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) 
+           (\<lambda>x. case x of (a, x) \<Rightarrow> ((sem (fst a), sem (snd a)), x)) 
             ` {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
       invar (construct f I FP D_it) \<and>
       NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
@@ -927,14 +938,14 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
       (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
            set_iterator (D_it q) ({(a, q'). (q, a, q') \<in> D}) \<and>
            {(a, q'). (q, a, q') \<in> ?D} =
-           (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) 
+           (\<lambda>x. case x of (a, x) \<Rightarrow> ((sem (fst a), sem (snd a)), x)) 
             ` {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
       invar (construct f I FP D_it) \<and>
       NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
        (NFA_remove_unreachable_states \<A>)))"
     by simp
   from  p7 have "{(q, a \<inter> b, q') |q a b q'.
-     (q, (a, b), q') \<in> {(q, (semIs a, semIs b), q') |q a b q'. (q, (a, b), q') \<in> D}} =
+     (q, (a, b), q') \<in> {(q, (sem a, sem b), q') |q a b q'. (q, (a, b), q') \<in> D}} =
     \<Delta> \<A>"
     apply simp
     apply auto
@@ -942,14 +953,14 @@ set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
   proof -
   fix a :: 'd and aa :: "'c set" and b :: 'd
   assume a1: "(a, aa, b) \<in> \<Delta> \<A>"
-  assume "{(q, semIs a \<inter> semIs b, q') |q a b q'. (q, (a, b), q') \<in> D} =
+  assume "{(q, sem a \<inter> sem b, q') |q a b q'. (q, (a, b), q') \<in> D} =
        NFA_set_interval.NFA_rec.\<Delta> \<A>"
-  then have "\<exists>d a1 b1 da. (a, aa, b) = (d, semIs a1 \<inter> semIs b1, da) \<and> 
+  then have "\<exists>d a1 b1 da. (a, aa, b) = (d, sem a1 \<inter> sem b1, da) \<and> 
                               (d, (a1, b1), da) \<in> D"
     using a1 by blast
   then show "\<exists>ab ba.
           aa = ab \<inter> ba \<and>
-          (\<exists>aa. ab = semIs aa \<and> (\<exists>bb. ba = semIs bb \<and> (a, (aa, bb), b) \<in> D))"
+          (\<exists>aa. ab = sem aa \<and> (\<exists>bb. ba = sem bb \<and> (a, (aa, bb), b) \<in> D))"
     by (metis (no_types) Pair_inject)
 qed
  from p1 p2 p3 p4 p5 p6 p7 p8 p9 p11 this ck1 have "
@@ -959,7 +970,7 @@ qed
       (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
            set_iterator (D_it q) ({(a, q'). (q, a, q') \<in> D}) \<and>
            {(a, q'). (q, a, q') \<in> ?D} =
-           (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) 
+           (\<lambda>x. case x of (a, x) \<Rightarrow> ((sem (fst a), sem (snd a)), x)) 
             ` {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
       invar (construct f I FP D_it) \<and>
       NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
@@ -973,7 +984,7 @@ from p1 p2 p3 p4 p5 p6 p7 p8 p9 p11 this have "
       (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
            set_iterator (D_it q) ({(a, q'). (q, a, q') \<in> D}) \<and>
            {(a, q'). (q, a, q') \<in> ?D} =
-           (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) 
+           (\<lambda>x. case x of (a, x) \<Rightarrow> ((sem (fst a), sem (snd a)), x)) 
             ` {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
       invar (construct f I FP D_it) \<and>
       NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
@@ -985,7 +996,7 @@ from p1 p2 p3 p4 p5 p6 p7 p8 p9 p11 this have "
       (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
            set_iterator (D_it q) ({(a, q'). (q, a, q') \<in> D}) \<and>
            {(a, q'). (q, a, q') \<in> ?D} =
-           (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) 
+           (\<lambda>x. case x of (a, x) \<Rightarrow> ((sem (fst a), sem (snd a)), x)) 
             ` {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
       invar (construct f I FP D_it) \<and>
       NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
@@ -996,7 +1007,7 @@ from p1 p2 p3 p4 p5 p6 p7 p8 p9 p11 this have suc1: "
       (\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
            set_iterator (D_it q) ({(a, q'). (q, a, q') \<in> D}) \<and>
            {(a, q'). (q, a, q') \<in> ?D} =
-           (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) 
+           (\<lambda>x. case x of (a, x) \<Rightarrow> ((sem (fst a), sem (snd a)), x)) 
             ` {(a, q'). (q, a, q') \<in> D}) \<longrightarrow>
       invar (construct f I FP D_it) \<and>
       NFA_isomorphic_wf (\<alpha> (construct f I FP D_it))
@@ -1007,8 +1018,8 @@ from p2 p3 p4 p5 p6 p7 p8 p9 p11
   have "(\<forall>q. q \<in> \<Q> \<A> \<longrightarrow>
          set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D} \<and>
          {(a, q').
-          (q, a, q') \<in> {(q, (semIs a, semIs b), q') |q a b q'. (q, (a, b), q') \<in> D}} =
-         (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) `
+          (q, a, q') \<in> {(q, (sem a, sem b), q') |q a b q'. (q, (a, b), q') \<in> D}} =
+         (\<lambda>x. case x of (a, x) \<Rightarrow> ((sem (fst a), sem (snd a)), x)) `
          {(a, q'). (q, a, q') \<in> D})"
     apply (rule_tac allI impI)+
   proof -
@@ -1016,8 +1027,8 @@ from p2 p3 p4 p5 p6 p7 p8 p9 p11
     assume pi1: "\<forall>q. set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D}"
     from this show "set_iterator (D_it q) {(a, q'). (q, a, q') \<in> D} \<and>
          {(a, q').
-          (q, a, q') \<in> {(q, (semIs a, semIs b), q') |q a b q'. (q, (a, b), q') \<in> D}} =
-         (\<lambda>x. case x of (a, x) \<Rightarrow> ((semIs (fst a), semIs (snd a)), x)) `
+          (q, a, q') \<in> {(q, (sem a, sem b), q') |q a b q'. (q, (a, b), q') \<in> D}} =
+         (\<lambda>x. case x of (a, x) \<Rightarrow> ((sem (fst a), sem (snd a)), x)) `
          {(a, q'). (q, a, q') \<in> D}"
       apply simp
       by force
@@ -1656,12 +1667,12 @@ type_synonym ('q,'a,'nfa_e) nfa_ep_\<alpha> = "'nfa_e \<Rightarrow> ('q, 'a) NFA
 
   subsection \<open>  Record Based Interface \<close>
 
-  record ('q,'a,'nfa) nfa_ops =
+  record ('q,'a, 'b, 'nfa) nfa_ops =
     nfa_op_\<alpha> :: "('q::{NFA_states},'a,'nfa) nfa_\<alpha>"
     nfa_op_invar :: "'nfa \<Rightarrow> bool"
-    nfa_op_interval_wf :: "('q list \<times> ('q \<times> ('a \<times> 'a) list \<times> 'q) list 
+    nfa_op_ba_wf :: "('q list \<times> ('q \<times> 'b \<times> 'q) list 
       \<times> 'q list \<times> 'q list) \<Rightarrow> bool"
-    nfa_op_nfa_from_list_interval :: "('q,'a::linorder,'nfa) nfa_from_list_interval"
+    nfa_op_nfa_from_list_ba :: "('q,'b,'nfa) nfa_from_list_ba"
     nfa_op_bool_comb :: "(bool \<Rightarrow> bool \<Rightarrow> bool) \<Rightarrow> 'nfa \<Rightarrow> 'nfa \<Rightarrow> 'nfa"
     nfa_op_concate :: "'nfa \<Rightarrow> 'nfa \<Rightarrow> 'nfa"
  (*   nfa_op_determinise :: "'nfa \<Rightarrow> 'nfa"
@@ -1687,13 +1698,13 @@ type_synonym ('q,'a,'nfa_e) nfa_ep_\<alpha> = "'nfa_e \<Rightarrow> ('q, 'a) NFA
 *)
 
   locale StdNFADefs =
-    fixes ops :: "('q::{NFA_states},'a ::linorder ,'nfa) nfa_ops"
+    fixes ops :: "('q::{NFA_states},'a ::linorder, 'b, 'nfa) nfa_ops"
   begin
     abbreviation \<alpha> where "\<alpha> \<equiv> nfa_op_\<alpha> ops"
     abbreviation invar where "invar \<equiv> nfa_op_invar ops"
-    abbreviation nfa_interval_wf where "nfa_interval_wf \<equiv> nfa_op_interval_wf ops"
+    abbreviation nfa_ba_wf where "nfa_ba_wf \<equiv> nfa_op_ba_wf ops"
 (*  abbreviation nfa_from_list where "nfa_from_list \<equiv> nfa_op_nfa_from_list ops" *)
-    abbreviation nfa_from_list_interval where "nfa_from_list_interval \<equiv> nfa_op_nfa_from_list_interval ops"
+    abbreviation nfa_from_list_ba where "nfa_from_list_ba \<equiv> nfa_op_nfa_from_list_ba ops"
 (*    abbreviation dfa_from_list where "dfa_from_list \<equiv> nfa_op_dfa_from_list ops"
     abbreviation to_list where "to_list \<equiv> nfa_op_to_list ops"
     abbreviation accept where "accept \<equiv> nfa_op_accept ops"
@@ -1721,7 +1732,7 @@ end
   locale StdNFA = StdNFADefs +
     nfa \<alpha> invar +
     (* nfa_from_list \<alpha> invar nfa_from_list + *)
-    nfa_from_list_interval \<alpha> invar  nfa_interval_wf nfa_from_list_interval 
+    nfa_from_list_ba  \<alpha> invar  nfa_ba_wf nfa_from_list_ba
 (*
     nfa_to_list \<alpha> invar to_list +
     nfa_stats \<alpha> invar states_no trans_no initial_no final_no +
@@ -1732,7 +1743,7 @@ end
     nfa_bool_comb_same \<alpha> invar bool_comb *)
   begin
   
-    lemmas correct = nfa_from_list_interval_correct (*to_list_correct
+    lemmas correct = nfa_from_list_ba_correct (*to_list_correct
                      stats_correct
                      accept_correct  rename_labels_correct
                      normalise_correct reverse_correct 
@@ -1741,7 +1752,7 @@ end
                      *)
 
     lemmas correct_isomorphic = 
-       nfa_from_list_interval_correct___isomorphic 
+       nfa_from_list_ba_correct___isomorphic 
        (*to_list_correct___isomorphic
        stats_correct___isomorphic
        accept_correct___isomorphic
