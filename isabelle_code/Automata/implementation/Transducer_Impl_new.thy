@@ -6,13 +6,14 @@ imports "../Transducer_new" DFAByLTS
 
 begin
 
-type_synonym 'a TlabelI = "('a \<times> 'a) list option \<times>  
-                                ('a option \<Rightarrow> ('a \<times> 'a) list option)"
+type_synonym ('a, 'b, 'c) TlabelI = "'b option \<times>  
+                                ('a option \<Rightarrow> 'c option)"
 
 
 
 locale transducer_code = automaton_by_lts_bool_algebra_defs
-  s_ops l_ops lt_ops d_ops +
+  s_ops l_ops lt_ops d_ops sem empty_op noempty_op 
+                   intersect_op diff_op elem_op canonical_op +
   s: StdSet s_ops (* Set operations on states *) +
   l: StdSet l_ops (* Set operations on labels *) +
   lt: StdSet lt_ops   (* Set operations on labels *) +
@@ -22,7 +23,11 @@ locale transducer_code = automaton_by_lts_bool_algebra_defs
   ddt: StdLTS ddt_ops "\<lambda> _ _. True" (* An LTS *) +
   ss: StdSet ss_ops (* Set operations on states *)  +
   ssd: StdSet ssd_ops (* Set operations on states *)  +
-  ssm: StdMap m_ops 
+  ssm: StdMap m_ops +
+  iv: bool_algebra sem empty_op noempty_op 
+                   intersect_op diff_op elem_op canonical_op +
+  ov: bool_algebra sem' empty_op' noempty_op' 
+                   intersect_op' diff_op' elem_op' canonical_op'
   for s_ops::"('q::{NFA_states},'q_set,_) set_ops_scheme"
   and ss_ops::"('q \<times> 'q,'qq_set,_) set_ops_scheme"
   and ssd_ops::"(('q \<times> 'q) \<times> ('q \<times> 'q),'qqqq_set,_) set_ops_scheme"
@@ -32,7 +37,21 @@ locale transducer_code = automaton_by_lts_bool_algebra_defs
   and m_ops :: "('q, 'q_set, 'qqset_m, 'more) map_ops_scheme"
   and ddt_ops::"('q \<times> 'q, 'b,'a,'ddt,_) lts_ops_scheme"
   and d_ops::"('q, 'b,'a,'d,_) lts_ops_scheme"
-  and dt_ops::"('q, 'b option \<times> 'b ,'a,'dt,_) lts_ops_scheme"
+  and dt_ops::"('q, 'b option \<times> 'i ,'a,'dt,_) lts_ops_scheme"
+  and sem :: "'b \<Rightarrow> 'a set"
+  and empty_op :: "'b \<Rightarrow> bool"
+  and noempty_op :: "'b \<Rightarrow> bool"
+  and intersect_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
+  and diff_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
+  and elem_op :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
+  and canonical_op :: "'b \<Rightarrow> bool"
+  and sem' :: "'c \<Rightarrow> 'ce set"
+  and empty_op' :: "'c \<Rightarrow> bool"
+  and noempty_op' :: "'c \<Rightarrow> bool"
+  and intersect_op' :: "'c \<Rightarrow> 'c \<Rightarrow> 'c"
+  and diff_op' :: "'c \<Rightarrow> 'c \<Rightarrow> 'c"
+  and elem_op' :: "'ce \<Rightarrow> 'c \<Rightarrow> bool"
+  and canonical_op' :: "'c \<Rightarrow> bool"
 
 begin
 
@@ -103,19 +122,19 @@ definition copy_tran'_imp where
     FOREACH {q. q \<in> s.\<alpha> S} 
               (\<lambda> s T. RETURN (ddt.add (q,s) \<alpha> (q',s) T)) (ddt.empty)"
 
-fun interval_to_set_prod :: "('q \<times>'q) \<times> ('a \<times> 'a) list \<times> ('q \<times> 'q) \<Rightarrow> 
+fun ba_to_set_prod :: "('q \<times>'q) \<times> 'b \<times> ('q \<times> 'q) \<Rightarrow> 
                         ('q \<times> 'q) \<times> 'a set \<times> ('q \<times> 'q)"  where
-    "interval_to_set_prod (q, s, q') = (q, semIs s, q')"
+    "ba_to_set_prod (q, s, q') = (q, sem s, q')"
 
 definition ddt\<alpha> where
-   "ddt\<alpha> = (\<lambda> S. interval_to_set_prod ` (ddt.\<alpha> S))"
+   "ddt\<alpha> = (\<lambda> S. ba_to_set_prod ` (ddt.\<alpha> S))"
 
 definition ddtinvar where
-   "ddtinvar = (\<lambda> S. ddt.invar S \<and> (\<forall> (q, \<alpha>, q') \<in> (ddt.\<alpha> S). canonicalIs \<alpha>))"
+   "ddtinvar = (\<lambda> S. ddt.invar S \<and> (\<forall> (q, \<alpha>, q') \<in> (ddt.\<alpha> S). canonical_op \<alpha>))"
 
 lemma copy_tran'_imp:
   assumes S_ok: "S' = s.\<alpha> S \<and> s.invar S"
-      and \<alpha>_ok: "\<alpha>' = semIs \<alpha> \<and> canonicalIs \<alpha>"
+      and \<alpha>_ok: "\<alpha>' = sem \<alpha> \<and> canonical_op \<alpha>"
   shows "copy_tran'_imp q \<alpha> q' S \<le> \<Down> (br ddt\<alpha> ddtinvar) 
    (copy_tran' q \<alpha>' q' S')"
   unfolding copy_tran'_imp_def copy_tran'_def
@@ -135,17 +154,18 @@ proof -
     fix x it \<sigma> x' it' \<sigma>'
     assume xin: "x \<in> it"
        and itin: "it \<subseteq> S'"
-       and pre1: "{((q, s), \<alpha>', q', s) |s. s \<in> S' \<and> s \<notin> it} = interval_to_set_prod ` ddt.\<alpha> \<sigma> \<and>
-       ddt.invar \<sigma> \<and> (\<forall>x\<in>ddt.\<alpha> \<sigma>. case x of (q, \<alpha>, q') \<Rightarrow> canonicalIs \<alpha>)"
-       and pre2: "\<sigma>' = interval_to_set_prod ` ddt.\<alpha> \<sigma>"
+       and pre1: "{((q, s), \<alpha>', q', s) |s. s \<in> S' \<and> s \<notin> it} = 
+                    ba_to_set_prod ` ddt.\<alpha> \<sigma> \<and>
+       ddt.invar \<sigma> \<and> (\<forall>x\<in>ddt.\<alpha> \<sigma>. case x of (q, \<alpha>, q') \<Rightarrow> canonical_op \<alpha>)"
+       and pre2: "\<sigma>' = ba_to_set_prod ` ddt.\<alpha> \<sigma>"
     from pre1
     have "ddt.\<alpha> (ddt.add (q, x) \<alpha> (q', x) \<sigma>) = 
                 {((q, x), \<alpha>, (q', x))} \<union> ddt.\<alpha> \<sigma>"
       using ddt.lts_add_correct(2) by auto
      
     from this
-    show "insert ((q, x), \<alpha>', q', x) (interval_to_set_prod ` ddt.\<alpha> \<sigma>) =
-          interval_to_set_prod ` ddt.\<alpha> (ddt.add (q, x) \<alpha> (q', x) \<sigma>)"
+    show "insert ((q, x), \<alpha>', q', x) (ba_to_set_prod ` ddt.\<alpha> \<sigma>) =
+          ba_to_set_prod ` ddt.\<alpha> (ddt.add (q, x) \<alpha> (q', x) \<sigma>)"
       apply simp
       using \<alpha>_ok
       by force  
@@ -154,12 +174,14 @@ proof -
       fix x it \<sigma> x' it' \<sigma>'
       assume xin: "x \<in> it"
          and itin: "it \<subseteq> S'"
-         and pre: "{((q, s), \<alpha>', q', s) |s. s \<in> S' \<and> s \<notin> it} = interval_to_set_prod ` ddt.\<alpha> \<sigma> \<and>
-                  ddt.invar \<sigma> \<and> (\<forall>x\<in>ddt.\<alpha> \<sigma>. case x of (q, \<alpha>, q') \<Rightarrow> canonicalIs \<alpha>)"
+         and pre: "{((q, s), \<alpha>', q', s) |s. s \<in> S' \<and> s \<notin> it} = 
+                  ba_to_set_prod ` ddt.\<alpha> \<sigma> \<and>
+                  ddt.invar \<sigma> \<and> (\<forall>x\<in>ddt.\<alpha> \<sigma>. case x of (q, \<alpha>, q') \<Rightarrow> 
+                  canonical_op \<alpha>)"
 
       show "ddt.invar (ddt.add (q, x) \<alpha> (q', x) \<sigma>) \<and>
                (\<forall>x\<in>ddt.\<alpha> (ddt.add (q, x) \<alpha> (q', x) \<sigma>).
-                     case x of (q, \<alpha>, q') \<Rightarrow> canonicalIs \<alpha>)"
+                     case x of (q, \<alpha>, q') \<Rightarrow> canonical_op \<alpha>)"
         apply (rule conjI)
         using pre 
         apply (simp add: pre ddt.lts_add_correct(1))
@@ -173,52 +195,64 @@ definition subtrans_comp_imp where
     "subtrans_comp_imp M q \<alpha> f q' F fe T D1 D2 =
      FOREACH
       {t. t \<in> d.\<alpha> T} (\<lambda> (q1, \<alpha>', q1') (D1, D2).
-      (if (nemptyIs (intersectIs \<alpha> \<alpha>')) then do {
-       D1 \<leftarrow> (if (F (M f) (intersectIs \<alpha> \<alpha>') \<noteq> None) 
+      (if (noempty_op (intersect_op \<alpha> \<alpha>')) then do {
+       D1 \<leftarrow> (if (F (M f) (intersect_op \<alpha> \<alpha>') \<noteq> None) 
                   then RETURN (ddt.add (q,q1)
-                       (the (F (M f) (intersectIs \<alpha> \<alpha>'))) (q',q1') D1)
+                       (the (F (M f) (intersect_op \<alpha> \<alpha>'))) (q',q1') D1)
                else RETURN D1);
-       D2 \<leftarrow> (if fe (M f) (intersectIs \<alpha> \<alpha>') then 
+       D2 \<leftarrow> (if fe (M f) (intersect_op \<alpha> \<alpha>') then 
                     RETURN (ssd.ins ((q,q1), (q',q1'))  D2) else RETURN D2);
        RETURN (D1, D2)
       }
       else (RETURN (D1, D2)))) (D1, D2)"
 
 definition Dddt\<alpha> where
-   "Dddt\<alpha> = (\<lambda> (D1,D2). (interval_to_set_prod ` (ddt.\<alpha> D1), ssd.\<alpha> D2))"
+   "Dddt\<alpha> = (\<lambda> (D1,D2). (ba_to_set_prod ` (ddt.\<alpha> D1), ssd.\<alpha> D2))"
 
 definition Dddtinvar where
    "Dddtinvar = (\<lambda> (D1, D2). ddt.invar D1 \<and> 
-                             (\<forall> (q, \<alpha>, q') \<in> (ddt.\<alpha> D1). canonicalIs \<alpha>) \<and>
+                             (\<forall> (q, \<alpha>, q') \<in> (ddt.\<alpha> D1). canonical_op \<alpha>) \<and>
                              ssd.invar D2)"
 
+lemma intersect_correct: "\<And> l1 l2. 
+    canonical_op l1 \<and> canonical_op l2 \<Longrightarrow>
+    sem (intersect_op l1 l2) = sem l1 \<inter> sem l2 \<and>
+    canonical_op (intersect_op l1 l2)"
+  using iv.intersect_intervals_sem
+  by simp
+
+lemma nempty_correct: "\<And> l. canonical_op l \<longrightarrow> noempty_op l = (sem l \<noteq> {})"
+  using iv.empty_interval_sem iv.noempty_intervals_sem by presburger
+
 lemma subtrans_comp_correct:
-  assumes T'_ok: "T' = interval_to_set ` (d.\<alpha> T)"
-      and T_ok: "\<forall> (q, \<alpha>, q') \<in> (d.\<alpha> T). canonicalIs \<alpha>"
+  assumes T'_ok: "T' = ba_to_set ` (d.\<alpha> T)"
+      and T_ok: "\<forall> (q, \<alpha>, q') \<in> (d.\<alpha> T). canonical_op \<alpha>"
       and DD_ok: "((D1, D2), D1', D2') \<in> br Dddt\<alpha> Dddtinvar"
-      and \<alpha>_ok: "canonicalIs \<alpha> \<and> \<alpha>' = semIs \<alpha>"
-      and F_ok: "\<forall> \<alpha> \<alpha>'. \<alpha>' = semIs \<alpha> \<longrightarrow> 
+      and \<alpha>_ok: "canonical_op \<alpha> \<and> \<alpha>' = sem \<alpha>"
+      and F_ok: "\<forall> \<alpha> \<alpha>'. \<alpha>' = sem \<alpha> \<longrightarrow> 
                        (F (M f) \<alpha> = None) \<longleftrightarrow> (F' (M' f') \<alpha>' = None)"
-      and F_ok'': "\<forall> \<alpha>. canonicalIs \<alpha> \<and> (F (M f) \<alpha> \<noteq> None) \<longrightarrow> 
-                                        canonicalIs (the (F (M f) \<alpha>))"
-      and F_ok': "\<forall> \<alpha> \<alpha>'. (\<alpha>' = semIs \<alpha> \<and> F (M f) \<alpha> \<noteq> None \<longrightarrow>
-                               semIs (the (F (M f) \<alpha>)) = the (F' (M' f') \<alpha>'))"
-      and fe_ok: "\<forall> \<alpha> \<alpha>'. \<alpha>' = semIs \<alpha> \<longrightarrow> fe (M f) \<alpha>  = fe' (M' f') \<alpha>'"
+      and F_ok'': "\<forall> \<alpha>. canonical_op \<alpha> \<and> (F (M f) \<alpha> \<noteq> None) \<longrightarrow> 
+                                        canonical_op (the (F (M f) \<alpha>))"
+      and F_ok': "\<forall> \<alpha> \<alpha>'. (\<alpha>' = sem \<alpha> \<and> F (M f) \<alpha> \<noteq> None \<longrightarrow>
+                               sem (the (F (M f) \<alpha>)) = the (F' (M' f') \<alpha>'))"
+      and fe_ok: "\<forall> \<alpha> \<alpha>'. \<alpha>' = sem \<alpha> \<longrightarrow> fe (M f) \<alpha>  = fe' (M' f') \<alpha>'"
   shows "subtrans_comp_imp M q \<alpha> f q' F fe T D1 D2 \<le> \<Down> (br Dddt\<alpha> Dddtinvar)
          (subtrans_comp M' q \<alpha>' f' q' F' fe' T' D1' D2')"
   unfolding subtrans_comp_imp_def subtrans_comp_def
   apply (refine_rcg)
-  apply (subgoal_tac "inj_on interval_to_set {t. t \<in> d.\<alpha> T}")
+  apply (subgoal_tac "inj_on ba_to_set {t. t \<in> d.\<alpha> T}")
   apply assumption
-  using T_ok inj_semIs
-  unfolding inj_on_def 
+  using T_ok iv.inj_semIs_aux
+  unfolding inj_on_def
   apply simp
   apply fastforce
   using T'_ok apply force
   using DD_ok
   apply simp
-  using \<alpha>_ok intersectIs_correct nemptyIs_correct
-  apply (smt Pair_inject T_ok interval_to_set.simps mem_Collect_eq old.prod.case subset_eq)
+  using \<alpha>_ok intersect_correct nempty_correct
+  
+  apply (smt Pair_inject T_ok ba_to_set.simps 
+        mem_Collect_eq old.prod.case subset_eq)
   using \<alpha>_ok intersectIs_correct nemptyIs_correct F_ok
   apply (smt Pair_inject T_ok interval_to_set.simps mem_Collect_eq old.prod.case subset_eq)
   apply (subgoal_tac "(ddt.add (q, x1c) (the (F (M f) (intersectIs \<alpha> x1d))) (q', x2d) x1e,
