@@ -1,7 +1,9 @@
 
-theory Interval
+section \<open> "Implementing Interval" \<close>
 
-imports Main
+theory Interval_imp
+
+imports Main 
 
 begin
 
@@ -1709,7 +1711,7 @@ lemma intervals_imp_instance :
   using diffIs_correct[OF f1_cons f2_cons]
   apply blast
   using elemIs_correct
-  by auto
+  by auto 
 
 
 end

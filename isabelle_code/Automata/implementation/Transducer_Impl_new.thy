@@ -2,7 +2,7 @@
 theory Transducer_Impl_new
 
 imports "../Transducer_new" DFAByLTS 
-        RBT_LTSImpl RBT_NFAImpl interval
+        RBT_LTSImpl RBT_NFAImpl Interval_imp
 
 begin
 
@@ -35,21 +35,21 @@ locale transducer_code = automaton_by_lts_bool_algebra_defs
   and lt_ops::"('b, 'ai_set ,_) set_ops_scheme"
   and llt_ops::"('c, 'ac_set ,_) set_ops_scheme"
   and m_ops :: "('q, 'q_set, 'qqset_m, 'more) map_ops_scheme"
-  and ddt_ops::"('q \<times> 'q, 'c,'ce,'ddt,_) lts_ops_scheme"
+  and ddt_ops::"('q \<times> 'q, 'c,'ce::ord ,'ddt,_) lts_ops_scheme"
   and d_ops::"('q, 'b,'a,'d,_) lts_ops_scheme"
   and dt_ops::"('q, 'b option \<times> 'i ,'a,'dt,_) lts_ops_scheme"
   and sem :: "'b \<Rightarrow> 'a set"
   and empty_op :: "'b \<Rightarrow> bool"
   and noempty_op :: "'b \<Rightarrow> bool"
   and intersect_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
-  and diff_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
+  and diff_op :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'b"
   and elem_op :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
   and canonical_op :: "'b \<Rightarrow> bool"
   and sem' :: "'c \<Rightarrow> 'ce set"
   and empty_op' :: "'c \<Rightarrow> bool"
   and noempty_op' :: "'c \<Rightarrow> bool"
   and intersect_op' :: "'c \<Rightarrow> 'c \<Rightarrow> 'c"
-  and diff_op' :: "'c \<Rightarrow> 'c \<Rightarrow> 'c"
+  and diff_op' :: "('ce \<Rightarrow> 'ce) \<Rightarrow> ('ce \<Rightarrow> 'ce) \<Rightarrow> 'c \<Rightarrow> 'c \<Rightarrow> 'c"
   and elem_op' :: "'ce \<Rightarrow> 'c \<Rightarrow> bool"
   and canonical_op' :: "'c \<Rightarrow> bool"
 
@@ -1125,13 +1125,13 @@ fun nft_construct_ba  where
 
 
 schematic_goal nft_construct_interval_aux_code:
-  "nft_construct_interval_aux  = ?XXX1"
+  "nft_construct_ba_aux  = ?XXX1"
   unfolding nft_construct_ba_aux_def
   by (rule refl)+
 
 
 schematic_goal nft_construct_interval_code:
-  "nft_construct_interval (QL, DL, IL, FL, Fun) = ?XXX1"
+  "nft_construct_ba (QL, DL, IL, FL, Fun) = ?XXX1"
   unfolding nft_construct_ba.simps
   by (rule refl)+
 
@@ -1223,10 +1223,10 @@ end
 interpretation transducer_implementation_defs: 
         transducer_code rs_ops rs_ops rs_ops rs_ops rs_ops rs_ops 
                            rm_ops rs_lts_ops  rs_lts_ops  rs_lts_ops 
-     semIs emptyIs nemptyIs intersectIs "(diffIs f1 f2)" elemIs canonicalIs
-     semIs emptyIs nemptyIs intersectIs "(diffIs f1 f2)" elemIs canonicalIs 
-  apply intro_locales
-  apply (simp add: bool_algebra_def)
+     semIs emptyIs nemptyIs intersectIs diffIs elemIs canonicalIs
+     semIs emptyIs nemptyIs intersectIs diffIs elemIs canonicalIs 
+  by intro_locales
+ 
 
 
 definition rs_nfa_normal where
