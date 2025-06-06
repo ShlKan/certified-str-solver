@@ -33,7 +33,6 @@ locale bool_algebra =
 begin 
 
 
-
 end
 
 end
