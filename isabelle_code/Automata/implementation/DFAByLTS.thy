@@ -26,7 +26,7 @@ locale automaton_by_lts_bool_algebra_syntax =
   and empty_op :: "'b \<Rightarrow> bool"
   and noempty_op :: "'b \<Rightarrow> bool"
   and intersect_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
-  and diff_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
+  and diff_op :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'b"
   and elem_op :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
   and canonical_op :: "'b \<Rightarrow> bool"
 
@@ -48,7 +48,7 @@ locale automaton_by_lts_bool_algebra_defs = automaton_by_lts_bool_algebra_syntax
   and empty_op :: "'b \<Rightarrow> bool"
   and noempty_op :: "'b \<Rightarrow> bool"
   and intersect_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
-  and diff_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
+  and diff_op :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'b"
   and elem_op :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
   and canonical_op :: "'b \<Rightarrow> bool"
 
@@ -70,7 +70,7 @@ locale nfa_by_lts_bool_algebra_defs = automaton_by_lts_bool_algebra_defs
   and empty_op :: "'b \<Rightarrow> bool"
   and noempty_op :: "'b \<Rightarrow> bool"
   and intersect_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
-  and diff_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
+  and diff_op :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'b"
   and elem_op :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
   and canonical_op :: "'b \<Rightarrow> bool"
 
@@ -110,7 +110,7 @@ locale nfa_dfa_by_lts_bool_algebra_defs =
   and empty_op :: "'b \<Rightarrow> bool"
   and noempty_op :: "'b \<Rightarrow> bool"
   and intersect_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
-  and diff_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
+  and diff_op :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'b"
   and elem_op :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
   and canonical_op :: "'b \<Rightarrow> bool"
 
@@ -521,7 +521,7 @@ locale NFA_construct_reachable_locale =
   and empty_op :: "'b \<Rightarrow> bool"
   and noempty_op :: "'b \<Rightarrow> bool"
   and intersect_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
-  and diff_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
+  and diff_op :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'b"
   and elem_op :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
   and canonical_op :: "'b \<Rightarrow> bool" +
   fixes f :: "'q2 \<Rightarrow> 'i"
@@ -5234,25 +5234,26 @@ end
 context nfa_dfa_by_lts_bool_algebra_defs
 begin
 
-definition nfa_construct_interval where
-    "nfa_construct_interval AA = (nfa.nfa_construct_ba AA)"
+definition nfa_construct_ba where
+    "nfa_construct_ba AA = (nfa.nfa_construct_ba AA)"
 
 
 
 schematic_goal nfa_construct_ba_code :
      "nfa_construct_ba (QL, DL, IL, FL) = ?code_nfa"
-  unfolding nfa_construct_interval_def nfa.nfa_construct_ba.simps 
+  unfolding nfa_construct_ba_def nfa.nfa_construct_ba.simps 
               nfa.nfa_construct_ba_aux_def split
     by (rule refl)+
 
 lemma nfa_construct_ba_correct :
-    "nfa_from_list_ba nfa_dfa_\<alpha> nfa_dfa_invar nfa.wf_IA nfa_construct_interval sem"
+    "nfa_from_list_ba nfa_dfa_\<alpha> nfa_dfa_invar nfa.wf_IA 
+                nfa_construct_ba sem"
     using nfa.nfa_construct_interval_correct'
     apply (simp add: nfa_from_list_ba_def 
                   automaton_by_lts_correct 
                   nfa_from_list_axioms_def
-                  nfa_construct_interval_def)
-    apply (unfold nfa_construct_interval_def nfa_dfa_invar_def nfa_dfa_\<alpha>_def)
+                  nfa_construct_ba_def)
+    apply (unfold nfa_construct_ba_def nfa_dfa_invar_def nfa_dfa_\<alpha>_def)
     by auto
 
 definition nfa_construct_reachable_ba where
@@ -5261,7 +5262,7 @@ definition nfa_construct_reachable_ba where
 
 
 schematic_goal nfa_construct_reachable_ba_code :
-  "nfa_construct_reachable_interval qm_ops f I FP D_it = ?code"
+  "nfa_construct_reachable_ba qm_ops f I FP D_it = ?code"
 unfolding nfa_construct_reachable_ba_def
           nfa.NFA_construct_reachable_ba_impl_code_def
   by (rule refl)

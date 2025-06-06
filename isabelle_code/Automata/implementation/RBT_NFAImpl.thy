@@ -4,15 +4,27 @@ section \<open> LTS by Hashmaps \<close>
 theory RBT_NFAImpl 
 
 imports  "Collections.Collections" 
-          RBT_LTSImpl interval 
+          RBT_LTSImpl Interval_imp 
           DFAByLTS Datatype_Order_Generator.Derive
 begin
 
 derive linorder "('a \<times> 'a) list"
 
-interpretation rs_nfa_defs: nfa_dfa_by_lts_interval_defs rs_ops
+interpretation rs_nfa_defs: nfa_dfa_by_lts_bool_algebra_defs rs_ops
                             rs_ops rs_ops rs_ops rs_lts_ops rs_lts_ops
-  by intro_locales
+                            semIs emptyIs nemptyIs intersectIs diffIs elemIs canonicalIs
+  apply intro_locales
+  apply (simp add: bool_algebra_def)
+  apply (rule conjI)
+  using inj_semIs apply blast
+  apply (rule conjI)
+  using nemptyIs.simps nemptyIs_correct apply blast
+  apply (rule conjI)
+  using intersectIs_correct apply blast
+  apply (rule conjI)
+  apply (simp add: diffIs_correct)
+  apply (simp add: elemIs_correct)
+  done
 
 
 type_synonym ('a,'b) rs_nfa = 
@@ -26,9 +38,9 @@ definition rs_nfa_\<alpha> :: "('q::{linorder, NFA_states},'a::linorder)
   where "rs_nfa_\<alpha> \<equiv> rs_nfa_defs.nfa_dfa_\<alpha>"
 
 definition "rs_nfa_invar \<equiv> rs_nfa_defs.nfa_dfa_invar"
-definition "rs_nfa_construct_interval \<equiv> rs_nfa_defs.nfa_construct_interval"
+definition "rs_nfa_construct_interval \<equiv> rs_nfa_defs.nfa_construct_ba"
 definition "rs_nfa_construct_reachable_interval \<equiv> 
-            rs_nfa_defs.nfa_construct_reachable_interval rm_ops"
+            rs_nfa_defs.nfa_construct_reachable_ba rm_ops"
 
 definition "rs_nfa_destruct \<equiv> rs_nfa_defs.nfa_destruct"
 
@@ -149,29 +161,30 @@ interpretation rs_nfa: nfa rs_nfa_\<alpha> rs_nfa_invar
   using rs_nfa_impl .
 
 
-lemmas rs_nfa_construct_interval_code [code] = 
-        rs_nfa_defs.nfa_construct_interval_code [folded rs_nfa_defs]
-lemmas rs_nfa_construct_interval_impl = 
-        rs_nfa_defs.nfa_construct_interval_correct[folded rs_nfa_defs]
-interpretation rs_nfa: nfa_from_list_interval 
-              rs_nfa_\<alpha> rs_nfa_invar rs_nfa_defs.nfa.wf_IA rs_nfa_construct_interval
-  using rs_nfa_construct_interval_impl .
+lemmas rs_nfa_construct_ba_code [code] = 
+        rs_nfa_defs.nfa_construct_ba_code [folded rs_nfa_defs]
+lemmas rs_nfa_construct_ba_impl = 
+        rs_nfa_defs.nfa_construct_ba_correct[folded rs_nfa_defs]
+interpretation rs_nfa: nfa_from_list_ba 
+              rs_nfa_\<alpha> rs_nfa_invar rs_nfa_defs.nfa.wf_IA 
+              rs_nfa_construct_interval semIs
+  using rs_nfa_construct_ba_impl .
   
-  
-lemmas rs_nfa_construct_reachable_interval_code [code] = 
-      rs_nfa_defs.nfa_construct_reachable_interval_code 
-  [of rm_ops, folded rs_nfa_defs]
-lemmas rs_nfa_construct_reachable_interval_impl = 
-      rs_nfa_defs.nfa_construct_reachable_interval_correct
+
+lemmas rs_nfa_construct_reachable_ba_code [code] = 
+      rs_nfa_defs.nfa_construct_reachable_ba_code 
+  [of  rm_ops, folded rs_nfa_defs]
+lemmas rs_nfa_construct_reachable_ba_impl = 
+      rs_nfa_defs.nfa_construct_reachable_ba_correct
    [OF rm.StdMap_axioms, folded rs_nfa_defs]
 lemmas rs_nfa_construct_reachable_interval_no_enc_impl = 
-   nfa_construct_no_enc_default [OF rs_nfa_construct_reachable_interval_impl]
+   nfa_construct_no_enc_default [OF rs_nfa_construct_reachable_ba_impl]
 
 lemmas rs_nfa_construct_reachable_prod_interval_code [code] = 
-      rs_nfa_defs.nfa_construct_reachable_prod_interval_code 
+      rs_nfa_defs.nfa_construct_reachable_prod_ba_code 
   [of rm_ops, folded rs_nfa_defs]
 lemmas rs_nfa_construct_reachable_prod_interval_impl = 
-      rs_nfa_defs.nfa_construct_reachable_interval_correct
+      rs_nfa_defs.nfa_construct_reachable_ba_correct
    [OF rm.StdMap_axioms, folded rs_nfa_defs]
 lemmas rs_nfa_construct_reachable_prod_interval_no_enc_impl = 
    nfa_construct_no_enc_default [OF rs_nfa_construct_reachable_prod_interval_impl]
@@ -246,88 +259,15 @@ lemmas rs_nfa_concate_impl = rs_nfa_defs.nfa_concat_impl_correct
     folded rs_nfa_defs]
 
 
-(*
-interpretation rs_nfa: 
- nfa_bool_comb_same rs_nfa_\<alpha> rs_nfa_invar rs_nfa_bool_comb  
-   using rs_nfa_bool_comb_impl .
-
-lemmas rs_nfa_bool_comb_gen_code [code] = rs_nfa_defs.bool_comb_gen_impl_code [of rm_ops
-rs_lts_succ_label_it rs_lts_succ_it rs_dlts_succ_label_it rs_dlts_succ_it
-   rs_dlts_succ_label_it rs_dlts_succ_it, folded rs_nfa_defs]
-lemmas rs_nfa_bool_comb_gen_impl  = rs_nfa_defs.bool_comb_gen_impl_correct
-   [unfolded rs_lts_ops_unfold rs_dlts_ops_unfold rs_ops_unfold,
-    OF rmr.StdMap_axioms rs_lts_succ_label_it_impl rs_lts_succ_it_impl
-       rs_dlts_succ_label_it_impl rs_dlts_succ_it_impl
-        rs_dlts_succ_label_it_impl rs_dlts_succ_it_impl, folded rs_nfa_defs]
-
-lemmas rs_nfa_bool_comb_code [code] = rs_nfa_defs.bool_comb_impl_code [of rm_ops
-rs_lts_succ_label_it rs_lts_succ_it rs_dlts_succ_label_it rs_dlts_succ_it
-   rs_dlts_succ_label_it rs_dlts_succ_it, folded rs_nfa_defs]
-lemmas rs_nfa_bool_comb_impl = rs_nfa_defs.bool_comb_impl_correct
-   [unfolded rs_lts_ops_unfold rs_dlts_ops_unfold rs_ops_unfold,
-    OF rmr.StdMap_axioms rs_lts_succ_label_it_impl rs_lts_succ_it_impl
-       rs_dlts_succ_label_it_impl rs_dlts_succ_it_impl
-        rs_dlts_succ_label_it_impl rs_dlts_succ_it_impl, folded rs_nfa_defs]
-interpretation rs_nfa!: 
- nfa_bool_comb_same rs_nfa_\<alpha> rs_nfa_invar rs_nfa_bool_comb  
-   using rs_nfa_bool_comb_impl .
-
-lemmas rs_nfa_right_quotient_lists_code [code] = rs_nfa_defs.right_quotient_lists_impl_code [of rm_ops
-rs_lts_filter_it rs_dlts_filter_it, folded rs_nfa_defs]
-lemmas rs_nfa_right_quotient_lists_impl = rs_nfa_defs.right_quotient_lists_impl_correct
-   [unfolded rs_lts_ops_unfold rs_dlts_ops_unfold rs_ops_unfold,
-    OF rmr.StdMap_axioms rs_lts_filter_it_impl rs_dlts_filter_it_impl, folded rs_nfa_defs]
-interpretation rs_nfa!: 
- nfa_right_quotient_lists rs_nfa_\<alpha> rs_nfa_invar rs_nfa_\<alpha> rs_nfa_invar rs_nfa_right_quotient_lists   
-   using rs_nfa_right_quotient_lists_impl .
-
-lemmas rs_nfa_determinise_code [code] =  rs_nfa_defs.determinise_impl_code [of rm_ops rm_ops
-  rs_iteratei rs_iteratei rs_iteratei rs_iteratei rs_lts_succ_it rs_dlts_succ_it , 
-  folded rs_nfa_defs, unfolded rs_nfa_defs.NFA_construct_reachable_impl_code_def]
-lemmas rs_nfa_determinise_impl = rs_nfa_defs.determinise_impl_correct
-   [unfolded rs_lts_ops_unfold rs_dlts_ops_unfold rs_ops_unfold,
-    OF rs_iteratei_impl rs_iteratei_impl rs_iteratei_impl rs_iteratei_impl
-       rs_lts_succ_it_impl rs_dlts_succ_it_impl rmr.StdMap_axioms rmr.StdMap_axioms, folded rs_nfa_defs]
-interpretation rs_nfa!: 
- nfa_determinise rs_nfa_\<alpha> rs_nfa_invar rs_nfa_\<alpha> rs_nfa_invar rs_nfa_determinise    
-   using rs_nfa_determinise_impl .
-
-
-lemmas rs_nfa_Brzozowski_code [code] = NFAGA.Brzozowski_impl_def [of rs_nfa_reverse rs_nfa_determinise, folded rs_nfa_defs]
-lemmas rs_nfa_Brzozowski_impl = NFAGA.Brzozowski_impl_correct [OF rs_nfa_reverse_impl rs_nfa_determinise_impl, folded rs_nfa_defs]
-interpretation rs_nfa_min_Brzozowski!: 
- nfa_minimise rs_nfa_\<alpha> rs_nfa_invar rs_nfa_\<alpha> rs_nfa_invar rs_nfa_Brzozowski     
-   using rs_nfa_Brzozowski_impl .
-
-
-lemmas rs_nfa_Hopcroft_code [code] = rs_nfa_defs.Hopcroft_minimise_impl_code
-[of rm_ops rm_ops rs_iteratei 
-   rs_image rs_lts_reverse rs_lts_dlts_reverse rs_lts_succ_it rs_image
-   rs_dlts_lts_image rs_dlts_image, folded rs_nfa_defs]
-lemmas rs_nfa_Hopcroft_impl = rs_nfa_defs.Hopcroft_minimise_impl_correct [OF rsr.StdSet_axioms
-  rmr.StdMap_axioms rmr.StdMap_axioms, unfolded rs_ops_unfold rs_lts_ops_unfold rs_dlts_ops_unfold,
-  OF rs_iteratei_impl  rs_image_impl rs_image_impl
-     rs_dlts_lts_image_impl rs_dlts_image_impl rs_lts_succ_it_impl 
-     rs_lts_reverse_impl rs_lts_dlts_reverse_impl, folded rs_nfa_defs]
-interpretation rs_nfa_min_Hopcroft!: 
- dfa_minimise rs_nfa_\<alpha> rs_nfa_invar rs_nfa_\<alpha> rs_nfa_invar rs_nfa_Hopcroft
-   using rs_nfa_Hopcroft_impl .
-
-lemmas rs_nfa_Hopcroft_NFA_code [code] = rs_nfa_Hopcroft_NFA_def
-lemmas rs_nfa_Hopcroft_NFA_impl = NFAGA_minimisation_with_determinisation [OF rs_nfa_determinise_impl rs_nfa_Hopcroft_impl,
-unfolded o_def, folded rs_nfa_defs]
-interpretation rs_nfa_min_Hopcroft_NFA!: 
- nfa_minimise rs_nfa_\<alpha> rs_nfa_invar rs_nfa_\<alpha> rs_nfa_invar rs_nfa_Hopcroft_NFA
-   using rs_nfa_Hopcroft_NFA_impl .
-*)
 
 definition rs_nfa_ops :: 
-    "('q::{linorder, NFA_states},'a::{linorder},('q,'a) rs_nfa) nfa_ops" where
+    "('q::{linorder, NFA_states},'a::{linorder}, ('a \<times> 'a) list, 
+      ('q,'a) rs_nfa) nfa_ops" where
    "rs_nfa_ops \<equiv> \<lparr>
     nfa_op_\<alpha> = rs_nfa_\<alpha>,
     nfa_op_invar = rs_nfa_invar,
-    nfa_op_interval_wf = rs_nfa_defs.nfa.wf_IA,
-    nfa_op_nfa_from_list_interval = rs_nfa_construct_interval,
+    nfa_op_ba_wf = rs_nfa_defs.nfa.wf_IA,
+    nfa_op_nfa_from_list_ba = rs_nfa_construct_interval,
     nfa_op_bool_comb = rs_nfa_bool_comb,
     nfa_op_concate = rs_nfa_concate
  \<rparr>" 
@@ -357,7 +297,7 @@ definition rs_nfa_ops ::
 lemma rs_nfa_ops_unfold[code_unfold] :
    "nfa_op_\<alpha> rs_nfa_ops = rs_nfa_\<alpha>"
    "nfa_op_invar rs_nfa_ops = rs_nfa_invar"
-   "nfa_op_nfa_from_list_interval rs_nfa_ops = rs_nfa_construct_interval"
+   "nfa_op_nfa_from_list_ba rs_nfa_ops = rs_nfa_construct_interval"
    "nfa_op_bool_comb rs_nfa_ops = rs_nfa_bool_comb"
    "nfa_op_concate rs_nfa_ops = rs_nfa_concate"
 (*  "nfa_op_dfa_from_list rs_nfa_ops = rs_dfa_construct"
@@ -382,7 +322,7 @@ lemma rs_nfa_ops_unfold[code_unfold] :
 
 lemmas rs_nfa_impls =
   rs_nfa_impl 
-  rs_nfa_construct_interval_impl
+  rs_nfa_construct_ba_impl
   rs_nfa_bool_comb_gen_impl
   rs_nfa_bool_comb_impl
   rs_nfa_concate_impl
@@ -405,8 +345,9 @@ lemmas rs_nfa_impls =
   rs_nfa_Brzozowski_impl
   rs_nfa_Hopcroft_impl
   rs_nfa_Hopcroft_NFA_impl *)
-
-lemma rs_nfa_StdNFA_impl: "StdNFA rs_nfa_ops"
+term StdNFA
+term rs_nfa_ops
+lemma rs_nfa_StdNFA_impl: "StdNFA rs_nfa_ops semIs"
   apply (rule StdNFA.intro)
   apply (simp_all add: rs_nfa_ops_def rs_nfa_impls)
 done

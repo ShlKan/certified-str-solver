@@ -2,26 +2,26 @@
 theory Epsilon_elim_code
 
 imports Epsilon_Elim_Imp LTSSpec NFA_interval_Spec DFAByLTS
-        RBT_LTSImpl RBT_NFAImpl interval
+        RBT_LTSImpl RBT_NFAImpl Interval_imp
 
 begin
 
 
 
-locale epsilon_elim_interval_code = automaton_by_lts_interval_syntax
+locale epsilon_elim_interval_code = automaton_by_lts_bool_algebra_syntax
   s_ops l_ops lt_ops d_ops +
   s: StdSet s_ops (* Set operations on states *) +
   l: StdSet l_ops (* Set operations on labels *) +
   lt: StdSet lt_ops   (* Set operations on labels *) +
-  d: StdLTS d_ops elemIs (* An LTS *) +
+  d: StdLTS d_ops elem_op (* An LTS *) +
   ss: StdSet ss_ops (* Set operations on states *)  +
   ssm: StdMap m_ops 
   for s_ops::"('q::{NFA_states},'q_set,_) set_ops_scheme"
   and ss_ops::"('q \<times> 'q,'qq_set,_) set_ops_scheme"
   and l_ops::"('a ::linorder, 'a_set ,_) set_ops_scheme"
-  and lt_ops::"(('a \<times> 'a) list, 'ai_set ,_) set_ops_scheme"
+  and lt_ops::"('b, 'ai_set ,_) set_ops_scheme"
   and m_ops :: "('q, 'q_set, 'qqset_m, 'more) map_ops_scheme"
-  and d_ops::"('q,('a \<times> 'a) list,'a,'d,_) lts_ops_scheme"
+  and d_ops::"('q,'b,'a,'d,_) lts_ops_scheme"
 
 begin
 
@@ -752,30 +752,30 @@ definition compute_ep_Trans_imp where
           }
       ) d.empty"
 
-term d.\<alpha>
+
 lemma compute_ep_Trans_imp_correct:
-  assumes Tran_ok: "Tran' =  interval_to_set ` {t. t \<in> d.\<alpha> Tran}"
-      and Tran_ok': "\<forall> (q, \<alpha>, q') \<in> {t. t \<in> d.\<alpha> Tran}. canonicalIs \<alpha>"
+  assumes Tran_ok: "Tran' =  ba_to_set ` {t. t \<in> d.\<alpha> Tran}"
+      and Tran_ok': "\<forall> (q, \<alpha>, q') \<in> {t. t \<in> d.\<alpha> Tran}. canonical_op \<alpha>"
       and QQ'_ok: "Q' = s.\<alpha> Q"
       and P_ok: "ssm.invar P \<and> (\<forall> q \<in> dom P'. s.invar (the (ssm.lookup q P)))"
       and PP'_ok: "dom P' = dom (ssm.\<alpha> P) \<and> Q' \<subseteq> dom P' \<and>
                           (\<forall> q \<in> dom P'. s.\<alpha> (the (ssm.lookup q P)) = the (P' q))"
-    shows "compute_ep_Trans_imp Tran Q P \<le> \<Down> (br (\<lambda> d. interval_to_set ` (d.\<alpha> d)) 
+    shows "compute_ep_Trans_imp Tran Q P \<le> \<Down> (br (\<lambda> d. ba_to_set ` (d.\<alpha> d)) 
             d.invar)
          (compute_ep_Trans Tran' Q' P')"
   unfolding compute_ep_Trans_imp_def compute_ep_Trans_def
   apply (refine_rcg)
-  apply (subgoal_tac "inj_on interval_to_set {t. t \<in> d.\<alpha> Tran}")
-           apply assumption
-  using inj_on_def interval_to_set.simps
-  apply (smt Pair_inject Tran_ok' case_prodE inj_semIs interval_to_set.simps)
+  apply (subgoal_tac "inj_on ba_to_set {t. t \<in> d.\<alpha> Tran}")
+  apply assumption
+  using inj_on_def ba_to_set.simps
+  apply (smt Pair_inject Tran_ok' case_prodE iv.inj_semIs_aux ba_to_set.simps)
   using Tran_ok apply force
   apply (simp add: br_def d.lts_empty_correct(1) d.lts_empty_correct(2))
   apply (subgoal_tac "inj_on id {q. q \<in> s.\<alpha> Q}")
   apply assumption
   apply force
   using QQ'_ok apply force
-  apply (subgoal_tac "(d.empty, {}) \<in> (br (\<lambda> d. interval_to_set ` (d.\<alpha> d)) d.invar)")
+  apply (subgoal_tac "(d.empty, {}) \<in> (br (\<lambda> d. ba_to_set ` (d.\<alpha> d)) d.invar)")
   apply assumption
   apply simp
   apply (simp add: br_def d.lts_empty_correct(1) d.lts_empty_correct(2))
@@ -829,7 +829,7 @@ definition nfae_\<alpha> :: "'q_set \<times>  'd \<times> 'qq_set \<times> 'q_se
   where
   "nfae_\<alpha> A =
    \<lparr> \<Q>e = s.\<alpha> (nfae_states A),   
-     \<Delta>e = interval_to_set ` (d.\<alpha> (nfae_trans A)),
+     \<Delta>e = ba_to_set ` (d.\<alpha> (nfae_trans A)),
      \<Delta>e' = ss.\<alpha> (nfae_trans_ep A),
      \<I>e = s.\<alpha> (nfae_initial A), 
      \<F>e = s.\<alpha> (nfae_accepting A) \<rparr>"
@@ -850,9 +850,9 @@ lemma NFA_elim_imp_correct:
   fixes \<A> \<A>'
   assumes state_ok: "\<Q>e \<A>' = s.\<alpha> (nfae_states \<A>) \<and> s.invar (nfae_states \<A>)" 
       and trans_ok: "\<Delta>e' \<A>' = ss.\<alpha> (nfae_trans_ep \<A>) \<and> ss.invar (nfae_trans_ep \<A>)"
-      and trans_ok': "\<Delta>e \<A>' = interval_to_set ` {t. t \<in> d.\<alpha> (nfae_trans \<A>)} \<and>
+      and trans_ok': "\<Delta>e \<A>' = ba_to_set ` {t. t \<in> d.\<alpha> (nfae_trans \<A>)} \<and>
                       d.invar (nfae_trans \<A>) \<and> 
-                      (\<forall>(q, \<alpha>, q')\<in>{t. t \<in> d.\<alpha> (nfae_trans \<A>)}. canonicalIs \<alpha>)"
+                      (\<forall>(q, \<alpha>, q')\<in>{t. t \<in> d.\<alpha> (nfae_trans \<A>)}. canonical_op \<alpha>)"
       and initial_ok: "\<I>e \<A>' = s.\<alpha> (nfae_initial \<A>) \<and> s.invar (nfae_initial \<A>)"
       and accepting_ok: "\<F>e \<A>' = s.\<alpha> (nfae_accepting \<A>) \<and> s.invar (nfae_accepting \<A>)"
       and wf_\<A>': "NFAe \<A>' \<and> finite (\<Delta>e' \<A>')"
@@ -865,7 +865,7 @@ lemma NFA_elim_imp_correct:
        apply assumption 
       defer
   apply (subgoal_tac "compute_ep_Trans_imp (nfae_trans \<A>) (nfae_states \<A>) P
-                        \<le> \<Down> ((br (\<lambda>d. interval_to_set ` d.\<alpha> d) d.invar)) 
+                        \<le> \<Down> ((br (\<lambda>d. ba_to_set ` d.\<alpha> d) d.invar)) 
                      (compute_ep_Trans (\<Delta>e \<A>') (\<Q>e \<A>') Pa)")
        apply assumption
   defer
@@ -1028,7 +1028,7 @@ proof -
               ssm.map_lookup_axioms subset_eq)
     
     show "compute_ep_Trans_imp (nfae_trans \<A>) (nfae_states \<A>) P
-       \<le> \<Down> (br (\<lambda>d. interval_to_set ` d.\<alpha> d) d.invar)
+       \<le> \<Down> (br (\<lambda>d. ba_to_set ` d.\<alpha> d) d.invar)
            (compute_ep_Trans (\<Delta>e \<A>') (\<Q>e \<A>') Pa)"
       apply (rule compute_ep_Trans_imp_correct[of "\<Delta>e \<A>'" "nfae_trans \<A>" "\<Q>e \<A>'"
                                       "nfae_states \<A>"])
@@ -1038,7 +1038,7 @@ proof -
   }
   {
     fix P Pa N\<Delta> N\<Delta>' N\<I> N\<I>' N\<F> N\<F>' 
-    assume trans_pre: "(N\<Delta>, N\<Delta>') \<in> br (\<lambda>d. interval_to_set ` d.\<alpha> d) d.invar"
+    assume trans_pre: "(N\<Delta>, N\<Delta>') \<in> br (\<lambda>d. ba_to_set ` d.\<alpha> d) d.invar"
        and init_pre: "(N\<I>, N\<I>') \<in> br s.\<alpha> s.invar"
        and accept_pre: "(N\<F>, N\<F>') \<in> br s.\<alpha> s.invar"
     show "((nfae_states \<A>,  d.union (nfae_trans \<A>) N\<Delta>,
@@ -1086,7 +1086,7 @@ schematic_goal NFA_elim_imp_code:
   fixes D_it1 :: "'q_set \<Rightarrow> ('q, 'qqset_m) set_iterator"
   fixes D_it2 :: "'qq_set \<Rightarrow> ('q \<times> 'q, 'q_set) set_iterator"
   fixes D_it3 :: "'q \<Rightarrow> 'qqset_m \<Rightarrow> ('q, 'q_set) set_iterator"
-  fixes D_it4 :: "'d \<Rightarrow> ('q \<times> ('a \<times> 'a) list \<times> 'q, 'd) set_iterator"
+  fixes D_it4 :: "'d \<Rightarrow> ('q \<times> 'b \<times> 'q, 'd) set_iterator"
   fixes D_it5 :: "'q_set \<Rightarrow> ('q, 'd) set_iterator"
   fixes D_it6 :: "'q_set \<Rightarrow> ('q, 'q_set) set_iterator"
   fixes D_it7 :: "'q_set \<Rightarrow> ('q, 'q_set) set_iterator"
@@ -1201,9 +1201,12 @@ schematic_goal lookup_aux_code :
 end
 
 interpretation epsilon_elim_interval_defs: 
-        epsilon_elim_interval_code rs_ops rs_ops rs_ops 
-                                   rs_ops rm_ops rs_lts_ops
+        epsilon_elim_interval_code semIs emptyIs nemptyIs 
+                   intersectIs diffIs elemIs canonicalIs
+                   rs_ops rs_ops rs_ops 
+                   rs_ops rm_ops rs_lts_ops                             
   by intro_locales
+  
 
 definition lookup_aux where
       "lookup_aux = epsilon_elim_interval_defs.lookup_aux"

@@ -4,7 +4,7 @@
 theory NFA_set_interval
 imports Main LTS_set "../General/Accessible"
         "HOL-Library.Nat_Bijection" 
-        "implementation/Interval"
+        "implementation/Interval_imp"
 begin
 
 

@@ -1675,27 +1675,7 @@ type_synonym ('q,'a,'nfa_e) nfa_ep_\<alpha> = "'nfa_e \<Rightarrow> ('q, 'a) NFA
     nfa_op_nfa_from_list_ba :: "('q,'b,'nfa) nfa_from_list_ba"
     nfa_op_bool_comb :: "(bool \<Rightarrow> bool \<Rightarrow> bool) \<Rightarrow> 'nfa \<Rightarrow> 'nfa \<Rightarrow> 'nfa"
     nfa_op_concate :: "'nfa \<Rightarrow> 'nfa \<Rightarrow> 'nfa"
- (*   nfa_op_determinise :: "'nfa \<Rightarrow> 'nfa"
-    nfa_op_complement :: "'nfa \<Rightarrow> 'nfa"
-    nfa_op_nfa_from_list :: "('q,'a,'nfa) nfa_from_list" *)
- (*
-    nfa_op_dfa_from_list :: "('q,'a,'nfa) nfa_from_list"
-    nfa_op_to_list :: "('q,'a,'nfa) nfa_to_list"
-    nfa_op_states_no :: "'nfa \<Rightarrow> nat"
-    nfa_op_labels_no :: "'nfa \<Rightarrow> nat"
-    nfa_op_trans_no :: "'nfa \<Rightarrow> nat"
-    nfa_op_initial_no :: "'nfa \<Rightarrow> nat"
-    nfa_op_final_no :: "'nfa \<Rightarrow> nat"
-    nfa_op_accept :: "('q,'a,'nfa) nfa_accept"
-    nfa_op_is_deterministic :: "'nfa \<Rightarrow> bool"
-    nfa_op_rename_labels :: "('a,'a,'nfa,'nfa) nfa_rename_labels"
-    nfa_op_normalise :: "'nfa \<Rightarrow> 'nfa"
-    nfa_op_reverse :: "'nfa \<Rightarrow> 'nfa"
-    nfa_op_minimise_Brzozowski :: "'nfa \<Rightarrow> 'nfa" 
-    nfa_op_minimise_Hopcroft :: "'nfa \<Rightarrow> 'nfa" 
-    nfa_op_minimise_Hopcroft_NFA :: "'nfa \<Rightarrow> 'nfa" 
-    nfa_op_right_quotient_lists :: "('a \<Rightarrow> bool) \<Rightarrow> 'nfa \<Rightarrow> 'nfa"
-*)
+ 
 
   locale StdNFADefs =
     fixes ops :: "('q::{NFA_states},'a ::linorder, 'b, 'nfa) nfa_ops"

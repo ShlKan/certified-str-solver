@@ -13,7 +13,7 @@ export_code
   rs_nfa_construct_interval
   rs_nfa_bool_comb
   rs_nfa_destruct  
-  rs_nfa_concate 
+  rs_nfa_concate
   rs_nfa_elim 
   rs_nfa_concate_rename 
   rs_nfa_construct_reachable 
