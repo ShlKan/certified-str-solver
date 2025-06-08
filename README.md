@@ -5,7 +5,7 @@ CertiStr is a certified string solver developed by [Isabelle proof assistant](ht
 ## Isabelle Code
 
 All the formalizations and proofs can be found in [isabelle_code](isabelle_code).
-The proofs related to Symbolic Finite Transducers (SFT) have been upgraded to [Isabelle 2024](https://isabelle.in.tum.de/)
+The proofs related to Symbolic Finite Transducers (SFT) have been upgraded to [Isabelle 2025](https://isabelle.in.tum.de/)
 There are still some other proofs that have not been upgraded.
 
 To run the proofs of SFTs, open the theory `isabelle_code/Automata/implementation/RBT_CodeExport.thy`
