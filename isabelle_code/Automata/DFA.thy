@@ -2,7 +2,7 @@
 (* Deterministic Finite Automata *)
 
 theory DFA
-imports Main LTS_set NFA_set_interval "Deriving.Derive"
+imports Main LTS_Sig NFA_set "Deriving.Derive"
 
 begin
 
@@ -152,15 +152,17 @@ lemma (in DFA) \<delta>_to_\<Delta> [simp] : "DLTS_to_LTS (\<delta> \<A>) = \<De
   apply (simp add: \<delta>_def LTS_to_DLTS_inv deterministic )
   using LTS_is_deterministic_def[of "\<Q> \<A>" "\<Delta> \<A>"] deterministic
         LTS_to_DLTS_inv[of "\<Delta> \<A>"]
-  by (simp add: LTS_is_deterministic_def)
+  by (simp add: LTS_Sig.LTS_is_weak_deterministic_def LTS_is_deterministic_def
+      LTS_set.LTS_is_weak_deterministic_def)
 
 lemma (in detNFA) \<delta>_in_\<Delta>_iff :
   "(q, \<sigma>, q') \<in> \<Delta> \<A> \<longleftrightarrow> (\<delta> \<A>) (q, \<sigma>) = Some q'"
   unfolding \<delta>_def 
   using LTS_to_DLTS_is_some_det deterministic
         LTS_is_deterministic_def
-  by (simp add: LTS_is_deterministic_def LTS_to_DLTS_is_some_det)
-
+  by (metis LTS_Sig.LTS_to_DLTS_is_some_det LTS_set.LTS_to_DLTS_in
+      LTS_set.LTS_to_DLTS_is_some)
+  
 lemma (in DFA) \<delta>_wf :
   assumes "\<delta> \<A> (q,\<sigma>) = Some q'" 
   shows "q \<in> \<Q> \<A> \<and> (q' \<in> \<Q> \<A>)"
@@ -196,7 +198,9 @@ proof -
     show "\<exists>\<pi>. inPath w \<pi> \<and> DLTS_reach (LTS_to_DLTS (\<Delta> \<A>)) q \<pi> = Some q'"
       apply (induction w arbitrary: q)
       using inPath.simps(1) apply fastforce
-      by (meson LTS_is_deterministic_def LTS_is_reachable_weak_determistic3 deterministic)
+      by (smt (verit, del_insts) LTS_Sig.LTS_is_weak_deterministic_def
+          LTS_is_deterministic_def LTS_set.LTS_is_reachable_weak_determistic3
+          LTS_set.LTS_is_weak_deterministic_def deterministic)
   }
 qed
 
@@ -369,7 +373,7 @@ next
               unfolding DFA_def detNFA_def NFA_is_deterministic_def
                         LTS_is_deterministic_def
                         LTS_is_weak_deterministic_def
-              by blast
+              by (simp add: LTS_Sig.LTS_is_weak_deterministic_def)
             from this q'_def q''_def
             have q'_eq_q'': "q' = q''"
               by blast
@@ -465,15 +469,18 @@ proof (rule ccontr)
     by (metis DFA_LTS_is_reachable_DLTS_reach_simp \<delta>_def)
   from this p_neq_Q
   have "\<pi>1 \<noteq> [] \<and> \<pi>2 \<noteq> []"
-    by (meson LTS_is_deterministic_def LTS_is_reachable___LTS_is_weak_deterministic 
-              \<open>LTS_is_reachable (\<Delta> \<A>) (\<i> \<A>) w p\<close> \<open>LTS_is_reachable (\<Delta> \<A>) (\<i> \<A>) w q\<close> 
-              deterministic)  
+    by (smt (verit, best) LTS_Sig.LTS_is_weak_deterministic_def
+        LTS_is_deterministic_def LTS_set.LTS_is_reachable___LTS_is_weak_deterministic
+        LTS_set.LTS_is_weak_deterministic_def
+        \<open>LTS_set.LTS_is_reachable (\<Delta> \<A>) (\<i> \<A>) w p\<close>
+        \<open>LTS_set.LTS_is_reachable (\<Delta> \<A>) (\<i> \<A>) w q\<close> deterministic)
   from this deterministic \<pi>1_def \<pi>2_def
   show "False"
-    by (meson LTS_is_deterministic_def 
-              LTS_is_reachable___LTS_is_weak_deterministic 
-              \<open>LTS_is_reachable (\<Delta> \<A>) (\<i> \<A>) w p\<close> 
-              \<open>LTS_is_reachable (\<Delta> \<A>) (\<i> \<A>) w q\<close> p_neq_Q)  
+    by (smt (verit, best) LTS_Sig.LTS_is_weak_deterministic_def
+        LTS_is_deterministic_def LTS_set.LTS_is_reachable___LTS_is_weak_deterministic
+        LTS_set.LTS_is_weak_deterministic_def
+        \<open>LTS_set.LTS_is_reachable (\<Delta> \<A>) (\<i> \<A>) w p\<close>
+        \<open>LTS_set.LTS_is_reachable (\<Delta> \<A>) (\<i> \<A>) w q\<close> p_neq_Q)  
 qed
 
 lemma (in DFA) DFA_accept_alt_def :
@@ -596,7 +603,8 @@ proof -
          from pt1 pt3 pt4 in_D1 DFA1.deterministic
          have "q'' = q1'" 
            using LTS_is_weak_deterministic_def LTS_is_deterministic_def
-           by (metis (no_types, lifting) Int_iff empty_iff)
+           by (metis (no_types, lifting) LTS_Sig.LTS_is_weak_deterministic_def
+               insert_disjoint(2) mk_disjoint_insert)
          from this pt5 pt2
          show "\<exists>x\<in>\<F> \<A>. LTS_is_reachable (\<Delta> \<A>) q1' w x"
            by blast
@@ -652,9 +660,9 @@ proof -
          have "q'' = q2'" 
            using LTS_is_deterministic_def
                  LTS_is_weak_deterministic_def
-           by (metis (no_types, opaque_lifting) 
-                      insert_disjoint(2) insert_subset subsetI subset_antisym)
-         from this pt5 pt2
+           by (metis (no_types, lifting) Int_iff LTS_Sig.LTS_is_weak_deterministic_def
+               empty_iff)
+          from this pt5 pt2
          show "\<exists>x\<in>\<F> \<A>'. LTS_is_reachable (\<Delta> \<A>') q2' w x"
            by blast
        } qed
@@ -773,7 +781,8 @@ proof -
          LTS_is_deterministic_def
          LTS_is_weak_deterministic_def
     show "\<sigma>1 \<noteq> {} \<and> \<sigma>2 \<noteq> {} \<and> \<sigma>1 \<inter> \<sigma>2 = {}" 
-      by (metis (no_types, lifting) in_D in_D' s2_s2'_f)
+      by (metis (no_types, lifting) LTS_Sig.LTS_is_weak_deterministic_def in_D in_D'
+          s2_s2'_f)
   qed
   from LTS_is_deterministic_def[of "\<Q> \<A>" "\<Sigma> \<A>" "\<Delta> \<A>"] deterministic
   have step2: "(\<forall>q\<in>\<Q> \<A>. \<forall>a \<in> \<Sigma> \<A>. \<exists>q' \<sigma>. (q, \<sigma>, q') \<in> \<Delta> \<A> \<and> a \<in> \<sigma>)"
@@ -788,7 +797,9 @@ proof -
     using LTS_is_deterministic_def[of "\<Q> \<A>" "\<Sigma> \<A>" "\<Delta> \<A>"] 
           LTS_is_weak_deterministic_def[of "\<Delta> \<A>"] 
               \<Delta>_consistent deterministic inj_f inj_on_eq_iff
-    using step1 apply fastforce
+    using step1 
+    apply (smt (verit, del_insts) LTS_Sig.LTS_is_weak_deterministic_def
+        mem_Collect_eq prod.inject)
     using step2 inj_f
     using step1 by blast    
 qed
@@ -968,13 +979,15 @@ lemma determinise_NFA_is_detNFA :
   apply (rule conjI)
   using determinise_NFA_is_weak_detNFA[of \<A>] 
         NFA_is_weak_deterministic_def
-    apply auto[1]
-   defer
-   apply auto[1]
-  apply simp
+  apply auto[1]
+  defer
+  apply auto[1]
   unfolding determinise_NFA_def
   apply simp
-  by blast
+  apply blast
+  apply force
+  by (simp add: LTS_Sig.LTS_is_weak_deterministic_def
+      LTS_set.LTS_is_weak_deterministic_def NFA_is_weak_deterministic_def)
 
 lemma determinise_NFA___is_well_formed :
   "NFA \<A> \<and> \<I> \<A> \<noteq> {}\<Longrightarrow> NFA (determinise_NFA \<A>)"
@@ -1484,14 +1497,35 @@ lemma NFA_is_deterministic___NFA_remove_unreachable_states :
   "NFA_is_deterministic \<A> \<Longrightarrow>
    NFA_is_deterministic (NFA_remove_unreachable_states \<A>)"
 proof -
+  have r1: "LTS_is_deterministic (\<Q> \<A>) (\<Sigma> \<A>) (\<Delta> \<A>) \<Longrightarrow> LTS_is_weak_deterministic (\<Delta> (NFA_remove_unreachable_states \<A>))"
+    using LTS_is_deterministic_def LTS_is_weak_deterministic_def 
+                  NFA_remove_unreachable_states_def Ball_def
+                  NFA_unreachable_states_extend
+    by (smt (verit) LTS_Sig.LTS_is_weak_deterministic_def
+        NFA_remove_states_\<Delta>_subset subsetD)
+  have r2: "LTS_is_deterministic (\<Q> \<A>) (\<Sigma> \<A>) (\<Delta> \<A>) \<Longrightarrow> 
+           (\<forall>q\<in>\<Q> (NFA_remove_unreachable_states \<A>).
+            \<forall>a\<in>\<Sigma> (NFA_remove_unreachable_states \<A>).
+             \<exists>q' \<sigma>. (q, \<sigma>, q') \<in> \<Delta> (NFA_remove_unreachable_states \<A>) \<and> 
+            a \<in> \<sigma>)"
+    unfolding LTS_is_deterministic_def
+    using LTS_is_deterministic_def LTS_is_weak_deterministic_def 
+           NFA_remove_unreachable_states_def Ball_def
+           NFA_unreachable_states_extend
+    apply simp
+    
   have det_impl: 
     "LTS_is_deterministic (\<Q> \<A>) (\<Sigma> \<A>) (\<Delta> \<A>) \<Longrightarrow>
      LTS_is_deterministic (\<Q> (NFA_remove_unreachable_states \<A>)) 
                           (\<Sigma> (NFA_remove_unreachable_states \<A>))
            (\<Delta> (NFA_remove_unreachable_states \<A>))" 
-    by (simp add: LTS_is_deterministic_def LTS_is_weak_deterministic_def 
-                  NFA_remove_unreachable_states_def Ball_def,
-        metis NFA_unreachable_states_extend)
+    unfolding LTS_is_deterministic_def
+    using LTS_is_deterministic_def LTS_is_weak_deterministic_def 
+                  NFA_remove_unreachable_states_def Ball_def
+                  NFA_unreachable_states_extend
+    
+    
+
   assume "NFA_is_deterministic \<A>"
   with det_impl show ?thesis 
     by (simp add: NFA_is_deterministic_def)
