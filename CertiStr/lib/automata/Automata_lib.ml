@@ -7,8 +7,6 @@ module Uint : sig
 
   val less_eq : t -> t -> bool
 
-  val set_bit : t -> Z.t -> bool -> t
-
   val shiftl : t -> Z.t -> t
 
   val shiftr : t -> Z.t -> t
@@ -32,10 +30,6 @@ end = struct
   let less x y = if x < 0 then y < 0 && x < y else y < 0 || x < y
 
   let less_eq x y = if x < 0 then y < 0 && x <= y else y < 0 || x <= y
-
-  let set_bit x n b =
-    let mask = 1 lsl Z.to_int n in
-    if b then x lor mask else x land lnot mask
 
   let shiftl x n = x lsl Z.to_int n
 
@@ -65,8 +59,6 @@ module Uint32 : sig
 
   val less_eq : int32 -> int32 -> bool
 
-  val set_bit : int32 -> Z.t -> bool -> int32
-
   val shiftl : int32 -> Z.t -> int32
 
   val shiftr : int32 -> Z.t -> int32
@@ -87,10 +79,6 @@ end = struct
       Int32.compare y Int32.zero < 0 && Int32.compare x y <= 0
     else Int32.compare y Int32.zero < 0 || Int32.compare x y <= 0
 
-  let set_bit x n b =
-    let mask = Int32.shift_left Int32.one (Z.to_int n) in
-    if b then Int32.logor x mask else Int32.logand x (Int32.lognot mask)
-
   let shiftl x n = Int32.shift_left x (Z.to_int n)
 
   let shiftr x n = Int32.shift_right_logical x (Z.to_int n)
@@ -105,25 +93,6 @@ end = struct
 end
 
 (*struct Uint32*)
-
-module Integer_Bit : sig
-  val test_bit : Z.t -> Z.t -> bool
-
-  val shiftl : Z.t -> Z.t -> Z.t
-
-  val shiftr : Z.t -> Z.t -> Z.t
-end = struct
-  (* We do not need an explicit range checks here, because
-     Big_int.int_of_big_int raises Failure if the argument does not fit into
-     an int. *)
-  let test_bit x n = Z.testbit x (Z.to_int n)
-
-  let shiftl x n = Z.shift_left x (Z.to_int n)
-
-  let shiftr x n = Z.shift_right x (Z.to_int n)
-end
-
-(*struct Integer_Bit*)
 
 module Automata_lib : sig
   type 'a equal = {equal: 'a -> 'a -> bool}
@@ -835,12 +804,6 @@ end = struct
     | [], uu -> []
     | x :: xs, ys -> map (fun a -> (x, a)) ys @ product xs ys
 
-  let rec snd (x1, x2) = x2
-
-  let rec fst (x1, x2) = x1
-
-  let rec nempI _A s = less_eq _A (fst s) (snd s)
-
   let rec is_none = function Some x -> false | None -> true
 
   let rec worklist b f x2 =
@@ -852,41 +815,22 @@ end = struct
         else (s, e :: wl)
     | b, f, (s, []) -> (s, [])
 
-  let rec nemptyIs _A l = not (null l)
-
   let rec ltsga_image imf f =
     imf f (fun _ -> true) (fun _ -> true) (fun _ -> true) (fun _ -> true)
 
   let rec the (Some x2) = x2
 
-  let rec apsnd f (x, y) = (x, f y)
+  let rec snd (x1, x2) = x2
 
-  let rec intersectI _A _B s1 s2 =
-    ( (if less _A (fst s1) (fst s2) then fst s2 else fst s1)
-    , if less _B (snd s1) (snd s2) then snd s1 else snd s2 )
+  let rec fst (x1, x2) = x1
+
+  let rec nempI _A s = less_eq _A (fst s) (snd s)
+
+  let rec apsnd f (x, y) = (x, f y)
 
   let rec iterate_to_list it = it (fun _ -> true) (fun a b -> a :: b) []
 
   let rec ltsga_to_list it = comp iterate_to_list it
-
-  let rec intersectIs_aux _A a x1 =
-    match (a, x1) with
-    | a, [] -> []
-    | a, b :: l ->
-        if
-          nempI _A.order_linorder.preorder_order.ord_preorder
-            (intersectI _A.order_linorder.preorder_order.ord_preorder
-               _A.order_linorder.preorder_order.ord_preorder a b )
-        then
-          intersectI _A.order_linorder.preorder_order.ord_preorder
-            _A.order_linorder.preorder_order.ord_preorder a b
-          :: intersectIs_aux _A a l
-        else intersectIs_aux _A a l
-
-  let rec intersectIs _A x0 l2 =
-    match (x0, l2) with
-    | [], l2 -> []
-    | a :: l1, l2 -> intersectIs_aux _A a l2 @ intersectIs _A l1 l2
 
   let rec ltsga_iterator it =
     it (fun _ -> true) (fun _ -> true) (fun _ -> true) (fun _ -> true)
@@ -899,6 +843,8 @@ end = struct
           let sigmaa = rm_iterateoi l c f sigma in
           if c sigmaa then rm_iterateoi r c f (f (k, v) sigmaa) else sigmaa
         else sigma
+
+  let rec nemptyIs _A l = not (null l)
 
   let rec iteratei_set_op_list_it_rs_ops _A s =
    fun c f -> rm_iterateoi (impl_of _A s) c (comp f fst)
@@ -1011,6 +957,10 @@ end = struct
 
   let rec whilea b c s = if b s then whilea b c (c s) else s
 
+  let rec intersectI _A _B s1 s2 =
+    ( (if less _A (fst s1) (fst s2) then fst s2 else fst s1)
+    , if less _B (snd s1) (snd s2) then snd s1 else snd s2 )
+
   let rec set_iterator_union it_a it_b =
    fun c f sigma_0 -> it_b c f (it_a c f sigma_0)
 
@@ -1027,6 +977,25 @@ end = struct
       (fP2 aA2)
       (tri_union_iterator (it_1 aA1) (it_2 aA2)
          (it_3 aA1 (fP1 aA1) (i2 aA2)) )
+
+  let rec intersectIs_aux _A a x1 =
+    match (a, x1) with
+    | a, [] -> []
+    | a, b :: l ->
+        if
+          nempI _A.order_linorder.preorder_order.ord_preorder
+            (intersectI _A.order_linorder.preorder_order.ord_preorder
+               _A.order_linorder.preorder_order.ord_preorder a b )
+        then
+          intersectI _A.order_linorder.preorder_order.ord_preorder
+            _A.order_linorder.preorder_order.ord_preorder a b
+          :: intersectIs_aux _A a l
+        else intersectIs_aux _A a l
+
+  let rec intersectIs _A x0 l2 =
+    match (x0, l2) with
+    | [], l2 -> []
+    | a :: l1, l2 -> intersectIs_aux _A a l2 @ intersectIs _A l1 l2
 
   let rec ltsga_image_filter e a it f p_v1 p_e p_v2 p l =
     it p_v1 p_e p_v2 p l
