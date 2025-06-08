@@ -964,7 +964,177 @@ shows "NFA_construct_reachable_impl_step_ba DS qm0 n D0 q \<le>
            (map_list_rel (build_rel q2_\<alpha> q2_invar))))
      (NFA_construct_reachable_abstract_impl_step S D rm (\<Delta> \<A>) 
                                                         (q2_\<alpha> q))"
+proof -
+{
+  fix it N i1 q'' qm n qm' NN r' D' n' i2 q'
+  
+  assume aq'_in_it: "(i2, q') \<in> it"
+     and aq''_in_it: "(i1, q'') \<in> it"
+     and it_subset: "it \<subseteq> DS q"
+     and q''_q'_eq: "q2_\<alpha> q'' = q2_\<alpha> q'"
+     and semI_a_b: "sem i2 \<noteq> {}"
+  
+  let ?it' = "((\<lambda>x. case x of (a, q') \<Rightarrow> (sem a, q2_\<alpha> q')) ` it)"
+  assume invar_foreach: 
+     "NFA_construct_reachable_abstract_impl_foreach_invar 
+      S D rm (ba_to_set ` D0') (q2_\<alpha> q) ?it'
+               (state_map_\<alpha> (qm, n), ba_to_set `  d.\<alpha> D', N)"
+     and invar_qm_n: "state_map_invar (qm, n)"
+     and invar_D': "d.invar D'"
 
+  from aq'_in_it aq''_in_it it_subset DS_OK
+  have invar_q': "q2_invar q'" and invar_q'': "q2_invar q''"
+    by (auto simp add: NFA_construct_reachable_impl_step_rel_def br_def)   
+  have q'_in_S: "q2_\<alpha> q' \<in> S"
+  proof -
+    from DS_OK have "
+        {(a, q'). (q2_\<alpha> q, a, q') \<in> D \<and> a \<noteq> {}} = 
+         (\<lambda> (a, q'). (sem a, q2_\<alpha> q')) ` {(a,q'). (a, q') \<in> DS q \<and> 
+          sem a \<noteq> {}}"
+      unfolding NFA_construct_reachable_impl_step_rel_def 
+       apply (insert DS_OK) []
+  apply (simp add: NFA_construct_reachable_impl_step_rel_def)
+  apply (simp add: in_br_conv br_def)
+  apply (simp only: set_eq_iff)
+      by (fastforce)
+    with aq'_in_it it_subset semI_a_b 
+    have "(sem i2, q2_\<alpha> q') \<in> 
+          {(a, q'). (q2_\<alpha> q, a, q') \<in> D \<and> a \<noteq> {}}"
+      by (simp add: image_iff Bex_def) blast
+    hence "(q2_\<alpha> q, q2_\<alpha> q') \<in> LTS_forget_labels D"
+      unfolding LTS_forget_labels_def 
+      NFA_construct_reachable_impl_step_rel_def
+      by (metis (mono_tags, lifting) aq'_in_it 
+                 case_prodD case_prodI 
+                 in_mono it_subset mem_Collect_eq)
+    with q_in_S show ?thesis unfolding S_def accessible_def
+      by (metis rtrancl_image_advance)
+  qed
+  from q'_in_S q''_q'_eq have q''_in_S: "q2_\<alpha> q''\<in> S" by simp
+  from ff_OK[OF invar_q'' q''_in_S] q''_q'_eq have ff_q''_eq[simp]: 
+    "ff q'' = f (q2_\<alpha> q')" by simp
+
+  define D'' where "D'' = {(a, q'). (q2_\<alpha> q, a, q') \<in> D \<and> a \<noteq> {}} - ?it'"
+  from invar_foreach have
+     qm_OK: "NFA_construct_reachable_map_OK S rm (snd ` D'') 
+     (state_map_\<alpha> (qm, n))" and
+     set_N_eq: "set N = snd ` D''" and
+     D'_eq: "ba_to_set ` d.\<alpha> D' = (ba_to_set ` D0') \<union>
+       {(the (state_map_\<alpha> (qm, n) (q2_\<alpha> q)), a, 
+         the (state_map_\<alpha> (qm, n) q')) |a q'. (a, q') \<in> D'' \<and> a \<noteq> {}}"
+    unfolding NFA_construct_reachable_abstract_impl_foreach_invar.simps 
+              NFA_construct_reachable_map_OK_def
+              D''_def[symmetric]
+    by (auto simp add: D''_def D0'_eq)
+  (* "... and the case that the map needs to be extended." *)
+  { 
+    assume "qm.lookup (ff q'') qm = None"
+    with invar_qm_n have q'_nin_dom: 
+    "q2_\<alpha> q' \<notin> dom (state_map_\<alpha> (qm, n))"
+      unfolding state_map_invar_def state_map_\<alpha>_def 
+      by (simp add: qm.correct dom_def)
+
+    from qm_OK have qm_OK':
+      "NFA_construct_reachable_map_OK S Map.empty {} (state_map_\<alpha> (qm, n))"
+      unfolding NFA_construct_reachable_map_OK_def by simp
+
+    define qm' where "qm'= qm.update_dj 
+        (f (q2_\<alpha> q')) (states_enumerate n) qm"
+    from state_map_extend_thm [OF f_inj_on invar_qm_n 
+                      q'_in_S q'_nin_dom qm_OK', folded qm'_def]
+    have invar_qm'_n: "state_map_invar (qm', Suc n)" and
+         qm'_alpha: "qm.\<alpha> qm' = (qm.\<alpha> qm)(f (q2_\<alpha> q') 
+          \<mapsto> states_enumerate n)" and
+         qm'_OK: 
+          "NFA_construct_reachable_map_OK S 
+           (state_map_\<alpha> (qm, n)) {q2_\<alpha> q'} 
+           (state_map_\<alpha> (qm', Suc n))"
+      by simp_all
+
+    from qm'_alpha have rm'_q': 
+          "state_map_\<alpha> (qm', Suc n) (q2_\<alpha> q') = Some (states_enumerate n)"
+      unfolding state_map_\<alpha>_def by simp
+
+    define aa where "aa = state_map_\<alpha> (qm.update_dj (ff q'') 
+                     (states_enumerate n) qm, Suc n)"
+    
+    from invar_qm'_n qm'_OK rm'_q'
+    have  "\<exists> a. ((qm.update_dj (ff q'') (states_enumerate n) qm, Suc n), a)
+           \<in> br state_map_\<alpha> state_map_invar \<and> NFA_construct_reachable_map_OK S
+        (state_map_\<alpha> (qm, n)) {q2_\<alpha> q'} a \<and>
+        a (q2_\<alpha> q') =
+         Some (states_enumerate n)"
+    proof -
+      have "((qm.update_dj (ff q'') (states_enumerate n) qm, Suc n), aa)
+           \<in> br state_map_\<alpha> state_map_invar \<and> NFA_construct_reachable_map_OK S
+        (state_map_\<alpha> (qm, n)) {q2_\<alpha> q'} aa \<and>
+        aa (q2_\<alpha> q') =
+         Some (states_enumerate n)"
+        unfolding qm'_def[symmetric] ff_q''_eq aa_def
+        apply (auto simp add: br_def)
+        using invar_qm'_n apply blast
+        using rm'_q' apply auto[1]
+        apply (insert qm'_OK)
+        apply (simp add: qm'_def qm'_OK NFA_construct_reachable_map_OK_def)
+        apply (simp add: NFA_construct_reachable_map_OK_def)
+        apply (simp add: NFA_construct_reachable_map_OK_def rm'_q')
+        done
+      from this show ?thesis by auto
+    qed
+  } note case1 = this
+
+  (*  "Consider the case that the map does not need to be extended" *)
+  { fix r
+    assume "qm.lookup (ff q'') qm = Some r"
+    define aa where "aa = (state_map_\<alpha> (qm, n))"
+    with invar_qm_n qm_OK
+    have " ((qm, n), aa) \<in> br state_map_\<alpha> state_map_invar \<and>
+           NFA_construct_reachable_map_OK S (state_map_\<alpha> (qm, n)) {q2_\<alpha> q'} aa \<and>
+           aa (q2_\<alpha> q') = qm.lookup (ff q'') qm"
+     apply (simp add: state_map_\<alpha>_def qm.correct state_map_invar_def
+                    NFA_construct_reachable_map_OK_def rm_eq dom_def br_def)
+      using \<open>qm.lookup (ff q'') qm = Some r\<close> qm.lookup_correct by auto
+    from this
+    have "\<exists> aa.((qm, n), aa) \<in> br state_map_\<alpha> state_map_invar \<and>
+           NFA_construct_reachable_map_OK S (state_map_\<alpha> (qm, n)) {q2_\<alpha> q'} aa \<and>
+           aa (q2_\<alpha> q') = qm.lookup (ff q'') qm"
+      by auto
+  } note case2 = this
+ 
+  { (* It remains to show that adding to the transition systems works. 
+        Here, a case distinction
+        depending on whether the input is weak deterministic, is needed. *)
+    fix r'
+
+    from qm_OK rm_q have r_intro1: "state_map_\<alpha> (qm, n) (q2_\<alpha> q) = Some r"
+      unfolding NFA_construct_reachable_map_OK_def by simp
+
+    from rm_q rm_eq have r_intro2: "qm.lookup (ff q) qm0 = Some r" 
+      using invar_qm0_n
+      unfolding state_map_\<alpha>_def state_map_invar_def
+      using ff_OK [OF invar_q q_in_S] by (simp add: qm.correct)
+    assume semI_eq: "sem i1 = sem i2" 
+    from this semI_a_b 
+      have semI_ab_noempty: "sem i2 \<noteq> {} \<and> sem i1 \<noteq> {} " 
+        by auto
+      from iv.inj_semIs_aux semI_eq aq'_in_it aq''_in_it DS_OK0 it_subset
+      have xayb: "i1 = i2" 
+      by fastforce
+    have "insert (r, i2, r') (d.\<alpha> D') = d.\<alpha> (d.add r i2 r' D') \<and>
+          d.invar (d.add r i2 r' D')"
+      by (metis d_add_OK invar_D' lts_add_def)
+    from semI_ab_noempty iv.inj_semIs_aux xayb this D0'_eq semI_eq 
+    have "insert (the (state_map_\<alpha> (qm, n) (q2_\<alpha> q)), sem i2, r') 
+            (ba_to_set `d.\<alpha> D') =
+          ba_to_set ` d.\<alpha> (d.add (the (qm.lookup (ff q) qm0)) i1 r' D') \<and>
+          d.invar (d.add (the (qm.lookup (ff q) qm0)) i1 r' D') \<and>
+          q2_invar q''"   
+      apply (simp add: r_intro1 r_intro2 invar_q'' )
+      by (metis ba_to_set.simps image_insert)
+  } note case3 = this
+  note case1 case2 case3
+} note cases = this
+  show ?thesis
   apply (subgoal_tac "NFA_construct_reachable_impl_step_ba DS qm0 n D0 q \<le> 
   \<Down> (rprod (build_rel state_map_\<alpha> state_map_invar) (rprod (build_rel 
            (\<lambda> d. ba_to_set ` d.\<alpha> d) d.invar) 
@@ -1031,179 +1201,15 @@ shows "NFA_construct_reachable_impl_step_ba DS qm0 n D0 q \<le>
   apply (clarify, simp add: br_def)+
   apply (rename_tac it N i1 q'' qm n D' NN r' qm' n' i2 q')
   defer
-     apply (simp add: br_def D0'_eq)
-    apply (rename_tac it N i1  q'' qm n D' NN i2 q')
+  apply (simp add: br_def D0'_eq)
+  apply (rename_tac it N i1  q'' qm n D' NN i2 q')
   defer
   apply (rename_tac it N i1 q'' qm n D' NN i2 q' r)
-proof -
-  fix it N i1 q'' qm n qm' NN r' D' n' i2 q'
-  
-  assume aq'_in_it: "(i2, q') \<in> it"
-     and aq''_in_it: "(i1, q'') \<in> it"
-     and it_subset: "it \<subseteq> DS q"
-     and q''_q'_eq: "q2_\<alpha> q'' = q2_\<alpha> q'"
-     and semI_a_b: "sem i2 \<noteq> {}"
-  
-  let ?it' = "((\<lambda>x. case x of (a, q') \<Rightarrow> (sem a, q2_\<alpha> q')) ` it)"
-  assume invar_foreach: 
-     "NFA_construct_reachable_abstract_impl_foreach_invar 
-      S D rm (ba_to_set ` D0') (q2_\<alpha> q) ?it'
-               (state_map_\<alpha> (qm, n), ba_to_set `  d.\<alpha> D', N)"
-     and invar_qm_n: "state_map_invar (qm, n)"
-     and invar_D': "d.invar D'"
-
-  from aq'_in_it aq''_in_it it_subset DS_OK
-  have invar_q': "q2_invar q'" and invar_q'': "q2_invar q''"
-    by (auto simp add: NFA_construct_reachable_impl_step_rel_def br_def)   
-  have q'_in_S: "q2_\<alpha> q' \<in> S"
-  proof -
-    from DS_OK have "
-        {(a, q'). (q2_\<alpha> q, a, q') \<in> D \<and> a \<noteq> {}} = 
-         (\<lambda> (a, q'). (sem a, q2_\<alpha> q')) ` {(a,q'). (a, q') \<in> DS q \<and> 
-          sem a \<noteq> {}}"
-      unfolding NFA_construct_reachable_impl_step_rel_def 
-       apply (insert DS_OK) []
-  apply (simp add: NFA_construct_reachable_impl_step_rel_def)
-  apply (simp add: in_br_conv br_def)
-  apply (simp only: set_eq_iff)
-      by (fastforce)
-    with aq'_in_it it_subset semI_a_b 
-    have "(sem i2, q2_\<alpha> q') \<in> 
-          {(a, q'). (q2_\<alpha> q, a, q') \<in> D \<and> a \<noteq> {}}"
-      by (simp add: image_iff Bex_def) blast
-    hence "(q2_\<alpha> q, q2_\<alpha> q') \<in> LTS_forget_labels D"
-      unfolding LTS_forget_labels_def 
-      NFA_construct_reachable_impl_step_rel_def
-      by (metis (mono_tags, lifting) aq'_in_it 
-                 case_prodD case_prodI 
-                 in_mono it_subset mem_Collect_eq)
-    with q_in_S show ?thesis unfolding S_def accessible_def
-      by (metis rtrancl_image_advance)
-  qed
-  from q'_in_S q''_q'_eq have q''_in_S: "q2_\<alpha> q''\<in> S" by simp
-  from ff_OK[OF invar_q'' q''_in_S] q''_q'_eq have ff_q''_eq[simp]: 
-    "ff q'' = f (q2_\<alpha> q')" by simp
-
-  define D'' where "D'' = {(a, q'). (q2_\<alpha> q, a, q') \<in> D \<and> a \<noteq> {}} - ?it'"
-  from invar_foreach have
-     qm_OK: "NFA_construct_reachable_map_OK S rm (snd ` D'') 
-     (state_map_\<alpha> (qm, n))" and
-     set_N_eq: "set N = snd ` D''" and
-     D'_eq: "ba_to_set ` d.\<alpha> D' = (ba_to_set ` D0') \<union>
-       {(the (state_map_\<alpha> (qm, n) (q2_\<alpha> q)), a, 
-         the (state_map_\<alpha> (qm, n) q')) |a q'. (a, q') \<in> D'' \<and> a \<noteq> {}}"
-    unfolding NFA_construct_reachable_abstract_impl_foreach_invar.simps 
-              NFA_construct_reachable_map_OK_def
-              D''_def[symmetric]
-    by (auto simp add: D''_def D0'_eq)
-  (* "... and the case that the map needs to be extended." *)
-  { 
-   
-    assume "qm.lookup (ff q'') qm = None"
-    with invar_qm_n have q'_nin_dom: 
-    "q2_\<alpha> q' \<notin> dom (state_map_\<alpha> (qm, n))"
-      unfolding state_map_invar_def state_map_\<alpha>_def 
-      by (simp add: qm.correct dom_def)
-
-    from qm_OK have qm_OK':
-      "NFA_construct_reachable_map_OK S Map.empty {} (state_map_\<alpha> (qm, n))"
-      unfolding NFA_construct_reachable_map_OK_def by simp
-
-    define qm' where "qm'= qm.update_dj 
-        (f (q2_\<alpha> q')) (states_enumerate n) qm"
-    from state_map_extend_thm [OF f_inj_on invar_qm_n 
-                      q'_in_S q'_nin_dom qm_OK', folded qm'_def]
-    have invar_qm'_n: "state_map_invar (qm', Suc n)" and
-         qm'_alpha: "qm.\<alpha> qm' = (qm.\<alpha> qm)(f (q2_\<alpha> q') 
-          \<mapsto> states_enumerate n)" and
-         qm'_OK: 
-          "NFA_construct_reachable_map_OK S 
-           (state_map_\<alpha> (qm, n)) {q2_\<alpha> q'} 
-           (state_map_\<alpha> (qm', Suc n))"
-      by simp_all
-
-    from qm'_alpha have rm'_q': 
-          "state_map_\<alpha> (qm', Suc n) (q2_\<alpha> q') = Some (states_enumerate n)"
-      unfolding state_map_\<alpha>_def by simp
-
-    define aa where "aa = state_map_\<alpha> (qm.update_dj (ff q'') 
-                     (states_enumerate n) qm, Suc n)"
-    
-    from invar_qm'_n qm'_OK rm'_q'
-    show  "\<exists> a. ((qm.update_dj (ff q'') (states_enumerate n) qm, Suc n), a)
-           \<in> br state_map_\<alpha> state_map_invar \<and> NFA_construct_reachable_map_OK S
-        (state_map_\<alpha> (qm, n)) {q2_\<alpha> q'} a \<and>
-        a (q2_\<alpha> q') =
-         Some (states_enumerate n)"
-    proof -
-      have "((qm.update_dj (ff q'') (states_enumerate n) qm, Suc n), aa)
-           \<in> br state_map_\<alpha> state_map_invar \<and> NFA_construct_reachable_map_OK S
-        (state_map_\<alpha> (qm, n)) {q2_\<alpha> q'} aa \<and>
-        aa (q2_\<alpha> q') =
-         Some (states_enumerate n)"
-        unfolding qm'_def[symmetric] ff_q''_eq aa_def
-        apply (auto simp add: br_def)
-        using invar_qm'_n apply blast
-        using rm'_q' apply auto[1]
-        apply (insert qm'_OK)
-        apply (simp add: qm'_def qm'_OK NFA_construct_reachable_map_OK_def)
-        apply (simp add: NFA_construct_reachable_map_OK_def)
-        apply (simp add: NFA_construct_reachable_map_OK_def rm'_q')
-        done
-      from this show ?thesis by auto
-    qed
-  }
-  (*  "Consider the case that the map does not need to be extended" *)
-  { fix r
-    assume "qm.lookup (ff q'') qm = Some r"
-    define aa where "aa = (state_map_\<alpha> (qm, n))"
-    with invar_qm_n qm_OK
-    have " ((qm, n), aa) \<in> br state_map_\<alpha> state_map_invar \<and>
-           NFA_construct_reachable_map_OK S (state_map_\<alpha> (qm, n)) {q2_\<alpha> q'} aa \<and>
-           aa (q2_\<alpha> q') = qm.lookup (ff q'') qm"
-     apply (simp add: state_map_\<alpha>_def qm.correct state_map_invar_def
-                    NFA_construct_reachable_map_OK_def rm_eq dom_def br_def)
-      using \<open>qm.lookup (ff q'') qm = Some r\<close> qm.lookup_correct by auto
-    from this
-    show "\<exists> aa.((qm, n), aa) \<in> br state_map_\<alpha> state_map_invar \<and>
-           NFA_construct_reachable_map_OK S (state_map_\<alpha> (qm, n)) {q2_\<alpha> q'} aa \<and>
-           aa (q2_\<alpha> q') = qm.lookup (ff q'') qm"
-      by auto
-  }
- 
-  { (* It remains to show that adding to the transition systems works. 
-        Here, a case distinction
-        depending on whether the input is weak deterministic, is needed. *)
-    fix r'
-
-    from qm_OK rm_q have r_intro1: "state_map_\<alpha> (qm, n) (q2_\<alpha> q) = Some r"
-      unfolding NFA_construct_reachable_map_OK_def by simp
-
-    from rm_q rm_eq have r_intro2: "qm.lookup (ff q) qm0 = Some r" 
-      using invar_qm0_n
-      unfolding state_map_\<alpha>_def state_map_invar_def
-      using ff_OK [OF invar_q q_in_S] by (simp add: qm.correct)
-    assume semI_eq: "sem i1 = sem i2" 
-    from this semI_a_b 
-      have semI_ab_noempty: "sem i2 \<noteq> {} \<and> sem i1 \<noteq> {} " 
-        by auto
-      from iv.inj_semIs_aux semI_eq aq'_in_it aq''_in_it DS_OK0 it_subset
-      have xayb: "i1 = i2" 
-      by fastforce
-    have "insert (r, i2, r') (d.\<alpha> D') = d.\<alpha> (d.add r i2 r' D') \<and>
-          d.invar (d.add r i2 r' D')"
-      by (metis d_add_OK invar_D' lts_add_def)
-    from semI_ab_noempty iv.inj_semIs_aux xayb this D0'_eq semI_eq show 
-          "insert (the (state_map_\<alpha> (qm, n) (q2_\<alpha> q)), sem i2, r') 
-            (ba_to_set `d.\<alpha> D') =
-          ba_to_set ` d.\<alpha> (d.add (the (qm.lookup (ff q) qm0)) i1 r' D') \<and>
-          d.invar (d.add (the (qm.lookup (ff q) qm0)) i1 r' D') \<and>
-          q2_invar q''"   
-      apply (simp add: r_intro1 r_intro2 invar_q'' )
-      by (metis ba_to_set.simps image_insert)
-  } 
+  using local.cases(2) apply force
+  using local.cases(3) apply force
+  using local.cases(1) apply force
+  done
 qed
-
 
 definition NFA_construct_reachable_ba_impl where
   "NFA_construct_reachable_ba_impl S I FP DS  =

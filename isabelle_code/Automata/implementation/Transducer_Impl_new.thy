@@ -255,15 +255,13 @@ lemma subtrans_comp_correct:
   using T'_ok apply force
   using DD_ok
   apply (simp add: nempty_correct)
-  using \<alpha>_ok intersect_correct nempty_correct 
-  apply simp
-  apply (smt Pair_inject T_ok ba_to_set.simps 
-        mem_Collect_eq old.prod.case subset_eq)
-  using \<alpha>_ok intersect_correct  F_ok
-  apply (simp add: br_def )
-  using \<alpha>_ok intersect_correct  F_ok
-  apply (smt Pair_inject T_ok ba_to_set.simps 
-         mem_Collect_eq old.prod.case subset_eq)
+  using \<alpha>_ok intersect_correct nempty_correct T_ok
+          apply simp
+  apply (metis (lifting) case_prod_conv subset_iff)
+ using \<alpha>_ok intersect_correct  F_ok
+  apply (simp add: br_def Dddtinvar_def)
+  using \<alpha>_ok intersect_correct  F_ok T_ok
+  apply (metis (no_types, lifting) case_prod_conv subsetD)
   apply (subgoal_tac "(ddt.add (q, x1c) (the (F (M f) (intersect_op \<alpha> x1d))) (q', x2d) x1e,
         {((q, x1), the (F' (M' f') (\<alpha>' \<inter> x1a)), q', x2a)} \<union> x1b)
        \<in> (br ddt\<alpha> ddtinvar)")
