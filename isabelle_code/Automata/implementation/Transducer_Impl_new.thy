@@ -1,7 +1,7 @@
 
 theory Transducer_Impl_new
 
-imports "../Transducer_new" DFAByLTS 
+imports "../Transducer_new"  
         RBT_LTSImpl RBT_NFAImpl Interval_imp
 
 begin

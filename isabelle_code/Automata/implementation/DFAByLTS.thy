@@ -2,8 +2,8 @@
 theory DFAByLTS
                                       
 imports "Collections.Collections" "HOL.Enum"
-      "../../General/Accessible_Impl"
-  LTSSpec LTSGA NFA_interval_Spec LTS_Impl Bool_Algebra
+      "../../General/Accessible_Impl" "../DFA"
+  LTSSpec LTSGA NFA_set_spec LTS_Impl Bool_Algebra
   
 
 begin
@@ -123,30 +123,34 @@ sublocale nfa_dfa_by_lts_bool_algebra_defs <
 context automaton_by_lts_bool_algebra_syntax
 begin
 
-definition nfa_states :: "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
+definition nfa_states :: "'q_set \<times> 'b \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
   "nfa_states A = fst A"
-lemma [simp]: "nfa_states (Q, D, I, F) = Q" by (simp add: nfa_states_def)
+lemma [simp]: "nfa_states (Q, E, D, I, F) = Q" by (simp add: nfa_states_def)
 
 
 fun ba_to_set :: "'q \<times> 'b \<times> 'q \<Rightarrow> 'q \<times> 'a set \<times> 'q"  where
     "ba_to_set (q, s, q') = (q, sem s, q')"
 
 definition nfa_trans :: 
-        "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'd" where
-  "nfa_trans A = (fst (snd A))"
-lemma [simp]: "nfa_trans (Q, D, I, F) = D" by (simp add: nfa_trans_def)
+        "'q_set \<times> 'b \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'd" where
+  "nfa_trans A = (fst (snd (snd A)))"
+lemma [simp]: "nfa_trans (Q, E, D, I, F) = D" by (simp add: nfa_trans_def)
 
+definition nfa_\<Sigma> :: 
+        "'q_set \<times> 'b \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'b" where
+  "nfa_\<Sigma> A = (fst (snd A))"
+lemma [simp]: "nfa_\<Sigma> (Q, E, D, I, F) = E" by (simp add: nfa_\<Sigma>_def)
 
     
 
 
-definition nfa_initial :: "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
-  "nfa_initial A = fst (snd (snd  A))"
-lemma [simp]: "nfa_initial (Q, D, I, F) = I" by (simp add: nfa_initial_def)
+definition nfa_initial :: "'q_set \<times> 'b \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
+  "nfa_initial A = fst (snd (snd (snd  A)))"
+lemma [simp]: "nfa_initial (Q, E, D, I, F) = I" by (simp add: nfa_initial_def)
 
-definition nfa_accepting :: "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
-  "nfa_accepting A = snd (snd (snd  A))"
-lemma [simp]: "nfa_accepting (Q, D, I, F) = F" by (simp add: nfa_accepting_def)
+definition nfa_accepting :: "'q_set \<times> 'b \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
+  "nfa_accepting A = snd (snd (snd (snd  A)))"
+lemma [simp]: "nfa_accepting (Q, E, D, I, F) = F" by (simp add: nfa_accepting_def)
 
 
 (***********)
@@ -172,7 +176,7 @@ lemmas nfa_selectors_def = nfa_accepting_def nfa_states_def
        nfa_trans_def nfa_initial_def
 
 
-definition nfa_invar :: "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> bool" where
+definition nfa_invar :: "'q_set \<times> 'b \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> bool" where
   "nfa_invar A =
    (s.invar (nfa_states A) \<and> 
     d.invar (nfa_trans A) \<and>
@@ -180,10 +184,11 @@ definition nfa_invar :: "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \<Ri
     s.invar (nfa_accepting A))"
 
 
-definition nfa_\<alpha> :: "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> ('q, 'a) NFA_rec" 
+definition nfa_\<alpha> :: "'q_set \<times> 'b \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> ('q, 'a) NFA_rec" 
   where
   "nfa_\<alpha> A =
    \<lparr> \<Q> = s.\<alpha> (nfa_states A), 
+     \<Sigma> = sem (nfa_\<Sigma> A),
      \<Delta> = ba_to_set ` (d.\<alpha> (nfa_trans A)),
      \<I> = s.\<alpha> (nfa_initial A), 
      \<F> = s.\<alpha> (nfa_accepting A) \<rparr>"
@@ -191,12 +196,14 @@ definition nfa_\<alpha> :: "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \
 definition nfa_to_set :: "'q_set \<Rightarrow> 'q set" where
    "nfa_to_set s = s.\<alpha> s"
 
-definition nfa_invar_NFA :: "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> bool" where
+definition nfa_invar_NFA :: "'q_set \<times> 'b \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> bool" where
   "nfa_invar_NFA A \<equiv> (nfa_invar A \<and> NFA (nfa_\<alpha> A))"
 
-definition nfa_invar_NFA' :: "'q_set \<times>  'd \<times> 'q_set \<times> 'q_set \<Rightarrow> bool" where
+definition nfa_invar_NFA' :: "'q_set \<times> 'b \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> bool" where
   "nfa_invar_NFA' A \<equiv> (nfa_invar A \<and> NFA (nfa_\<alpha> A))"
 
+definition nfa_invar_DFA :: "'q_set \<times> 'b \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> bool" where
+  "nfa_invar_DFA A \<equiv> (nfa_invar A \<and> weak_DFA (nfa_\<alpha> A))"
 
 end
 
@@ -5450,7 +5457,7 @@ proof -
     by (smt IntD2 domIff inj_on_def option.inject prod.inject)
 qed
 
-(*
+
 definition determinise_impl_aux where
 "determinise_impl_aux const s_ops ff it_A it_D it_S I A FP =
  (\<lambda>AA. const (ff AA) (A AA) [I AA] 
@@ -5458,9 +5465,9 @@ definition determinise_impl_aux where
 
 
 
-lemma (in automaton_by_lts_interval_syntax) dfa_by_map_correct2 [simp]: 
+lemma (in automaton_by_lts_bool_algebra_syntax) dfa_by_map_correct2 [simp]: 
     "nfa nfa_\<alpha> nfa_invar_DFA"    
-    unfolding nfa_def nfa_invar_DFA_def DFA_alt_def by simp
+    unfolding nfa_def nfa_invar_NFA_def DFA_alt_def by simp
 
 
 
@@ -6417,126 +6424,11 @@ proof -
 qed
 
 *)
-(*
-lemma determinise_impl_correct :
-assumes it_S_OK: "set_iteratei  s.\<alpha> s.invar it_S"
-    and it_S2_OK: "set_iteratei  s.\<alpha> s.invar it_S2"
-    and it_q_OK: "set_iteratei  s.\<alpha> s.invar it_q"
-    and it_A_OK: "set_iteratei lt.\<alpha> lt.invar it_A"
-    and it_D_nfa_OK: "lts_succ_it' d_nfa.\<alpha> d_nfa.invar it_D"
-    and qm_ops_OK: "StdMap qm_ops"
-    and m_ops_OK: "StdMap m_ops"
-    and I_OK: "(\<And>n. nfa.nfa_invar_DFA n \<Longrightarrow> s.\<alpha> (nfa.nfa_initial n) \<noteq> {})"
-    and \<Sigma>_OK: "\<And>n. nfa.nfa_invar_DFA n \<Longrightarrow> canonicalIs (nfa.nfa_alphabet n)"
-    and s_inj: "\<And> S. Ball S s.invar \<Longrightarrow> inj_on s.\<alpha> S"
-  shows "nfa_determinise nfa_dfa_\<alpha> nfa.nfa_invar_DFA
-         nfa_dfa_\<alpha> nfa.nfa_invar_DFA (\<lambda> n. (d_nfa.\<alpha> (nfa.nfa_trans n)))
-       (determinise_impl qm_ops m_ops it_S it_S2 it_q it_A it_D)"
-proof (intro nfa_determinise.intro automaton_by_lts_correct1
-             nfa_determinise_axioms.intro)
-  fix n
-  assume invar_a: "nfa.nfa_invar_DFA n"
-     and labelneq: "\<forall>(q, a, q')\<in>d_nfa.\<alpha> (nfa.nfa_trans n). semIs a \<noteq> {}"
-     and canonicaltrans: "\<forall>(q, a, q')\<in>d_nfa.\<alpha> (nfa.nfa_trans n). canonicalIs a"
-     and label_OK: "\<forall>(q1, a1, q1')\<in>d_nfa.\<alpha> (nfa.nfa_trans n).
-            \<forall>(q2, a2, q2')\<in>d_nfa.\<alpha> (nfa.nfa_trans n).
-               a1 \<noteq> a2 \<longrightarrow> emptyIs (intersectIs a1 a2)"
-  note it_A_OK' = set_iteratei_alt_D[OF it_A_OK]
-  note it_S_OK' = set_iteratei_alt_D[OF it_S_OK]
-  note it_S2_OK' = set_iteratei_alt_D[OF it_S2_OK]
-
-  { fix Q
-    assume invar_Q: "s.invar Q"
-    define m where "m = set_encode_rename_map m_ops (\<lambda>c f. it_S2 Q c f)"
-
-    from invar_Q have fin_Q: "finite (s.\<alpha> Q)" by simp
-    thm set_encode_rename_map_correct
-    from set_encode_rename_map_correct [OF it_S2_OK', OF invar_Q m_ops_OK,folded m_def] 
-    obtain f where f_props: "inj_on f (s.\<alpha> Q)"
-                            "map_op_invar m_ops m"
-                            "dom (map_op_\<alpha> m_ops m) = s.\<alpha> Q"
-                            "\<And>q. q\<in>s.\<alpha> Q \<Longrightarrow> map_op_\<alpha> m_ops m q = Some (2 ^ f q)"
-      by auto
- 
-    { fix S
-      assume "s.invar S" "s.\<alpha> S \<subseteq> s.\<alpha> Q"
-      with f_props set_encode_rename_impl_correct 
-            [of m_ops m f "s.\<alpha> S" "\<lambda>c f. it_q S c f"] 
-      have " set_encode_rename_impl m_ops m (\<lambda>c f. it_q S c f) = set_encode_rename f (set_op_\<alpha> s_ops S)" 
-        by (simp add: m_ops_OK subset_iff set_iteratei_alt_D[OF it_q_OK] inj_on_def)
-    } note rename_impl_OK = this
-
-    have "\<exists>f. inj_on f {q. q \<subseteq> s.\<alpha> Q} \<and>
-          (\<forall>S. s.invar S \<and> s.\<alpha> S \<subseteq> s.\<alpha> Q \<longrightarrow>
-               set_encode_rename_impl m_ops m (\<lambda>c f. it_q S c f) =
-               f (s.\<alpha> S))" 
-      apply (rule exI [where x ="set_encode_rename f"])
-      apply (simp add: rename_impl_OK inj_on_def set_encode_rename_eq
-                       set_encode_rename_eq [OF fin_Q f_props(1)])
-    done
-  } note ff_OK = this
-
-  show " nfa.nfa_invar_DFA (determinise_impl qm_ops m_ops it_S it_S2 it_q it_A it_D n) \<and>
-         NFA_set_interval.NFA_isomorphic_wf
-          (nfa_dfa_\<alpha> (determinise_impl qm_ops m_ops it_S it_S2 it_q it_A it_D n))
-          (efficient_determinise_NFA (nfa_dfa_\<alpha> n))"
-  proof -
-    from invar_a have invar_n: "nfa.nfa_invar_DFA n" 
-      unfolding nfa.nfa_invar_DFA_def nfa.nfa_invar_NFA_def
-      by simp
-    from invar_n have wf_n: "NFA (nfa.nfa_\<alpha> n)"  
-      unfolding nfa.nfa_invar_DFA_def by simp
-    
-    thm nfa.DFA_construct_reachable_impl_code_correct [OF ]
-    thm nfa_determinise.determinise_correct_aux
-    note aux_rule = nfa_determinise.determinise_correct_aux 
-          [OF automaton_by_lts_interval_syntax.determinise_impl_aux_correct,
-          OF _ nfa.dfa_by_map_correct] 
-  
-    show ?thesis 
-      unfolding nfa_dfa_\<alpha>_def determinise_impl_def
-      apply (rule aux_rule)
-      apply (simp_all add: s.StdSet_axioms invar_n it_S_OK')
-      thm nfa.determinise_impl_aux_correct
-          nfa.DFA_construct_reachable_impl_code_correct
-      apply (rule nfa.DFA_construct_reachable_impl_code_correct [OF qm_ops_OK])
-
-      apply (simp_all add: nfa.nfa_invar_NFA_def nfa.nfa_invar_def nfa.nfa_invar_DFA_def
-                           s.correct it_A_OK' nfa.nfa_\<alpha>_def I_OK \<Sigma>_OK canonicaltrans)
-             defer 
-              
-      apply (subgoal_tac "{(q, semIs a, q') |q a q'. (q, a, q') \<in> d_nfa.\<alpha> (nfa.nfa_trans n)} =
-         nfa.interval_to_set ` d_nfa.\<alpha> (nfa.nfa_trans n)")
-      apply assumption
-             apply force
-      defer defer defer   
-             apply (insert canonicaltrans)
-             apply (assumption)
-      defer
-      using label_OK apply force
-          defer   defer defer
-      apply (rule ff_OK) 
-         apply (simp add: nfa.nfa_invar_NFA_def nfa.nfa_invar_def) defer defer
-        
-        apply (insert it_A_OK)
-      unfolding set_iteratei_alt_def  
-      apply simp
-      using nfa_labels_invar lteq nfa.nfa_invar_DFA_def
-      using nfa.nfa_\<alpha>_def nfa.nfa_invar_def apply auto[1]
-        apply (insert it_D_nfa_OK) []
-      apply (simp add: lts_succ_it'_def) 
-      using labelneq apply auto
-      using s_inj apply auto
-    done
-  
-  qed
-qed
 end
-*)
 
-(*
+
 subsection \<open> Complement \<close>
-context automaton_by_lts_interval_defs 
+context automaton_by_lts_bool_algebra_defs 
 begin
 
 definition complement_impl where
