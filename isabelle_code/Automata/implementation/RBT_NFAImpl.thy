@@ -5,7 +5,7 @@ theory RBT_NFAImpl
 
 imports  "Collections.Collections" 
           RBT_LTSImpl Interval_imp 
-          DFAByLTS Datatype_Order_Generator.Derive
+          NFAByLTS Datatype_Order_Generator.Derive
 begin
 
 derive linorder "('a \<times> 'a) list"

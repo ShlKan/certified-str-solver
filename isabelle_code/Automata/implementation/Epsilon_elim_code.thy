@@ -1,7 +1,7 @@
 
 theory Epsilon_elim_code
 
-imports Epsilon_Elim_Imp LTSSpec NFA_interval_Spec DFAByLTS
+imports Epsilon_Elim_Imp LTSSpec NFA_interval_Spec NFAByLTS
         RBT_LTSImpl RBT_NFAImpl Interval_imp
 
 begin
