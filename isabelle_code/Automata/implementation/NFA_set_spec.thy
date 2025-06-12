@@ -15,7 +15,93 @@ type_synonym ('q,'a,'nfa) nfa_\<alpha> = "'nfa \<Rightarrow> ('q, 'a) NFA_rec"
     fixes invar :: "'nfa \<Rightarrow> bool"
     assumes nfa_is_wellformed: "invar n \<Longrightarrow> NFA (\<alpha> n)"
 
+type_synonym ('q2,'i,'b,'\<sigma>,'nfa) nfa_construct = 
+    "('q2 \<Rightarrow> 'i) \<Rightarrow> 'b \<Rightarrow> 'q2 list \<Rightarrow>  ('q2 \<Rightarrow> bool) \<Rightarrow> 
+     ('q2 \<Rightarrow> ('b \<times>'q2,'\<sigma>) set_iterator) \<Rightarrow> 'nfa"
 
+locale dfa_construct = nfa \<alpha> invar + set s_\<alpha> s_invar 
+    for \<alpha> invar 
+    and s_\<alpha> :: "'a_set \<Rightarrow> 'a::linorder set" and s_invar + 
+    constrains \<alpha> :: "('q,'a,'nfa) nfa_\<alpha>" 
+    fixes q2_\<alpha> :: "'q2_rep \<Rightarrow> 'q2" 
+      and q2_invar :: "'q2_rep \<Rightarrow> bool" 
+      and construct :: "('q2_rep,'i,'b,'\<sigma>,'nfa) nfa_construct"
+      and sem :: "'b \<Rightarrow> 'a set" 
+      and canonical_op :: "'b \<Rightarrow> bool"
+    assumes dfa_construct_correct:
+       "\<lbrakk>weak_DFA (\<A>::('q2, 'a) NFA_rec); inj_on f (\<Q> \<A>);
+         \<And>q. q2_invar q \<Longrightarrow> q2_\<alpha> q \<in> \<Q> \<A> \<Longrightarrow> ff q = (f (q2_\<alpha> q));
+         distinct (map q2_\<alpha> I); \<And>q. q \<in> set I \<Longrightarrow> q2_invar q; q2_\<alpha> ` (set I) = \<I> \<A>;
+         canonical_op Sig; 
+         finite (\<Delta> \<A>);
+         \<And> q. \<forall> (a, q') \<in> (DS q). canonical_op a ; 
+         \<And> q. q2_invar q \<Longrightarrow> q2_\<alpha> q \<in> \<Q> \<A> \<Longrightarrow> inj_on q2_\<alpha> {q'. \<exists>a. (a, q') \<in> DS q};
+         sem Sig = \<Sigma> \<A>; \<And>q. \<lbrakk>q2_invar q; q2_\<alpha> q \<in> \<Q> \<A>\<rbrakk> \<Longrightarrow> FP q \<longleftrightarrow> q2_\<alpha> q \<in> \<F> \<A>;
+         \<And>q. q2_invar q \<Longrightarrow> q2_\<alpha> q \<in> \<Q> \<A> \<Longrightarrow> set_iterator (D_it q) (DS q) \<and>
+               {(a, q'). (q2_\<alpha> q, a, q') \<in> \<Delta> \<A>} = (\<lambda>(a, q'). (sem a, q2_\<alpha> q')) ` (DS q) \<and>
+               (\<forall>a q'. (a, q') \<in> (DS q) \<longrightarrow> q2_invar q') \<and>
+               (\<forall>a q'. (a, q') \<in> (DS q) \<longrightarrow> (\<forall>q''. (a, q'') \<in> (DS q) \<longrightarrow> (q2_\<alpha> q' = q2_\<alpha> q'') = (q' = q''))) 
+            \<rbrakk> \<Longrightarrow> 
+         (invar (construct ff Sig I FP D_it) \<and>
+          NFA_isomorphic_wf (\<alpha> (construct ff Sig I FP D_it)) (NFA_remove_unreachable_states \<A>))"
+
+locale nfa_rename_states = nfa \<alpha>1 invar1 + nfa \<alpha>2 invar2  
+    for \<alpha>1 :: "('q1,'a,'nfa1) nfa_\<alpha>" and invar1 and
+        \<alpha>2 :: "('q2,'a,'nfa2) nfa_\<alpha>" and invar2 +
+    fixes rename_states :: "'nfa1 \<Rightarrow> ('q1 \<Rightarrow> 'q2) \<Rightarrow> 'nfa2"
+    assumes nfa_rename_states_correct:
+      "invar1 n \<Longrightarrow> (invar2 (rename_states n f))"
+      "invar1 n \<Longrightarrow> (\<alpha>2 (rename_states n f) = NFA_rename_states (\<alpha>1 n) f)"
+
+  type_synonym ('a1,'a2,'nfa1,'nfa2) nfa_rename_labels = "'nfa1 \<Rightarrow> ('a1 \<Rightarrow> 'a2) \<Rightarrow> 'nfa2"
+  locale nfa_rename_labels = n1:nfa \<alpha>1 invar1 + n2:nfa \<alpha>2 invar2  
+    for \<alpha>1 :: "('q,'a1,'nfa1) nfa_\<alpha>" and invar1 and
+        \<alpha>2 :: "('q,'a2,'nfa2) nfa_\<alpha>" and invar2 +
+    fixes rename_labels :: "('a1,'a2,'nfa1,'nfa2) nfa_rename_labels"
+    assumes rename_labels_correct:
+      "invar1 n \<Longrightarrow> (invar2 (rename_labels n f))"
+      "invar1 n \<Longrightarrow> (\<alpha>2 (rename_labels n f) = NFA_rename_labels (\<alpha>1 n) f)"
+  begin
+    lemma rename_labels_correct___isomorphic :
+      "invar1 n \<Longrightarrow> (invar2 (rename_labels n f))"
+      "invar1 n \<Longrightarrow> NFA_isomorphic_wf (\<alpha>1 n) \<A> \<Longrightarrow> 
+                    NFA_isomorphic_wf (\<alpha>2 (rename_labels n f)) (NFA_rename_labels \<A> f)"
+    using rename_labels_correct[of n f] n2.nfa_is_wellformed
+          NFA_isomorphic_wf___NFA_rename_labels_cong [of "\<alpha>1 n" \<A> f]
+
+    by simp_all
+end
+
+type_synonym ('q,'b,'nfa) nfa_from_list_ba = 
+    "('q list \<times> 'b \<times> ('q \<times> 'b \<times> 'q) list 
+      \<times> 'q list \<times> 'q list) \<Rightarrow> 'nfa"
+
+  thm NFA_construct_interval___is_well_formed
+
+  locale nfa_from_list_ba = nfa +
+    constrains \<alpha> :: "('q,'a::linorder,'nfa) nfa_\<alpha>"
+    fixes wf :: "('q list \<times> 'b \<times> ('q \<times> 'b \<times> 'q) list 
+      \<times> 'q list \<times> 'q list) \<Rightarrow> bool"
+    fixes from_interval :: "('q,'b,'nfa) nfa_from_list_ba" and
+         sem :: "'b \<Rightarrow> 'a set" and
+        canonical_op :: "'b \<Rightarrow> bool" and
+        intersect_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b" and
+        empty_op :: "'b \<Rightarrow> bool" 
+    assumes nfa_from_list_interval_correct:
+      "wf l \<Longrightarrow> invar (from_interval l)"  
+      "wf l \<Longrightarrow> \<alpha> (from_interval l) = NFA_construct_ba sem l"
+  begin
+    lemma nfa_from_list_interval_correct___isomorphic :
+      "wf l \<Longrightarrow> invar (from_interval l)"
+      "wf l \<Longrightarrow> (\<forall> (q,d,q') \<in> set (fst (snd (snd l))). finite (sem d)) \<longrightarrow>
+       (\<forall> (q, \<sigma>, q') \<in> set (fst (snd (snd l))). sem \<sigma> \<subseteq> sem (fst (snd l))) \<longrightarrow>
+         NFA_isomorphic_wf (\<alpha> (from_interval l)) (NFA_construct_ba sem l)"
+      apply auto
+      by (simp_all add: nfa_from_list_interval_correct 
+                        NFA_isomorphic_wf_def NFA_isomorphic_refl
+                        NFA_construct_interval___is_well_formed)
+      
+  end
 
 locale nfa_determinise = n1: nfa \<alpha>1 invar1 + n2: nfa \<alpha>2 invar2    
     for \<alpha>1 :: "('q1::{NFA_states},'a::linorder,'nfa1) nfa_\<alpha>" and invar1 and

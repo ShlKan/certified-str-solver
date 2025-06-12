@@ -1518,7 +1518,6 @@ NFA_construct_reachable_ba_impl_code where
    clts_op_empty d_ops, Is, set_op_empty s_ops ()), I)
  in AA)"
 
-
 lemma NFA_construct_reachable_interval_impl_code_correct: 
 fixes D_it :: "'q2_rep \<Rightarrow> (('b \<times> 'q2_rep),
                      ('m \<times> nat) \<times> 'd \<times> 'q2_rep list) set_iterator"
