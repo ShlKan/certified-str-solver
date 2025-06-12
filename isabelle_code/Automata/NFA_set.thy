@@ -231,38 +231,38 @@ lemma foldl_fun_comm:
 
 (* NFA_construct for interval *)
 
-fun construct_NFA_interval_aux where 
-   "construct_NFA_interval_aux \<A> (q1, l, q2) =
+fun construct_NFA_ba_aux where 
+   "construct_NFA_ba_aux sem \<A> (q1, l, q2) =
     \<lparr> \<Q>=insert q1 (insert q2 (\<Q> \<A>)),
       \<Sigma> = \<Sigma> \<A>,
-      \<Delta> = \<Delta> \<A> \<union> {(q1,semIs l \<inter> (\<Sigma> \<A>),q2)}, 
+      \<Delta> = \<Delta> \<A> \<union> {(q1,sem l \<inter> (\<Sigma> \<A>),q2)}, 
       \<I> = \<I> \<A>, \<F> = \<F> \<A>\<rparr>"
 
-fun NFA_construct_interval   where
-   "NFA_construct_interval (Q, S, D, I, F) =
-    foldl construct_NFA_interval_aux 
-    \<lparr> \<Q>=set (Q @ I @ F), \<Sigma> = semIs S, \<Delta>={}, \<I> =set I, \<F> = set F\<rparr> D"
-declare NFA_construct_interval.simps [simp del]
+fun NFA_construct_ba   where
+   "NFA_construct_ba sem (Q, S, D, I, F) =
+    foldl (construct_NFA_ba_aux sem) 
+    \<lparr> \<Q>=set (Q @ I @ F), \<Sigma> = sem S, \<Delta>={}, \<I> =set I, \<F> = set F\<rparr> D"
+declare NFA_construct_ba.simps [simp del]
 
-lemma NFA_construct_interval_alt_def :
-  "NFA_construct_interval (Q, S, D, I, F) =
+lemma NFA_construct_ba_alt_def :
+  "NFA_construct_ba sem (Q, S, D, I, F) =
    \<lparr> \<Q>=set Q \<union> set I \<union> set F \<union>
        set (map fst D) \<union>
        set (map (snd \<circ> snd) D),
-       \<Sigma> = semIs S,
-       \<Delta> = {(q1,l,q2). \<exists> l1. (q1,l1,q2) \<in> set D \<and> l = semIs l1 \<inter> (semIs S)}, 
+       \<Sigma> = sem S,
+       \<Delta> = {(q1,l,q2). \<exists> l1. (q1,l1,q2) \<in> set D \<and> l = sem l1 \<inter> (sem S)}, 
        \<I> = set I, \<F> = set F\<rparr>"
 proof (induct D)
-  case Nil thus ?case by (auto simp add: NFA_construct_interval.simps)
+  case Nil thus ?case by (auto simp add: NFA_construct_ba.simps)
 next
   case (Cons qlq D)
-  have fold_lemma: "\<And>\<A>. foldl construct_NFA_interval_aux 
-                (construct_NFA_interval_aux \<A> qlq) D =
-            construct_NFA_interval_aux (foldl construct_NFA_interval_aux \<A> D) qlq"
+  have fold_lemma: "\<And>\<A>. foldl (construct_NFA_ba_aux sem) 
+                (construct_NFA_ba_aux sem \<A> qlq) D =
+            construct_NFA_ba_aux sem (foldl (construct_NFA_ba_aux sem) \<A> D) qlq"
     by (rule_tac foldl_fun_comm [symmetric], auto)
-  have fold_lemma1: "NFA_construct_interval (Q, S, (qlq # D), I, F)= 
-         construct_NFA_interval_aux (NFA_construct_interval (Q, S, D, I, F)) qlq"
-    by (simp add: NFA_construct_interval.simps fold_lemma)
+  have fold_lemma1: "NFA_construct_ba sem (Q, S, (qlq # D), I, F)= 
+         construct_NFA_ba_aux sem (NFA_construct_ba sem (Q, S, D, I, F)) qlq"
+    by (simp add: NFA_construct_ba.simps fold_lemma)
   obtain q1 l q2 where qlq_eq : "qlq = (q1, l, q2)" by (cases qlq, auto)
   
   from Cons fold_lemma1 show ?case
@@ -271,15 +271,15 @@ qed
 
 lemma NFA_construct_interval___is_well_formed :
   fixes l
-  shows "NFA (NFA_construct_interval l)"
+  shows "NFA (NFA_construct_ba sem l)"
 proof -
   obtain Q S D I F where l_eq[simp]: "l = (Q, S, D, I, F)" 
     by (metis prod.exhaust)
   have l_D: "fst (snd (snd l)) = D" by auto
   { fix q \<sigma> q'
-    assume "(q, \<sigma>, q') \<in> \<Delta> (NFA_construct_interval (Q, S, D, I, F))"
+    assume "(q, \<sigma>, q') \<in> \<Delta> (NFA_construct_ba sem (Q, S, D, I, F))"
     then obtain l where in_D: "(q, l, q') \<in> set D" 
-       by (auto simp add: NFA_construct_interval_alt_def)
+       by (auto simp add: NFA_construct_ba_alt_def)
 
     from in_D have p1: "q \<in> fst ` set D" by (metis fst_conv imageI) 
     from in_D have p3: "q' \<in> (snd \<circ> snd) ` set D"
@@ -288,7 +288,7 @@ proof -
   } 
   
   thus ?thesis
-    by (auto simp add: NFA_construct_interval_alt_def NFA_def 
+    by (auto simp add: NFA_construct_ba_alt_def NFA_def 
            Ball_def)
 
 qed 
@@ -360,42 +360,6 @@ lemma list_set_eq : "\<And> l a. finite a \<longrightarrow> (l = set (SOME l. se
 
 lemma S_S: "S = {q. q \<in>S}"
   by auto
-
-(*
-lemma NFA_construct_exists :
-fixes \<A> :: "('q, 'a::linorder) NFA_rec"
-assumes wf_A: "NFA \<A>" and
-    finite_\<Delta>: "finite (\<Delta> \<A>)"
-  shows "\<exists> Q D I F. 
-   NFA_construct_interval (Q, D, I, F) = \<A> "
-proof -
-  interpret NFA_A: NFA \<A> by (fact wf_A)
-
-  from finite_list[OF NFA_A.finite_\<Q>] guess Q .. note set_Q = this 
-  from finite_list[OF NFA_A.finite_\<I>] guess I .. note set_I = this 
-  from finite_list[OF NFA_A.finite_\<F>] guess F .. note set_F = this 
-  from finite_list[OF finite_\<Delta>] guess DD .. note set_DD = this
-
-  
-  let ?D = "map (\<lambda>qaq. (fst qaq, set_to_list (fst (snd qaq)), snd (snd qaq))) DD"
-
-  have "\<A> = NFA_construct (Q, ?D, I, F)"
-    apply (rule NFA_rec.equality)
-    apply (simp_all add: NFA_construct_alt_def set_Q set_I set_F set_DD o_def)
-        apply (insert NFA_A.\<Delta>_consistent NFA_A.\<I>_consistent NFA_A.\<F>_consistent) []
-        apply auto[]
-      apply (insert NFA_A.\<Delta>_consistent) []
-     apply auto []
-    apply (metis finite_\<Delta> infinite_super set_set_to_list subset_eq set_to_list_def)
-    apply (auto simp add: 
-         image_iff Bex_def ex_simps[symmetric] set_to_list_def some_eq_ex  S_S)
-     apply (metis NFA_A.\<Delta>_consistent NFA_A.finite_\<Sigma> 
-          infinite_super set_set_to_list set_to_list_def)
-    by (metis NFA_A.\<Delta>_consistent NFA_A.finite_\<Sigma> infinite_super set_set_to_list set_to_list_def)
-  thus ?thesis by blast
-qed
-
-*)
 
 
 subsection \<open> Removing states \<close>
