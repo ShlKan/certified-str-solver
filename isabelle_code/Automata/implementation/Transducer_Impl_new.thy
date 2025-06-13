@@ -2,7 +2,7 @@
 theory Transducer_Impl_new
 
 imports "../Transducer_new"  
-        RBT_LTSImpl RBT_NFAImpl Interval_imp
+        RBT_LTSImpl RBT_NFAImpl 
 
 begin
 
@@ -1224,7 +1224,7 @@ interpretation transducer_implementation_defs:
      semIs emptyIs nemptyIs intersectIs diffIs elemIs canonicalIs
      semIs emptyIs nemptyIs intersectIs diffIs elemIs canonicalIs 
   by intro_locales
- 
+
 
 
 definition rs_nfa_normal where
