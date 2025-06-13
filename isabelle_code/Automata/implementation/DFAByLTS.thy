@@ -2,7 +2,7 @@
 theory DFAByLTS
                                       
 imports "Collections.Collections" "HOL.Enum"
-      "../../General/Accessible_Impl" "../DFA"
+      "../../General/Accessible_Impl" 
   LTSSpec LTSGA NFA_set_spec LTS_Impl Bool_Algebra
   
 
@@ -2979,6 +2979,7 @@ end
 
 
 end
+
 
 
 

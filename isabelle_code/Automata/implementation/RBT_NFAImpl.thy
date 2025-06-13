@@ -5,27 +5,15 @@ theory RBT_NFAImpl
 
 imports  "Collections.Collections" 
           RBT_LTSImpl Interval_imp 
-          NFAByLTS Datatype_Order_Generator.Derive
+          NFAByLTS
 begin
 
-derive linorder "('a \<times> 'a) list"
-
-interpretation rs_nfa_defs: nfa_dfa_by_lts_bool_algebra_defs rs_ops
+interpretation rs_nfa_defs: nfa_bool_algebra_defs rs_ops
                             rs_ops rs_ops rs_ops rs_lts_ops rs_lts_ops
                             semIs emptyIs nemptyIs intersectIs diffIs elemIs canonicalIs
   apply intro_locales
-  apply (simp add: bool_algebra_def)
-  apply (rule conjI)
-  using inj_semIs apply blast
-  apply (rule conjI)
-  using nemptyIs.simps nemptyIs_correct apply blast
-  apply (rule conjI)
-  using intersectIs_correct apply blast
-  apply (rule conjI)
-  apply (simp add: diffIs_correct)
-  apply (simp add: elemIs_correct)
-  done
-
+  using interval_bool_algebra
+  by simp
 
 type_synonym ('a,'b) rs_nfa = 
    "('a, unit) RBT.rbt \<times> 

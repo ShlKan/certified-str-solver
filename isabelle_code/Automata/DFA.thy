@@ -2,11 +2,10 @@
 (* Deterministic Finite Automata *)
 
 theory DFA
-imports Main LTS_Sig NFA_set "Deriving.Derive"
+imports Main LTS_Sig NFA_set 
 
 begin
 
-derive linorder "('a \<times> 'a) list"
 
 (* Basic Definitions *)
 

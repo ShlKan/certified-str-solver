@@ -4,8 +4,10 @@ section \<open> Export Code with RBTs \<close>
 theory RBT_CodeExport
 imports Main 
         RBT_NFAImpl 
+        RBT_DFAImpl
         Transducer_Impl_new
         Epsilon_elim_code
+        NFA_Split_Impl
 begin
 
 export_code
@@ -25,6 +27,9 @@ export_code
   rs_nft_destruct
   rs_nfae_destruct
   rs_nfa_normal 
+  rs_nfa_complement
+  rs_nfa_determinise
+  rs_nfa_tran_complement
   
 
 in OCaml module_name "Automata_lib"

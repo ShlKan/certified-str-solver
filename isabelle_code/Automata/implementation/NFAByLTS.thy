@@ -75,7 +75,7 @@ locale nfa_by_lts_bool_algebra_defs = automaton_by_lts_bool_algebra_defs
   and canonical_op :: "'b \<Rightarrow> bool"
 
 
-lemma nfa_by_lts_bool_algebra_defs___sublocale :
+lemma nfa_bool_algebra_defs___sublocale :
   "nfa_by_lts_bool_algebra_defs s_ops l_ops lt_ops d_ops sem empty_op noempty_op 
                    intersect_op diff_op elem_op canonical_op \<Longrightarrow>
    automaton_by_lts_bool_algebra_defs s_ops l_ops lt_ops d_ops sem empty_op noempty_op 
@@ -91,7 +91,7 @@ lemma nfa_by_lts_defs___sublocale :
   unfolding nfa_by_lts_bool_algebra_defs_def automaton_by_lts_bool_algebra_defs_def
   by (simp add: StdLTS_sublocale)
 
-locale nfa_dfa_by_lts_bool_algebra_defs = 
+locale nfa_bool_algebra_defs = 
   s: StdSet s_ops (* Set operations on states *) +
   ss: StdSet ss_ops (* Set operations on states *) +
   l: StdSet l_ops (* Set operations on labels *) +
@@ -114,7 +114,7 @@ locale nfa_dfa_by_lts_bool_algebra_defs =
   and elem_op :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
   and canonical_op :: "'b \<Rightarrow> bool"
 
-sublocale nfa_dfa_by_lts_bool_algebra_defs < 
+sublocale nfa_bool_algebra_defs < 
           nfa: nfa_by_lts_bool_algebra_defs 
           s_ops l_ops lt_ops d_nfa_ops by unfold_locales
 
@@ -497,7 +497,7 @@ qed
 
 end
 
-context nfa_dfa_by_lts_bool_algebra_defs 
+context nfa_bool_algebra_defs 
 begin
 
 lemma (in automaton_by_lts_bool_algebra_syntax) automaton_by_lts_correct :
@@ -4062,7 +4062,7 @@ proof (intro nfa_bool_comb.intro
 qed
 
 
-context nfa_dfa_by_lts_bool_algebra_defs 
+context nfa_bool_algebra_defs 
 begin
 
   fun rename_states_impl where
@@ -4123,11 +4123,11 @@ schematic_goal bool_comb_impl_code :
  by (rule refl)+
 
 
-definition (in nfa_dfa_by_lts_bool_algebra_defs) nfa_dfa_invar where
+definition (in nfa_bool_algebra_defs) nfa_dfa_invar where
      "nfa_dfa_invar n = (nfa.nfa_invar_NFA' n)"
 
 
-definition (in nfa_dfa_by_lts_bool_algebra_defs) nfa_dfa_\<alpha> where
+definition (in nfa_bool_algebra_defs) nfa_dfa_\<alpha> where
      "nfa_dfa_\<alpha> n = (nfa.nfa_\<alpha> n)"
 
 
@@ -4728,10 +4728,10 @@ proof (intro nfa_rename_states.intro
 
 
   interpret ss: StdSet ss_ops using wf_target 
-    unfolding nfa_dfa_by_lts_bool_algebra_defs_def 
+    unfolding nfa_bool_algebra_defs_def 
     by (simp add: ss.StdSet_axioms)
   interpret dd_nfa: StdLTS dd_nfa_ops elem_op using wf_target 
-    unfolding nfa_dfa_by_lts_bool_algebra_defs_def 
+    unfolding nfa_bool_algebra_defs_def 
     using dd_nfa.StdLTS_axioms by force
 
 interpret im: set_image s.\<alpha> s.invar ss.\<alpha> ss.invar im by fact
@@ -4833,7 +4833,7 @@ proof (intro nfa_rename_states.intro
 
 
   interpret ss: StdSet ss_ops using wf_target 
-    unfolding nfa_dfa_by_lts_bool_algebra_defs_def 
+    unfolding nfa_bool_algebra_defs_def 
     by (simp add: ss.StdSet_axioms)
   interpret dd_nfa: StdLTS dd_nfa_ops elem_op using wf_target 
     using dd_nfa.StdLTS_axioms by auto
@@ -5236,7 +5236,7 @@ qed
 end
 
 
-context nfa_dfa_by_lts_bool_algebra_defs
+context nfa_bool_algebra_defs
 begin
 
 definition nfa_construct_ba where
@@ -6127,7 +6127,7 @@ proof -
 qed
 
 
-context nfa_dfa_by_lts_bool_algebra_defs
+context nfa_bool_algebra_defs
 begin
 
 (*
@@ -6607,7 +6607,7 @@ end
 end
 subsection \<open> union \<close>
 
-context nfa_dfa_by_lts_bool_algebra_defs 
+context nfa_bool_algebra_defs 
 begin
 definition nfa_union_imp where
   "nfa_union_imp n1 n2 =
