@@ -3,8 +3,9 @@ theory NFA_Split_Impl
 
 imports Main "Collections.Collections" LTSSpec 
         LTSGA NFA_interval_Spec LTS_Impl "../DFA"
-        RBT_LTSImpl 
+        RBT_LTSImpl Datatype_Order_Generator.Derive
 begin
+
 
 locale nfa_split_tran_imp =
   s: StdSet s_ops (* Set operations on states *) +
@@ -1438,7 +1439,7 @@ proof -
     case False
     from \<sigma>\<sigma>'_cons
     have "finite \<sigma>'" by force
-    from False this card_insert
+    from False this 
     have eq1: "card (insert (x', diff L L'aa, q_dead) \<sigma>') = 1 + card \<sigma>'"
       by auto
 
@@ -1448,7 +1449,7 @@ proof -
     from False
     have "(x', df, q_dead) \<notin> d_nfa.\<alpha> \<sigma>"
       using \<sigma>\<sigma>'_cons image_iff labeleq by fastforce
-    from this d_nfa.correct(10)[of \<sigma> x df q_dead] \<sigma>\<sigma>'_cons  card_insert[OF finite\<sigma>]
+    from this d_nfa.correct(10)[of \<sigma> x df q_dead] \<sigma>\<sigma>'_cons
     have eq2: "card (d_nfa.\<alpha> (d_nfa.add x df q_dead \<sigma>)) = 1 + card (d_nfa.\<alpha> \<sigma>)"
       by (simp add: xxeq)
     from eq1 eq2 \<sigma>\<sigma>'_cons

@@ -3,7 +3,7 @@ section \<open> "Implementing Interval" \<close>
 
 theory Interval_imp
 
-imports Main 
+imports Main Bool_algebra
 
 begin
 
@@ -1713,6 +1713,19 @@ lemma intervals_imp_instance :
   using elemIs_correct
   by auto 
 
+lemma interval_bool_algebra:
+ "bool_algebra semIs emptyIs nemptyIs intersectIs diffIs elemIs canonicalIs"
+  apply (simp add: bool_algebra_def)
+  apply (rule conjI)
+  using inj_semIs apply blast
+  apply (rule conjI)
+  using nemptyIs.simps nemptyIs_correct apply blast
+  apply (rule conjI)
+  using intersectIs_correct apply blast
+  apply (rule conjI)
+  apply (simp add: diffIs_correct)
+  apply (simp add: elemIs_correct)
+  done
 
 end
 

@@ -1,8 +1,10 @@
 
 theory RBT_LTSImpl
 
-imports LTSByMap LTSGA LTS_Impl
+imports LTSByMap LTSGA LTS_Impl Datatype_Order_Generator.Derive
 begin
+
+derive linorder "('a \<times> 'a) list"
 
 subsection \<open> LTS \<close>
 interpretation rs_lts_defs: ltsbm_defs rm_ops rm_ops rs_ops 
