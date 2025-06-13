@@ -13,9 +13,12 @@ begin
 interpretation rs_nfa_defs: nfa_dfa_by_lts_bool_algebra_defs rs_ops
                             rs_ops rs_ops rs_ops rs_lts_ops rs_lts_ops
                             semIs emptyIs nemptyIs intersectIs diffIs elemIs canonicalIs
+  unfolding nfa_dfa_by_lts_bool_algebra_defs_def
   apply intro_locales
-  using interval_bool_algebra
-  by simp
+  apply (simp add: interval_bool_algebra 
+      nfa_dfa_by_lts_bool_algebra_defs_axioms_def
+      rs.StdSet_axioms rs_lts_impl)
+  done
 
 
 type_synonym ('a,'b) rs_nfa = 

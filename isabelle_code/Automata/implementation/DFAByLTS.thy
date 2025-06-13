@@ -3,7 +3,7 @@ theory DFAByLTS
                                       
 imports "Collections.Collections" "HOL.Enum"
       "../../General/Accessible_Impl" 
-  LTSSpec LTSGA NFA_set_spec LTS_Impl Bool_Algebra
+  LTSSpec LTSGA NFA_set_spec RBT_LTSImpl Bool_Algebra
   
 
 begin
@@ -15,9 +15,7 @@ locale automaton_by_lts_bool_algebra_syntax =
   s: StdSetDefs s_ops   (* Set operations on states *) +
   l: StdSetDefs l_ops   (* Set operations on labels *) +
   lt: StdSetDefs lt_ops   (* Set operations on labels *) +
-  d: StdCommonLTSDefs d_ops elem_op  (* An LTS *) +
-  iv: bool_algebra sem empty_op noempty_op 
-                   intersect_op diff_op elem_op canonical_op
+  d: StdCommonLTSDefs d_ops elem_op  (* An LTS *) 
   for s_ops::"('q::{NFA_states},'q_set,_) set_ops_scheme"
   and l_ops::"('a:: linorder,'a_set ,_) set_ops_scheme"
   and lt_ops::"('b, 'ai_set ,_) set_ops_scheme"
@@ -28,7 +26,12 @@ locale automaton_by_lts_bool_algebra_syntax =
   and intersect_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
   and diff_op :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'b"
   and elem_op :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
-  and canonical_op :: "'b \<Rightarrow> bool"
+  and canonical_op :: "'b \<Rightarrow> bool" +
+assumes
+  iv: "bool_algebra sem empty_op noempty_op 
+                   intersect_op diff_op elem_op canonical_op"
+  
+
 
 
 locale automaton_by_lts_bool_algebra_defs = automaton_by_lts_bool_algebra_syntax
@@ -37,9 +40,7 @@ locale automaton_by_lts_bool_algebra_defs = automaton_by_lts_bool_algebra_syntax
   s: StdSet s_ops (* Set operations on states *) +
   l: StdSet l_ops (* Set operations on labels *) +
   lt: StdSet lt_ops   (* Set operations on labels *) +
-  d: StdCommonLTS d_ops elem_op (* An LTS *) + 
-  iv: bool_algebra sem empty_op noempty_op 
-                   intersect_op diff_op elem_op canonical_op
+  d: StdCommonLTS d_ops elem_op (* An LTS *) 
   for s_ops::"('q::{NFA_states},'q_set,_) set_ops_scheme"
   and l_ops::"('a :: linorder,'a_set ,_) set_ops_scheme"
   and lt_ops::"('b, 'ai_set ,_) set_ops_scheme"
@@ -50,7 +51,7 @@ locale automaton_by_lts_bool_algebra_defs = automaton_by_lts_bool_algebra_syntax
   and intersect_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
   and diff_op :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'b"
   and elem_op :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
-  and canonical_op :: "'b \<Rightarrow> bool"
+  and canonical_op :: "'b \<Rightarrow> bool" 
 
 
 locale nfa_by_lts_bool_algebra_defs = automaton_by_lts_bool_algebra_defs 
@@ -59,9 +60,7 @@ locale nfa_by_lts_bool_algebra_defs = automaton_by_lts_bool_algebra_defs
   s: StdSet s_ops (* Set operations on states *) +
   l: StdSet l_ops (* Set operations on labels *) +
   lt: StdSet lt_ops   (* Set operations on labels *) +
-  d: StdLTS d_ops elem_op (* An LTS *) +
-  iv: bool_algebra sem empty_op noempty_op 
-                   intersect_op diff_op elem_op canonical_op
+  d: StdLTS d_ops elem_op (* An LTS *) 
   for s_ops::"('q :: {NFA_states},'q_set,_) set_ops_scheme"
   and l_ops::"('a ::linorder,'a_set,_) set_ops_scheme"
   and lt_ops::"('b, 'ai_set ,_) set_ops_scheme"
@@ -72,8 +71,7 @@ locale nfa_by_lts_bool_algebra_defs = automaton_by_lts_bool_algebra_defs
   and intersect_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
   and diff_op :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'b"
   and elem_op :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
-  and canonical_op :: "'b \<Rightarrow> bool"
-
+  and canonical_op :: "'b \<Rightarrow> bool" 
 
 lemma nfa_by_lts_bool_algebra_defs___sublocale :
   "nfa_by_lts_bool_algebra_defs s_ops l_ops lt_ops d_ops sem empty_op noempty_op 
@@ -97,9 +95,7 @@ locale nfa_dfa_by_lts_bool_algebra_defs =
   l: StdSet l_ops (* Set operations on labels *) +
   lt: StdSet lt_ops   (* Set operations on labels *) +
   d_nfa: StdLTS d_nfa_ops elem_op (* An LTS *) +
-  dd_nfa: StdLTS dd_nfa_ops elem_op (* An LTS *) +
-  iv: bool_algebra sem empty_op noempty_op 
-                   intersect_op diff_op elem_op canonical_op
+  dd_nfa: StdLTS dd_nfa_ops elem_op (* An LTS *) 
   for s_ops::"('q::{NFA_states},'q_set,_) set_ops_scheme"
   and ss_ops::"('q \<times> 'q,'qq_set,_) set_ops_scheme"
   and l_ops::"('a::linorder, 'a_set ,_) set_ops_scheme"
@@ -112,13 +108,22 @@ locale nfa_dfa_by_lts_bool_algebra_defs =
   and intersect_op :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
   and diff_op :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'b"
   and elem_op :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
-  and canonical_op :: "'b \<Rightarrow> bool"
+  and canonical_op :: "'b \<Rightarrow> bool" +
+assumes
+  iv: "bool_algebra sem empty_op noempty_op 
+                   intersect_op diff_op elem_op canonical_op"
 
 sublocale nfa_dfa_by_lts_bool_algebra_defs < 
           nfa: nfa_by_lts_bool_algebra_defs 
-          s_ops l_ops lt_ops d_nfa_ops by unfold_locales
-
-
+          s_ops l_ops lt_ops d_nfa_ops sem empty_op
+          noempty_op intersect_op diff_op elem_op canonical_op
+  apply unfold_locales
+  apply (metis bool_algebra.inj_semIs_aux iv) 
+  apply (meson bool_algebra.empty_interval_sem iv)
+  using bool_algebra.noempty_intervals_sem iv apply fastforce
+  apply (meson bool_algebra.intersect_intervals_sem iv)
+  apply (smt (verit, best) bool_algebra.diff_intervals_sem iv)
+  by (smt (verit, ccfv_SIG) bool_algebra.elem_sem iv)
 
 context automaton_by_lts_bool_algebra_syntax
 begin
@@ -417,7 +422,8 @@ proof -
 
     from this l_cano
     have lsiglinter: "sem (intersect_op l SigL) = sem l \<inter> sem SigL" 
-      using iv.intersect_intervals_sem by auto
+      using iv bool_algebra.intersect_intervals_sem 
+      by fastforce
       
       
 
@@ -427,8 +433,10 @@ proof -
        "nfa_invar (nfa_construct_ba_aux A (q1, l, q2))"
       apply (simp_all add: nfa_construct_ba_aux_def 
                         nfa_\<alpha>_def s.correct nfa_invar_NFA_def nfa_invar_def)
-      apply (simp add: \<open>canonical_op SigL\<close> iv.intersect_intervals_sem l_cano
+     apply (simp add: \<open>canonical_op SigL\<close> iv 
+                bool_algebra.intersect_intervals_sem l_cano
           lts_add_def)
+      using lsiglinter apply presburger
       by (simp add: lts_add.lts_add_correct(1))
 qed
 
@@ -1022,7 +1030,7 @@ proof
 
    have bool_algebra_pre: "bool_algebra sem empty_op noempty_op intersect_op diff_op elem_op
    canonical_op"
-      using iv.bool_algebra_axioms by blast
+     using iv by blast
     note inj_sem = bool_algebra.inj_semIs_aux 
                    [of sem empty_op noempty_op intersect_op 
                        diff_op elem_op  canonical_op, OF bool_algebra_pre ]
@@ -1038,7 +1046,7 @@ qed
 
 lemma bool_algebra_pre : "bool_algebra sem empty_op noempty_op intersect_op 
                        diff_op elem_op  canonical_op"
-  using iv.bool_algebra_axioms by blast
+  using iv by blast
 
 lemma NFA_construct_reachable_impl_step_correct :
 fixes D II
@@ -1096,8 +1104,8 @@ shows "NFA_construct_reachable_impl_step_ba DS qm0 n D0 q \<le>
   apply (simp add: rm_eq D0'_eq invar_qm0_n invar_D0)
   apply (simp add: in_br_conv)
   apply (simp add: invar_D0 invar_qm0_n)
-  using assms(8) invar_D0 iv.noempty_intervals_sem 
-  iv.empty_interval_sem DS_OK0
+  using assms(8) invar_D0 iv bool_algebra.noempty_intervals_sem 
+  iv bool_algebra.empty_interval_sem DS_OK0
   apply fastforce
   (* "goal solved" *)
   apply (simp add: br_def in_br_conv invar_D0)
@@ -1292,7 +1300,7 @@ proof -
         by auto
       from inj_semIs_aux semI_eq aq'_in_it aq''_in_it DS_OK0 it_subset
       have xayb: "i1 = i2" 
-        by (metis case_prod_conv iv.inj_semIs_aux subset_iff)
+        by (metis case_prod_conv iv bool_algebra.inj_semIs_aux subset_iff)
     have "insert (r, i2, r') (d.\<alpha> D') = d.\<alpha> (d.add r i2 r' D') \<and>
           d.invar (d.add r i2 r' D')"
       by (metis d_add_OK invar_D' lts_add_def)
@@ -1588,7 +1596,7 @@ assumes D_it_OK[rule_format, refine_transfer]:
           {p. p \<in> DS q}"
 shows "RETURN ?f \<le> NFA_construct_reachable_ba_impl Sig S I FP DS"
  unfolding NFA_construct_reachable_ba_impl_alt_def 
- WORKLISTT_def NFA_construct_reachable_impl_step_ba_def iv.noempty_intervals_sem
+ WORKLISTT_def NFA_construct_reachable_impl_step_ba_def iv bool_algebra.noempty_intervals_sem
  apply (unfold split_def snd_conv fst_conv prod.collapse)
  apply (rule refine_transfer | assumption  | erule conjE)+
 done
@@ -2053,8 +2061,8 @@ proof (intro nfa_determinise.intro nfa_OK dfa_by_map_correct2 nfa_determinise_ax
         using \<alpha>1I_def \<alpha>2I_def by auto
       from this 
       have "sem \<alpha>1I \<inter> sem \<alpha>2I = {}"
-        by (simp add: \<open>canonical_op \<alpha>1I \<and> canonical_op \<alpha>2I\<close> iv.empty_interval_sem
-            iv.intersect_intervals_sem)
+        using \<open>canonical_op \<alpha>1I \<and> canonical_op \<alpha>2I\<close> bool_algebra.empty_interval_sem
+          bool_algebra.intersect_intervals_sem iv by fastforce
       from this \<alpha>1I_def \<alpha>2I_def
       show ?thesis by auto
     qed
@@ -2208,7 +2216,7 @@ proof (intro nfa_determinise.intro nfa_OK dfa_by_map_correct2 nfa_determinise_ax
             "(qb, a1, x) \<in> T n \<and> sem a1 = sem ai" by auto
             from this labels_OK1
             have "(qb, ai, x) \<in> T n" 
-              by (metis ai_def iv.inj_semIs_aux old.prod.case)
+              by (metis ai_def bool_algebra.inj_semIs_aux iv old.prod.case)
             from this  p1
             show "\<exists>qa. qa \<in> set_op_\<alpha> ss_ops q \<and> (qa, ai, x) \<in> T n" by auto
           }
@@ -2286,7 +2294,7 @@ proof (intro nfa_determinise.intro nfa_OK dfa_by_map_correct2 nfa_determinise_ax
         aa1_def: "(qaa, aa1, xb) \<in> T n \<and> sem aa1 = sem aa" by auto
         from aa1_def p3 labels_OK1
         have "aa = aa1"
-          by (metis iv.inj_semIs_aux old.prod.case)
+          by (metis iv bool_algebra.inj_semIs_aux old.prod.case)
         from this aa1_def 
         have "(qaa, aa, xb) \<in> T n" 
           by auto
@@ -2976,7 +2984,6 @@ lemma complement_impl_correct :
 
 
 end
-
 
 end
 
