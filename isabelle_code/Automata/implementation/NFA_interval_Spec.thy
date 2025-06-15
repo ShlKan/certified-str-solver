@@ -6,7 +6,7 @@ theory NFA_interval_Spec
 imports Main 
   "../NFA_set_interval" 
   "Collections.Collections"
-  "../Epsilon_elim"
+  "../Epsilon_elim" "../NFA_states"
 
 begin
 type_synonym ('q,'a,'nfa) nfa_\<alpha> = "'nfa \<Rightarrow> ('q, 'a) NFA_rec"

@@ -244,6 +244,23 @@ module Automata_lib : sig
        * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
          * (('a, unit) rbt * ('a, unit) rbt) )
 
+  val rs_nfa_complement :
+       'a nFA_states * 'a linorder
+    -> ('a, unit) rbt * ('b * ('c * ('d * ('a, unit) rbt)))
+    -> ('a, unit) rbt * ('b * ('c * ('d * ('a, unit) rbt)))
+
+  val rs_nfa_determinise :
+       'a nFA_states * 'a linorder
+    -> 'b equal * 'b linorder
+    -> ('a, unit) rbt
+       * ( ('b * 'b) list
+         * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
+           * (('a, unit) rbt * ('a, unit) rbt) ) )
+    -> ('a, unit) rbt
+       * ( ('b * 'b) list
+         * ( ('a, (('b * 'b) list, ('a, unit) rbt) rbt) rbt
+           * (('a, unit) rbt * ('a, unit) rbt) ) )
+
   val rs_nfa_concate_rename :
        'a nFA_states * 'a linorder
     -> 'b equal * 'b linorder
@@ -292,6 +309,19 @@ module Automata_lib : sig
        * ( (('a * 'a) * (('b * 'b) list * ('a * 'a))) list
          * ((('a * 'a) * ('a * 'a)) list * (('a * 'a) list * ('a * 'a) list))
          )
+
+  val rs_nfa_tran_complement :
+       'a equal * 'a linorder
+    -> 'b equal * 'b nFA_states * 'b linorder
+    -> ('a -> 'a)
+    -> ('a -> 'a)
+    -> ('b, unit) rbt
+       * ( ('a * 'a) list
+         * (('b, (('a * 'a) list, ('b, unit) rbt) rbt) rbt * ('c * 'd)) )
+    -> 'b
+    -> ('b, unit) rbt
+       * ( ('a * 'a) list
+         * (('b, (('a * 'a) list, ('b, unit) rbt) rbt) rbt * ('c * 'd)) )
 
   val rs_nfa_construct_interval :
        'a nFA_states * 'a linorder
@@ -348,6 +378,34 @@ module Automata_lib : sig
            * (('a, unit) rbt * ('c -> 'b option -> ('d * 'd) list option)) )
          )
 end = struct
+  type nat = Nat of Z.t
+
+  let rec integer_of_nat (Nat x) = x
+
+  let rec less_eq_nat m n = Z.leq (integer_of_nat m) (integer_of_nat n)
+
+  type 'a ord = {less_eq: 'a -> 'a -> bool; less: 'a -> 'a -> bool}
+
+  let less_eq _A = _A.less_eq
+
+  let less _A = _A.less
+
+  let rec less_nat m n = Z.lt (integer_of_nat m) (integer_of_nat n)
+
+  let ord_nat = ({less_eq= less_eq_nat; less= less_nat} : nat ord)
+
+  type 'a preorder = {ord_preorder: 'a ord}
+
+  type 'a order = {preorder_order: 'a preorder}
+
+  let preorder_nat = ({ord_preorder= ord_nat} : nat preorder)
+
+  let order_nat = ({preorder_order= preorder_nat} : nat order)
+
+  type 'a linorder = {order_linorder: 'a order}
+
+  let linorder_nat = ({order_linorder= order_nat} : nat linorder)
+
   type 'a equal = {equal: 'a -> 'a -> bool}
 
   let equal _A = _A.equal
@@ -360,12 +418,6 @@ end = struct
     | x21 :: x22, [] -> false
     | x21 :: x22, y21 :: y22 -> eq _A x21 y21 && equal_list _A x22 y22
     | [], [] -> true
-
-  type 'a ord = {less_eq: 'a -> 'a -> bool; less: 'a -> 'a -> bool}
-
-  let less_eq _A = _A.less_eq
-
-  let less _A = _A.less
 
   let rec rec_list f1 f2 x2 =
     match (f1, f2, x2) with
@@ -395,18 +447,12 @@ end = struct
     ( {less_eq= less_eq_list (_A1, _A2); less= less_list (_A1, _A2)}
       : 'a list ord )
 
-  type 'a preorder = {ord_preorder: 'a ord}
-
-  type 'a order = {preorder_order: 'a preorder}
-
   let rec preorder_list (_A1, _A2) =
     ( {ord_preorder= ord_list (_A1, _A2.preorder_order.ord_preorder)}
       : 'a list preorder )
 
   let rec order_list (_A1, _A2) =
     ({preorder_order= preorder_list (_A1, _A2)} : 'a list order)
-
-  type 'a linorder = {order_linorder: 'a order}
 
   let rec linorder_list (_A1, _A2) =
     ( {order_linorder= order_list (_A1, _A2.order_linorder)}
@@ -463,8 +509,6 @@ end = struct
 
   let ord_integer = ({less_eq= Z.leq; less= Z.lt} : Z.t ord)
 
-  type nat = Nat of Z.t
-
   type 'a nFA_states = {states_enumerate: nat -> 'a}
 
   let states_enumerate _A = _A.states_enumerate
@@ -480,8 +524,6 @@ end = struct
   type ('b, 'a) rbt = RBT of ('b, 'a) rbta
 
   let rec id x = (fun xa -> xa) x
-
-  let rec integer_of_nat (Nat x) = x
 
   let rec plus_nat m n = Nat (Z.add (integer_of_nat m) (integer_of_nat n))
 
@@ -499,6 +541,9 @@ end = struct
     match (f, a, x2) with
     | f, a, [] -> a
     | f, a, x :: xs -> foldl f (f a x) xs
+
+  let rec foldr f x1 =
+    match (f, x1) with f, [] -> id | f, x :: xs -> comp (f x) (foldr f xs)
 
   let rec balance x0 s t x3 =
     match (x0, s, t, x3) with
@@ -757,6 +802,137 @@ end = struct
           , t
           , Branch (B, va, vb, vc, vd) )
 
+  let rec paint c x1 =
+    match (c, x1) with
+    | c, Empty -> Empty
+    | c, Branch (uu, l, k, v, r) -> Branch (c, l, k, v, r)
+
+  let rec balance_right a k x xa3 =
+    match (a, k, x, xa3) with
+    | a, k, x, Branch (R, b, s, y, c) ->
+        Branch (R, a, k, x, Branch (B, b, s, y, c))
+    | Branch (B, a, k, x, b), s, y, Empty ->
+        balance (Branch (R, a, k, x, b)) s y Empty
+    | Branch (B, a, k, x, b), s, y, Branch (B, va, vb, vc, vd) ->
+        balance (Branch (R, a, k, x, b)) s y (Branch (B, va, vb, vc, vd))
+    | Branch (R, a, k, x, Branch (B, b, s, y, c)), t, z, Empty ->
+        Branch
+          (R, balance (paint R a) k x b, s, y, Branch (B, c, t, z, Empty))
+    | ( Branch (R, a, k, x, Branch (B, b, s, y, c))
+      , t
+      , z
+      , Branch (B, va, vb, vc, vd) ) ->
+        Branch
+          ( R
+          , balance (paint R a) k x b
+          , s
+          , y
+          , Branch (B, c, t, z, Branch (B, va, vb, vc, vd)) )
+    | Empty, k, x, Empty -> Empty
+    | Branch (R, va, vb, vc, Empty), k, x, Empty -> Empty
+    | Branch (R, va, vb, vc, Branch (R, ve, vf, vg, vh)), k, x, Empty ->
+        Empty
+    | Empty, k, x, Branch (B, va, vb, vc, vd) -> Empty
+    | Branch (R, ve, vf, vg, Empty), k, x, Branch (B, va, vb, vc, vd) ->
+        Empty
+    | ( Branch (R, ve, vf, vg, Branch (R, vi, vj, vk, vl))
+      , k
+      , x
+      , Branch (B, va, vb, vc, vd) ) ->
+        Empty
+
+  let rec balance_left x0 s y c =
+    match (x0, s, y, c) with
+    | Branch (R, a, k, x, b), s, y, c ->
+        Branch (R, Branch (B, a, k, x, b), s, y, c)
+    | Empty, k, x, Branch (B, a, s, y, b) ->
+        balance Empty k x (Branch (R, a, s, y, b))
+    | Branch (B, va, vb, vc, vd), k, x, Branch (B, a, s, y, b) ->
+        balance (Branch (B, va, vb, vc, vd)) k x (Branch (R, a, s, y, b))
+    | Empty, k, x, Branch (R, Branch (B, a, s, y, b), t, z, c) ->
+        Branch
+          (R, Branch (B, Empty, k, x, a), s, y, balance b t z (paint R c))
+    | ( Branch (B, va, vb, vc, vd)
+      , k
+      , x
+      , Branch (R, Branch (B, a, s, y, b), t, z, c) ) ->
+        Branch
+          ( R
+          , Branch (B, Branch (B, va, vb, vc, vd), k, x, a)
+          , s
+          , y
+          , balance b t z (paint R c) )
+    | Empty, k, x, Empty -> Empty
+    | Empty, k, x, Branch (R, Empty, vb, vc, vd) -> Empty
+    | Empty, k, x, Branch (R, Branch (R, ve, vf, vg, vh), vb, vc, vd) ->
+        Empty
+    | Branch (B, va, vb, vc, vd), k, x, Empty -> Empty
+    | Branch (B, va, vb, vc, vd), k, x, Branch (R, Empty, vf, vg, vh) ->
+        Empty
+    | ( Branch (B, va, vb, vc, vd)
+      , k
+      , x
+      , Branch (R, Branch (R, vi, vj, vk, vl), vf, vg, vh) ) ->
+        Empty
+
+  let rec combine xa0 x =
+    match (xa0, x) with
+    | Empty, x -> x
+    | Branch (v, va, vb, vc, vd), Empty -> Branch (v, va, vb, vc, vd)
+    | Branch (R, a, k, x, b), Branch (R, c, s, y, d) -> (
+      match combine b c with
+      | Empty -> Branch (R, a, k, x, Branch (R, Empty, s, y, d))
+      | Branch (R, b2, t, z, c2) ->
+          Branch (R, Branch (R, a, k, x, b2), t, z, Branch (R, c2, s, y, d))
+      | Branch (B, b2, t, z, c2) ->
+          Branch (R, a, k, x, Branch (R, Branch (B, b2, t, z, c2), s, y, d))
+      )
+    | Branch (B, a, k, x, b), Branch (B, c, s, y, d) -> (
+      match combine b c with
+      | Empty -> balance_left a k x (Branch (B, Empty, s, y, d))
+      | Branch (R, b2, t, z, c2) ->
+          Branch (R, Branch (B, a, k, x, b2), t, z, Branch (B, c2, s, y, d))
+      | Branch (B, b2, t, z, c2) ->
+          balance_left a k x (Branch (B, Branch (B, b2, t, z, c2), s, y, d))
+      )
+    | Branch (B, va, vb, vc, vd), Branch (R, b, k, x, c) ->
+        Branch (R, combine (Branch (B, va, vb, vc, vd)) b, k, x, c)
+    | Branch (R, a, k, x, b), Branch (B, va, vb, vc, vd) ->
+        Branch (R, a, k, x, combine b (Branch (B, va, vb, vc, vd)))
+
+  let rec rbt_del _A x xa1 =
+    match (x, xa1) with
+    | x, Empty -> Empty
+    | x, Branch (c, a, y, s, b) ->
+        if less _A x y then rbt_del_from_left _A x a y s b
+        else if less _A y x then rbt_del_from_right _A x a y s b
+        else combine a b
+
+  and rbt_del_from_left _A x xa1 y s b =
+    match (x, xa1, y, s, b) with
+    | x, Branch (B, lt, z, v, rt), y, s, b ->
+        balance_left (rbt_del _A x (Branch (B, lt, z, v, rt))) y s b
+    | x, Empty, y, s, b -> Branch (R, rbt_del _A x Empty, y, s, b)
+    | x, Branch (R, va, vb, vc, vd), y, s, b ->
+        Branch (R, rbt_del _A x (Branch (R, va, vb, vc, vd)), y, s, b)
+
+  and rbt_del_from_right _A x a y s xa4 =
+    match (x, a, y, s, xa4) with
+    | x, a, y, s, Branch (B, lt, z, v, rt) ->
+        balance_right a y s (rbt_del _A x (Branch (B, lt, z, v, rt)))
+    | x, a, y, s, Empty -> Branch (R, a, y, s, rbt_del _A x Empty)
+    | x, a, y, s, Branch (R, va, vb, vc, vd) ->
+        Branch (R, a, y, s, rbt_del _A x (Branch (R, va, vb, vc, vd)))
+
+  let rec rbt_delete _A k t = paint B (rbt_del _A k t)
+
+  let rec impl_of _B (RBT x) = x
+
+  let rec delete _A xb xc =
+    RBT
+      (rbt_delete _A.order_linorder.preorder_order.ord_preorder xb
+         (impl_of _A xc) )
+
   let rec rbt_ins _A f k v x3 =
     match (f, k, v, x3) with
     | f, k, v, Empty -> Branch (R, Empty, k, v, Empty)
@@ -769,16 +945,9 @@ end = struct
         else if less _A x k then Branch (R, l, x, y, rbt_ins _A f k v r)
         else Branch (R, l, x, f k y v, r)
 
-  let rec paint c x1 =
-    match (c, x1) with
-    | c, Empty -> Empty
-    | c, Branch (uu, l, k, v, r) -> Branch (c, l, k, v, r)
-
   let rec rbt_insert_with_key _A f k v t = paint B (rbt_ins _A f k v t)
 
   let rec rbt_insert _A = rbt_insert_with_key _A (fun _ _ nv -> nv)
-
-  let rec impl_of _B (RBT x) = x
 
   let rec insert _A xc xd xe =
     RBT
@@ -824,13 +993,51 @@ end = struct
 
   let rec fst (x1, x2) = x1
 
+  let rec diffI _A suc pre ib is =
+    if less _A.order_linorder.preorder_order.ord_preorder (snd ib) (fst ib)
+    then []
+    else if
+      less _A.order_linorder.preorder_order.ord_preorder (snd is) (fst is)
+    then [ib]
+    else if
+      less _A.order_linorder.preorder_order.ord_preorder (snd is) (fst ib)
+    then [ib]
+    else if
+      less _A.order_linorder.preorder_order.ord_preorder (snd is) (snd ib)
+    then
+      if
+        less_eq _A.order_linorder.preorder_order.ord_preorder (fst is)
+          (fst ib)
+      then [(suc (snd is), snd ib)]
+      else [(fst ib, pre (fst is)); (suc (snd is), snd ib)]
+    else if
+      less _A.order_linorder.preorder_order.ord_preorder (snd ib) (fst is)
+    then [ib]
+    else if
+      less_eq _A.order_linorder.preorder_order.ord_preorder (fst is) (fst ib)
+    then []
+    else [(fst ib, pre (fst is))]
+
   let rec nempI _A s = less_eq _A (fst s) (snd s)
 
   let rec apsnd f (x, y) = (x, f y)
 
+  let rec diffIs_aux _A suc pre x2 i =
+    match (suc, pre, x2, i) with
+    | suc, pre, [], i -> []
+    | suc, pre, a :: l, i -> diffI _A suc pre a i @ diffIs_aux _A suc pre l i
+
+  let rec diffIs _A suc pre l1 x3 =
+    match (suc, pre, l1, x3) with
+    | suc, pre, l1, [] -> l1
+    | suc, pre, l1, i :: l2 ->
+        diffIs _A suc pre (diffIs_aux _A suc pre l1 i) l2
+
   let rec iterate_to_list it = it (fun _ -> true) (fun a b -> a :: b) []
 
   let rec ltsga_to_list it = comp iterate_to_list it
+
+  let rec emptyIs _A l = null l
 
   let rec ltsga_iterator it =
     it (fun _ -> true) (fun _ -> true) (fun _ -> true) (fun _ -> true)
@@ -961,23 +1168,6 @@ end = struct
     ( (if less _A (fst s1) (fst s2) then fst s2 else fst s1)
     , if less _B (snd s1) (snd s2) then snd s1 else snd s2 )
 
-  let rec set_iterator_union it_a it_b =
-   fun c f sigma_0 -> it_b c f (it_a c f sigma_0)
-
-  let rec tri_union_iterator it_1 it_2 it_3 =
-   fun q ->
-    set_iterator_union (it_1 q) (set_iterator_union (it_2 q) (it_3 q))
-
-  let rec concat_impl_aux c_inter c_nempty const f it_1 it_2 it_3 i1a i2a i1
-      f1 i2 fP1 fP2 =
-   fun aA1 aA2 ->
-    const f
-      ( if c_nempty (c_inter (i1 aA1) (f1 aA1)) then i1a aA1 @ i2a aA2
-        else i1a aA1 )
-      (fP2 aA2)
-      (tri_union_iterator (it_1 aA1) (it_2 aA2)
-         (it_3 aA1 (fP1 aA1) (i2 aA2)) )
-
   let rec intersectIs_aux _A a x1 =
     match (a, x1) with
     | a, [] -> []
@@ -1004,6 +1194,33 @@ end = struct
         let v, (ea, va) = f vev in
         a v ea va la )
       e
+
+  let rec set_iterator_union it_a it_b =
+   fun c f sigma_0 -> it_b c f (it_a c f sigma_0)
+
+  let rec tri_union_iterator it_1 it_2 it_3 =
+   fun q ->
+    set_iterator_union (it_1 q) (set_iterator_union (it_2 q) (it_3 q))
+
+  let rec concat_impl_aux c_inter c_nempty const f it_1 it_2 it_3 i1a i2a i1
+      f1 i2 fP1 fP2 =
+   fun aA1 aA2 ->
+    const f
+      ( if c_nempty (c_inter (i1 aA1) (f1 aA1)) then i1a aA1 @ i2a aA2
+        else i1a aA1 )
+      (fP2 aA2)
+      (tri_union_iterator (it_1 aA1) (it_2 aA2)
+         (it_3 aA1 (fP1 aA1) (i2 aA2)) )
+
+  let rec dnfa_iter _A _B _C =
+   fun x c f ->
+    iteratei_map_op_list_it_rm_ops _A x c (fun (q, aq) ->
+        iteratei_map_op_list_it_rm_ops _B aq
+          (fun _ -> true)
+          (fun (a, mq) ->
+            iteratei_set_op_list_it_rs_ops _C mq
+              (fun _ -> true)
+              (fun qa -> f (q, (a, qa))) ) )
 
   let rec rs_lts_empty _A _B = empty _A
 
@@ -1291,6 +1508,15 @@ end = struct
 
   let rec ltsga_to_collect_list to_list l = to_list l
 
+  let rec rs_lts_succq_it _A _B =
+   fun m1 v e ->
+    match lookup _A m1 v with
+    | None -> set_iterator_emp
+    | Some m2 -> (
+      match lookup _B m2 e with
+      | None -> set_iterator_emp
+      | Some a -> iteratei_set_op_list_it_rs_ops _A a )
+
   let rec rs_lts_to_collect_list _A _B =
     ltsga_to_collect_list (rs_lts_to_list _A _B)
 
@@ -1540,6 +1766,224 @@ end = struct
         , g_union_dflt_basic_oops_rm_basic_ops _A3
             (snd (snd (snd (snd a))))
             xc ) ) )
+
+  let rec delete_rm_basic_ops _A x s = delete _A x s
+
+  let rec g_diff_dflt_basic_oops_rm_basic_ops _A s1 s2 =
+    iteratei_bset_op_list_it_dflt_basic_oops_rm_basic_ops _A s2
+      (fun _ -> true)
+      (delete_rm_basic_ops _A) s1
+
+  let rec rs_nfa_complement (_A1, _A2) (q1, (a1, (d1, (i1, f1)))) =
+    (q1, (a1, (d1, (i1, g_diff_dflt_basic_oops_rm_basic_ops _A2 q1 f1))))
+
+  let rec g_disjoint_dflt_basic_oops_rm_basic_ops _A s1 s2 =
+    g_ball_dflt_basic_oops_rm_basic_ops _A s1 (fun x ->
+        not (memb_rm_basic_ops _A x s2) )
+
+  let rec set_iterator_product it_a it_b =
+   fun c f -> it_a c (fun a -> it_b a c (fun b -> f (a, b)))
+
+  let rec rs_nfa_determinise (_A1, _A2) (_B1, _B2) (q1, (a1, (d1, (i1, f1))))
+      =
+    let a, b =
+      foldl
+        (fun (a, b) ->
+          (let qm, n = a in
+           fun is q ->
+             ( ( insert linorder_nat
+                   (iteratei_set_op_list_it_rs_ops _A2 q
+                      (fun _ -> true)
+                      (fun qa na ->
+                        plus_nat na
+                          (the
+                             (lookup _A2
+                                (fst
+                                   (iteratei_set_op_list_it_rs_ops _A2 q1
+                                      (fun _ -> true)
+                                      (fun qb (m, nb) ->
+                                        ( insert _A2 qb nb m
+                                        , times_nat
+                                            (nat_of_integer (Z.of_int 2))
+                                            nb ) )
+                                      (empty _A2, one_nat) ) )
+                                qa ) ) )
+                      zero_nat )
+                   (states_enumerate _A1 n) qm
+               , suc n )
+             , ins_dj_rm_basic_ops _A2 (states_enumerate _A1 n) is ) )
+            b )
+        ((empty linorder_nat, zero_nat), empty_rm_basic_ops _A2 ())
+        [i1]
+    in
+    (let qm, n = a in
+     fun is ->
+       let aa, ba =
+         worklist
+           (fun _ -> true)
+           (fun (aa, ba) ->
+             (let qma, na = aa in
+              fun (qs, (siga, (dd, (isa, fs)))) q ->
+                let r =
+                  the
+                    (lookup linorder_nat qma
+                       (iteratei_set_op_list_it_rs_ops _A2 q
+                          (fun _ -> true)
+                          (fun qa nb ->
+                            plus_nat nb
+                              (the
+                                 (lookup _A2
+                                    (fst
+                                       (iteratei_set_op_list_it_rs_ops _A2 q1
+                                          (fun _ -> true)
+                                          (fun qb (m, nc) ->
+                                            ( insert _A2 qb nc m
+                                            , times_nat
+                                                (nat_of_integer (Z.of_int 2))
+                                                nc ) )
+                                          (empty _A2, one_nat) ) )
+                                    qa ) ) )
+                          zero_nat ) )
+                in
+                if memb_rm_basic_ops _A2 r qs then
+                  (((qma, na), (qs, (siga, (dd, (isa, fs))))), [])
+                else
+                  let ab, bb =
+                    set_iterator_image_filter
+                      (fun ab ->
+                        let nq =
+                          set_iterator_product
+                            (iteratei_set_op_list_it_rs_ops _A2 q)
+                            (fun qa ->
+                              rs_lts_succq_it _A2
+                                (linorder_list
+                                   (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
+                                d1 qa ab )
+                            (fun _ -> true)
+                            (fun (_, ac) -> ins_rm_basic_ops _A2 ac)
+                            (empty_rm_basic_ops _A2 ())
+                        in
+                        if
+                          not (g_isEmpty_dflt_basic_oops_rm_basic_ops _A2 nq)
+                        then Some (ab, nq)
+                        else None )
+                      (iteratei_set_op_list_it_rs_ops
+                         (linorder_list
+                            (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
+                         (foldr
+                            (fun e ->
+                              ins_rm_basic_ops
+                                (linorder_list
+                                   (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
+                                (fst (snd e)) )
+                            (rs_lts_to_list _A2
+                               (linorder_list
+                                  (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
+                               d1 )
+                            (empty_rm_basic_ops
+                               (linorder_list
+                                  (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
+                               () ) ) )
+                      (fun _ -> true)
+                      (fun (ab, qa) (bb, c) ->
+                        (let qmb, nb = bb in
+                         fun (dda, naa) ->
+                           if nemptyIs _B2 ab then
+                             let r_opt =
+                               lookup linorder_nat qmb
+                                 (iteratei_set_op_list_it_rs_ops _A2 qa
+                                    (fun _ -> true)
+                                    (fun qb nc ->
+                                      plus_nat nc
+                                        (the
+                                           (lookup _A2
+                                              (fst
+                                                 (iteratei_set_op_list_it_rs_ops
+                                                    _A2 q1
+                                                    (fun _ -> true)
+                                                    (fun qc (m, nd) ->
+                                                      ( insert _A2 qc nd m
+                                                      , times_nat
+                                                          (nat_of_integer
+                                                             (Z.of_int 2) )
+                                                          nd ) )
+                                                    (empty _A2, one_nat) ) )
+                                              qb ) ) )
+                                    zero_nat )
+                             in
+                             let bc, ca =
+                               if is_none r_opt then
+                                 let ra = states_enumerate _A1 nb in
+                                 ( ( insert linorder_nat
+                                       (iteratei_set_op_list_it_rs_ops _A2 qa
+                                          (fun _ -> true)
+                                          (fun qb nc ->
+                                            plus_nat nc
+                                              (the
+                                                 (lookup _A2
+                                                    (fst
+                                                       (iteratei_set_op_list_it_rs_ops
+                                                          _A2 q1
+                                                          (fun _ -> true)
+                                                          (fun qc (m, nd) ->
+                                                            ( insert _A2 qc
+                                                                nd m
+                                                            , times_nat
+                                                                (nat_of_integer
+                                                                   (Z.of_int
+                                                                      2 ) )
+                                                                nd ) )
+                                                          (empty _A2, one_nat) ) )
+                                                    qb ) ) )
+                                          zero_nat )
+                                       ra qmb
+                                   , suc nb )
+                                 , ra )
+                               else ((qmb, nb), the r_opt)
+                             in
+                             (let qmc, nc = bc in
+                              fun ra ->
+                                ( (qmc, nc)
+                                , ( rs_lts_add _A2
+                                      (linorder_list
+                                         ( equal_prod _B1 _B1
+                                         , linorder_prod _B2 _B2 ) )
+                                      r ab ra dda
+                                  , qa :: naa ) ) )
+                               ca
+                           else ((qmb, nb), (dda, naa)) )
+                          c )
+                      ((qma, na), (dd, []))
+                  in
+                  (let qmb, nb = ab in
+                   fun (dda, ac) ->
+                     ( ( (qmb, nb)
+                       , ( ins_dj_rm_basic_ops _A2 r qs
+                         , ( siga
+                           , ( dda
+                             , ( isa
+                               , if
+                                   not
+                                     (g_disjoint_dflt_basic_oops_rm_basic_ops
+                                        _A2 q f1 )
+                                 then ins_dj_rm_basic_ops _A2 r fs
+                                 else fs ) ) ) ) )
+                     , ac ) )
+                    bb )
+               ba )
+           ( ( (qm, n)
+             , ( empty_rm_basic_ops _A2 ()
+               , ( a1
+                 , ( rs_lts_empty _A2
+                       (linorder_list
+                          (equal_prod _B1 _B1, linorder_prod _B2 _B2) )
+                   , (is, empty_rm_basic_ops _A2 ()) ) ) ) )
+           , [i1] )
+       in
+       (let _, aaa = aa in
+        fun _ -> aaa )
+         ba )
+      b
 
   let rec concat_rename_impl_aux c_inter c_nempty const f it_1 it_2 it_3 i1a
       i2a i1 f1a i2 fP1 fP2 rename1 rename2 f1 f2 =
@@ -1800,6 +2244,42 @@ end = struct
         , ( g_to_list_dflt_basic_oops_rm_basic_ops (linorder_prod _A2 _A2) i
           , g_to_list_dflt_basic_oops_rm_basic_ops (linorder_prod _A2 _A2) f
           ) ) ) )
+
+  let rec diffS _A f1 f2 i s = foldl (diffIs _A f1 f2) i s
+
+  let rec rs_nfa_tran_complement (_A1, _A2) (_B1, _B2, _B3) f1 f2
+      (q, (a, (d, (i, f)))) q_dead =
+    (let qa, (aa, (da, (ia, fa))) = (q, (a, (d, (i, f)))) in
+     fun q_deada ->
+       let x =
+         iteratei_set_op_list_it_rs_ops _B3 qa
+           (fun _ -> true)
+           (fun x sigma ->
+             let xa =
+               dnfa_iter _B3
+                 (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2))
+                 _B3 da
+                 (fun _ -> true)
+                 (fun xa sigmaa ->
+                   if eq _B1 x (fst xa) then fst (snd xa) :: sigmaa
+                   else sigmaa )
+                 []
+             in
+             let xb = diffS _A2 f1 f2 aa xa in
+             if emptyIs _A2 xb then sigma
+             else
+               rs_lts_add _B3
+                 (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2))
+                 x xb q_deada sigma )
+           da
+       in
+       ( ins_rm_basic_ops _B3 q_deada qa
+       , ( aa
+         , ( rs_lts_add _B3
+               (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2))
+               q_deada aa q_deada x
+           , (ia, fa) ) ) ) )
+      q_dead
 
   let rec g_from_list_aux_dflt_basic_oops_rm_basic_ops _A accs x1 =
     match (accs, x1) with
