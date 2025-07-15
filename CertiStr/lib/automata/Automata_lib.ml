@@ -199,6 +199,16 @@ module Automata_lib : sig
        * ( ('c, (('b * 'b) list, ('c, unit) rbt) rbt) rbt
          * (('c, unit) rbt * ('c, unit) rbt) )
 
+  val rs_nfa_uniq :
+       'a equal * 'a linorder
+    -> 'd nFA_states * 'd linorder
+    -> ('a -> 'a)
+    -> ('a -> 'a)
+    -> 'b
+       * ('c * (('d, (('a * 'a) list, ('d, unit) rbt) rbt) rbt * ('e * 'f)))
+    -> 'b
+       * ('c * (('d, (('a * 'a) list, ('d, unit) rbt) rbt) rbt * ('e * 'f)))
+
   val rs_nfa_concate :
        'a nFA_states * 'a linorder
     -> 'b equal * 'b linorder
@@ -1339,6 +1349,96 @@ end = struct
          (linorder_list (equal_prod _B1 _B1, linorder_prod _B2 _B2))
          _C
          (linorder_list (equal_prod _B1 _B1, linorder_prod _B2 _B2)) )
+
+  let rec rs_split_trans_code (_A1, _A2) (_B1, _B2) f1 f2 ts =
+    let x =
+      dnfa_iter _B2
+        (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2))
+        _B2 ts
+        (fun _ -> true)
+        (fun x ->
+          ins_rm_basic_ops
+            (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2))
+            (fst (snd x)) )
+        (empty_rm_basic_ops
+           (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2))
+           () )
+    in
+    dnfa_iter _B2
+      (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2))
+      _B2 ts
+      (fun _ -> true)
+      (fun xa sigma ->
+        let a =
+          let xb =
+            iteratei_set_op_list_it_rs_ops
+              (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2))
+              x
+              (fun _ -> true)
+              (fun xb sigmaa ->
+                iteratei_set_op_list_it_rs_ops
+                  (linorder_list
+                     (equal_prod _A1 _A1, linorder_prod _A2 _A2) )
+                  sigmaa
+                  (fun _ -> true)
+                  (fun xc sigmab ->
+                    if nemptyIs _A2 (intersectIs _A2 xc xb) then
+                      if
+                        equal_list (equal_prod _A1 _A1) xc
+                          (intersectIs _A2 xc xb)
+                      then
+                        ins_rm_basic_ops
+                          (linorder_list
+                             (equal_prod _A1 _A1, linorder_prod _A2 _A2) )
+                          xc sigmab
+                      else
+                        ins_rm_basic_ops
+                          (linorder_list
+                             (equal_prod _A1 _A1, linorder_prod _A2 _A2) )
+                          (intersectIs _A2 xc xb)
+                          (ins_rm_basic_ops
+                             (linorder_list
+                                (equal_prod _A1 _A1, linorder_prod _A2 _A2) )
+                             (diffIs _A2 f1 f2 xc (intersectIs _A2 xc xb))
+                             sigmab )
+                    else
+                      ins_rm_basic_ops
+                        (linorder_list
+                           (equal_prod _A1 _A1, linorder_prod _A2 _A2) )
+                        xc sigmab )
+                  (empty_rm_basic_ops
+                     (linorder_list
+                        (equal_prod _A1 _A1, linorder_prod _A2 _A2) )
+                     () ) )
+              (ins_rm_basic_ops
+                 (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2))
+                 (fst (snd xa))
+                 (empty_rm_basic_ops
+                    (linorder_list
+                       (equal_prod _A1 _A1, linorder_prod _A2 _A2) )
+                    () ) )
+          in
+          iteratei_set_op_list_it_rs_ops
+            (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2))
+            xb
+            (fun _ -> true)
+            (fun xc ->
+              rs_lts_add _B2
+                (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2))
+                (fst xa) xc
+                (snd (snd xa)) )
+            (rs_lts_empty _B2
+               (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2)) )
+        in
+        rs_lts_union _B2
+          (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2))
+          sigma a )
+      (rs_lts_empty _B2
+         (linorder_list (equal_prod _A1 _A1, linorder_prod _A2 _A2)) )
+
+  let rec rs_nfa_uniq (_A1, _A2) (_D1, _D2) f1 f2 (q, (a, (d, (i, f)))) =
+    let qa, (aa, (da, (ia, fa))) = (q, (a, (d, (i, f)))) in
+    (qa, (aa, (rs_split_trans_code (_A1, _A2) (_D1, _D2) f1 f2 da, (ia, fa))))
 
   let rec set_iterator_emp c f sigma_0 = sigma_0
 

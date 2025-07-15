@@ -111,7 +111,7 @@ let rec print_tran l =
         l ;
       Format.printf ", " ;
       Format.printf "%d" (Z.to_int (Automata_lib.integer_of_nat c)) ;
-      Format.printf ")" ;
+      Format.printf ")\n" ;
       print_tran rl
 
 let rec print_tran_str l =
@@ -142,13 +142,13 @@ let print_auto a =
 let print_auto_str a =
   match a with
   | s, (d, (i, f)) ->
-      Format.printf "States:" ;
+      Format.printf "States:\n" ;
       print_list s ;
-      Format.printf "Initial states:" ;
+      Format.printf "Initial states:\n" ;
       print_list i ;
-      Format.printf "Transitions:" ;
+      Format.printf "Transitions:\n" ;
       print_tran_str d ;
-      Format.printf "Accepting states:" ;
+      Format.printf "Accepting states:\n" ;
       print_list f
 
 let gen_S_from_list l = Automata_lib.rs_gen_S_from_list linorder_nat l
@@ -250,8 +250,18 @@ let connectTrans ends starts =
 let selfTrans states =
   List.fold_left
     (fun trans_s a ->
-      (a, ((Some [(Z.of_int 0, Z.of_int 65535)], -2), a)) :: trans_s )
+      (a, ((Some [(Z.of_int 0, Z.of_int 0x10FFFF)], -2), a)) :: trans_s )
     [] states
+
+let selfTrans_pure states =
+  List.fold_left
+    (fun trans_s a -> (a, [(0, 0x10FFFF)], a) :: trans_s)
+    [] states
+
+let trans_NFA2NFTId trans =
+  List.fold_left
+    (fun trans_s (q, l, q') -> (q, (Some l, -2), q') :: trans_s)
+    [] trans
 
 let nft_construct nft =
   Automata_lib.rs_nft_construct_interval
@@ -268,6 +278,10 @@ type str_op =
   | Replace of string * Parser.strConstrain * Parser.strConstrain
   | ReplaceI of int * Parser.strConstrain * Parser.strConstrain
 
+let fresh_int lst =
+  let rec aux n = if n > 0 && not (List.mem n lst) then n else aux (n + 1) in
+  aux 1
+
 let nft_from_replace pattern replacement =
   let pAuto =
     match pattern with
@@ -276,6 +290,28 @@ let nft_from_replace pattern replacement =
     | Parser.RegEx s ->
         Regex.compile (Parser.str2Reg (String.sub s 1 (String.length s - 2)))
     | reg -> Regex.compile (Parser.reg2reg reg)
+  in
+  let pQ, pT, pI, pF = gen_nfa_construct_input pAuto in
+  let p_dead = fresh_int (List.map Int32.to_int pQ) in
+  let pAutoNeg =
+    IAutomata.nfa_complement
+      (nfa_construct
+         ( (p_dead + 1) :: (p_dead + 2) :: pQ
+         , pT
+           @ selfTrans_pure [p_dead + 1; p_dead + 2]
+           @ List.map (fun s -> (p_dead + 1, [(0, 0x10FFFF)], s)) pI
+           @ List.map (fun s -> (s, [(0, 0x10FFFF)], p_dead + 2)) pF
+         , (p_dead + 1) :: pI
+         , (p_dead + 2) :: pF ) )
+      (Nat (Z.of_int p_dead))
+  in
+  let pAutoNeg_nS =
+    match pAutoNeg with s, (_e, (t, (i, f))) -> (s, (t, (i, f)))
+  in
+  let nState, (nTrans, (nInits, nAccepts)) = nfa_destruct pAutoNeg_nS in
+  let max1 =
+    fresh_int
+      (List.map (fun n -> Z.to_int (Automata_lib.integer_of_nat n)) nState)
   in
   let rAuto =
     Regex.compile
@@ -292,36 +328,71 @@ let nft_from_replace pattern replacement =
   in
   let pStates = SNFA.gather_states pAuto in
   let max =
-    1 + maxState (List.map Int32.to_int (StateSet.to_list pStates)) 0
+    1 + maxState (List.map Int32.to_int (StateSet.to_list pStates)) 0 + max1
   in
   let _, pTrans, pInit, pAccept = gen_nfa_construct_input pAuto in
   let _, rTrans, rInit, rAccepts = gen_nfa_construct_input rAuto in
   let rTrans, output = trans_NFA2NFT rTrans in
+  let nTrans =
+    List.map
+      (fun (a, b, c) -> (a, (b, c)))
+      (trans_NFA2NFTId (List.map (fun (a, (b, c)) -> (a, b, c)) nTrans))
+  in
   let outputZ =
     List.map
       (fun l -> List.map (fun (l1, l2) -> (Z.of_int l1, Z.of_int l2)) l)
       output
   in
   let nftInit =
-    List.map (fun s -> Automata_lib.nat_of_integer (Z.of_int s)) pInit
+    if nAccepts <> [] then nInits else rename_states pInit max1
   in
   let nftAccepts = rename_states rAccepts max in
   let rTrans = rename_transtions rTrans max in
   let pTrans = trans_NFA2NFT_None pTrans in
-  let pTrans = rename_transtions pTrans 0 in
+  let pTrans = rename_transtions pTrans max1 in
   let pAccept =
-    List.map (fun s -> Automata_lib.nat_of_integer (Z.of_int s)) pAccept
+    List.map
+      (fun s -> Automata_lib.nat_of_integer (Z.of_int (s + max1)))
+      pAccept
   in
+  let pInit = rename_states pInit max1 in
   let rInit = rename_states rInit max in
   let nftTrans =
     rTrans @ pTrans
+    @ (if nAccepts <> [] then nTrans else [])
+    @ (if nAccepts <> [] then connectTrans nAccepts pInit else [])
     @ connectTrans pAccept rInit
-    @ selfTrans (nftInit @ nftAccepts)
+    @ selfTrans nftAccepts
   in
   let nftTrans =
     List.map (fun (p, ((l, i), q)) -> (p, ((l, Z.of_int i), q))) nftTrans
   in
   let outputFun = outputFunc outputZ in
+  (* For testing *)
+  (*
+  Format.printf "nftTrans:\n" ;
+  List.iter
+    (fun (p, ((l, i), q)) ->
+      Format.printf "(%d, " (Z.to_int (Automata_lib.integer_of_nat p)) ;
+      ( match l with
+      | Some ranges ->
+          List.iter
+            (fun (l1, l2) ->
+              Format.printf "[%d, %d]" (Z.to_int l1) (Z.to_int l2) )
+            ranges
+      | None -> Format.printf "None" ) ;
+      Format.printf ", %d, %d)\n" (Z.to_int i)
+        (Z.to_int (Automata_lib.integer_of_nat q)) )
+    nftTrans ;
+  Format.printf "nftInit:\n" ;
+  List.iter
+    (fun s -> Format.printf "%d " (Z.to_int (Automata_lib.integer_of_nat s)))
+    nftInit ;
+  Format.printf "\nnftAccepts:\n" ;
+  List.iter
+    (fun s -> Format.printf "%d " (Z.to_int (Automata_lib.integer_of_nat s)))
+    nftAccepts ;
+  Format.printf "\noutputFun:\n" ; *)
   nft_construct ([], (nftTrans, (nftInit, (nftAccepts, outputFun))))
 
 exception Unreachable of string

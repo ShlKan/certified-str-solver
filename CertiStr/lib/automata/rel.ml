@@ -1,4 +1,4 @@
-open Transducer.Automata_lib
+open Automata_lib
 
 let less_eq_nat z1 z2 =
   Z.leq (Automata_lib.integer_of_nat z1) (Automata_lib.integer_of_nat z2)

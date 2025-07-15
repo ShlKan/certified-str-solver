@@ -212,8 +212,6 @@ let nft_example =
       , ( [Automata_lib.nat_of_integer (Z.of_int 1)]
         , ([Automata_lib.nat_of_integer (Z.of_int 2)], fun x -> f) ) ) )
 
-(* let () = nft_from_replace "[a-b]|c" "abcd" *)
-
 let gen_aut at =
   nfa_construct_reachable (nfa_construct (gen_nfa_construct_input at))
 

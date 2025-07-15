@@ -30,7 +30,7 @@ export_code
   rs_nfa_complement
   rs_nfa_determinise
   rs_nfa_tran_complement
-  
+  rs_nfa_uniq
 
 in OCaml module_name "Automata_lib"
 

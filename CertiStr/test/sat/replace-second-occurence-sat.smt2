@@ -2,6 +2,6 @@
   (declare-fun a () String)
   (declare-fun b () String)
   (assert (= a "2024,2025"))
-  (assert (= b "2024,NUM"))
+  (assert (= b "NUM,2025"))
   (assert (= b (str.replace_re a (re.+ (re.range "0" "9")) "NUM")))
   (check-sat)
