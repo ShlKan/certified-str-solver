@@ -7,7 +7,7 @@
 (declare-fun e () String)
 
 (assert (= a "ITP2024"))
-(assert (= b "ITP2024"))
+(assert (= b "ITP20242024"))
 (assert (= b (str.replace a "" "2024")))
 
 

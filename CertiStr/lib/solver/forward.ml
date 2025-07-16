@@ -282,7 +282,7 @@ let fresh_int lst =
   let rec aux n = if n > 0 && not (List.mem n lst) then n else aux (n + 1) in
   aux 1
 
-let nft_from_replace pattern replacement =
+let nft_from_replace pattern replacement leftmost =
   let pAuto =
     match pattern with
     | Parser.Str s ->
@@ -344,7 +344,7 @@ let nft_from_replace pattern replacement =
       output
   in
   let nftInit =
-    if nAccepts <> [] then nInits else rename_states pInit max1
+    if nAccepts <> [] && leftmost then nInits else rename_states pInit max1
   in
   let nftAccepts = rename_states rAccepts max in
   let rTrans = rename_transtions rTrans max in
@@ -359,10 +359,10 @@ let nft_from_replace pattern replacement =
   let rInit = rename_states rInit max in
   let nftTrans =
     rTrans @ pTrans
-    @ (if nAccepts <> [] then nTrans else [])
-    @ (if nAccepts <> [] then connectTrans nAccepts pInit else [])
+    @ (if nAccepts <> [] && leftmost then nTrans else [])
+    @ (if nAccepts <> [] && leftmost then connectTrans nAccepts pInit else [])
     @ connectTrans pAccept rInit
-    @ selfTrans nftAccepts
+    @ selfTrans (if leftmost then nftAccepts else nftAccepts @ nftInit)
   in
   let nftTrans =
     List.map (fun (p, ((l, i), q)) -> (p, ((l, Z.of_int i), q))) nftTrans
@@ -424,7 +424,7 @@ let fe f l =
   | [] -> false
   | e :: l' -> if f (Some (fst e)) = None then true else false
 
-let rec update_once l rm auto =
+let rec update_once l rm auto leftmost =
   List.fold_left
     (fun acc_auto op ->
       match op with
@@ -434,7 +434,7 @@ let rec update_once l rm auto =
       | Concat (_, _) -> raise (Unreachable "update_once")
       | Replace _ -> raise (Unreachable "update_once")
       | ReplaceI (i, a, c) ->
-          let nft = nft_from_replace a c in
+          let nft = nft_from_replace a c leftmost in
           let nft_res =
             nfa_normal
               (nfa_elim (nft_product nft (ConcatRI.find i rm) fmap fe))
@@ -449,8 +449,8 @@ let rec update_once l rm auto =
           nfa_product acc_auto nfa )
     auto l
 
-let rec update_auto var rc rm =
-  update_once (ConcatCI.find var rc) rm (ConcatRI.find var rm)
+let rec update_auto var rc rm leftmost =
+  update_once (ConcatCI.find var rc) rm (ConcatRI.find var rm) leftmost
 
 let indegree_count rc vars =
   let indegree_map =
@@ -515,7 +515,7 @@ let test_input rest refined rc rm =
       Format.printf "\n--------------------\n" )
     rm
 
-let rec forward_analysis rest refined rc rm =
+let rec forward_analysis rest refined rc rm leftmost =
   (* test_input rest refined rc rm ;*)
   if List.is_empty rest then rm
   else
@@ -535,8 +535,8 @@ let rec forward_analysis rest refined rc rm =
       List.fold_left
         (fun acc_rm v ->
           ConcatRI.update v
-            (Option.map (fun _ -> update_auto v rc rm))
+            (Option.map (fun _ -> update_auto v rc rm leftmost))
             acc_rm )
         rm ready
     in
-    forward_analysis new_rest new_refined rc new_rm
+    forward_analysis new_rest new_refined rc new_rm leftmost

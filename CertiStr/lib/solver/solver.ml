@@ -269,7 +269,7 @@ let rm_to_list rm =
 
 let output_nfa = nft_product nft_example (gen_aut SNFA.universalAuto) fmap fe
 
-let solve (constraints : Parser.strConstrain list) =
+let solve (constraints : Parser.strConstrain list) leftmost =
   let ss, cc, cr = genStrConstraints constraints in
   let sl = SS.elements ss in
   let new_rc = gen_mapc cc sl in
@@ -282,5 +282,5 @@ let solve (constraints : Parser.strConstrain list) =
   let rr = full_rm sl cr in
   let rm = gen_mapr rr sl in
   (* test_input rest new_sl new_rc rm *)
-  let final_rm = forward_analysis rest new_sl new_rc rm in
+  let final_rm = forward_analysis rest new_sl new_rc rm leftmost in
   check_sat (rest @ new_sl) new_rc final_rm
