@@ -5,7 +5,7 @@
 
 (assert (= a "ITP20242024"))
 (assert (= b "ITP20232024"))
-(assert (= b (str.replace a "2024" "2023")))
+(assert (= b (str.replace_all a "2024" "2023")))
 
 (check-sat)
 (get-model)

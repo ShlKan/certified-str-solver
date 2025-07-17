@@ -185,12 +185,12 @@ let rec print_rm rm =
 let rec check_unsat_rm s rc rm =
   match rm with
   | [] -> if indegree s rc = true then "sat" else "unknown"
-  | (v, a) :: rml ->
-      let _, (l, (_, ac)) = nfa_destruct a in
+  | (_v, a) :: rml ->
+      let _, (_l, (_, ac)) = nfa_destruct a in
       if ac = [] then "unsat" else check_unsat_rm s rc rml
 
 let print_trans_num a =
-  let q, (l, (_, ac)) = nfa_destruct a in
+  let q, (l, (_, _ac)) = nfa_destruct a in
   print_int (List.length q) ;
   print_string ", " ;
   print_int (List.length l) ;
@@ -199,7 +199,7 @@ let print_trans_num a =
 let rec print_size rm =
   match rm with
   | [] -> ()
-  | (v, a) :: rml -> print_trans_num a ; print_size rml
+  | (_v, a) :: rml -> print_trans_num a ; print_size rml
 
 let nft_product nft =
   Automata_lib.rs_product_transducer
@@ -277,12 +277,14 @@ type str_op =
   | ConcatI of int * int
   | Replace of string * Parser.strConstrain * Parser.strConstrain
   | ReplaceI of int * Parser.strConstrain * Parser.strConstrain
+  | ReplaceAll of string * Parser.strConstrain * Parser.strConstrain
+  | ReplaceAllI of int * Parser.strConstrain * Parser.strConstrain
 
 let fresh_int lst =
   let rec aux n = if n > 0 && not (List.mem n lst) then n else aux (n + 1) in
   aux 1
 
-let nft_from_replace pattern replacement leftmost =
+let nft_from_replace pattern replacement leftmost replace_all =
   let pAuto =
     match pattern with
     | Parser.Str s ->
@@ -308,10 +310,10 @@ let nft_from_replace pattern replacement leftmost =
   let pAutoNeg_nS =
     match pAutoNeg with s, (_e, (t, (i, f))) -> (s, (t, (i, f)))
   in
-  let nState, (nTrans, (nInits, nAccepts)) = nfa_destruct pAutoNeg_nS in
+  let nStates, (nTrans, (nInits, nAccepts)) = nfa_destruct pAutoNeg_nS in
   let max1 =
     fresh_int
-      (List.map (fun n -> Z.to_int (Automata_lib.integer_of_nat n)) nState)
+      (List.map (fun n -> Z.to_int (Automata_lib.integer_of_nat n)) nStates)
   in
   let rAuto =
     Regex.compile
@@ -330,8 +332,8 @@ let nft_from_replace pattern replacement leftmost =
   let max =
     1 + maxState (List.map Int32.to_int (StateSet.to_list pStates)) 0 + max1
   in
-  let _, pTrans, pInit, pAccept = gen_nfa_construct_input pAuto in
-  let _, rTrans, rInit, rAccepts = gen_nfa_construct_input rAuto in
+  let pStates, pTrans, pInit, pAccept = gen_nfa_construct_input pAuto in
+  let rStates, rTrans, rInit, rAccepts = gen_nfa_construct_input rAuto in
   let rTrans, output = trans_NFA2NFT rTrans in
   let nTrans =
     List.map
@@ -344,25 +346,30 @@ let nft_from_replace pattern replacement leftmost =
       output
   in
   let nftInit =
-    if nAccepts <> [] && leftmost then nInits else rename_states pInit max1
+    if (nAccepts <> [] && leftmost) || replace_all then nInits
+    else rename_states pInit max1
   in
-  let nftAccepts = rename_states rAccepts max in
+  let nftAccepts =
+    if replace_all then rename_states rAccepts max @ nAccepts
+    else rename_states rAccepts max
+  in
   let rTrans = rename_transtions rTrans max in
   let pTrans = trans_NFA2NFT_None pTrans in
   let pTrans = rename_transtions pTrans max1 in
-  let pAccept =
-    List.map
-      (fun s -> Automata_lib.nat_of_integer (Z.of_int (s + max1)))
-      pAccept
-  in
+  let pAccept = rename_states pAccept max1 in
   let pInit = rename_states pInit max1 in
   let rInit = rename_states rInit max in
   let nftTrans =
     rTrans @ pTrans
-    @ (if nAccepts <> [] && leftmost then nTrans else [])
-    @ (if nAccepts <> [] && leftmost then connectTrans nAccepts pInit else [])
+    @ (if (nAccepts <> [] && leftmost) || replace_all then nTrans else [])
+    @ ( if (nAccepts <> [] && leftmost) || replace_all then
+          connectTrans nAccepts pInit
+        else [] )
     @ connectTrans pAccept rInit
-    @ selfTrans (if leftmost then nftAccepts else nftAccepts @ nftInit)
+    @
+    if not replace_all then
+      selfTrans (if leftmost then nftAccepts else nftAccepts @ nftInit)
+    else connectTrans (rename_states rAccepts max) nInits
   in
   let nftTrans =
     List.map (fun (p, ((l, i), q)) -> (p, ((l, Z.of_int i), q))) nftTrans
@@ -407,6 +414,8 @@ let sub_list lsmall llarge =
       | Concat _ -> raise (Unreachable "sub_list")
       | Replace _ -> raise (Unreachable "sub_list")
       | ReplaceI (i, _, _) -> List.exists (fun e' -> i = e') llarge
+      | ReplaceAll _ -> raise (Unreachable "sub_list")
+      | ReplaceAllI (i, _, _) -> List.exists (fun e' -> i = e') llarge
       | Tran _ -> raise (Unreachable "sub_list")
       | TranI i -> List.exists (fun e' -> i = e') llarge )
     lsmall
@@ -433,8 +442,19 @@ let rec update_once l rm auto leftmost =
             (nfa_concate (ConcatRI.find i rm) (ConcatRI.find j rm))
       | Concat (_, _) -> raise (Unreachable "update_once")
       | Replace _ -> raise (Unreachable "update_once")
+      | ReplaceAll _ -> raise (Unreachable "update_once")
       | ReplaceI (i, a, c) ->
-          let nft = nft_from_replace a c leftmost in
+          let nft = nft_from_replace a c leftmost false in
+          let nft_res =
+            nfa_normal
+              (nfa_elim (nft_product nft (ConcatRI.find i rm) fmap fe))
+          in
+          let _, (_, (_, f)) = nfa_destruct nft_res in
+          let nfa' = if f = [] then ConcatRI.find i rm else nft_res in
+          let nfa = nfa_product acc_auto nfa' in
+          nfa
+      | ReplaceAllI (i, a, c) ->
+          let nft = nft_from_replace a c leftmost true in
           let nft_res =
             nfa_normal
               (nfa_elim (nft_product nft (ConcatRI.find i rm) fmap fe))

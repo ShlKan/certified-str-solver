@@ -28,6 +28,7 @@ type strConstrain =
   | IN_NFA of strConstrain * Nfa.nfa
   | RegEx of string
   | REPLACE of strConstrain * strConstrain * strConstrain
+  | REPLACEALL of strConstrain * strConstrain * strConstrain
   | StrEq of strConstrain * strConstrain
   | Concat of strConstrain * strConstrain
   | Range of string * string
@@ -85,6 +86,9 @@ let rec print_str_constraint fmt sc =
   | REPLACE (s, p, r) ->
       Format.fprintf fmt "str.replace %a %a %s" print_str_constraint s
         print_str_constraint p (reg2Str r)
+  | REPLACEALL (s, p, r) ->
+      Format.fprintf fmt "str.replace_all %a %a %s" print_str_constraint s
+        print_str_constraint p (reg2Str r)
   | StrEq (lhs, rhs) ->
       Format.fprintf fmt "%a = %a\n" print_str_constraint lhs
         print_str_constraint rhs
@@ -138,6 +142,12 @@ let rec term_str_constraint (tm : Std.Expr.term) =
       | "replace" ->
           Option.some
             (REPLACE
+               ( Option.get (term_str_constraint (List.nth args 0))
+               , Option.get (term_str_constraint (List.nth args 1))
+               , Option.get (term_str_constraint (List.nth args 2)) ) )
+      | "replace_all" ->
+          Option.some
+            (REPLACEALL
                ( Option.get (term_str_constraint (List.nth args 0))
                , Option.get (term_str_constraint (List.nth args 1))
                , Option.get (term_str_constraint (List.nth args 2)) ) )

@@ -16,6 +16,7 @@ let check_constraints (cons : Parser.strConstrain list) =
         match rhs with
         | Parser.Concat _ -> true
         | Parser.REPLACE (_, _, _) -> true
+        | Parser.REPLACEALL (_, _, _) -> true
         | Parser.Str _ -> true
         | Parser.Name _ -> true
         | _ -> Parser.print_str_cons c ; false )
@@ -98,6 +99,15 @@ let rec genStrConstraints (constraints : Parser.strConstrain list) =
                 | Some l -> Some (Replace (s, reg, r) :: l) )
               reC
           , reR )
+      | Parser.StrEq (Name lhs, REPLACEALL (Name s, reg, r)) ->
+          ( Forward.SS.add lhs (Forward.SS.add s reS)
+          , Forward.ConcatC.update lhs
+              (fun x ->
+                match x with
+                | None -> Some [ReplaceAll (s, reg, r)]
+                | Some l -> Some (ReplaceAll (s, reg, r) :: l) )
+              reC
+          , reR )
       | Parser.IN_NFA (Name lhs, nfa) ->
           ( Forward.SS.add lhs reS
           , reC
@@ -168,8 +178,11 @@ let rec genPair ls l =
   | Concat (s1, s2) :: rs ->
       ConcatI (get_index s1 l, get_index s2 l) :: genPair rs l
   | Replace (a, p, r) :: rs -> ReplaceI (get_index a l, p, r) :: genPair rs l
+  | ReplaceAll (a, p, r) :: rs ->
+      ReplaceAllI (get_index a l, p, r) :: genPair rs l
   | ConcatI (a, b) :: rs -> ConcatI (a, b) :: genPair rs l
   | ReplaceI (a, p, r) :: rs -> ReplaceI (a, p, r) :: genPair rs l
+  | ReplaceAllI (a, p, r) :: rs -> ReplaceAllI (a, p, r) :: genPair rs l
   | Tran s :: rs -> TranI (get_index s l) :: genPair rs l
   | TranI i :: rs -> TranI i :: genPair rs l
 
