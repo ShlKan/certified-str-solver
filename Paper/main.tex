@@ -51,12 +51,22 @@
 %\titlerunning{Dummy short title} %TODO optional, please use if title is longer than one line
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstdefinelanguage{Isabelle}{
+    keywords={definition,theorem,lemma,proof,qed,by,auto,simp,apply,done,
+              where,fixes,assumes,shows,if,then,else,let,in,case,of,
+              record,datatype,type_synonym,fun,function,primrec},
+    sensitive=true,
+    morecomment=[s]{(*}{*)},
+    morestring=[b]",
+  }
 
 \lstset{
+  language=Isabelle,
 	basicstyle=\ttfamily,
 	keywordstyle=\color{blue}\bfseries,
-	keywords={definition,if,then,else, where, record, fun, lemma, type_synonym, fixes, shows, assumes, shows},
-	escapeinside={|}{|}
+	morekeywords={definition,if,then,else,where,record,fun,lemma,type_synonym,fixes,shows,assumes,and},
+	escapeinside={|}{|},
+  sensitive=true
 }
 
 \begin{document}
@@ -500,7 +510,7 @@ The operation \texttt{prods\_imp}, shown in Figure \ref{fig-def-prods_imp}, comp
 \begin{figure}[hbt!]
 	\begin{lstlisting}
 definition productT_impl where
-  "productT_impl |$\mathcal{T}$| |$\mathcal{A}$| F fe = do {
+"productT_impl |$\mathcal{T}$| |$\mathcal{A}$| F fe = do {
     Q |$\leftarrow$| prods_imp (nft_states |$\mathcal{T}$|) 
     (nfa_states |$\mathcal{A}$|);
     (D1, D2) |$\leftarrow$| trans_comp_imp 
@@ -522,7 +532,7 @@ definition productT_impl where
 \begin{figure}[hbt!]
 	\begin{lstlisting}
 definition prods_imp where
-  "prods_imp Q1 Q2 =
+"prods_imp Q1 Q2 =
    FOREACH {q. q |$\in$| Q1} (|$\lambda$| q Q. do {
     S |$\leftarrow$| FOREACH {q. q |$\in$| Q2}
       (|$\lambda$| q|$'$| Q|$'$|. RETURN ({(q,q|$'$|)} |$\cup$| Q|$'$|)) |$\emptyset$|;
@@ -563,7 +573,7 @@ A central algorithmic challenge in our implementation lies in the computation of
 
 
 \begin{figure}[hbt!]
-	\begin{lstlisting}
+\begin{lstlisting}[language=SMTLIB]
 definition subtrans_comp where
 "subtrans_comp M q |$\alpha$| f q|$'$| F fe T D1 D2 =
  FOREACH {t.t|$\in$|T} (|$\lambda$| (q1,|$\alpha'$|,q1|$'$|) (D1,D2).
