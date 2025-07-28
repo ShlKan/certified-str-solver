@@ -794,6 +794,12 @@ Figure \ref{fig-rearranged-automata} presents the complete SFT construction, obt
   \emph{Comparison with SMT-LIB Semantics.} It is important to note that our formalization differs from the standard SMT-LIB semantics for the replacement operation. In SMT-LIB, the \texttt{str.replace} operation is defined to replace only the \emph{first} occurrence of a substring matching the given pattern. In contrast, our semantics allows for a more general interpretation where any matching substring may be replaced. But it still replaces only one occurrence of them.
 
 
+\begin{figure}
+\centering
+\includegraphics[scale=0.45]{benchmark_loglog.pdf}
+\caption{Experimental results for the sanitizer product}
+\label{fig:benchmark-results}
+\end{figure}
 
 
 \subsection{Experiments}
