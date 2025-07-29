@@ -640,17 +640,75 @@ In our formalization, we refine the sets of storing states and transitions to re
 
 
 
+\section{Applications and Evaluation}
+
+We evaluate our formalization and implementation of the SFT product operation in two key application domains: string sanitization and string replacement operations in string solving. These applications demonstrate the practical utility of our certified SFT product operation in real-world scenarios.
+\subsection{Sanitizer}
+
+One Important application of our formalization is in the context of string sanitization, specifically for web applications. Sanitizers are crucial for preventing security vulnerabilities such as cross-site scripting (XSS) attacks by ensuring that user inputs are properly encoded before being rendered in a web browser. Listing \ref{lst-html-encode} presents a C\# code snippet that implements an HTML encoding function, which is a sanitization operation. The function iterates through each character in the input string and encodes characters that are not safe for HTML rendering.
 
 
 
+\begin{lstlisting}[language={[Sharp]C}, caption={C\# Code for AntiXSS.EncodeHtml version 2.0.}, label={lst-html-encode}, float=htbp]
+static string EncodeHtml(string t)
+{
+  if (t == null) { return null; }
+  if (t.Length == 0) {
+    return string.Empty;
+  }
+  StringBuilder builder = new
+    StringBuilder("", t.Length * 2);
+  foreach (char c in t) {
+    if ((((c > ''') && (c < '{')) |$\mid\mid$|
+         ((c > '@') && (c < '['))) |$\mid\mid$|
+         (((c == ' ') || ((c > '/') && (c < ':'))) |$\mid\mid$|
+         (((c == '.') || (c == ',')) |$\mid\mid$|
+         ((c == '-') || (c == '_'))))) {
+          builder.Append(c);
+      }
+      else {
+          builder.Append("&#" +
+          ((int) c).ToString() + ";");
+      }
+  }
+  return builder.ToString();
+}
+\end{lstlisting}
 
-\section{An Application to String Solving}
-\label{sec-app-str-solver}
+Figure \ref{fig:html-sanitizer-sft} illustrates the SFT representation of the HTML encoding sanitizer function. The transducer accepts any input string and produces an output where safe characters are preserved using the identity function $\texttt{id}$, while unsafe characters are encoded as HTML entities. The set of safe characters is defined as $\texttt{safe\_chars} = [\texttt{' '}, \texttt{','}, \texttt{'.'}, \texttt{'-'}, \texttt{'\_'}] \cup [\texttt{'0'}-\texttt{'9'}] \cup [\texttt{'A'}-\texttt{'Z'}] \cup [\texttt{'a'}-\texttt{'z'}]$, which can be efficiently represented using the interval algebra we formalized. Unsafe characters are transformed using the encoding function $\texttt{encode}(c) = \texttt{``\&\#''} + \texttt{toString}(\texttt{ord}(c)) + \texttt{``\;''}$. When the alphabet is set to Unicode $[\mathtt{0x0000}, \mathtt{0x10FFFF}]$, the complement $\neg\texttt{safe\_chars}$ represents all Unicode characters outside the safe set, which can also be efficiently represented using our formalized interval operations.
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[shorten >=1pt, node distance=2.5cm, on grid, auto]
+  % States
+  \node[state, initial, accepting] (q0) {$q_0$};
+  \node[state] (q1) [right=3.5cm of q0] {$q_1$};
+  \node[state] (q2) [below=of q0] {$q_2$};
+  
+  \path[->] 
+    % Transition for safe characters
+    (q0) edge[bend left=20] node[above,midway=1] {$\texttt{safe\_chars}, \texttt{id}$} (q1)
+    % Transition for unsafe characters  
+    (q0) edge[bend right=20] node[left,midway] {$\neg\texttt{safe\_chars}, \texttt{encode}$} (q2)
+    % Epsilon transitions back to q0
+    (q1) edge[bend left=30] node[below,midway] {$\varepsilon, \lambda\varepsilon$} (q0)
+    (q2) edge[bend right=20] node[right,midway] {$\varepsilon, \lambda\varepsilon$} (q0);
+\end{tikzpicture}
+\caption{SFT representation of the HTML encoding sanitizer function.}
+\label{fig:html-sanitizer-sft}
+\end{figure}
 
-In this section, we demonstrate the practical application of our formalized SFTs to string constraint solving, specifically focusing on replacement operations. While CertiStr \cite{cpp/KanLRS22} provides a verified framework for string constraint solving using SFAs, its capabilities are inherently limited by the expressiveness of SFAs. In particular, SFAs cannot directly model string transformation operations such as replacement.
+We evaluate the performance of our SFT product operation by computing the product of the HTML encoding sanitizer SFT with SFAs constructed from randomly generated Unicode user inputs. This experimental setup reflects realistic usage scenarios where diverse character sets and input patterns are encountered.
 
-Our string solver is based on CertiStr \cite{cpp/KanLRS22} by extending it with the modeling of replacement operations. CertiStr exploits forward-propagation to solve the string constraints. Our SFT modeling for replacement operations can seamlessly be integrated into CertiStr's forward-propagation framework.
+Figure \ref{fig:benchmark-results} demonstrates the scalability characteristics of our SFT product implementation. The computation requires approximately 1 second for 100,000-character inputs and 10 seconds for 1,000,000-character inputs. These performance metrics confirm that our certified implementation maintains computational efficiency suitable for practical string processing applications at scale.
 
+\begin{figure}
+\centering
+\includegraphics[scale=0.45]{benchmark_loglog.pdf}
+\caption{Experimental results for the sanitizer product}
+\label{fig:benchmark-results}
+\end{figure}
+
+Beyond performance evaluation, our SFT formalization enables formal verification of string sanitizer correctness. For example, this verification framework models user input as an SFA, the sanitizer as an SFT, and potential attacks as an SFA accepting unsafe strings. A sanitizer is verified correct if the product of the sanitizer SFT and user input SFA produces no outputs that intersect with the attack SFA's language. This correctness property can be checked by computing the intersection of the product SFT's output language with the attack SFA, where emptiness of this intersection guarantees sanitizer safety.
 
 
 \subsection{Modeling the Replacement Operation}
@@ -794,13 +852,71 @@ Figure \ref{fig-rearranged-automata} presents the complete SFT construction, obt
   \emph{Comparison with SMT-LIB Semantics.} It is important to note that our formalization differs from the standard SMT-LIB semantics for the replacement operation. In SMT-LIB, the \texttt{str.replace} operation is defined to replace only the \emph{first} occurrence of a substring matching the given pattern. In contrast, our semantics allows for a more general interpretation where any matching substring may be replaced. But it still replaces only one occurrence of them.
 
 
-\begin{figure}
+  The modeling of the aformentioned replacement operation will replace one occurrence of the substring that matches the regular expression pattern. We may also want to model left-most replacement and replace all occurrences of the substring that matches the regular expression pattern.
+
+  One way to model left-most replacement is illustrated in the following.
+
+\begin{figure}[htbp]
 \centering
-\includegraphics[scale=0.45]{benchmark_loglog.pdf}
-\caption{Experimental results for the sanitizer product}
-\label{fig:benchmark-results}
+\begin{tikzpicture}[node distance=2cm, state/.style={circle, draw, minimum size=0.8cm}]
+  % First SFT rectangle
+  \node[draw, rectangle, minimum width=5.2cm, minimum height=2.1cm] (sft1-box) {};
+  \node[above=0.1cm of sft1-box.north] {\textbf{SFT} $\mathcal{T}_1$ (Non-matching)};
+  
+  % States inside first SFT
+  \node[state, initial] (p0) at ([xshift=-0.8cm]sft1-box.center) {$p_0$};
+  \node[state, accepting] (p1) at ([xshift=1.8cm]sft1-box.center) {$p_1$};
+  \path[->] (p0) edge[above] node {\shortstack{$\neg\texttt{pattern},$ \\ $\lambda x.x$}} (p1);
+  
+  % Second SFT rectangle
+  \node[draw, rectangle, minimum width=5.2cm, minimum height=2.1cm, below=1.5cm of sft1-box] (sft2-box) {};
+  \node[below=0.1cm of sft2-box.south] {\textbf{SFT} $\mathcal{T}_2$ (Matching)};
+  
+  % States inside second SFT
+  \node[state, initial] (s0) at ([xshift=-0.8cm]sft2-box.center) {$s_0$};
+  \node[state, accepting] (s1) at ([xshift=2cm]sft2-box.center) {$s_1$};
+  \path[->] (s0) edge[above] node {\shortstack{$\texttt{pattern},$ \\ $\texttt{replacement}$}} (s1);
+  
+  % Epsilon transition from accepting state of first SFT to initial state of second SFT
+  \path[->] (p1) edge[bend right=30] node[right] {\shortstack{$\varepsilon$, $\lambda\varepsilon$}} (s0);
+  
+  
+\end{tikzpicture}
+\caption{The modeling of left-most replacement operation.}
+\label{fig:replace-left-most}
 \end{figure}
 
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[node distance=2cm, state/.style={circle, draw, minimum size=0.8cm}]
+  % First SFT rectangle
+  \node[draw, rectangle, minimum width=5.2cm, minimum height=2.1cm] (sft1-box) {};
+  \node[above=0.1cm of sft1-box.north] {\textbf{SFT} $\mathcal{T}_1$ (Non-matching)};
+  
+  % States inside first SFT
+  \node[state, initial] (p0) at ([xshift=-0.8cm]sft1-box.center) {$p_0$};
+  \node[state, accepting] (p1) at ([xshift=1.8cm]sft1-box.center) {$p_1$};
+  \path[->] (p0) edge[above] node {\shortstack{$\neg\texttt{pattern},$ \\ $\lambda x.x$}} (p1);
+  
+  % Second SFT rectangle
+  \node[draw, rectangle, minimum width=5.2cm, minimum height=2.1cm, below=1.5cm of sft1-box] (sft2-box) {};
+  \node[below=0.1cm of sft2-box.south] {\textbf{SFT} $\mathcal{T}_2$ (Matching)};
+  
+  % States inside second SFT
+  \node[state, initial] (s0) at ([xshift=-0.8cm]sft2-box.center) {$s_0$};
+  \node[state, accepting] (s1) at ([xshift=2cm]sft2-box.center) {$s_1$};
+  \path[->] (s0) edge[above] node {\shortstack{$\texttt{pattern},$ \\ $\texttt{replacement}$}} (s1);
+  
+  % Epsilon transition from accepting state of first SFT to initial state of second SFT
+  \path[->] (p1) edge[bend right=30] node[left] {\shortstack{$\varepsilon$, $\lambda\varepsilon$}} (s0);
+  
+  % Epsilon transition from accepting state of second SFT to initial state of first SFT
+  \path[->] (s1) edge[bend right=30] node[right] {\shortstack{$\varepsilon$, $\lambda\varepsilon$}} (p0);
+  
+\end{tikzpicture}
+\caption{The modeling of replace all operation.}
+\label{fig:replace-all}
+\end{figure}
 
 \subsection{Experiments}
 
@@ -818,7 +934,7 @@ As discussed in the previous subsection, our replacement semantics differs from 
 Run the SMT solver CVC5 \cite{cvc5} with the code in Listing \ref{lst-smtlib-code}, the result is UNSAT because CVC5 only matches the first occurrence of the pattern.
 
 
-\begin{lstlisting}[language=SMTLIB, caption={Example SMT-LIB Code}, label={lst-smtlib-code}]
+\begin{lstlisting}[language=SMTLIB, caption={Example SMT-LIB Code}, label={lst-smtlib-code}, float=htbp]
   (set-logic QF_S)
   (declare-fun a () String)
   (declare-fun b () String)
