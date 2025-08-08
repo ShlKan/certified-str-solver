@@ -1,0 +1,54 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Finite Automata (FA) and Finite Transducers (FT) are fundamental constructs in the theory of formal languages, with extensive applications in programming languages and software engineering. For example, recent advancements in string solvers, as demonstrated by \cite{pacmpl/ChenFHHHKLRW22}, have illustrated the relationship between regular expressions in modern programming languages and various forms of FAs and FTs. Additionally, FAs and FTs find significant industrial applications, such as in the verification of AWS access control policies \cite{DBLP:conf/fmcad/BackesBCDGLRTV18}.
+
+
+Even though there are various formalizations of FAs and FTs in interactive proof assistants such as Isabelle \cite{isabelle-homepage} and Coq \cite{coq-homepage}, these are predominantly based on classical definitions. However, these traditional approaches present certain limitations when applied to practical scenarios. One significant drawback is that transition labels are typically non-symbolic and finite. A conventional transition is represented as $q\xrightarrow{a}q'$, where $a$ is a character from a finite alphabet. This simplistic representation can lead to a phenomenon known as transition explosion. For example, if the alphabet $\Sigma$ encompasses the entire Unicode range, which is common in modern programming languages, it consists of $\texttt{0x110000}$ distinct characters. Defining a transition from state $q$ to $q'$ that accepts any character in $\Sigma$ would require splitting into $\texttt{0x110000}$ individual transitions, rendering the FA and FT operations highly inefficient. Furthermore, in practical applications, it is often necessary to consider infinite alphabets, such as the set of all integers.
+
+
+
+Symbolic Finite Automata (SFA) and Symbolic Finite Transducers (SFT) \cite{cav/DAntoniV17, VeanesHLMB12Transducer} represent advanced extensions of classic FAs and  FTs, enhancing their applicability in practical scenarios.
+%
+These symbolic models utilize transition labels defined by first-order predicates over boolean algebras, allowing for more expressive representations. For example, a transition label might be specified as an interval ($'\texttt{a}'-'\texttt{z}'$), encompassing all characters from $'\texttt{a}'$ to $'\texttt{z}'$, or as an arithmetic condition ($x \mod 2 = 0$), denoting all even numbers. This symbolic approach not only provides a more succinct representation but also supports infinite alphabets, thereby extending the expressive capabilities of FAs and FTs.
+
+
+
+However, the formalization of transition labels in SFAs and SFTs presents significant challenges within interactive proof assistants. Two fundamental considerations arise: first, the representation of transition labels must be sufficiently expressive to accommodate diverse predicate representations of boolean algebras; second, the formalization framework must be designed with extensibility in mind to facilitate the incorporation of new boolean algebras while minimizing redundant proof efforts.
+
+
+
+
+Prior work of CertiStr \cite{cpp/KanLRS22} has successfully formalized SFAs within Isabelle/HOL, demonstrating both the efficiency and effectiveness of SFAs in practice. However, the formalization of SFTs remains an open challenge, primarily due to their inherent complexity in two aspects: the formalization of transition labels and the specification of transition output functions. SFTs constitute a significantly more expressive and powerful theoretical framework compared to  SFAs, as evidenced by their capability to model complex string transformations such as replacement operations.
+%
+Furthermore, numerous studies have demonstrated the broad applicability of SFTs across diverse domains. The work of \cite{VeanesHLMB12Transducer} showcases SFTs in security-critical applications, particularly for cross-site scripting (XSS) prevention. \cite{uss/HooimeijerLMSV11} extends this security focus by applying SFTs to web application sanitizer analysis. In system verification, \cite{osdi/YaseenABCL20} employs SFTs for runtime behavior monitoring, while \cite{pldi/HuD17} demonstrates their utility in automated program transformation through systematic inversion techniques.
+
+
+
+ 
+In this work, we present a comprehensive formalization of SFTs. To address the extensibility challenges inherent in supporting diverse transition label theories, we adopt a refinement-based approach. At the abstraction level, transition labels are formalized through the fundamental mathematical concept of \emph{sets}. This abstraction facilitates subsequent refinement to various representations of Boolean algebras, such as intervals and arithmetic predicates, while maintaining theoretical consistency.
+
+The key operation of our formalization is the product operation between an SFT and an input regular language. Specifically, given an SFA $\mathcal{A}$ representing a regular language and an SFT $\mathcal{T}$, we define the product operation $\mathcal{T} \times\mathcal{A}$ that characterizes the output language generated by $\mathcal{T}$ when processing inputs from the language recognized by $\mathcal{A}$.
+
+
+In the refinement level, we implemented transition labels using an interval-based representation to examplify the refinement process. The formalization of interval algebra provides efficient set-theoretic operations—including membership checking, intersection, and difference computations—facilitating the refinement of transition labels from abstract sets to concrete intervals. Furthermore, leveraging the data refinement framework \cite{DBLP:conf/itp/Lammich13} in Isabelle/HOL, we store states and transitions using sophisticated data structures such as hashmaps and red-black trees, ensuring efficient automata manipulation.
+
+To evaluate the effectiveness and efficiency of our formalization, we developed a string solver compliant with SMT-LIB language \cite{smtlib}, focusing particularly on replacement operations. We evaluated our implementation using a set of benchmarks from the SMT-LIB repository \cite{smtlib_benchmarks}. The experimental results demonstrate that our formalization achieves computational efficiency in constraint-solving scenarios.
+
+
+
+In summary, our formalization makes the following contributions:
+\begin{enumerate}
+\item We present the first formalization of symbolic finite transducers in Isabelle/HOL proof assistant.
+\item We leverage the refinement framework to create an extensible SFT formalization that is capable of accommodating various boolean algebras, ensuring adaptability to future transition label developments.
+\item We develop an interval algebra with efficient set-theoretic operations, enabling refinement of transition labels from abstract sets to concrete intervals.
+\item We demonstrate the practical utility of our formalization through its application to string constraint solving, specifically in modeling replacement operations with verified correctness guarantees.
+\end{enumerate}
+
+The remainder of this paper is organized as follows:
+Section \ref{sec:formalization} introduces the formalization of symbolic finite transducers.
+Section \ref{sec:product-operation} presents the product operation at the abstract level.
+Section \ref{sec_alg_refinement} details the algorithmic refinement of the product operation.
+Section \ref{sec-app-str-solver} demonstrates the application to string constraint solving.
+Section \ref{sec:related-work} discusses related work.
+Section \ref{sec:conclusion} concludes with future directions.
