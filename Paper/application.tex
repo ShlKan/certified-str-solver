@@ -66,17 +66,70 @@ Figure \ref{fig:benchmark-results} demonstrates the scalability characteristics 
 \label{fig:benchmark-results}
 \end{figure}
 
-Beyond performance evaluation, our SFT formalization enables formal verification of string sanitizer correctness. For example, this verification framework models user input as an SFA, the sanitizer as an SFT, and potential attacks as an SFA accepting unsafe strings. A sanitizer is verified correct if the product of the sanitizer SFT and user input SFA produces no outputs that intersect with the attack SFA's language. This correctness property can be checked by computing the intersection of the product SFT's output language with the attack SFA, where emptiness of this intersection guarantees sanitizer safety.
+Beyond performance evaluation, our SFT formalization enables formal verification of string sanitizer correctness. A santizer is used to transform user inputs into safe outputs, ensuring that the output does not contain any unsafe characters. However, santizers just like programs, which are eror-prone. Manual reviews of sanitizers are often insufficient to guarantee correctness.
 
+Based on our formalization, we can verify sanitizers by modeling the sanitizer as an SFT and the user input as an SFA. We can also model potential attacks as SFAs that accept unsafe strings. Formally speaking, Let $\mathcal{T}$ be an SFT, $\mathcal{I}$ is the possible user inputs modeled by an SFA, and $\mathcal{A}$ is the attack SFA that accepts unsafe strings. The santizer correctness checking against the attack is to check whether the intersection of the product $\mathcal{T} \times \mathcal{I}$ and the attack SFA $\mathcal{A}$ is empty, i.e., $\mathcal{T} \times \mathcal{I} \cap \mathcal{A} = \emptyset$.
+
+Moreover, santizers are usually used in combination with other sanitizers to ensure comprehensive safety. For example, the HTML encoding sanitizer can be combined with a string trimming operation to remove leading and trailing whitespace characters. For this kind of sanitizer composition, it can be modeled by our SFT product as well. Let $\mathcal{T}_1$ and $\mathcal{T}_2$ correspond to two sanitizers, and $\mathcal{T}_1$ is applied before $\mathcal{T}_2$. What we need to check is $\mathcal{T}_2 \times (\mathcal{T}_1 \times \mathcal{I}) \cap \mathcal{A} = \emptyset$.
+
+
+
+
+\begin{table}[h]
+  \centering
+  \small
+  \setlength{\tabcolsep}{4pt} % Reduced column gap
+  \begin{tabular}{p{2.2cm}ll} % Increased width for automatic line break
+    \toprule
+    \textbf{Attack Model} & \textbf{Verfication Result} & \textbf{Size} \\
+    \midrule
+    attack\_html           & GA HtmlEscape: \textbf{Unsafe} & 1/6\\
+                           & Trim + GA HtmlEscape: \textbf{Safe} & 4/12 \\
+                           & escapeString: \textbf{Unsafe} & 1/11 \\
+                           & Trim + escapeString: \textbf{Safe} & 4/17 \\
+                           & Trim + OWASP HTMLEncode: \textbf{Safe} & 4/18 \\
+    \midrule
+    attack\_javascript     & GA Htmlescape + GA PreEscape + & 3/20 \\
+                           &  gaSnippetesc: \textbf{safe} & \\
+    \midrule
+    attack\_json           & Trim + GA JSONESc : \textbf{Safe} & 4/16\\
+    \midrule
+    attack\_xml            & Trim + GA XMLEsc: \textbf{safe} & 4/16\\
+    \midrule
+    attack\_ccs            & Trim + GA CleanseCSS : \textbf{Safe} & 25/46\\
+    \bottomrule
+  \end{tabular}
+  \caption{Sanitizer verfication result}
+  \label{tab:sanitizer_attack}
+\end{table}
+
+Table \ref{tab:sanitizer_attack} summarizes the verification results for various sanitizers against different attack models. The first column lists the attack models, the second column indicates whether the sanitizer is classified as safe or unsafe with respect to the attack, and the third column reports the size of the transducers used in the verification, given as [number of states/number of transitions]. For composed SFTs, the size reflects the total number of states and transitions across all components.
+
+We evaluate a range of attack models for HTML, JavaScript, JSON, XML, and CSS. Listing \ref{lst-css-attack} shows the CSS attack model, which is used to verify the corresponding sanitizer. The attack model includes comments, declaration breakers, and known dangerous tokens such as \textbf{expression(}, \textbf{@import}, \textbf{behavior:}, \textbf{-moz-binding}, and \textbf{url(} (unless the URL is separately validated). Sanitizers include GA HtmlEscape, GA JSONEscape, GA XMLEscape, escapeString, and GA CleanseCSS, where "GA" means from Google. Sanitizers are often composed with preprocessing steps such as Trim, which removes leading and trailing whitespace characters. As shown in the table, GAHtmlEscape and escapeString are unsafe with respect to the HTML attack model without preprocessing, but become safe when combined with Trim. The \textbf{Size} column demonstrates the expressive power and succinctness of SFTs in modeling real-world transducers.
+
+
+
+
+\begin{lstlisting}[language={}, caption={CSS attack model for sanitizer verification.}, label={lst-css-attack}, float=htbp]
+|$\Sigma$|* ( / \* [\s\S]*? \*/
+  |$\mid$| ; |$\mid$| \{ |$\mid$| \}
+  |$\mid$| [eE][xX][pP][rR][eE][sS][sS][iI]
+    [oO][nN]\s*\(
+  |$\mid$| @\s*[iI][mM][pP][oO][rR][tT]
+  |$\mid$| [bB][eE][hH][aA][vV][iI][oO][rR]\s*:
+  |$\mid$| -\s*[mM][oO][zZ]-\s*[bB][iI][nN]
+    [dD][iI][nN][gG]
+  |$\mid$| (?!allowUrl) [uU][rR][lL]\s*\(
+ ) |$\Sigma$|*
+\end{lstlisting}
 
 \subsection{Modeling the Replacement Operation}
 
-
-The string replacement operation, denoted as 
+The string replacement operation, denoted as
 $\texttt{replace}(\texttt{str}, \newline\texttt{pattern}, \texttt{replacement})$, is a fundamental string transformation that takes three parameters:
 \begin{itemize}
   \item $\texttt{str}$: The input string to be transformed.
-  \item $\texttt{pattern}$: A regular expression defining the matching criteria.  
+  \item $\texttt{pattern}$: A regular expression defining the matching criteria.
   \item $\texttt{replacement}$: The string to be substituted for the matched substring.
 \end{itemize}
 
