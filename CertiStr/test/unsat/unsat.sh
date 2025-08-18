@@ -1,7 +1,7 @@
 #!/bin/bash
 
 for test in ./*.smt2; do
-    result=$(CertiStr $test --left-most)
+    result=$(CertiStr --left-most $test)
     if ( [ $result != 'UNSAT' ])
     then
         echo "Test ($test) Fail:"
