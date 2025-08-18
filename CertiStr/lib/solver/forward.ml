@@ -3,6 +3,7 @@ open Automata_lib
 open Rel
 open Nfa
 open SFT
+open Parser
 module SS = Set.Make (String)
 module ConcatC = Map.Make (String)
 module ConcatR = Map.Make (String)
@@ -228,7 +229,7 @@ let rec maxState states i =
   match states with
   | [] -> i
   | state :: states' ->
-      if state > i then maxState states' state else maxState states' state
+      if state > i then maxState states' state else maxState states' i
 
 let gen_nfa_construct_input (n : Nfa.nfa) =
   let all_states = SNFA.gather_states n in
@@ -281,8 +282,7 @@ type str_op =
   | ReplaceAllI of int * Parser.strConstrain * Parser.strConstrain
 
 let fresh_int lst =
-  let rec aux n = if n > 0 && not (List.mem n lst) then n else aux (n + 1) in
-  aux 1
+  match lst with [] -> 0 | _ -> List.fold_left max 0 lst + 1
 
 let nft_from_replace pattern replacement leftmost replace_all =
   let pAuto =
@@ -332,8 +332,8 @@ let nft_from_replace pattern replacement leftmost replace_all =
   let max =
     1 + maxState (List.map Int32.to_int (StateSet.to_list pStates)) 0 + max1
   in
-  let pStates, pTrans, pInit, pAccept = gen_nfa_construct_input pAuto in
-  let rStates, rTrans, rInit, rAccepts = gen_nfa_construct_input rAuto in
+  let _pStates, pTrans, pInit, pAccept = gen_nfa_construct_input pAuto in
+  let _rStates, rTrans, rInit, rAccepts = gen_nfa_construct_input rAuto in
   let rTrans, output = trans_NFA2NFT rTrans in
   let nTrans =
     List.map
@@ -351,6 +351,7 @@ let nft_from_replace pattern replacement leftmost replace_all =
   in
   let nftAccepts =
     if replace_all then rename_states rAccepts max @ nAccepts
+    else if leftmost then rename_states rAccepts max @ nAccepts
     else rename_states rAccepts max
   in
   let rTrans = rename_transtions rTrans max in
@@ -368,38 +369,26 @@ let nft_from_replace pattern replacement leftmost replace_all =
     @ connectTrans pAccept rInit
     @
     if not replace_all then
-      selfTrans (if leftmost then nftAccepts else nftAccepts @ nftInit)
+      selfTrans
+        ( if leftmost then rename_states rAccepts max
+          else nftAccepts @ nftInit )
     else connectTrans (rename_states rAccepts max) nInits
   in
   let nftTrans =
     List.map (fun (p, ((l, i), q)) -> (p, ((l, Z.of_int i), q))) nftTrans
   in
   let outputFun = outputFunc outputZ in
-  (* For testing *)
-  (*
-  Format.printf "nftTrans:\n" ;
-  List.iter
-    (fun (p, ((l, i), q)) ->
-      Format.printf "(%d, " (Z.to_int (Automata_lib.integer_of_nat p)) ;
-      ( match l with
-      | Some ranges ->
-          List.iter
-            (fun (l1, l2) ->
-              Format.printf "[%d, %d]" (Z.to_int l1) (Z.to_int l2) )
-            ranges
-      | None -> Format.printf "None" ) ;
-      Format.printf ", %d, %d)\n" (Z.to_int i)
-        (Z.to_int (Automata_lib.integer_of_nat q)) )
-    nftTrans ;
-  Format.printf "nftInit:\n" ;
-  List.iter
-    (fun s -> Format.printf "%d " (Z.to_int (Automata_lib.integer_of_nat s)))
-    nftInit ;
-  Format.printf "\nnftAccepts:\n" ;
-  List.iter
-    (fun s -> Format.printf "%d " (Z.to_int (Automata_lib.integer_of_nat s)))
-    nftAccepts ;
-  Format.printf "\noutputFun:\n" ; *)
+  (* For testing Format.printf "nftTrans:\n" ; List.iter (fun (p, ((l, i),
+     q)) -> Format.printf "(%d, " (Z.to_int (Automata_lib.integer_of_nat p))
+     ; ( match l with | Some ranges -> List.iter (fun (l1, l2) ->
+     Format.printf "[%d, %d]" (Z.to_int l1) (Z.to_int l2) ) ranges | None ->
+     Format.printf "None" ) ; Format.printf ", %d, %d)\n" (Z.to_int i)
+     (Z.to_int (Automata_lib.integer_of_nat q)) ) nftTrans ; Format.printf
+     "nftInit:\n" ; List.iter (fun s -> Format.printf "%d " (Z.to_int
+     (Automata_lib.integer_of_nat s))) nftInit ; Format.printf
+     "\nnftAccepts:\n" ; List.iter (fun s -> Format.printf "%d " (Z.to_int
+     (Automata_lib.integer_of_nat s))) nftAccepts ; Format.printf
+     "\noutputFun:\n" ; *)
   nft_construct ([], (nftTrans, (nftInit, (nftAccepts, outputFun))))
 
 exception Unreachable of string
@@ -420,13 +409,31 @@ let sub_list lsmall llarge =
       | TranI i -> List.exists (fun e' -> i = e') llarge )
     lsmall
 
-let fmap ff e =
+let rec fmap ff e =
   match e with
   | [] -> None
-  | (a, b) :: l ->
+  | [(a, b)] -> (
       let l = ff (Some a) in
       let r = ff (Some b) in
-      if l = None then None else l
+      if l = None then None
+      else
+        match l with
+        | Some [(l1, _l2)] -> (
+          match r with Some [(r1, _r2)] -> Some [(l1, r1)] | _ -> None )
+        | _ -> None )
+  | (a, b) :: l -> (
+      let rl = fmap ff l in
+      let l = ff (Some a) in
+      let r = ff (Some b) in
+      if l = None then None
+      else
+        match l with
+        | Some [(l1, _l2)] -> (
+          match r with
+          | Some [(r1, _r2)] -> (
+            match rl with Some l -> Some ((l1, r1) :: l) | None -> None )
+          | _ -> None )
+        | _ -> None )
 
 let fe f l =
   match l with
@@ -449,6 +456,9 @@ let rec update_once l rm auto leftmost =
             nfa_normal
               (nfa_elim (nft_product nft (ConcatRI.find i rm) fmap fe))
           in
+          (* Format.printf "nfa after prudct-1:\n" ; print_auto (nfa_destruct
+             (ConcatRI.find i rm)) ; Format.printf "nfa after prudct-2:\n" ;
+             print_auto (nfa_destruct nft_res) ;*)
           let _, (_, (_, f)) = nfa_destruct nft_res in
           let nfa' = if f = [] then ConcatRI.find i rm else nft_res in
           let nfa = nfa_product acc_auto nfa' in

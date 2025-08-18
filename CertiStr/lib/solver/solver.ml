@@ -294,6 +294,7 @@ let solve (constraints : Parser.strConstrain list) leftmost =
   in
   let rr = full_rm sl cr in
   let rm = gen_mapr rr sl in
+  let auto = ConcatRI.find 1 rm in
   (* test_input rest new_sl new_rc rm *)
   let final_rm = forward_analysis rest new_sl new_rc rm leftmost in
   check_sat (rest @ new_sl) new_rc final_rm
