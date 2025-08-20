@@ -125,27 +125,23 @@ We evaluate a range of attack models for HTML, JavaScript, JSON, XML, and CSS. L
 
 \subsection{Modeling the Replacement Operation}
 
-The string replacement operation, denoted as
-$\texttt{replace}(\texttt{str}, \newline\texttt{pattern}, \texttt{replacement})$, is a fundamental string transformation that takes three parameters:
+The string replacement, denoted as
+$\texttt{replace}(\texttt{str}, \texttt{pattern}, \newline\texttt{replacement}, \texttt{flag})$, is a fundamental string transformation accepting four parameters:
 \begin{itemize}
   \item $\texttt{str}$: The input string to be transformed.
   \item $\texttt{pattern}$: A regular expression defining the matching criteria.
-  \item $\texttt{replacement}$: The string to be substituted for the matched substring.
+  \item $\texttt{replacement}$: The string that replaces matched substrings.
+  \item $\texttt{flag}=s/g$: The replacement mode flag, where $s$ denotes single occurrence replacement and $g$ denotes replace-all operation.
 \end{itemize}
 
-The semantics of the replacement operation can be formally characterized by two distinct cases:
-\begin{enumerate}
-  \item When there exists at least one substring $s'$ in \texttt{str} such that $s'$ matches $\texttt{pattern}$, then $s'$ is replaced with \texttt{replacement}.
-  \item When no substring of \texttt{str} matches $\texttt{pattern}$, the operation returns \texttt{str} unchanged.
-\end{enumerate}
+The operation's semantics is to replace the first occurrence (or all occurrences) of any substring $s'$ in \texttt{str} that matches $\texttt{pattern}$ with \texttt{replacement}.
 
-The first case can be modeled by SFTs. We illustrate this case by an example. Given a replacement operation $\texttt{replace}\newline(s, \texttt{/[0-9]+/}, "\texttt{NUM}")$, which means replacing a occurrence of the substring that matches the regular expression $\texttt{/[0-9]+/}$ with the string "\texttt{NUM}".
-We model this replacement operation by an SFT with the following 3 steps:
+To illustrate how SFTs model this operation, consider $\texttt{replace}(s, \texttt{/[0-9]+/}, "\texttt{NUM}", \texttt{flag})$. We construct the SFT representation through three steps:
 
 \begin{enumerate}
-  \item First, construct an SFA that recognizes the regular expression pattern $\texttt{/[0-9]+/}$. Transform this SFA into an SFT by augmenting each transition with an output function $f = \lambda x.~\texttt{None}$ that produces the empty string. 
-  \item Second, construct an SFA that accepts the replacement string "\texttt{NUM}". Since a constant string can be viewed as a specialized regular expression, we can construct its SFA representation. Convert this SFA into an SFT by adding $\varepsilon$-transitions  and appropriate output functions that emit the characters of "\texttt{NUM}" in sequence.
-  \item Finally, compose the two SFTs through concatenation and augment the resulting transducer with self-loop transitions at the initial and final states. These additional transitions, labeled with $\Sigma$ (the set of all characters in the alphabet) and the identity function $\texttt{id}=\lambda x.~x$, enable the SFT to process arbitrary prefixes and suffixes of the input string while preserving the replacement behavior on matched substrings.
+  \item Construct an SFA recognizing the pattern $\texttt{/[0-9]+/}$ and transform it into an SFT by augmenting each transition with output function $f = \lambda x.~\texttt{None}$ that produces the empty string.
+  \item Construct an SFA accepting the replacement string "\texttt{NUM}". Since constant strings are specialized regular expressions, we build their SFA representation and convert it to an SFT by adding $\varepsilon$-transitions with output functions that emit the replacement characters sequentially.
+  \item Compose the two SFTs by connecting the accepting state of the pattern-matching SFT to the initial state of the replacement-generating SFT via $\varepsilon$-transitions.
 \end{enumerate}
 
 
@@ -222,11 +218,8 @@ This function maps transition indices to their corresponding character outputs, 
 
 
 \noindent\emph{Step 3.}
-Figure \ref{fig-rearranged-automata} presents the complete SFT construction, obtained by composing the pattern-matching SFT (Fig. \ref{fig-snfa-pattern}) with the replacement-generating SFT (Fig. \ref{fig-snfa-replacement}). The composition process involves two key modifications:
-\begin{enumerate}
-  \item Connect the two SFTs by adding $\varepsilon$-transitions (labeled with "\texttt{None}, \texttt{f}") from each accepting state of the pattern-matching SFT to the initial state of the replacement-generating SFT
-  \item Augment the resulting transducer with self-loop transitions at both ends, labeled with "$\Sigma,~\texttt{id}$", where $\Sigma$ represents the full alphabet. For the string solver, $\Sigma$ is the set of all unicode characters. These transitions enable the SFT to process arbitrary input prefixes and suffixes while preserving the matched substring for replacement
-\end{enumerate}
+Figure \ref{fig-rearranged-automata} presents the complete SFT construction, obtained by composing the pattern-matching SFT (Fig. \ref{fig-snfa-pattern}) with the replacement-generating SFT (Fig. \ref{fig-snfa-replacement}). The composition process involves connecting the two SFTs by adding $\varepsilon$-transitions (labeled with "\texttt{None}, \texttt{f}") from each accepting state of the pattern-matching SFT to the initial state of the replacement-generating SFT.
+
 
 \begin{figure}[h] \centering
   \begin{tikzpicture}[shorten >=1pt, node distance=2cm, auto]
@@ -236,8 +229,7 @@ Figure \ref{fig-rearranged-automata} presents the complete SFT construction, obt
   
      \path[->] 
      (q0') edge [bend left] node {\texttt{[0-9]}, $\texttt{f}$} (q1')
-     (q1') edge [loop right] node {\texttt{[0-9]}, $\texttt{f}$} (q1')
-     (q0') edge [loop below] node {$\Sigma$, $\texttt{id}$} (q0');
+     (q1') edge [loop right] node {\texttt{[0-9]}, $\texttt{f}$} (q1');
   
     % Second automaton from the second figure
     \node[state] (q0'') [below=1cm of q1'] {$q_0''$}; 
@@ -249,25 +241,17 @@ Figure \ref{fig-rearranged-automata} presents the complete SFT construction, obt
     (q0'') edge node {\texttt{None}, \texttt{(g 1)}} (q1'')
     (q1'') edge [bend left=5] node[left] {\texttt{None}, \texttt{(g 2)}} (q2'')
     (q2'') edge node {\texttt{None}, \texttt{(g 3)}} (q3'')
-    (q3'') edge [loop left] node {$\Sigma$, $\texttt{id}$} (q3'')
     (q1') edge [bend right=30] node {\texttt{None}, \texttt{f}} (q0'');
   \end{tikzpicture}
   \caption{The SFT for the replacement operation \\ $\texttt{replace}(s, \texttt{/[0-9]+/}, \text{``NUM''})$}
   \label{fig-rearranged-automata}
   \end{figure}
 
+  We can extend the above construction to model both singleton and replace-all operations. In this paper, we only illustrate the construction of replace-all in Figure \ref{fig:replace-all}. The SFT $\mathcal{T}_2$ combines pattern matching and replacement using the construction just described. The SFT $\mathcal{T}_1$ matches strings that do not contain any substrings matching the pattern. Two $\varepsilon$-transitions connect these components: one from $\mathcal{T}_1$'s accepting state to $\mathcal{T}_2$'s initial state, and another from $\mathcal{T}_2$'s accepting state back to $\mathcal{T}_1$'s initial state. This cyclic structure enables the replace-all operation by repeatedly applying pattern replacement until no more matches exist in the input string.
+
 
   Having constructed the SFT, we can now compute the forward image of the replacement operation. Consider the string constraint $s' = \texttt{replace}(s,~\texttt{/[0-9]+/},~\text{"}\texttt{NUM}\text{"})$, where we aim to characterize the possible values of $s'$. Let $\mathcal{T}$ denote the constructed SFT modeling the replacement operation, and let $\mathcal{A}$ be the SFA representing the domain of possible values for the input string $s$. The forward image of this replacement operation is given by the product $\mathcal{T} \times \mathcal{A}$, which precisely captures the set of all possible output strings that can be produced by applying the replacement operation to any input string accepted by $\mathcal{A}$.
   Our string solver uses this forward image to do forward propagation for further string solving.
-
-  
-  The replacement operation model described above replaces a single occurrence of any substring matching the regular expression pattern. To support different replacement semantics, 
-  we model replace-all operations (which substitute all occurrences of matching substrings).
-
-  
-
-  The approach to modeling replace-all operations is illustrated in Figure \ref{fig:replace-all}. 
-
 
 
 \begin{figure}[htbp]
@@ -313,7 +297,7 @@ CertiStr \cite{cpp/KanLRS22} is a certified string solver that only support some
 
 %While the core solving algorithm maintains the certification guarantees of CertiStrR, the frontend components are implemented using established non-certified  OCaml libraries: dolmen \cite{dolmen} for SMT-LIB parsing and ocaml-re-nfa \cite{ocaml-re-nfa} for regular expression to NFA conversion.
 
-CertiStrR implements two different pattern matching introduced above: (1) singleton matching at any position, (2) replace-all matching. The pattern can be a regular expression or a constant string, which is a special case of regular expression.
+CertiStrR implements two different pattern matching introduced above: (1) singleton matching at first occurrence, (2) replace-all matching. The pattern can be a regular expression or a constant string, which is a special case of regular expression.
 
 % Listing \ref{lst-smtlib-code} demonstrates the regular expression variant through an example that replaces numeric sequences with the string "\texttt{NUM}". The constraints are satisfiable because the input string \texttt{a} = "\texttt{2024,2025}" contains a substring "\texttt{2025}" that matches the regular expression \texttt{re.+ (re.range "0" "9")} (equivalent to \texttt{/[0-9]+/}), and replacing this match with "\texttt{NUM}" yields the expected output string \texttt{b} = "\texttt{2024,NUM}".
 % %
@@ -331,7 +315,7 @@ CertiStrR implements two different pattern matching introduced above: (1) single
 %   \end{lstlisting}
 
 
-We evaluate CertiStrR using benchmarks from SMT-LIB 2024 \cite{smtlib_benchmarks}, focusing on the QF\_S and QF\_SLIA logic fragments. The benchmarks are categorized into three groups based on their pattern matching semantics: (1) general singleton matching and (2) replace-all matching. Patterns can be either regular expressions or constant strings.
+We evaluate CertiStrR using benchmarks from SMT-LIB 2024 \cite{smtlib_benchmarks}, focusing on the QF\_S and QF\_SLIA logic fragments. The benchmarks are categorized into two groups: (1) singleton matching and (2) replace-all matching.
 
 Due to CertiStrR's current frontend limitations in supporting the complete SMT-LIB language specification, we preprocess certain operations. For example, conjunctive assertions of the form \texttt{(assert (and c1 c2))} are decomposed into separate assertions \texttt{(assert c1)} and \texttt{(assert c2)} when both \texttt{c1} and \texttt{c2} are string constraints supported by CertiStrR.
 
@@ -358,31 +342,57 @@ Due to CertiStrR's current frontend limitations in supporting the complete SMT-L
 % Total number of inconclusive entries: 8
 
 
+%\begin{table}[h]
+%  \centering
+%  \small
+%  \begin{tabular}{lcccc}
+%      \toprule
+%      & \textbf{SAT/UNSAT/Inc} & \textbf{Time (s)} & \textbf{Tests} %\\
+%      \midrule
+%      \texttt{replace singleton} & 142/173/8 & 0.27 & 323\\
+%      \texttt{replace all} & 84/4/10 & 0.36 & 98\\
+%      \bottomrule
+%  \end{tabular}
+%  \caption{Experimental results}
+%  \label{tab:string_operations}
+%\end{table}
+
 \begin{table}[h]
-  \centering
-  \small
-  \begin{tabular}{lcccc}
-      \toprule
-      & \textbf{SAT/UNSAT/Inc} & \textbf{Time (s)} & \textbf{Tests} \\
-      \midrule
-      \texttt{replace singleton} & 142/173/8 & 0.27 & 323\\
-      \texttt{replace all} & 84/4/10 & 0.36 & 98\\
-      \bottomrule
-  \end{tabular}
-  \caption{Experimental results}
-  \label{tab:string_operations}
+\centering
+\small
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{lcccccc}
+  \toprule
+  \textbf{Subgroup} & \textbf{Tests} & \textbf{Time (s)} & \textbf{SAT} & \textbf{UNSAT} & \textbf{Inc} \\
+  \midrule
+  \multicolumn{6}{c}{\textbf{Replace Singleton}} \\
+  Replace RE  & 94  & 0.79 & 77  & 16  & 1 \\
+  Replace Str & 323 & 1.94 & 103 & 211 & 9 \\
+  \midrule
+  \multicolumn{6}{c}{\textbf{Replace All}} \\
+  PCP       & 1000 & 0.14 & 751 & 249 & 0 \\
+  RNA SAT   & 500  & 2.81 & 500 & 0   & 0 \\
+  RNA UNSAT & 500  & 3.14 & 0   & 500 & 0 \\
+  Rest      & 255  & 0.79 & 40  & 215 & 0 \\
+  \bottomrule
+\end{tabular}
+\caption{Experimental results}
+\label{tab:string_operations}
 \end{table}
 
-The experimental evaluation was conducted on a laptop with an Apple M4 processor and 24 GB of memory, with a one-minute time limit per test. The results show average execution times of 0.27 seconds for \texttt{replace singleton} and 0.36 seconds for \texttt{replace all}. Test outcomes were classified into three categories: SAT (satisfiable), UNSAT (unsatisfiable), and Inconclusive.
 
-An "Inconclusive" result indicates that the solver cannot determine satisfiability, not due to timeout (all tests completed within one minute), but due to the inherent incompleteness of the string solver's algorithm. An inconclusive result can occur when the solver cannot decide whether a string variable can be assigned a unique value to make the constraints satisfiable.
+The experimental evaluation was conducted on a laptop with an Apple M4 processor and 24 GB of memory, with a one-minute time limit per test. The results show average execution times of 0.97 seconds for "\texttt{Replace RE}" (patterns are regular expressions) and 1.94 seconds for "\texttt{Replace Str}" (patterns are strings). Test outcomes were classified into three categories: SAT (satisfiable), UNSAT (unsatisfiable), and Inconclusive.
+
+An "Inconclusive" result indicates that the solver cannot determine satisfiability due to the inherent incompleteness of the string solver's algorithm, not timeout (all tests completed within one minute). This occurs when the solver cannot determine whether string variables can be assigned values that satisfy all constraints.
+
+The most significant results appear in the "\texttt{Replace All}" subgroup, where CertiStrR efficiently handles diverse replace-all operations: 0.14 seconds for PCP (Post Correspondence Problem) tests, 2.81 seconds for RNA SAT, and 3.14 seconds for RNA UNSAT. The "\texttt{Rest}" category, encompassing various other string constraints, averages 0.79 seconds.
+
+Notably, PCP and RNA benchmarks cannot be solved by most state-of-the-art string solvers, including CVC4 \cite{cvc4} and Z3 \cite{Z3-str3}, yet CertiStrR solves them efficiently. Among existing solvers, only Ostrich \cite{pacmpl/ChenFHHHKLRW22} can handle these benchmarks.
 
 
-Our performance analysis revealed that while the SFT-based replacement operation modeling is efficient, the primary computational bottleneck stems from automata accumulation during  forward-propagation. Consider the following string constraints:
-\begin{align}
-x &= x_1\texttt{++}x_2;~x = \texttt{replace}(x_3, p, r); \nonumber ~x = \texttt{replace\_re}(x_5, p_1, r_1); \nonumber
-\end{align}
-where \texttt{++} denotes string concatenation. The variable $x$ appears multiple times on the left-hand side of the equations, causing the forward-propagation algorithm to accumulate automata representations for all constraints: $x_1\texttt{++}x_2$, \texttt{replace}\newline($x_3, p, r$), $x_4$, and \texttt{replace\_re}($x_5, p_1, r_1$). Each accumulation step requires computing the product of the current automaton with the previous result. Given that the product operation has a worst-case complexity of $O(n^2)$, where $n$ represents the automaton size, this repeated accumulation can lead to state explosion.
+\paragraph{Transducers vs. Replacement Operations}.
+%TODO
 
 
 \subsection{Effort of Certified Development}

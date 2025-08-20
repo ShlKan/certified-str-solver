@@ -3,6 +3,7 @@ open Automata_lib
 open Rel
 open Nfa
 open SFT
+open SNFA
 open Parser
 module SS = Set.Make (String)
 module ConcatC = Map.Make (String)
@@ -54,7 +55,7 @@ let nfa_destruct_str nfa =
     (equal_str, linorder_str) nfa
 
 let nfa_concate nfa1 nfa2 =
-  Automata_lib.rs_nfa_concate
+  Automata_lib.rs_nfa_concate_rename
     (nFA_states_nat, linorder_nat)
     (equal_Z, linorder_Z) nfa1 nfa2
 
@@ -62,6 +63,10 @@ let nfa_construct_reachable nfa =
   Automata_lib.rs_nfa_construct_reachable
     (nFA_states_nat, linorder_nat)
     (equal_Z, linorder_Z) nfa
+
+let f1 q = (Automata_lib.Nat (Z.of_int 1), q)
+
+let f2 q = (Automata_lib.Nat (Z.of_int 2), q)
 
 let f1 q = (Automata_lib.Nat (Z.of_int 1), q)
 
@@ -445,8 +450,11 @@ let rec update_once l rm auto leftmost =
     (fun acc_auto op ->
       match op with
       | ConcatI (i, j) ->
-          nfa_product acc_auto
-            (nfa_concate (ConcatRI.find i rm) (ConcatRI.find j rm))
+          let product =
+            nfa_product acc_auto
+              (nfa_concate_rename (ConcatRI.find i rm) (ConcatRI.find j rm))
+          in
+          product
       | Concat (_, _) -> raise (Unreachable "update_once")
       | Replace _ -> raise (Unreachable "update_once")
       | ReplaceAll _ -> raise (Unreachable "update_once")
@@ -495,6 +503,8 @@ let indegree_count rc vars =
               let acc1 = InDegree.add i (InDegree.find i acc + 1) acc in
               InDegree.add j (InDegree.find j acc1 + 1) acc1
           | ReplaceI (i, _, _) ->
+              InDegree.add i (InDegree.find i acc + 1) acc
+          | ReplaceAllI (i, _, _) ->
               InDegree.add i (InDegree.find i acc + 1) acc
           | _ -> acc )
         acc l )

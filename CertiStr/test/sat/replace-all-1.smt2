@@ -6,7 +6,7 @@
 
 
 
-(assert (= b (str.replace a "a" "b")))
+(assert (= b (str.replace_all a "a" "b")))
 
 (assert (= b "c"))
 

@@ -1,0 +1,4000 @@
+Test (./benchmark_0001.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.739s
+user	0m1.705s
+sys	0m0.023s
+SAT
+Test (./benchmark_0002.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.231s
+user	0m2.207s
+sys	0m0.017s
+SAT
+Test (./benchmark_0003.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.916s
+user	0m1.882s
+sys	0m0.019s
+SAT
+Test (./benchmark_0004.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.593s
+user	0m1.548s
+sys	0m0.017s
+SAT
+Test (./benchmark_0005.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.938s
+user	0m1.914s
+sys	0m0.014s
+SAT
+Test (./benchmark_0006.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.619s
+user	0m2.596s
+sys	0m0.016s
+SAT
+Test (./benchmark_0007.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.677s
+user	0m2.654s
+sys	0m0.016s
+SAT
+Test (./benchmark_0008.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.930s
+user	0m2.909s
+sys	0m0.014s
+SAT
+Test (./benchmark_0009.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.721s
+user	0m2.700s
+sys	0m0.013s
+SAT
+Test (./benchmark_0010.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.006s
+user	0m1.988s
+sys	0m0.012s
+SAT
+Test (./benchmark_0011.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.580s
+user	0m2.547s
+sys	0m0.026s
+SAT
+Test (./benchmark_0012.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.569s
+user	0m2.542s
+sys	0m0.020s
+SAT
+Test (./benchmark_0013.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.707s
+user	0m3.680s
+sys	0m0.019s
+SAT
+Test (./benchmark_0014.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.032s
+user	0m1.970s
+sys	0m0.024s
+SAT
+Test (./benchmark_0015.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.848s
+user	0m2.778s
+sys	0m0.026s
+SAT
+Test (./benchmark_0016.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.861s
+user	0m1.819s
+sys	0m0.021s
+SAT
+Test (./benchmark_0017.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.826s
+user	0m2.798s
+sys	0m0.021s
+SAT
+Test (./benchmark_0018.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.064s
+user	0m2.041s
+sys	0m0.015s
+SAT
+Test (./benchmark_0019.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.025s
+user	0m2.004s
+sys	0m0.013s
+SAT
+Test (./benchmark_0020.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.771s
+user	0m2.749s
+sys	0m0.016s
+SAT
+Test (./benchmark_0021.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.029s
+user	0m2.010s
+sys	0m0.013s
+SAT
+Test (./benchmark_0022.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.913s
+user	0m3.868s
+sys	0m0.026s
+SAT
+Test (./benchmark_0023.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.691s
+user	0m3.656s
+sys	0m0.024s
+SAT
+Test (./benchmark_0024.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.894s
+user	0m1.872s
+sys	0m0.015s
+SAT
+Test (./benchmark_0025.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.848s
+user	0m3.820s
+sys	0m0.021s
+SAT
+Test (./benchmark_0026.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.581s
+user	0m3.553s
+sys	0m0.020s
+SAT
+Test (./benchmark_0027.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.399s
+user	0m2.378s
+sys	0m0.015s
+SAT
+Test (./benchmark_0028.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.049s
+user	0m2.027s
+sys	0m0.015s
+SAT
+Test (./benchmark_0029.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.389s
+user	0m3.366s
+sys	0m0.016s
+SAT
+Test (./benchmark_0030.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.611s
+user	0m2.589s
+sys	0m0.015s
+SAT
+Test (./benchmark_0031.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.596s
+user	0m1.575s
+sys	0m0.014s
+SAT
+Test (./benchmark_0032.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.297s
+user	0m2.170s
+sys	0m0.017s
+SAT
+Test (./benchmark_0033.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.497s
+user	0m3.469s
+sys	0m0.022s
+SAT
+Test (./benchmark_0034.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.794s
+user	0m3.767s
+sys	0m0.021s
+SAT
+Test (./benchmark_0035.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.800s
+user	0m2.778s
+sys	0m0.015s
+SAT
+Test (./benchmark_0036.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.360s
+user	0m2.338s
+sys	0m0.015s
+SAT
+Test (./benchmark_0037.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.368s
+user	0m2.347s
+sys	0m0.015s
+SAT
+Test (./benchmark_0038.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.495s
+user	0m2.471s
+sys	0m0.017s
+SAT
+Test (./benchmark_0039.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.610s
+user	0m1.590s
+sys	0m0.013s
+SAT
+Test (./benchmark_0040.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.204s
+user	0m3.183s
+sys	0m0.015s
+SAT
+Test (./benchmark_0041.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.948s
+user	0m1.928s
+sys	0m0.013s
+SAT
+Test (./benchmark_0042.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.980s
+user	0m1.960s
+sys	0m0.013s
+SAT
+Test (./benchmark_0043.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.578s
+user	0m3.552s
+sys	0m0.019s
+SAT
+Test (./benchmark_0044.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.966s
+user	0m3.931s
+sys	0m0.022s
+SAT
+Test (./benchmark_0045.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.243s
+user	0m2.202s
+sys	0m0.022s
+SAT
+Test (./benchmark_0046.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.125s
+user	0m3.061s
+sys	0m0.028s
+SAT
+Test (./benchmark_0047.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.560s
+user	0m2.537s
+sys	0m0.016s
+SAT
+Test (./benchmark_0048.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.654s
+user	0m2.632s
+sys	0m0.015s
+SAT
+Test (./benchmark_0049.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.626s
+user	0m2.603s
+sys	0m0.016s
+SAT
+Test (./benchmark_0050.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.325s
+user	0m2.303s
+sys	0m0.016s
+SAT
+Test (./benchmark_0051.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.814s
+user	0m2.790s
+sys	0m0.016s
+SAT
+Test (./benchmark_0052.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.866s
+user	0m2.839s
+sys	0m0.016s
+SAT
+Test (./benchmark_0053.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.767s
+user	0m2.744s
+sys	0m0.016s
+SAT
+Test (./benchmark_0054.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.730s
+user	0m3.706s
+sys	0m0.018s
+SAT
+Test (./benchmark_0055.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.766s
+user	0m3.738s
+sys	0m0.022s
+SAT
+Test (./benchmark_0056.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.541s
+user	0m2.516s
+sys	0m0.018s
+SAT
+Test (./benchmark_0057.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.719s
+user	0m3.693s
+sys	0m0.019s
+SAT
+Test (./benchmark_0058.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.615s
+user	0m2.593s
+sys	0m0.015s
+SAT
+Test (./benchmark_0059.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.624s
+user	0m3.600s
+sys	0m0.017s
+SAT
+Test (./benchmark_0060.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.629s
+user	0m3.599s
+sys	0m0.022s
+SAT
+Test (./benchmark_0061.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.860s
+user	0m1.839s
+sys	0m0.014s
+SAT
+Test (./benchmark_0062.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.320s
+user	0m2.298s
+sys	0m0.015s
+SAT
+Test (./benchmark_0063.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.140s
+user	0m3.114s
+sys	0m0.018s
+SAT
+Test (./benchmark_0064.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.133s
+user	0m2.078s
+sys	0m0.020s
+SAT
+Test (./benchmark_0065.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.906s
+user	0m1.882s
+sys	0m0.014s
+SAT
+Test (./benchmark_0066.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.549s
+user	0m3.524s
+sys	0m0.016s
+SAT
+Test (./benchmark_0067.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.925s
+user	0m3.874s
+sys	0m0.020s
+SAT
+Test (./benchmark_0068.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.710s
+user	0m1.688s
+sys	0m0.013s
+SAT
+Test (./benchmark_0069.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.041s
+user	0m2.012s
+sys	0m0.012s
+SAT
+Test (./benchmark_0070.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.464s
+user	0m2.425s
+sys	0m0.014s
+SAT
+Test (./benchmark_0071.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.721s
+user	0m2.697s
+sys	0m0.013s
+SAT
+Test (./benchmark_0072.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.645s
+user	0m2.619s
+sys	0m0.012s
+SAT
+Test (./benchmark_0073.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.993s
+user	0m1.953s
+sys	0m0.015s
+SAT
+Test (./benchmark_0074.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.090s
+user	0m2.069s
+sys	0m0.012s
+SAT
+Test (./benchmark_0075.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.936s
+user	0m3.909s
+sys	0m0.012s
+SAT
+Test (./benchmark_0076.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.272s
+user	0m3.237s
+sys	0m0.013s
+SAT
+Test (./benchmark_0077.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.475s
+user	0m3.457s
+sys	0m0.011s
+SAT
+Test (./benchmark_0078.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.712s
+user	0m1.693s
+sys	0m0.011s
+SAT
+Test (./benchmark_0079.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m4.197s
+user	0m4.172s
+sys	0m0.013s
+SAT
+Test (./benchmark_0080.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.884s
+user	0m1.866s
+sys	0m0.011s
+SAT
+Test (./benchmark_0081.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.663s
+user	0m3.644s
+sys	0m0.011s
+SAT
+Test (./benchmark_0082.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.831s
+user	0m3.813s
+sys	0m0.011s
+SAT
+Test (./benchmark_0083.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.786s
+user	0m1.730s
+sys	0m0.011s
+SAT
+Test (./benchmark_0084.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.593s
+user	0m2.575s
+sys	0m0.011s
+SAT
+Test (./benchmark_0085.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.922s
+user	0m1.904s
+sys	0m0.011s
+SAT
+Test (./benchmark_0086.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.870s
+user	0m3.852s
+sys	0m0.011s
+SAT
+Test (./benchmark_0087.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.253s
+user	0m2.236s
+sys	0m0.010s
+SAT
+Test (./benchmark_0088.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.822s
+user	0m2.804s
+sys	0m0.011s
+SAT
+Test (./benchmark_0089.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.367s
+user	0m2.348s
+sys	0m0.011s
+SAT
+Test (./benchmark_0090.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.805s
+user	0m3.784s
+sys	0m0.012s
+SAT
+Test (./benchmark_0091.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.457s
+user	0m3.439s
+sys	0m0.011s
+SAT
+Test (./benchmark_0092.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.803s
+user	0m3.785s
+sys	0m0.011s
+SAT
+Test (./benchmark_0093.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.045s
+user	0m2.028s
+sys	0m0.010s
+SAT
+Test (./benchmark_0094.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.369s
+user	0m3.351s
+sys	0m0.011s
+SAT
+Test (./benchmark_0095.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.979s
+user	0m2.960s
+sys	0m0.011s
+SAT
+Test (./benchmark_0096.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.942s
+user	0m3.919s
+sys	0m0.011s
+SAT
+Test (./benchmark_0097.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.569s
+user	0m2.552s
+sys	0m0.010s
+SAT
+Test (./benchmark_0098.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.597s
+user	0m3.580s
+sys	0m0.011s
+SAT
+Test (./benchmark_0099.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.620s
+user	0m2.600s
+sys	0m0.012s
+SAT
+Test (./benchmark_0100.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.607s
+user	0m2.584s
+sys	0m0.016s
+SAT
+Test (./benchmark_0101.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.825s
+user	0m2.802s
+sys	0m0.016s
+SAT
+Test (./benchmark_0102.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.735s
+user	0m2.713s
+sys	0m0.015s
+SAT
+Test (./benchmark_0103.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.316s
+user	0m2.275s
+sys	0m0.034s
+SAT
+Test (./benchmark_0104.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.023s
+user	0m1.999s
+sys	0m0.017s
+SAT
+Test (./benchmark_0105.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.070s
+user	0m2.050s
+sys	0m0.013s
+SAT
+Test (./benchmark_0106.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.539s
+user	0m2.514s
+sys	0m0.015s
+SAT
+Test (./benchmark_0107.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.596s
+user	0m3.552s
+sys	0m0.024s
+SAT
+Test (./benchmark_0108.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.873s
+user	0m1.827s
+sys	0m0.020s
+SAT
+Test (./benchmark_0109.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.638s
+user	0m3.605s
+sys	0m0.027s
+SAT
+Test (./benchmark_0110.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.737s
+user	0m2.220s
+sys	0m0.048s
+SAT
+Test (./benchmark_0111.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m5.049s
+user	0m3.825s
+sys	0m0.064s
+SAT
+Test (./benchmark_0112.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.145s
+user	0m3.058s
+sys	0m0.027s
+SAT
+Test (./benchmark_0113.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.884s
+user	0m2.821s
+sys	0m0.026s
+SAT
+Test (./benchmark_0114.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.419s
+user	0m3.296s
+sys	0m0.027s
+SAT
+Test (./benchmark_0115.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.962s
+user	0m2.923s
+sys	0m0.019s
+SAT
+Test (./benchmark_0116.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.480s
+user	0m2.408s
+sys	0m0.030s
+SAT
+Test (./benchmark_0117.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.062s
+user	0m2.007s
+sys	0m0.019s
+SAT
+Test (./benchmark_0118.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.863s
+user	0m3.832s
+sys	0m0.014s
+SAT
+Test (./benchmark_0119.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.655s
+user	0m3.636s
+sys	0m0.012s
+SAT
+Test (./benchmark_0120.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.864s
+user	0m1.845s
+sys	0m0.011s
+SAT
+Test (./benchmark_0121.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.012s
+user	0m2.993s
+sys	0m0.012s
+SAT
+Test (./benchmark_0122.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.526s
+user	0m2.490s
+sys	0m0.015s
+SAT
+Test (./benchmark_0123.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.064s
+user	0m2.046s
+sys	0m0.011s
+SAT
+Test (./benchmark_0124.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m4.104s
+user	0m4.076s
+sys	0m0.013s
+SAT
+Test (./benchmark_0125.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.907s
+user	0m2.877s
+sys	0m0.013s
+SAT
+Test (./benchmark_0126.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.850s
+user	0m1.830s
+sys	0m0.012s
+SAT
+Test (./benchmark_0127.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.651s
+user	0m3.612s
+sys	0m0.014s
+SAT
+Test (./benchmark_0128.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.132s
+user	0m2.112s
+sys	0m0.012s
+SAT
+Test (./benchmark_0129.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.184s
+user	0m2.142s
+sys	0m0.015s
+SAT
+Test (./benchmark_0130.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m4.077s
+user	0m4.057s
+sys	0m0.013s
+SAT
+Test (./benchmark_0131.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.465s
+user	0m2.444s
+sys	0m0.014s
+SAT
+Test (./benchmark_0132.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.628s
+user	0m2.592s
+sys	0m0.017s
+SAT
+Test (./benchmark_0133.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.977s
+user	0m3.887s
+sys	0m0.030s
+SAT
+Test (./benchmark_0134.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.423s
+user	0m3.270s
+sys	0m0.028s
+SAT
+Test (./benchmark_0135.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m4.257s
+user	0m4.174s
+sys	0m0.030s
+SAT
+Test (./benchmark_0136.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.074s
+user	0m1.994s
+sys	0m0.035s
+SAT
+Test (./benchmark_0137.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.626s
+user	0m2.505s
+sys	0m0.033s
+SAT
+Test (./benchmark_0138.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.899s
+user	0m1.878s
+sys	0m0.013s
+SAT
+Test (./benchmark_0139.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.500s
+user	0m3.465s
+sys	0m0.019s
+SAT
+Test (./benchmark_0140.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.753s
+user	0m3.624s
+sys	0m0.033s
+SAT
+Test (./benchmark_0141.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.766s
+user	0m1.744s
+sys	0m0.013s
+SAT
+Test (./benchmark_0142.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.424s
+user	0m3.401s
+sys	0m0.015s
+SAT
+Test (./benchmark_0143.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.780s
+user	0m1.758s
+sys	0m0.015s
+SAT
+Test (./benchmark_0144.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.656s
+user	0m2.636s
+sys	0m0.013s
+SAT
+Test (./benchmark_0145.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.947s
+user	0m1.923s
+sys	0m0.017s
+SAT
+Test (./benchmark_0146.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.628s
+user	0m2.602s
+sys	0m0.018s
+SAT
+Test (./benchmark_0147.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.160s
+user	0m2.103s
+sys	0m0.024s
+SAT
+Test (./benchmark_0148.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.871s
+user	0m1.829s
+sys	0m0.020s
+SAT
+Test (./benchmark_0149.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.178s
+user	0m3.148s
+sys	0m0.021s
+SAT
+Test (./benchmark_0150.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.682s
+user	0m2.653s
+sys	0m0.019s
+SAT
+Test (./benchmark_0151.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.122s
+user	0m2.087s
+sys	0m0.020s
+SAT
+Test (./benchmark_0152.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.758s
+user	0m3.707s
+sys	0m0.024s
+SAT
+Test (./benchmark_0153.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.834s
+user	0m2.809s
+sys	0m0.018s
+SAT
+Test (./benchmark_0154.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.840s
+user	0m2.816s
+sys	0m0.018s
+SAT
+Test (./benchmark_0155.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.257s
+user	0m3.228s
+sys	0m0.022s
+SAT
+Test (./benchmark_0156.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.711s
+user	0m1.687s
+sys	0m0.017s
+SAT
+Test (./benchmark_0157.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.645s
+user	0m3.618s
+sys	0m0.020s
+SAT
+Test (./benchmark_0158.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m4.054s
+user	0m4.023s
+sys	0m0.024s
+SAT
+Test (./benchmark_0159.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.384s
+user	0m2.359s
+sys	0m0.018s
+SAT
+Test (./benchmark_0160.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.248s
+user	0m2.210s
+sys	0m0.019s
+SAT
+Test (./benchmark_0161.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.169s
+user	0m2.109s
+sys	0m0.025s
+SAT
+Test (./benchmark_0162.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.969s
+user	0m1.900s
+sys	0m0.023s
+SAT
+Test (./benchmark_0163.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.851s
+user	0m1.827s
+sys	0m0.018s
+SAT
+Test (./benchmark_0164.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.055s
+user	0m2.030s
+sys	0m0.018s
+SAT
+Test (./benchmark_0165.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.933s
+user	0m3.904s
+sys	0m0.022s
+SAT
+Test (./benchmark_0166.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.413s
+user	0m3.384s
+sys	0m0.022s
+SAT
+Test (./benchmark_0167.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.604s
+user	0m2.573s
+sys	0m0.024s
+SAT
+Test (./benchmark_0168.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.986s
+user	0m1.961s
+sys	0m0.018s
+SAT
+Test (./benchmark_0169.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.525s
+user	0m3.495s
+sys	0m0.023s
+SAT
+Test (./benchmark_0170.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.095s
+user	0m2.069s
+sys	0m0.018s
+SAT
+Test (./benchmark_0171.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.548s
+user	0m3.500s
+sys	0m0.025s
+SAT
+Test (./benchmark_0172.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.974s
+user	0m2.924s
+sys	0m0.023s
+SAT
+Test (./benchmark_0173.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.991s
+user	0m1.969s
+sys	0m0.015s
+SAT
+Test (./benchmark_0174.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.063s
+user	0m2.038s
+sys	0m0.018s
+SAT
+Test (./benchmark_0175.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.496s
+user	0m3.468s
+sys	0m0.019s
+SAT
+Test (./benchmark_0176.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.941s
+user	0m2.918s
+sys	0m0.016s
+SAT
+Test (./benchmark_0177.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.247s
+user	0m3.217s
+sys	0m0.022s
+SAT
+Test (./benchmark_0178.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.032s
+user	0m3.002s
+sys	0m0.023s
+SAT
+Test (./benchmark_0179.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.962s
+user	0m1.936s
+sys	0m0.019s
+SAT
+Test (./benchmark_0180.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.329s
+user	0m3.299s
+sys	0m0.023s
+SAT
+Test (./benchmark_0181.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.392s
+user	0m3.340s
+sys	0m0.025s
+SAT
+Test (./benchmark_0182.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.818s
+user	0m2.788s
+sys	0m0.019s
+SAT
+Test (./benchmark_0183.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.829s
+user	0m2.774s
+sys	0m0.023s
+SAT
+Test (./benchmark_0184.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.824s
+user	0m2.768s
+sys	0m0.022s
+SAT
+Test (./benchmark_0185.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.894s
+user	0m1.872s
+sys	0m0.015s
+SAT
+Test (./benchmark_0186.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m4.275s
+user	0m4.245s
+sys	0m0.023s
+SAT
+Test (./benchmark_0187.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.845s
+user	0m2.819s
+sys	0m0.019s
+SAT
+Test (./benchmark_0188.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.540s
+user	0m2.514s
+sys	0m0.019s
+SAT
+Test (./benchmark_0189.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m4.204s
+user	0m4.154s
+sys	0m0.026s
+SAT
+Test (./benchmark_0190.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.847s
+user	0m1.800s
+sys	0m0.019s
+SAT
+Test (./benchmark_0191.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.036s
+user	0m2.995s
+sys	0m0.023s
+SAT
+Test (./benchmark_0192.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.090s
+user	0m3.051s
+sys	0m0.022s
+SAT
+Test (./benchmark_0193.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.662s
+user	0m2.610s
+sys	0m0.022s
+SAT
+Test (./benchmark_0194.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.809s
+user	0m2.781s
+sys	0m0.019s
+SAT
+Test (./benchmark_0195.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.457s
+user	0m2.428s
+sys	0m0.018s
+SAT
+Test (./benchmark_0196.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.308s
+user	0m3.282s
+sys	0m0.018s
+SAT
+Test (./benchmark_0197.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.408s
+user	0m3.383s
+sys	0m0.018s
+SAT
+Test (./benchmark_0198.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.854s
+user	0m3.823s
+sys	0m0.021s
+SAT
+Test (./benchmark_0199.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.564s
+user	0m2.520s
+sys	0m0.018s
+SAT
+Test (./benchmark_0200.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.125s
+user	0m3.098s
+sys	0m0.020s
+SAT
+Test (./benchmark_0201.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.747s
+user	0m1.723s
+sys	0m0.015s
+SAT
+Test (./benchmark_0202.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.937s
+user	0m3.914s
+sys	0m0.015s
+SAT
+Test (./benchmark_0203.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.763s
+user	0m1.717s
+sys	0m0.013s
+SAT
+Test (./benchmark_0204.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.138s
+user	0m2.118s
+sys	0m0.011s
+SAT
+Test (./benchmark_0205.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m4.214s
+user	0m4.177s
+sys	0m0.012s
+SAT
+Test (./benchmark_0206.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.846s
+user	0m1.802s
+sys	0m0.014s
+SAT
+Test (./benchmark_0207.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.125s
+user	0m3.108s
+sys	0m0.011s
+SAT
+Test (./benchmark_0208.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.864s
+user	0m3.846s
+sys	0m0.011s
+SAT
+Test (./benchmark_0209.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.760s
+user	0m3.741s
+sys	0m0.012s
+SAT
+Test (./benchmark_0210.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.959s
+user	0m2.920s
+sys	0m0.013s
+SAT
+Test (./benchmark_0211.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.017s
+user	0m2.000s
+sys	0m0.011s
+SAT
+Test (./benchmark_0212.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.347s
+user	0m3.330s
+sys	0m0.011s
+SAT
+Test (./benchmark_0213.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.403s
+user	0m2.386s
+sys	0m0.011s
+SAT
+Test (./benchmark_0214.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.711s
+user	0m2.691s
+sys	0m0.011s
+SAT
+Test (./benchmark_0215.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.222s
+user	0m2.204s
+sys	0m0.011s
+SAT
+Test (./benchmark_0216.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.260s
+user	0m3.243s
+sys	0m0.011s
+SAT
+Test (./benchmark_0217.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.211s
+user	0m2.193s
+sys	0m0.012s
+SAT
+Test (./benchmark_0218.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.747s
+user	0m1.684s
+sys	0m0.013s
+SAT
+Test (./benchmark_0219.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.792s
+user	0m3.718s
+sys	0m0.025s
+SAT
+Test (./benchmark_0220.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.677s
+user	0m3.646s
+sys	0m0.022s
+SAT
+Test (./benchmark_0221.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.200s
+user	0m2.158s
+sys	0m0.017s
+SAT
+Test (./benchmark_0222.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.559s
+user	0m3.532s
+sys	0m0.019s
+SAT
+Test (./benchmark_0223.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.080s
+user	0m3.054s
+sys	0m0.017s
+SAT
+Test (./benchmark_0224.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.271s
+user	0m2.249s
+sys	0m0.016s
+SAT
+Test (./benchmark_0225.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.852s
+user	0m3.829s
+sys	0m0.016s
+SAT
+Test (./benchmark_0226.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.281s
+user	0m2.260s
+sys	0m0.014s
+SAT
+Test (./benchmark_0227.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.873s
+user	0m2.851s
+sys	0m0.015s
+SAT
+Test (./benchmark_0228.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.178s
+user	0m3.155s
+sys	0m0.015s
+SAT
+Test (./benchmark_0229.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.180s
+user	0m2.156s
+sys	0m0.017s
+SAT
+Test (./benchmark_0230.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.969s
+user	0m1.943s
+sys	0m0.019s
+SAT
+Test (./benchmark_0231.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.801s
+user	0m2.763s
+sys	0m0.022s
+SAT
+Test (./benchmark_0232.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.542s
+user	0m2.404s
+sys	0m0.044s
+SAT
+Test (./benchmark_0233.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.862s
+user	0m3.764s
+sys	0m0.044s
+SAT
+Test (./benchmark_0234.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.782s
+user	0m2.735s
+sys	0m0.020s
+SAT
+Test (./benchmark_0235.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.922s
+user	0m3.891s
+sys	0m0.022s
+SAT
+Test (./benchmark_0236.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.552s
+user	0m3.513s
+sys	0m0.023s
+SAT
+Test (./benchmark_0237.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.096s
+user	0m2.070s
+sys	0m0.017s
+SAT
+Test (./benchmark_0238.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.202s
+user	0m2.166s
+sys	0m0.020s
+SAT
+Test (./benchmark_0239.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.019s
+user	0m1.998s
+sys	0m0.014s
+SAT
+Test (./benchmark_0240.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.115s
+user	0m2.049s
+sys	0m0.029s
+SAT
+Test (./benchmark_0241.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.870s
+user	0m2.827s
+sys	0m0.025s
+SAT
+Test (./benchmark_0242.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.580s
+user	0m2.551s
+sys	0m0.021s
+SAT
+Test (./benchmark_0243.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.535s
+user	0m2.511s
+sys	0m0.017s
+SAT
+Test (./benchmark_0244.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.251s
+user	0m2.109s
+sys	0m0.019s
+SAT
+Test (./benchmark_0245.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.918s
+user	0m1.886s
+sys	0m0.018s
+SAT
+Test (./benchmark_0246.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.291s
+user	0m3.224s
+sys	0m0.032s
+SAT
+Test (./benchmark_0247.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.400s
+user	0m2.374s
+sys	0m0.018s
+SAT
+Test (./benchmark_0248.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.822s
+user	0m1.798s
+sys	0m0.015s
+SAT
+Test (./benchmark_0249.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.798s
+user	0m3.773s
+sys	0m0.018s
+SAT
+Test (./benchmark_0250.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.519s
+user	0m2.496s
+sys	0m0.017s
+SAT
+Test (./benchmark_0251.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.659s
+user	0m3.637s
+sys	0m0.015s
+SAT
+Test (./benchmark_0252.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.748s
+user	0m2.719s
+sys	0m0.018s
+SAT
+Test (./benchmark_0253.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.767s
+user	0m3.711s
+sys	0m0.029s
+SAT
+Test (./benchmark_0254.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.623s
+user	0m3.584s
+sys	0m0.025s
+SAT
+Test (./benchmark_0255.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.860s
+user	0m3.835s
+sys	0m0.018s
+SAT
+Test (./benchmark_0256.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.061s
+user	0m3.037s
+sys	0m0.017s
+SAT
+Test (./benchmark_0257.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.236s
+user	0m2.211s
+sys	0m0.018s
+SAT
+Test (./benchmark_0258.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.836s
+user	0m1.817s
+sys	0m0.013s
+SAT
+Test (./benchmark_0259.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.247s
+user	0m3.225s
+sys	0m0.015s
+SAT
+Test (./benchmark_0260.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.917s
+user	0m1.896s
+sys	0m0.014s
+SAT
+Test (./benchmark_0261.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.676s
+user	0m1.656s
+sys	0m0.013s
+SAT
+Test (./benchmark_0262.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.111s
+user	0m2.089s
+sys	0m0.016s
+SAT
+Test (./benchmark_0263.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.607s
+user	0m3.579s
+sys	0m0.021s
+SAT
+Test (./benchmark_0264.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.706s
+user	0m3.667s
+sys	0m0.025s
+SAT
+Test (./benchmark_0265.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.411s
+user	0m3.358s
+sys	0m0.029s
+SAT
+Test (./benchmark_0266.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.180s
+user	0m2.067s
+sys	0m0.048s
+SAT
+Test (./benchmark_0267.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m4.067s
+user	0m4.011s
+sys	0m0.041s
+SAT
+Test (./benchmark_0268.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.942s
+user	0m1.871s
+sys	0m0.034s
+SAT
+Test (./benchmark_0269.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.867s
+user	0m1.833s
+sys	0m0.023s
+SAT
+Test (./benchmark_0270.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.381s
+user	0m2.318s
+sys	0m0.032s
+SAT
+Test (./benchmark_0271.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.783s
+user	0m1.760s
+sys	0m0.016s
+SAT
+Test (./benchmark_0272.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.985s
+user	0m1.963s
+sys	0m0.016s
+SAT
+Test (./benchmark_0273.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m4.091s
+user	0m4.043s
+sys	0m0.026s
+SAT
+Test (./benchmark_0274.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.695s
+user	0m3.627s
+sys	0m0.030s
+SAT
+Test (./benchmark_0275.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.224s
+user	0m2.192s
+sys	0m0.021s
+SAT
+Test (./benchmark_0276.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.867s
+user	0m2.829s
+sys	0m0.022s
+SAT
+Test (./benchmark_0277.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.736s
+user	0m3.699s
+sys	0m0.026s
+SAT
+Test (./benchmark_0278.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.853s
+user	0m1.760s
+sys	0m0.032s
+SAT
+Test (./benchmark_0279.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.228s
+user	0m2.173s
+sys	0m0.030s
+SAT
+Test (./benchmark_0280.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.527s
+user	0m2.485s
+sys	0m0.026s
+SAT
+Test (./benchmark_0281.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.760s
+user	0m2.732s
+sys	0m0.017s
+SAT
+Test (./benchmark_0282.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.665s
+user	0m3.541s
+sys	0m0.044s
+SAT
+Test (./benchmark_0283.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.952s
+user	0m1.916s
+sys	0m0.018s
+SAT
+Test (./benchmark_0284.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.089s
+user	0m2.055s
+sys	0m0.019s
+SAT
+Test (./benchmark_0285.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.467s
+user	0m2.390s
+sys	0m0.025s
+SAT
+Test (./benchmark_0286.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.148s
+user	0m3.119s
+sys	0m0.021s
+SAT
+Test (./benchmark_0287.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.790s
+user	0m1.755s
+sys	0m0.018s
+SAT
+Test (./benchmark_0288.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m4.156s
+user	0m4.113s
+sys	0m0.023s
+SAT
+Test (./benchmark_0289.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.797s
+user	0m2.774s
+sys	0m0.016s
+SAT
+Test (./benchmark_0290.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.169s
+user	0m3.145s
+sys	0m0.016s
+SAT
+Test (./benchmark_0291.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.442s
+user	0m3.410s
+sys	0m0.022s
+SAT
+Test (./benchmark_0292.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.607s
+user	0m3.578s
+sys	0m0.022s
+SAT
+Test (./benchmark_0293.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.595s
+user	0m2.573s
+sys	0m0.016s
+SAT
+Test (./benchmark_0294.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.659s
+user	0m2.636s
+sys	0m0.016s
+SAT
+Test (./benchmark_0295.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.926s
+user	0m1.900s
+sys	0m0.019s
+SAT
+Test (./benchmark_0296.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.481s
+user	0m3.430s
+sys	0m0.027s
+SAT
+Test (./benchmark_0297.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.866s
+user	0m1.837s
+sys	0m0.019s
+SAT
+Test (./benchmark_0298.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.478s
+user	0m3.421s
+sys	0m0.030s
+SAT
+Test (./benchmark_0299.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.147s
+user	0m2.114s
+sys	0m0.021s
+SAT
+Test (./benchmark_0300.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.941s
+user	0m3.889s
+sys	0m0.030s
+SAT
+Test (./benchmark_0301.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.833s
+user	0m3.781s
+sys	0m0.030s
+SAT
+Test (./benchmark_0302.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.394s
+user	0m2.354s
+sys	0m0.024s
+SAT
+Test (./benchmark_0303.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m4.023s
+user	0m3.957s
+sys	0m0.034s
+SAT
+Test (./benchmark_0304.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.677s
+user	0m2.639s
+sys	0m0.019s
+SAT
+Test (./benchmark_0305.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.079s
+user	0m2.048s
+sys	0m0.019s
+SAT
+Test (./benchmark_0306.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.787s
+user	0m2.757s
+sys	0m0.022s
+SAT
+Test (./benchmark_0307.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.762s
+user	0m2.735s
+sys	0m0.020s
+SAT
+Test (./benchmark_0308.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.337s
+user	0m2.305s
+sys	0m0.020s
+SAT
+Test (./benchmark_0309.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.842s
+user	0m3.776s
+sys	0m0.038s
+SAT
+Test (./benchmark_0310.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.970s
+user	0m1.920s
+sys	0m0.024s
+SAT
+Test (./benchmark_0311.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.556s
+user	0m2.490s
+sys	0m0.026s
+SAT
+Test (./benchmark_0312.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.236s
+user	0m3.198s
+sys	0m0.026s
+SAT
+Test (./benchmark_0313.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.038s
+user	0m2.995s
+sys	0m0.026s
+SAT
+Test (./benchmark_0314.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.415s
+user	0m2.356s
+sys	0m0.025s
+SAT
+Test (./benchmark_0315.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.199s
+user	0m3.054s
+sys	0m0.055s
+SAT
+Test (./benchmark_0316.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.994s
+user	0m1.872s
+sys	0m0.054s
+SAT
+Test (./benchmark_0317.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.165s
+user	0m2.088s
+sys	0m0.043s
+SAT
+Test (./benchmark_0318.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.926s
+user	0m1.871s
+sys	0m0.036s
+SAT
+Test (./benchmark_0319.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.713s
+user	0m2.616s
+sys	0m0.049s
+SAT
+Test (./benchmark_0320.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.727s
+user	0m1.672s
+sys	0m0.031s
+SAT
+Test (./benchmark_0321.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.979s
+user	0m2.930s
+sys	0m0.034s
+SAT
+Test (./benchmark_0322.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.015s
+user	0m2.981s
+sys	0m0.026s
+SAT
+Test (./benchmark_0323.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.836s
+user	0m1.805s
+sys	0m0.021s
+SAT
+Test (./benchmark_0324.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.328s
+user	0m3.287s
+sys	0m0.029s
+SAT
+Test (./benchmark_0325.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.955s
+user	0m3.918s
+sys	0m0.030s
+SAT
+Test (./benchmark_0326.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.111s
+user	0m2.082s
+sys	0m0.015s
+SAT
+Test (./benchmark_0327.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.137s
+user	0m2.101s
+sys	0m0.013s
+SAT
+Test (./benchmark_0328.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m4.081s
+user	0m4.063s
+sys	0m0.012s
+SAT
+Test (./benchmark_0329.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.590s
+user	0m3.562s
+sys	0m0.013s
+SAT
+Test (./benchmark_0330.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.965s
+user	0m1.944s
+sys	0m0.012s
+SAT
+Test (./benchmark_0331.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.519s
+user	0m3.500s
+sys	0m0.012s
+SAT
+Test (./benchmark_0332.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.318s
+user	0m3.299s
+sys	0m0.012s
+SAT
+Test (./benchmark_0333.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.546s
+user	0m2.484s
+sys	0m0.014s
+SAT
+Test (./benchmark_0334.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.675s
+user	0m3.629s
+sys	0m0.015s
+SAT
+Test (./benchmark_0335.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.868s
+user	0m3.822s
+sys	0m0.015s
+SAT
+Test (./benchmark_0336.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.930s
+user	0m1.884s
+sys	0m0.014s
+SAT
+Test (./benchmark_0337.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.888s
+user	0m2.862s
+sys	0m0.013s
+SAT
+Test (./benchmark_0338.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.038s
+user	0m3.018s
+sys	0m0.012s
+SAT
+Test (./benchmark_0339.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.706s
+user	0m3.493s
+sys	0m0.047s
+SAT
+Test (./benchmark_0340.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.954s
+user	0m2.928s
+sys	0m0.016s
+SAT
+Test (./benchmark_0341.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.656s
+user	0m3.618s
+sys	0m0.013s
+SAT
+Test (./benchmark_0342.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.417s
+user	0m2.360s
+sys	0m0.016s
+SAT
+Test (./benchmark_0343.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.629s
+user	0m2.609s
+sys	0m0.012s
+SAT
+Test (./benchmark_0344.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.048s
+user	0m2.024s
+sys	0m0.012s
+SAT
+Test (./benchmark_0345.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m4.155s
+user	0m4.042s
+sys	0m0.028s
+SAT
+Test (./benchmark_0346.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.869s
+user	0m2.800s
+sys	0m0.031s
+SAT
+Test (./benchmark_0347.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.334s
+user	0m2.230s
+sys	0m0.029s
+SAT
+Test (./benchmark_0348.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.858s
+user	0m2.826s
+sys	0m0.016s
+SAT
+Test (./benchmark_0349.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.784s
+user	0m1.760s
+sys	0m0.013s
+SAT
+Test (./benchmark_0350.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.966s
+user	0m2.894s
+sys	0m0.023s
+SAT
+Test (./benchmark_0351.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.425s
+user	0m3.315s
+sys	0m0.035s
+SAT
+Test (./benchmark_0352.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.941s
+user	0m3.893s
+sys	0m0.017s
+SAT
+Test (./benchmark_0353.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.817s
+user	0m3.750s
+sys	0m0.015s
+SAT
+Test (./benchmark_0354.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.539s
+user	0m3.520s
+sys	0m0.011s
+SAT
+Test (./benchmark_0355.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.994s
+user	0m1.975s
+sys	0m0.011s
+SAT
+Test (./benchmark_0356.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.026s
+user	0m2.006s
+sys	0m0.012s
+SAT
+Test (./benchmark_0357.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.583s
+user	0m3.563s
+sys	0m0.012s
+SAT
+Test (./benchmark_0358.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.845s
+user	0m1.827s
+sys	0m0.011s
+SAT
+Test (./benchmark_0359.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.925s
+user	0m1.907s
+sys	0m0.011s
+SAT
+Test (./benchmark_0360.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.498s
+user	0m3.480s
+sys	0m0.011s
+SAT
+Test (./benchmark_0361.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.606s
+user	0m2.589s
+sys	0m0.011s
+SAT
+Test (./benchmark_0362.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.919s
+user	0m2.901s
+sys	0m0.011s
+SAT
+Test (./benchmark_0363.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.166s
+user	0m2.112s
+sys	0m0.015s
+SAT
+Test (./benchmark_0364.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.315s
+user	0m3.264s
+sys	0m0.021s
+SAT
+Test (./benchmark_0365.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.841s
+user	0m2.763s
+sys	0m0.013s
+SAT
+Test (./benchmark_0366.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.371s
+user	0m3.342s
+sys	0m0.013s
+SAT
+Test (./benchmark_0367.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.936s
+user	0m1.917s
+sys	0m0.011s
+SAT
+Test (./benchmark_0368.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.109s
+user	0m2.077s
+sys	0m0.014s
+SAT
+Test (./benchmark_0369.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.633s
+user	0m2.528s
+sys	0m0.025s
+SAT
+Test (./benchmark_0370.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.992s
+user	0m1.922s
+sys	0m0.026s
+SAT
+Test (./benchmark_0371.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.324s
+user	0m3.162s
+sys	0m0.042s
+SAT
+Test (./benchmark_0372.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.449s
+user	0m3.291s
+sys	0m0.053s
+SAT
+Test (./benchmark_0373.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.009s
+user	0m1.986s
+sys	0m0.012s
+SAT
+Test (./benchmark_0374.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.901s
+user	0m1.880s
+sys	0m0.013s
+SAT
+Test (./benchmark_0375.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.355s
+user	0m2.267s
+sys	0m0.028s
+SAT
+Test (./benchmark_0376.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.839s
+user	0m1.768s
+sys	0m0.030s
+SAT
+Test (./benchmark_0377.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.066s
+user	0m2.959s
+sys	0m0.042s
+SAT
+Test (./benchmark_0378.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.096s
+user	0m2.036s
+sys	0m0.017s
+SAT
+Test (./benchmark_0379.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.778s
+user	0m2.712s
+sys	0m0.027s
+SAT
+Test (./benchmark_0380.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.980s
+user	0m2.901s
+sys	0m0.034s
+SAT
+Test (./benchmark_0381.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.896s
+user	0m1.876s
+sys	0m0.012s
+SAT
+Test (./benchmark_0382.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.882s
+user	0m2.842s
+sys	0m0.014s
+SAT
+Test (./benchmark_0383.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.012s
+user	0m1.930s
+sys	0m0.025s
+SAT
+Test (./benchmark_0384.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.338s
+user	0m2.254s
+sys	0m0.030s
+SAT
+Test (./benchmark_0385.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.453s
+user	0m3.387s
+sys	0m0.024s
+SAT
+Test (./benchmark_0386.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.099s
+user	0m2.079s
+sys	0m0.012s
+SAT
+Test (./benchmark_0387.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.327s
+user	0m2.295s
+sys	0m0.013s
+SAT
+Test (./benchmark_0388.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.777s
+user	0m3.730s
+sys	0m0.018s
+SAT
+Test (./benchmark_0389.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.795s
+user	0m3.749s
+sys	0m0.019s
+SAT
+Test (./benchmark_0390.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.815s
+user	0m3.795s
+sys	0m0.013s
+SAT
+Test (./benchmark_0391.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.857s
+user	0m2.837s
+sys	0m0.012s
+SAT
+Test (./benchmark_0392.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m4.249s
+user	0m4.229s
+sys	0m0.012s
+SAT
+Test (./benchmark_0393.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.845s
+user	0m1.826s
+sys	0m0.012s
+SAT
+Test (./benchmark_0394.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.742s
+user	0m1.711s
+sys	0m0.013s
+SAT
+Test (./benchmark_0395.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.892s
+user	0m2.872s
+sys	0m0.012s
+SAT
+Test (./benchmark_0396.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.086s
+user	0m2.067s
+sys	0m0.012s
+SAT
+Test (./benchmark_0397.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.673s
+user	0m2.654s
+sys	0m0.012s
+SAT
+Test (./benchmark_0398.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.095s
+user	0m3.075s
+sys	0m0.013s
+SAT
+Test (./benchmark_0399.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.037s
+user	0m1.997s
+sys	0m0.013s
+SAT
+Test (./benchmark_0400.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.134s
+user	0m3.112s
+sys	0m0.012s
+SAT
+Test (./benchmark_0401.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.002s
+user	0m1.982s
+sys	0m0.012s
+SAT
+Test (./benchmark_0402.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.841s
+user	0m3.794s
+sys	0m0.014s
+SAT
+Test (./benchmark_0403.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.993s
+user	0m1.971s
+sys	0m0.013s
+SAT
+Test (./benchmark_0404.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m4.267s
+user	0m4.242s
+sys	0m0.014s
+SAT
+Test (./benchmark_0405.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.725s
+user	0m1.682s
+sys	0m0.015s
+SAT
+Test (./benchmark_0406.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.212s
+user	0m2.191s
+sys	0m0.012s
+SAT
+Test (./benchmark_0407.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.903s
+user	0m3.579s
+sys	0m0.023s
+SAT
+Test (./benchmark_0408.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.667s
+user	0m3.469s
+sys	0m0.048s
+SAT
+Test (./benchmark_0409.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.842s
+user	0m2.804s
+sys	0m0.019s
+SAT
+Test (./benchmark_0410.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m4.176s
+user	0m4.082s
+sys	0m0.033s
+SAT
+Test (./benchmark_0411.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.820s
+user	0m3.795s
+sys	0m0.012s
+SAT
+Test (./benchmark_0412.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.656s
+user	0m2.619s
+sys	0m0.014s
+SAT
+Test (./benchmark_0413.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.429s
+user	0m2.401s
+sys	0m0.013s
+SAT
+Test (./benchmark_0414.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.745s
+user	0m3.704s
+sys	0m0.016s
+SAT
+Test (./benchmark_0415.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.304s
+user	0m3.268s
+sys	0m0.014s
+SAT
+Test (./benchmark_0416.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.828s
+user	0m3.775s
+sys	0m0.016s
+SAT
+Test (./benchmark_0417.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.093s
+user	0m3.018s
+sys	0m0.023s
+SAT
+Test (./benchmark_0418.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.576s
+user	0m2.468s
+sys	0m0.041s
+SAT
+Test (./benchmark_0419.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.659s
+user	0m3.620s
+sys	0m0.018s
+SAT
+Test (./benchmark_0420.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.052s
+user	0m2.032s
+sys	0m0.012s
+SAT
+Test (./benchmark_0421.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.232s
+user	0m3.211s
+sys	0m0.013s
+SAT
+Test (./benchmark_0422.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.065s
+user	0m2.043s
+sys	0m0.013s
+SAT
+Test (./benchmark_0423.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m4.462s
+user	0m4.157s
+sys	0m0.046s
+SAT
+Test (./benchmark_0424.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m4.428s
+user	0m4.327s
+sys	0m0.041s
+SAT
+Test (./benchmark_0425.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.887s
+user	0m1.868s
+sys	0m0.011s
+SAT
+Test (./benchmark_0426.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.901s
+user	0m3.864s
+sys	0m0.013s
+SAT
+Test (./benchmark_0427.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.279s
+user	0m2.261s
+sys	0m0.011s
+SAT
+Test (./benchmark_0428.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.985s
+user	0m1.967s
+sys	0m0.011s
+SAT
+Test (./benchmark_0429.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.382s
+user	0m2.355s
+sys	0m0.019s
+SAT
+Test (./benchmark_0430.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.920s
+user	0m1.893s
+sys	0m0.020s
+SAT
+Test (./benchmark_0431.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.338s
+user	0m2.309s
+sys	0m0.022s
+SAT
+Test (./benchmark_0432.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.377s
+user	0m2.342s
+sys	0m0.024s
+SAT
+Test (./benchmark_0433.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.487s
+user	0m3.433s
+sys	0m0.034s
+SAT
+Test (./benchmark_0434.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.047s
+user	0m2.020s
+sys	0m0.020s
+SAT
+Test (./benchmark_0435.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.077s
+user	0m2.051s
+sys	0m0.019s
+SAT
+Test (./benchmark_0436.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.660s
+user	0m1.631s
+sys	0m0.021s
+SAT
+Test (./benchmark_0437.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.620s
+user	0m2.590s
+sys	0m0.023s
+SAT
+Test (./benchmark_0438.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.857s
+user	0m2.775s
+sys	0m0.035s
+SAT
+Test (./benchmark_0439.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.479s
+user	0m3.421s
+sys	0m0.037s
+SAT
+Test (./benchmark_0440.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.709s
+user	0m3.672s
+sys	0m0.030s
+SAT
+Test (./benchmark_0441.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.608s
+user	0m2.577s
+sys	0m0.024s
+SAT
+Test (./benchmark_0442.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.131s
+user	0m3.096s
+sys	0m0.027s
+SAT
+Test (./benchmark_0443.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.092s
+user	0m3.055s
+sys	0m0.030s
+SAT
+Test (./benchmark_0444.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.267s
+user	0m3.226s
+sys	0m0.028s
+SAT
+Test (./benchmark_0445.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.497s
+user	0m3.455s
+sys	0m0.032s
+SAT
+Test (./benchmark_0446.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.909s
+user	0m1.882s
+sys	0m0.020s
+SAT
+Test (./benchmark_0447.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.558s
+user	0m3.516s
+sys	0m0.030s
+SAT
+Test (./benchmark_0448.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.273s
+user	0m2.241s
+sys	0m0.025s
+SAT
+Test (./benchmark_0449.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.191s
+user	0m3.154s
+sys	0m0.029s
+SAT
+Test (./benchmark_0450.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.983s
+user	0m1.953s
+sys	0m0.022s
+SAT
+Test (./benchmark_0451.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.728s
+user	0m3.690s
+sys	0m0.031s
+SAT
+Test (./benchmark_0452.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.815s
+user	0m3.755s
+sys	0m0.039s
+SAT
+Test (./benchmark_0453.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.614s
+user	0m2.566s
+sys	0m0.030s
+SAT
+Test (./benchmark_0454.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.365s
+user	0m3.322s
+sys	0m0.033s
+SAT
+Test (./benchmark_0455.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.117s
+user	0m2.088s
+sys	0m0.019s
+SAT
+Test (./benchmark_0456.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.756s
+user	0m2.428s
+sys	0m0.040s
+SAT
+Test (./benchmark_0457.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.582s
+user	0m3.527s
+sys	0m0.032s
+SAT
+Test (./benchmark_0458.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.514s
+user	0m3.470s
+sys	0m0.032s
+SAT
+Test (./benchmark_0459.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.027s
+user	0m2.003s
+sys	0m0.016s
+SAT
+Test (./benchmark_0460.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.354s
+user	0m2.326s
+sys	0m0.021s
+SAT
+Test (./benchmark_0461.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.727s
+user	0m2.699s
+sys	0m0.022s
+SAT
+Test (./benchmark_0462.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.893s
+user	0m1.868s
+sys	0m0.018s
+SAT
+Test (./benchmark_0463.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.200s
+user	0m2.174s
+sys	0m0.020s
+SAT
+Test (./benchmark_0464.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.812s
+user	0m3.770s
+sys	0m0.034s
+SAT
+Test (./benchmark_0465.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.833s
+user	0m1.806s
+sys	0m0.020s
+SAT
+Test (./benchmark_0466.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.699s
+user	0m2.668s
+sys	0m0.024s
+SAT
+Test (./benchmark_0467.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.840s
+user	0m1.812s
+sys	0m0.021s
+SAT
+Test (./benchmark_0468.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.651s
+user	0m2.622s
+sys	0m0.022s
+SAT
+Test (./benchmark_0469.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.027s
+user	0m1.990s
+sys	0m0.023s
+SAT
+Test (./benchmark_0470.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.166s
+user	0m3.134s
+sys	0m0.026s
+SAT
+Test (./benchmark_0471.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m1.835s
+user	0m1.811s
+sys	0m0.018s
+SAT
+Test (./benchmark_0472.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.722s
+user	0m2.692s
+sys	0m0.023s
+SAT
+Test (./benchmark_0473.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.223s
+user	0m2.193s
+sys	0m0.023s
+SAT
+Test (./benchmark_0474.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.875s
+user	0m3.832s
+sys	0m0.032s
+SAT
+Test (./benchmark_0475.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.425s
+user	0m3.316s
+sys	0m0.042s
+SAT
+Test (./benchmark_0476.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.834s
+user	0m2.779s
+sys	0m0.036s
+SAT
+Test (./benchmark_0477.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.167s
+user	0m3.093s
+sys	0m0.026s
+SAT
+Test (./benchmark_0478.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.769s
+user	0m2.709s
+sys	0m0.032s
+SAT
+Test (./benchmark_0479.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.787s
+user	0m2.613s
+sys	0m0.053s
+SAT
+Test (./benchmark_0480.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.433s
+user	0m2.408s
+sys	0m0.016s
+SAT
+Test (./benchmark_0481.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.324s
+user	0m3.277s
+sys	0m0.022s
+SAT
+Test (./benchmark_0482.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m4.136s
+user	0m4.065s
+sys	0m0.028s
+SAT
+Test (./benchmark_0483.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.731s
+user	0m2.569s
+sys	0m0.050s
+SAT
+Test (./benchmark_0484.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.219s
+user	0m2.168s
+sys	0m0.028s
+SAT
+Test (./benchmark_0485.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.833s
+user	0m2.745s
+sys	0m0.022s
+SAT
+Test (./benchmark_0486.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.257s
+user	0m3.221s
+sys	0m0.029s
+SAT
+Test (./benchmark_0487.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.175s
+user	0m2.127s
+sys	0m0.025s
+SAT
+Test (./benchmark_0488.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.807s
+user	0m3.670s
+sys	0m0.056s
+SAT
+Test (./benchmark_0489.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m4.093s
+user	0m3.976s
+sys	0m0.049s
+SAT
+Test (./benchmark_0490.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.957s
+user	0m3.873s
+sys	0m0.052s
+SAT
+Test (./benchmark_0491.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m4.004s
+user	0m3.926s
+sys	0m0.044s
+SAT
+Test (./benchmark_0492.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m4.110s
+user	0m4.072s
+sys	0m0.030s
+SAT
+Test (./benchmark_0493.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.422s
+user	0m2.385s
+sys	0m0.024s
+SAT
+Test (./benchmark_0494.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.903s
+user	0m2.857s
+sys	0m0.026s
+SAT
+Test (./benchmark_0495.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.146s
+user	0m2.119s
+sys	0m0.020s
+SAT
+Test (./benchmark_0496.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.556s
+user	0m3.525s
+sys	0m0.023s
+SAT
+Test (./benchmark_0497.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.728s
+user	0m2.699s
+sys	0m0.022s
+SAT
+Test (./benchmark_0498.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.024s
+user	0m1.999s
+sys	0m0.018s
+SAT
+Test (./benchmark_0499.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m3.062s
+user	0m3.031s
+sys	0m0.024s
+SAT
+Test (./benchmark_0500.smt2):
+Entering directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+Leaving directory '/Users/shuanglong.kan/MyProjects/certified-str-solver/CertiStr'
+
+real	0m2.770s
+user	0m2.741s
+sys	0m0.022s
+SAT
