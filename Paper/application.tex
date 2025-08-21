@@ -391,20 +391,29 @@ The most significant results appear in the "\texttt{Replace All}" subgroup, wher
 Notably, PCP and RNA benchmarks cannot be solved by most state-of-the-art string solvers, including CVC4 \cite{cvc4} and Z3 \cite{Z3-str3}, yet CertiStrR solves them efficiently. Among existing solvers, only Ostrich \cite{pacmpl/ChenFHHHKLRW22} can handle these benchmarks.
 
 
-\paragraph{Transducers vs. Replacement Operations}.
-%TODO
+\paragraph{Transducers vs. Replacement Operations.}  
+Although both transducers and replacement operations can express string transformations for security-related verification, transducers are strictly more expressive because they can capture dependencies between the input pattern and the replacement string. In contrast, all replacement operations in SMT-LIB treat the pattern and the replacement string as independent. For example, in the SFT shown in Figure~\ref{fig:html-sanitizer-sft}, a transition may be defined over an interval such as $['a'-'z']$, and the output function computes its output directly based on the specific input character. Replacement operations, however, cannot express such dependencies.  
+
+Consider the transition $['a'-'z']/id$, where $id$ is the identity function. To model this transition with replacement operations, the interval must be explicitly expanded into the individual characters $\texttt{'a'}$ through $\texttt{'z'}$, requiring 26 nested \texttt{replace-all} operations—one for each character. Thus, modeling $['a'-'z']/id$ with replacement operations yields an expression of the form:
+\[
+\texttt{replace}(\texttt{replace}(\ldots,~\texttt{"b"},~\texttt{"b"},~g),~\texttt{"a"},~\texttt{"a"},~g).
+\]
+
+When the interval contains a large set of characters—as is common in web applications that support the full Unicode range of $0x10FFFF$ code points—this nested structure becomes impractical, leading to significant inefficiency and complexity in the replacement-based approach.
+
+
+
+
 
 
 \subsection{Effort of Certified Development}
 
-This subsection discusses the development effort required for our certified SFT formalization. Table \ref{tab:abstract_impl} provides an overview of this effort.
-Note that, to model replacement operation, we not only need the formalization of SFTs but also the formalization of negation of an SFA, $\epsilon$NFA.
+This subsection discusses the development effort required for our certified SFT formalization. While SFTs constitute the central contribution of this paper, they are not sufficient on their own to support the applications we target. A more comprehensive symbolic framework for automata libraries is necessary. Beyond the existing automata library supported by CertiStr \cite{cpp/KanLRS22}, which already includes operations such as SFA product and SFA concatenation, we needed to develop additional \emph{certified} SFA operations from scratch. These include $\varepsilon$SFAs, translation from $\varepsilon$SFAs to SFAs, translation from SFAs to Symbolic Deterministic Finite Automata (SDFA), and negation of SFAs. Table~\ref{tab:abstract_impl} summarizes the certified development effort that was carried out specifically for this work.
 
-All efforts listed in the table are additional to the existing CertiStr framework that we build upon.
+The abstract-level development encompasses all formalizations presented in Section~\ref{sec:abstract-layer}, including SFTs and the additional SFA operations used in this paper's application. The implementation-level development covers all formalizations described in Section~\ref{sec_alg_refinement}, including the refinement of the product operation and other SFA operations used in this paper's application. The final row of Table~\ref{tab:abstract_impl} corresponds to the effort devoted to interval formalization. The most challenging component proved to be the correctness proof of the product operation at the abstract level (Figure~\ref{fig-def-product-correct}).
 
-The abstract-level development encompasses all formalizations presented in Sections \ref{sec:formalization} and \ref{sec:product-operation}, including SFTs and $\varepsilon$SFAs. The implementation-level development covers all formalizations in Section \ref{sec_alg_refinement}, including the refinement of the product operation. The final row corresponds to the interval formalization effort. The most challenging component proved to be the correctness proof of the product operation at the abstract level (Figure \ref{fig-def-product-correct}).
+Compared to CertiStr \cite{cpp/KanLRS22}, the interval formalization in CertiStrR is substantially more complex, primarily because intervals were extended from single pairs to lists.
 
-The interval formalization complexity increased dramatically in CertiStrR compared to the interval formalization in CertiStr \cite{cpp/KanLRS22}, primarily due to extending intervals from single pairs to lists.
 
 \begin{table}[h]
   \centering
