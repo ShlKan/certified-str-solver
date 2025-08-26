@@ -1,6 +1,5 @@
 \section{Applications and Evaluation}
-
-We evaluate our formalization and implementation of the SFT product operation in two key application domains: string sanitization and string replacement operations in string solving. These applications demonstrate the practical utility of our certified SFT product operation in real-world scenarios.
+We evaluate our formalization and implementation of the SFT product operation across two key application domains: string sanitization and string replacement in string solving. These case studies highlight the practical value of our certified SFT product operation in real-world scenarios.
 \subsection{Sanitizer}
 
 An important application of our formalization lies in string sanitization for web applications. Sanitizers are crucial for preventing security vulnerabilities such as cross-site scripting (XSS) attacks by ensuring that user inputs are properly encoded before rendering in web browsers. Listing \ref{lst-html-encode} presents a C\# code snippet implementing an HTML encoding function—a fundamental sanitization operation. This function iterates through each character in the input string and encodes characters that are unsafe for HTML rendering.
@@ -52,7 +51,7 @@ Figure \ref{fig:html-sanitizer-sft} illustrates the SFT representation of the HT
     (q2) edge[bend right=20] node[right,midway] {$\varepsilon, \lambda\varepsilon$} (q0);
 \end{tikzpicture}
 \caption{SFT representation of the HTML encoding sanitizer function.}
-\label{fig:html-sanitizer-sft}
+\label{fig:html-sanitizer-sft1}
 \end{figure}
 
 We evaluate the performance of our SFT product operation by computing the product of the HTML encoding sanitizer SFT with SFAs constructed from randomly generated Unicode user inputs. This experimental setup reflects realistic usage scenarios where diverse character sets and input patterns are encountered. The experimental evaluation was conducted on a laptop with an Apple M4 processor and 24 GB of memory, with a one-minute time limit per test.
@@ -66,11 +65,11 @@ Figure \ref{fig:benchmark-results} demonstrates the scalability characteristics 
 \label{fig:benchmark-results}
 \end{figure}
 
-Beyond performance evaluation, our SFT formalization enables formal verification of string sanitizer correctness. A santizer is used to transform user inputs into safe outputs, ensuring that the output does not contain any unsafe characters. However, santizers just like programs, which are eror-prone. Manual reviews of sanitizers are often insufficient to guarantee correctness.
+Beyond performance evaluation, our SFT formalization also supports the formal verification of string sanitizer correctness. A sanitizer transforms user inputs into safe outputs, ensuring that the result contains no unsafe characters. However, sanitizers—like any other programs—are error-prone. Manual reviews or testing alone are often insufficient to guarantee their correctness.
 
-Based on our formalization, we can verify sanitizers by modeling the sanitizer as an SFT and the user input as an SFA. We can also model potential attacks as SFAs that accept unsafe strings. Formally speaking, Let $\mathcal{T}$ be an SFT, $\mathcal{I}$ is the possible user inputs modeled by an SFA, and $\mathcal{A}$ is the attack SFA that accepts unsafe strings. The santizer correctness checking against the attack is to check whether the intersection of the product $\mathcal{T} \times \mathcal{I}$ and the attack SFA $\mathcal{A}$ is empty, i.e., $\mathcal{T} \times \mathcal{I} \cap \mathcal{A} = \emptyset$.
+Based on our formalization, we can verify sanitizers by modeling the sanitizer as an SFT and the user input as an SFA. We can also model potential attacks as SFAs that accept unsafe strings. Formally speaking, Let $\mathcal{T}$ be an SFT, $\mathcal{I}$ is the possible user inputs modeled by an SFA, and $\mathcal{A}$ is the attack SFA that accepts unsafe strings. The santizer correctness checking against the attack is to check whether the intersection of the product $\mathcal{T} \times \mathcal{I}$ and the attack SFA $\mathcal{A}$ is empty, i.e., $(\mathcal{T} \times \mathcal{I}) \cap \mathcal{A} = \emptyset$.
 
-Moreover, santizers are usually used in combination with other sanitizers to ensure comprehensive safety. For example, the HTML encoding sanitizer can be combined with a string trimming operation to remove leading and trailing whitespace characters. For this kind of sanitizer composition, it can be modeled by our SFT product as well. Let $\mathcal{T}_1$ and $\mathcal{T}_2$ correspond to two sanitizers, and $\mathcal{T}_1$ is applied before $\mathcal{T}_2$. What we need to check is $\mathcal{T}_2 \times (\mathcal{T}_1 \times \mathcal{I}) \cap \mathcal{A} = \emptyset$.
+Moreover, santizers are usually used in combination with other sanitizers to ensure comprehensive safety. For example, the HTML encoding sanitizer can be combined with a string trimming operation to remove leading and trailing whitespace characters. For this kind of sanitizer composition, it can be modeled by our SFT product as well. Let $\mathcal{T}_1$ and $\mathcal{T}_2$ correspond to two sanitizers, and $\mathcal{T}_1$ is applied before $\mathcal{T}_2$. What we need to check is $(\mathcal{T}_2 \times (\mathcal{T}_1 \times \mathcal{I})) \cap \mathcal{A} = \emptyset$.
 
 
 
@@ -103,7 +102,7 @@ Moreover, santizers are usually used in combination with other sanitizers to ens
   \label{tab:sanitizer_attack}
 \end{table}
 
-Table \ref{tab:sanitizer_attack} summarizes the verification results for various sanitizers against different attack models. The first column lists the attack models, the second column indicates whether the sanitizer is classified as safe or unsafe with respect to the attack, and the third column reports the size of the transducers used in the verification, given as [number of states/number of transitions]. For composed SFTs, the size reflects the total number of states and transitions across all components.
+Table \ref{tab:sanitizer_attack} summarizes the verification results for various sanitizers against different attack models. The first column lists the attack models, the second column indicates whether the sanitizer is classified as safe or unsafe with respect to the attack, and the third column reports the size of the transducers used in the verification, given as [number of states/number of transitions]. For composed SFTs, the size reflects the total number of states and transitions across all SFTs.
 
 We evaluate a range of attack models for HTML, JavaScript, JSON, XML, and CSS. Listing \ref{lst-css-attack} shows the CSS attack model, which is used to verify the corresponding sanitizer. The attack model includes comments, declaration breakers, and known dangerous tokens such as \textbf{expression(}, \textbf{@import}, \textbf{behavior:}, \textbf{-moz-binding}, and \textbf{url(} (unless the URL is separately validated). Sanitizers include GA HtmlEscape, GA JSONEscape, GA XMLEscape, escapeString, and GA CleanseCSS, where "GA" means from Google. Sanitizers are often composed with preprocessing steps such as Trim, which removes leading and trailing whitespace characters. As shown in the table, GAHtmlEscape and escapeString are unsafe with respect to the HTML attack model without preprocessing, but become safe when combined with Trim. The \textbf{Size} column demonstrates the expressive power and succinctness of SFTs in modeling real-world transducers. We did not list the execution time of verification because all of them are quite efficent with less than 0.02 second to finish the verificaiton.
 
@@ -139,7 +138,7 @@ The operation's semantics is to replace the first occurrence (or all occurrences
 To illustrate how SFTs model this operation, consider $\texttt{replace}(s, \texttt{/[0-9]+/}, "\texttt{NUM}", \texttt{flag})$. We construct the SFT representation through three steps:
 
 \begin{enumerate}
-  \item Construct an SFA recognizing the pattern $\texttt{/[0-9]+/}$ and transform it into an SFT by augmenting each transition with output function $f = \lambda x.~\texttt{None}$ that produces the empty string.
+  \item Construct an SFA recognizing the pattern $\texttt{/[0-9]+/}$ and transform it into an SFT by augmenting each transition with output function "$f = \lambda x.~\texttt{None}$" that produces the empty string.
   \item Construct an SFA accepting the replacement string "\texttt{NUM}". Since constant strings are specialized regular expressions, we build their SFA representation and convert it to an SFT by adding $\varepsilon$-transitions with output functions that emit the replacement characters sequentially.
   \item Compose the two SFTs by connecting the accepting state of the pattern-matching SFT to the initial state of the replacement-generating SFT via $\varepsilon$-transitions.
 \end{enumerate}
@@ -244,7 +243,7 @@ Figure \ref{fig-rearranged-automata} presents the complete SFT construction, obt
     (q1') edge [bend right=30] node {\texttt{None}, \texttt{f}} (q0'');
   \end{tikzpicture}
   \caption{The SFT for the replacement operation \\ $\texttt{replace}(s, \texttt{/[0-9]+/}, \text{``NUM''})$}
-  \label{fig-rearranged-automata}
+  \label{fig-rearranged-automata1}
   \end{figure}
 
   We can extend the above construction to model both singleton and replace-all operations. In this paper, we only illustrate the construction of replace-all in Figure \ref{fig:replace-all}. The SFT $\mathcal{T}_2$ combines pattern matching and replacement using the construction just described. The SFT $\mathcal{T}_1$ matches strings that do not contain any substrings matching the pattern. Two $\varepsilon$-transitions connect these components: one from $\mathcal{T}_1$'s accepting state to $\mathcal{T}_2$'s initial state, and another from $\mathcal{T}_2$'s accepting state back to $\mathcal{T}_1$'s initial state. This cyclic structure enables the replace-all operation by repeatedly applying pattern replacement until no more matches exist in the input string.
@@ -283,7 +282,7 @@ Figure \ref{fig-rearranged-automata} presents the complete SFT construction, obt
   
 \end{tikzpicture}
 \caption{The modeling of replace all operation.}
-\label{fig:replace-all}
+\label{fig:replace-all1}
 \end{figure}
 
 
@@ -315,7 +314,7 @@ CertiStrR implements two different pattern matching introduced above: (1) single
 %   \end{lstlisting}
 
 
-We evaluate CertiStrR using benchmarks from SMT-LIB 2024 \cite{smtlib_benchmarks}, focusing on the QF\_S and QF\_SLIA logic fragments. The benchmarks are categorized into two groups: (1) singleton matching and (2) replace-all matching.
+We evaluate CertiStrR using benchmarks from SMT-LIB 2025 \cite{smtlib_benchmarks}, focusing on the QF\_S and QF\_SLIA logic fragments. The benchmarks are categorized into two groups: (1) singleton matching and (2) replace-all matching.
 
 Due to CertiStrR's current frontend limitations in supporting the complete SMT-LIB language specification, we preprocess certain operations. For example, conjunctive assertions of the form \texttt{(assert (and c1 c2))} are decomposed into separate assertions \texttt{(assert c1)} and \texttt{(assert c2)} when both \texttt{c1} and \texttt{c2} are string constraints supported by CertiStrR.
 
@@ -384,7 +383,7 @@ Due to CertiStrR's current frontend limitations in supporting the complete SMT-L
 
 The experimental evaluation was conducted on a laptop with an Apple M4 processor and 24 GB of memory, with a one-minute time limit per test. The results show average execution times of 0.97 seconds for "\texttt{Replace RE}" (patterns are regular expressions) and 1.94 seconds for "\texttt{Replace Str}" (patterns are strings). Test outcomes were classified into three categories: SAT (satisfiable), UNSAT (unsatisfiable), and Inconclusive.
 
-An "Inconclusive" result indicates that the solver cannot determine satisfiability due to the inherent incompleteness of the string solver's algorithm, not timeout (all tests completed within one minute). This occurs when the solver cannot determine whether string variables can be assigned values that satisfy all constraints.
+An "Inconclusive" result indicates that the solver cannot determine satisfiability due to the inherent incompleteness of the string solver's algorithm, not timeout (all tests completed within one minute). This occurs when the solver cannot determine whether string variables need to be assigned different values that satisfy all constraints.
 
 The most significant results appear in the "\texttt{Replace All}" subgroup, where CertiStrR efficiently handles diverse replace-all operations: 0.14 seconds for PCP (Post Correspondence Problem) tests, 2.81 seconds for RNA SAT, and 3.14 seconds for RNA UNSAT. The "\texttt{Rest}" category, encompassing various other string constraints, averages 0.79 seconds.
 

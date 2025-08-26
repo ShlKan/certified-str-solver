@@ -1,0 +1,153 @@
+\section{Motivation}
+\label{sec:motivation}
+
+\subsection{Sanitizer}
+
+An important application of SFTs lies in string sanitization for web applications. Sanitizers are crucial for preventing security vulnerabilities such as cross-site scripting (XSS) attacks by ensuring that user inputs are properly encoded before rendering in web browsers. Listing \ref{lst-html-encode} presents a C\# code snippet implementing an HTML encoding function—a fundamental sanitization operation. This function iterates through each character in the input string and encodes characters that are unsafe for HTML rendering.
+
+
+
+\begin{lstlisting}[language={[Sharp]C}, caption={C\# Code for AntiXSS.EncodeHtml version 2.0.}, label={lst-html-encode}, float=htbp]
+static string EncodeHtml(string t)
+{
+  if (t == null) { return null; }
+  if (t.Length == 0) {
+    return string.Empty;
+  }
+  StringBuilder builder = new
+    StringBuilder("", t.Length * 2);
+  foreach (char c in t) {
+    if ((((c > ''') && (c < '{')) |$\mid\mid$|
+         ((c > '@') && (c < '['))) |$\mid\mid$|
+         (((c == ' ') || ((c > '/') && (c < ':'))) |$\mid\mid$|
+         (((c == '.') || (c == ',')) |$\mid\mid$|
+         ((c == '-') || (c == '_'))))) {
+          builder.Append(c);
+      }
+      else {
+          builder.Append("&#" +
+          ((int) c).ToString() + ";");
+      }
+  }
+  return builder.ToString();
+}
+\end{lstlisting}
+
+Figure \ref{fig:html-sanitizer-sft} illustrates the SFT representation of the HTML encoding sanitizer function. The transducer accepts any input string and produces an output where safe characters are preserved using the identity function $\texttt{id}$, while unsafe characters are encoded as HTML entities. The set of safe characters is defined as $\texttt{safe\_chars} = [\texttt{' '}, \texttt{','}, \texttt{'.'}, \texttt{'-'}, \texttt{'\_'}] \cup [\texttt{'0'}-\texttt{'9'}] \cup [\texttt{'A'}-\texttt{'Z'}] \cup [\texttt{'a'}-\texttt{'z'}]$, which can be efficiently represented using the interval algebra we formalized. Unsafe characters are transformed using the encoding function $\texttt{encode}(c) = \texttt{``\&\#''} + \texttt{toString}(\texttt{ord}(c)) + \texttt{``\;''}$. When the alphabet is set to Unicode $[\mathtt{0x0000}, \mathtt{0x10FFFF}]$, the complement $\neg\texttt{safe\_chars}$ represents all Unicode characters outside the safe set, which can also be efficiently represented using our formalized interval operations.
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[shorten >=1pt, node distance=2.5cm, on grid, auto]
+  % States
+  \node[state, initial, accepting] (q0) {$q_0$};
+  \node[state] (q1) [right=3.5cm of q0] {$q_1$};
+  \node[state] (q2) [below=of q0] {$q_2$};
+  
+  \path[->] 
+    % Transition for safe characters
+    (q0) edge[bend left=20] node[above,midway=1] {$\texttt{safe\_chars}, \texttt{id}$} (q1)
+    % Transition for unsafe characters  
+    (q0) edge[bend right=20] node[left,midway] {$\neg\texttt{safe\_chars}, \texttt{encode}$} (q2)
+    % Epsilon transitions back to q0
+    (q1) edge[bend left=30] node[below,midway] {$\varepsilon, \lambda\varepsilon$} (q0)
+    (q2) edge[bend right=20] node[right,midway] {$\varepsilon, \lambda\varepsilon$} (q0);
+\end{tikzpicture}
+\caption{SFT representation of the HTML encoding sanitizer function.}
+\label{fig:html-sanitizer-sft}
+\end{figure}
+
+\subsection{Modeling the Replacement Operation}
+
+The string replacement, denoted as
+$\texttt{replace}(\texttt{str}, \texttt{pattern}, \newline\texttt{replacement}, \texttt{flag})$, is a fundamental string transformation accepting four parameters:
+\begin{itemize}
+  \item $\texttt{str}$: The input string to be transformed.
+  \item $\texttt{pattern}$: A regular expression defining the matching criteria.
+  \item $\texttt{replacement}$: The string that replaces matched substrings.
+  \item $\texttt{flag}=s/g$: The replacement mode flag, where $s$ denotes single occurrence replacement and $g$ denotes replace-all operation.
+\end{itemize}
+
+The operation's semantics is to replace the first occurrence (or all occurrences) of any substring $s'$ in \texttt{str} that matches $\texttt{pattern}$ with \texttt{replacement}.
+
+To illustrate how SFTs model this operation, consider $\texttt{replace}(s, \texttt{/[0-9]+/}, "\texttt{NUM}", \texttt{flag})$. We construct the SFT representation through three steps:
+
+\begin{enumerate}
+  \item Construct an SFA recognizing the pattern $\texttt{/[0-9]+/}$ and transform it into an SFT by augmenting each transition with output function "$f = \lambda x.~\texttt{None}$" that produces the empty string.
+  \item Construct an SFA accepting the replacement string "\texttt{NUM}". Since constant strings are specialized regular expressions, we build their SFA representation and convert it to an SFT by adding $\varepsilon$-transitions with output functions that emit the replacement characters sequentially.
+  \item Compose the two SFTs by connecting the accepting state of the pattern-matching SFT to the initial state of the replacement-generating SFT via $\varepsilon$-transitions.
+\end{enumerate}
+
+Figure \ref{fig-rearranged-automata} presents the complete SFT construction, obtained by composing the pattern-matching SFT generated from \texttt{/[0-9]+/}  with the replacement-generating SFT generated from "\texttt{NUM}", where the function \texttt{f} is defined as "$f = \lambda x.~\texttt{None}$" and the function \texttt{g} is defined as:
+\[
+\texttt{g} = \lambda~i~x.~\texttt{match}~i~\texttt{with}~
+\begin{cases}
+1 \mapsto [(78, 78)] & \text{(ASCII for 'N')} \\
+2 \mapsto [(85, 85)] & \text{(ASCII for 'U')} \\
+3 \mapsto [(77, 77)] & \text{(ASCII for 'M')} \\
+\_ \mapsto \texttt{None}
+\end{cases}
+\]
+
+\begin{figure}[h] \centering
+  \begin{tikzpicture}[shorten >=1pt, node distance=2cm, auto]
+    % Second automaton from the first figure
+    \node[state, initial] (q0') {$q_0'$}; 
+    \node[state] (q1') [right=of q0'] {$q_1'$}; 
+  
+     \path[->] 
+     (q0') edge [bend left] node {\texttt{[0-9]}, $\texttt{f}$} (q1')
+     (q1') edge [loop right] node {\texttt{[0-9]}, $\texttt{f}$} (q1');
+  
+    % Second automaton from the second figure
+    \node[state] (q0'') [below=1cm of q1'] {$q_0''$}; 
+    \node[state] (q1'') [right=of q0''] {$q_1''$}; 
+    \node[state, accepting] (q3'') [below=1cm of q0''] {$q_3''$}; 
+    \node[state] (q2'') [right=of q3''] {$q_2''$}; 
+  
+    \path[->] 
+    (q0'') edge node {\texttt{None}, \texttt{(g 1)}} (q1'')
+    (q1'') edge [bend left=5] node[left] {\texttt{None}, \texttt{(g 2)}} (q2'')
+    (q2'') edge node {\texttt{None}, \texttt{(g 3)}} (q3'')
+    (q1') edge [bend right=30] node {\texttt{None}, \texttt{f}} (q0'');
+  \end{tikzpicture}
+  \caption{The SFT for the replacement operation \\ $\texttt{replace}(s, \texttt{/[0-9]+/}, \text{``NUM''})$}
+  \label{fig-rearranged-automata}
+  \end{figure}
+
+  We can extend the above construction to model both singleton and replace-all operations. In this paper, we only illustrate the construction of replace-all in Figure \ref{fig:replace-all}. The SFT $\mathcal{T}_2$ combines pattern matching and replacement using the construction just described. The SFT $\mathcal{T}_1$ matches strings that do not contain any substrings matching the pattern. Two $\varepsilon$-transitions connect these components: one from $\mathcal{T}_1$'s accepting state to $\mathcal{T}_2$'s initial state, and another from $\mathcal{T}_2$'s accepting state back to $\mathcal{T}_1$'s initial state. This cyclic structure enables the replace-all operation by repeatedly applying pattern replacement until no more matches exist in the input string.
+
+
+  Having constructed the SFT, we can now compute the forward image of the replacement operation. Consider the string constraint $s' = \texttt{replace}(s,~\texttt{/[0-9]+/},~\text{"}\texttt{NUM}\text{"})$, where we aim to characterize the possible values of $s'$. Let $\mathcal{T}$ denote the constructed SFT modeling the replacement operation, and let $\mathcal{A}$ be the SFA representing the domain of possible values for the input string $s$. The forward image of this replacement operation is given by the product $\mathcal{T} \times \mathcal{A}$, which precisely captures the set of all possible output strings that can be produced by applying the replacement operation to any input string accepted by $\mathcal{A}$.
+  Our string solver uses this forward image to do forward propagation for further string solving.
+
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[node distance=2cm, state/.style={circle, draw, minimum size=0.8cm}]
+  % First SFT rectangle
+  \node[draw, rectangle, minimum width=5.2cm, minimum height=2.1cm] (sft1-box) {};
+  \node[above=0.1cm of sft1-box.north] {\textbf{SFT} $\mathcal{T}_1$ (Non-matching)};
+  
+  % States inside first SFT
+  \node[state, initial] (p0) at ([xshift=-0.8cm]sft1-box.center) {$p_0$};
+  \node[state, accepting] (p1) at ([xshift=1.8cm]sft1-box.center) {$p_1$};
+  \path[->] (p0) edge[above] node {\shortstack{$\neg\texttt{pattern},$ \\ $\lambda x.x$}} (p1);
+  
+  % Second SFT rectangle
+  \node[draw, rectangle, minimum width=5.2cm, minimum height=2.1cm, below=1.5cm of sft1-box] (sft2-box) {};
+  \node[below=0.1cm of sft2-box.south] {\textbf{SFT} $\mathcal{T}_2$ (Matching)};
+  
+  % States inside second SFT
+  \node[state, initial] (s0) at ([xshift=-0.8cm]sft2-box.center) {$s_0$};
+  \node[state, accepting] (s1) at ([xshift=2cm]sft2-box.center) {$s_1$};
+  \path[->] (s0) edge[above] node {\shortstack{$\texttt{pattern},$ \\ $\texttt{replacement}$}} (s1);
+  
+  % Epsilon transition from accepting state of first SFT to initial state of second SFT
+  \path[->] (p1) edge[bend right=30] node[left] {\shortstack{$\varepsilon$, $\lambda\varepsilon$}} (s0);
+  
+  % Epsilon transition from accepting state of second SFT to initial state of first SFT
+  \path[->] (s1) edge[bend right=30] node[right] {\shortstack{$\varepsilon$, $\lambda\varepsilon$}} (p0);
+  
+\end{tikzpicture}
+\caption{The modeling of replace all operation.}
+\label{fig:replace-all}
+\end{figure}

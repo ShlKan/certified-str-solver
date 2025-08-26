@@ -2,11 +2,11 @@
 \label{sec:formalization}
 
 
-We present the basic architecture of our SFT formalization in Isabelle/HOL, which consists of three distinct layers.
+In this section, we present our formalization of SFTs. We begin by outlining the basic architecture of our Isabelle/HOL formalization, which is organized into three distinct layers.
 
 The \textbf{abstract layer} defines transition labels as \textbf{sets}, states are stored in sets as well.  This abstract formalization, which abstracts away implementation details, enables straightforward correctness proofs for SFT operations.
 
-The \textbf{implementation layer} refines the abstract transition labels to a locale where a boolean algebra is defined as type variable \texttt{'b} together with a collection of operations and assumptions. State sets are refined using Refine\_Monadic \cite{Refine_Monadic-AFP}, a framework in Isabelle/HOL for data refinement that automatically transforms general sets into efficient data structures such as hashmaps and red-black trees.
+The \textbf{implementation layer} refines the abstract transition labels to a locale where a boolean algebra is defined as type variable $'\texttt{b}$ together with a collection of operations and assumptions. State sets are refined using Refine\_Monadic \cite{Refine_Monadic-AFP}, a framework in Isabelle/HOL for data refinement that automatically transforms general sets into efficient data structures such as hashmaps and red-black trees.
 
 The \textbf{boolean algebra layer} refines the transition label locale to a concrete boolean algebra implementation. In this paper, we present an interval-based refinement.
 
