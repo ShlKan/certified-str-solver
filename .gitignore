@@ -45,6 +45,7 @@ _opam/
 Paper/main.fdb_latexmk
 Paper/main.fls
 Paper/main.log
+Paper/main.pdf
 
 #vscode
 CertiStr/.vscode/
