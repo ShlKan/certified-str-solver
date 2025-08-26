@@ -388,7 +388,9 @@ An "Inconclusive" result indicates that the solver cannot determine satisfiabili
 
 The most significant results appear in the "\texttt{Replace All}" subgroup, where CertiStrR efficiently handles diverse replace-all operations: 0.14 seconds for PCP (Post Correspondence Problem) tests, 2.81 seconds for RNA SAT, and 3.14 seconds for RNA UNSAT. The "\texttt{Rest}" category, encompassing various other string constraints, averages 0.79 seconds.
 
-Notably, PCP and RNA benchmarks cannot be solved by most state-of-the-art string solvers, including CVC4 \cite{cvc4} and Z3 \cite{Z3-str3}, yet CertiStrR solves them efficiently. Among existing solvers, only Ostrich \cite{pacmpl/ChenFHHHKLRW22} can handle these benchmarks.
+Notably, PCP and RNA benchmarks cannot be solved by most state-of-the-art string
+solvers, including CVC4 \cite{cvc4} and Z3 \cite{Z3-str3}, yet CertiStrR solves
+them efficiently. Among existing solvers, only OSTRICH \cite{pacmpl/ChenFHHHKLRW22} can handle these benchmarks.
 
 
 \paragraph{Transducers vs. Replacement Operations.}  
