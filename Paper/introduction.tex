@@ -1,16 +1,49 @@
 \section{Introduction}
 \label{sec:introduction}
 
-Finite Automata (FA) and Finite Transducers (FT) are fundamental constructs in the theory of formal languages, with extensive applications in programming languages and software engineering. For example, recent advancements in string solvers, as demonstrated by \cite{pacmpl/ChenFHHHKLRW22}, have illustrated the relationship between regular expressions in modern programming languages and various forms of FAs and FTs. Additionally, FAs and FTs find significant industrial applications, such as in the verification of AWS access control policies \cite{DBLP:conf/fmcad/BackesBCDGLRTV18}.
+Finite Automata (FA) and Finite Transducers (FT) are fundamental constructs in the theory of formal languages, with extensive applications in programming 
+languages and software engineering. Despite this, many practical applications
+that employ FAs and FTs --- for example, string analysis for web applications
+%character sanitization in web
+%applications 
+(which easily prone to XSS vulnerabilities) and string constraint solving
+--- require extremely large alphabets (e.g. UTF-16), which are beyond the
+capabilities of classical automata algorithms
+\cite{DV21,cav/DAntoniV17,uss/HooimeijerLMSV11,Berkeley-JavaScript}.
+More precisely, explicit automata/transducer representations would yield 
+an extremely large number of transitions (potentially, one for 
+each letter).
+%For example, recent advancements in string solvers, as demonstrated by \cite{pacmpl/ChenFHHHKLRW22}, have illustrated the relationship between regular expressions in modern programming languages and various forms of FAs and FTs. Additionally, FAs and FTs find significant industrial applications, such as in the verification of AWS access control policies \cite{DBLP:conf/fmcad/BackesBCDGLRTV18}.
 
 
-Even though there are various formalizations of FAs and FTs in interactive proof assistants such as Isabelle \cite{isabelle-homepage} and Coq \cite{coq-homepage}, these are predominantly based on classical definitions. However, these traditional approaches present certain limitations when applied to practical scenarios. One significant drawback is that transition labels are typically non-symbolic and finite. A conventional transition is represented as $q\xrightarrow{a}q'$, where $a$ is a character from a finite alphabet. This simplistic representation can lead to a phenomenon known as transition explosion. For example, if the alphabet $\Sigma$ encompasses the entire Unicode range, which is common in modern programming languages, it consists of $\texttt{0x110000}$ distinct characters. Defining a transition from state $q$ to $q'$ that accepts any character in $\Sigma$ would require splitting into $\texttt{0x110000}$ individual transitions, rendering the FA and FT operations highly inefficient. Furthermore, in practical applications, it is often necessary to consider infinite alphabets, such as the set of all integers.
+
+%One significant drawback from classical automata approach is that transition 
+%labels are typically non-symbolic and finite. A conventional transition is represented as $q\xrightarrow{a}q'$, where $a$ is a character from a finite alphabet. This simplistic representation can lead to a phenomenon known as transition explosion. 
+%For example, if the alphabet $\Sigma$ encompasses the entire Unicode range, which is common in modern programming languages, it consists of $\texttt{0x110000}$ distinct characters. Defining a transition from state $q$ to $q'$ that accepts any character in $\Sigma$ would require splitting into $\texttt{0x110000}$ individual transitions, rendering the FA and FT operations highly inefficient. Furthermore, in practical applications, it is often necessary to consider infinite alphabets, such as the set of all integers.
+
+%Even though there are various formalizations of FAs and FTs in interactive proof assistants such as Isabelle \cite{isabelle-homepage} and Coq \cite{coq-homepage}, these are predominantly based on classical definitions. However, these traditional approaches present certain limitations when applied to practical scenarios. 
 
 
 
-Symbolic Finite Automata (SFA) and Symbolic Finite Transducers (SFT) \cite{cav/DAntoniV17, VeanesHLMB12Transducer} represent advanced extensions of classic FAs and  FTs, enhancing their applicability in practical scenarios.
+Symbolic Finite Automata (SFA) and Symbolic Finite Transducers (SFT)
+\cite{cav/DAntoniV17, VeanesHLMB12Transducer,DV21} were proposed around 15 years ago
+to deal with the alphabet-explosion problem that often arises in practical
+applications. 
+%represent advanced extensions of classic FAs and  FTs, enhancing their applicability in practical scenarios.
 %
-These symbolic models utilize transition labels defined by first-order predicates over boolean algebras, allowing for more expressive representations. For example, a transition label might be specified as an interval ($'\texttt{a}'-'\texttt{z}'$), encompassing all characters from $'\texttt{a}'$ to $'\texttt{z}'$, or as an arithmetic condition ($x \mod 2 = 0$), denoting all even numbers. This symbolic approach not only provides a more succinct representation but also supports infinite alphabets, thereby extending the expressive capabilities of FAs and FTs.
+These symbolic extensions permit transition labels defined by an effective 
+boolean algebra, allowing for a succinct representation of a set of transitions
+that can be conveniently manipulated. 
+%more expressive representations. 
+For example, in the interval algebra, a transition label might be specified as 
+an interval ($'\texttt{a}'-'\texttt{z}'$), encompassing all characters from
+$'\texttt{a}'$ to $'\texttt{z}'$. As another example, in the SMT-Algebra
+(particularly, of the theory of Linear Integer Arithmetic), %or 
+one could associate an arithmetic condition ($x \mod 2 = 0$) to a transition, 
+denoting all even numbers. Efficient algorithms for manipulating (e.g. computing
+closures) and analyzing (e.g. checking emptiness) SFA and SFT are by now
+rather mature (e.g see the CACM article \cite{DV21}).
+%This symbolic approach not only provides a more succinct representation but also supports infinite alphabets, thereby extending the expressive capabilities of FAs and FTs.
 
 
 
