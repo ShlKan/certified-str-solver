@@ -45,10 +45,42 @@ closures) and analyzing (e.g. checking emptiness) SFA and SFT are by now
 rather mature (e.g see the CACM article \cite{DV21}).
 %This symbolic approach not only provides a more succinct representation but also supports infinite alphabets, thereby extending the expressive capabilities of FAs and FTs.
 
+Owing to the security-critical nature of many applications of string analysis
+(e.g. analysis of web applications against XSS vulnerabilities), there is an 
+increasing need of trustworthy implementations in such application domains. 
+Unfortunately, string analysis implementations are often quite buggy. For
+example, even state-of-the-art SMT solvers over the theory of strings --- 
+which were used at AWS, esp. for analyzing Role-Based Access Control (RBAC) 
+policies --- were found to be buggy through such techniques as fuzzing
+\cite{DBLP:conf/cav/BlotskyMBZKG18,BM20,Mansur20}. This has motivated
+initial formalization efforts for the theory of strings in Isabelle/HOL, e.g., a verified solver
+\cite{cpp/KanLRS22}
+for handling a small fragment of SMT-LIB 2.6 unicode theory of strings
+consisting only of equality, concatenation and regular constraints, and a
+formalization of the semantics of this theory \cite{verified-verifying}.
 
+Despite these, existing verified implementations for string analysis do not
+handle the following indispensable string operations for analysis of web
+applications (e.g. see
+\cite{DBLP:conf/popl/LinB16,Kern,Berkeley-JavaScript,DBLP:conf/sp/SaxenaAHMMS10,uss/HooimeijerLMSV11}):
+\emph{string transductions} and \emph{replaceall} operators. In particular, 
+string transductions are used frequently in web applications (e.g. for
+sanitization, as well as implicitly applied transductions, for instance
+through \texttt{innerHTML}). In particular, SMT-LIB string constraints that 
+arise from such applications require the \emph{replaceall} operator (part of
+SMT-LIB), which is currently not handled by any existing verified
+implementation. This paper tackles the formalization of SFA/SFT and
+their associated algorithms, as well as applications to analysis of sanitizers
+and verified solver for string constraints. \textcolor{red}{Updated up to here
+so far}
+
+\OMIT{
+SFA and SFT (e.g. 
+analysis of web applications, e.g., against XSS vulnerabilities), 
 
 However, the formalization of transition labels in SFAs and SFTs presents significant challenges within interactive proof assistants. Two fundamental considerations arise: first, the representation of transition labels must be sufficiently expressive to accommodate diverse predicate representations of boolean algebras; second, the formalization framework must be designed with extensibility in mind to facilitate the incorporation of new boolean algebras while minimizing redundant proof efforts.
 
+}
 
 
 
