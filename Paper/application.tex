@@ -377,7 +377,10 @@ We evaluate {CertiStrR} using benchmarks from SMT-LIB 2025~\cite{smtlib_benchmar
 
 The experimental evaluation was conducted on a laptop with an Apple M4 processor and 24 GB of memory, with a \textbf{one-hour} time limit per test. The results were classified into three categories: SAT (satisfiable), UNSAT (unsatisfiable), and Inconclusive. An "Inconclusive" result indicates that the solver cannot determine satisfiability due to the inherent incompleteness of the string solver's algorithm, not timeout (all tests completed within one minute). This occurs when the solver cannot determine whether string variables need to be assigned different values that satisfy all constraints.
 
-We also compare with two state-of-the-art string solvers: Ostrich \cite{pacmpl/ChenFHHHKLRW22} and CVC5 \cite{cvc5}. Table~\ref{tab:string_operations} summarizes the results, including the number of tests, counts of SAT, UNSAT, and Inconclusive results, as well as the average execution time for each subgroup of benchmarks.
+We also compare with two state-of-the-art string solvers: Ostrich \cite{pacmpl/ChenFHHHKLRW22} and CVC5 \cite{cvc5}. From the experimental results, we observe that string replacement 
+
+
+Table~\ref{tab:string_operations} summarizes the results, including the number of tests, counts of SAT, UNSAT, and Inconclusive results, as well as the average execution time for each subgroup of benchmarks.
 
 
 
