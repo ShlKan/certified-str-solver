@@ -1,0 +1,77 @@
+Test (./lan_replace88.smt2):
+cvc5 interrupted by SIGTERM.
+
+real	10m0.033s
+user	9m44.281s
+sys	0m11.257s
+TIMEOUT (1 hour limit exceeded)
+Test (./lan_replace89.smt2):
+
+real	0m0.083s
+user	0m0.073s
+sys	0m0.005s
+sat
+Test (./lan_replace9.smt2):
+
+real	2m59.567s
+user	2m58.535s
+sys	0m0.772s
+sat
+Test (./lan_replace91.smt2):
+
+real	0m0.074s
+user	0m0.070s
+sys	0m0.003s
+sat
+Test (./lan_replace92.smt2):
+cvc5 interrupted by SIGTERM.
+
+real	10m0.003s
+user	9m53.331s
+sys	0m5.181s
+TIMEOUT (1 hour limit exceeded)
+Test (./lan_replace93.smt2):
+
+real	0m2.908s
+user	0m2.875s
+sys	0m0.024s
+sat
+Test (./lan_replace94.smt2):
+cvc5 interrupted by SIGTERM.
+
+real	10m0.012s
+user	9m54.976s
+sys	0m3.133s
+TIMEOUT (1 hour limit exceeded)
+Test (./lan_replace95.smt2):
+cvc5 interrupted by SIGTERM.
+
+real	10m0.076s
+user	9m48.686s
+sys	0m9.911s
+TIMEOUT (1 hour limit exceeded)
+Test (./lan_replace96.smt2):
+
+real	0m10.815s
+user	0m10.708s
+sys	0m0.086s
+sat
+Test (./lan_replace97.smt2):
+
+real	0m0.008s
+user	0m0.004s
+sys	0m0.003s
+sat
+Test (./lan_replace98.smt2):
+
+real	0m0.007s
+user	0m0.004s
+sys	0m0.002s
+sat
+Test (./lan_replace99.smt2):
+cvc5 interrupted by SIGTERM.
+
+real	10m0.061s
+user	9m49.830s
+sys	0m9.548s
+TIMEOUT (1 hour limit exceeded)

@@ -1,0 +1,445 @@
+Test (./lan_replace101.smt2):
+Loading ./lan_replace101.smt2 ...
+Prover 0: Options: -stringSolver=ostrich.OstrichStringTheory:-eager,-forwardPropagation,+backwardPropagation,+nielsenSplitter
+Prover 0: 
+Prover 0: Loading OSTRICH 2.0, a solver for string constraints
+Prover 0: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 0: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 0: For more information, see https://github.com/uuverifiers/ostrich
+Prover 0: 
+Prover 0: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 0: Preprocessing ...
+Prover 0: Constructing countermodel ...
+Prover 1: Options: +cea
+Prover 1: 
+Prover 1: Loading OSTRICH 2.0, a solver for string constraints
+Prover 1: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 1: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 1: For more information, see https://github.com/uuverifiers/ostrich
+Prover 1: 
+Prover 1: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 1: Preprocessing ...
+Prover 1: Constructing countermodel ...
+Prover 1:    "\x53\x45\x43\x55\x52\x49\x54\x59\x20\x57\x41\x52\x4e\x49\x4e\x47\x3a\x20\x6c\x6f\x67\x67\x65\x64\x20\x69\x6e\x74\x72\x75\x73\x69\x6f\x6e\x20\x61\x74\x74\x65\x6d\x70\x74\x20\x61\x67\x61\x69\x6e\x73\x74\x20\x6c\x69\x62\x2f\x61\x64\x6f\x64\x62\x2f\x74\x65\x73\x74\x73\x2f\x74\x6d\x73\x73\x71\x6c\x2e\x70\x68\x70" =
+Prover 1:      concatCEPreOp(atk_sigmaStar_1, tmp_0)
+Prover 1:    tmp_0 =
+Prover 1:      concatCEPreOp(atkPtn, atk_sigmaStar_2)
+Prover 2: Options: -stringSolver=ap.theories.strings.SeqStringTheory
+Prover 2: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 2: Preprocessing ...
+Prover 2: Constructing countermodel ...
+Prover 3: Options: -stringSolver=ostrich.OstrichStringTheory:+forwardPropagation,+backwardPropagation,+nielsenSplitter
+Prover 3: 
+Prover 3: Loading OSTRICH 2.0, a solver for string constraints
+Prover 3: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 3: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 3: For more information, see https://github.com/uuverifiers/ostrich
+Prover 3: 
+Prover 3: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 3: Preprocessing ...
+Prover 3: Constructing countermodel ...
+Prover 4: Options: -stringSolver=ostrich.OstrichStringTheory:+eager,+forwardPropagation,+backwardPropagation,-nielsenSplitter,+parikh
+Prover 4: 
+Prover 4: Loading OSTRICH 2.0, a solver for string constraints
+Prover 4: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 4: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 4: For more information, see https://github.com/uuverifiers/ostrich
+Prover 4: 
+Prover 4: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 4: Preprocessing ...
+Prover 4: Constructing countermodel ...
+Prover 1: proved (3132ms)
+Prover 0: stopped
+Prover 2: stopped
+Prover 4: stopped
+Prover 3: stopped
+
+
+27146ms
+
+real	0m27.266s
+user	0m38.854s
+sys	0m0.699s
+unsat
+Test (./lan_replace11.smt2):
+Loading ./lan_replace11.smt2 ...
+Prover 0: Options: -stringSolver=ostrich.OstrichStringTheory:-eager,-forwardPropagation,+backwardPropagation,+nielsenSplitter
+Prover 0: 
+Prover 0: Loading OSTRICH 2.0, a solver for string constraints
+Prover 0: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 0: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 0: For more information, see https://github.com/uuverifiers/ostrich
+Prover 0: 
+Prover 0: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 0: Preprocessing ...
+Prover 0: Constructing countermodel ...
+Prover 1: Options: +cea
+Prover 1: 
+Prover 1: Loading OSTRICH 2.0, a solver for string constraints
+Prover 1: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 1: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 1: For more information, see https://github.com/uuverifiers/ostrich
+Prover 1: 
+Prover 1: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 1: Preprocessing ...
+Prover 1: Constructing countermodel ...
+Prover 1:    "\x53\x45\x43\x55\x52\x49\x54\x59\x20\x57\x41\x52\x4e\x49\x4e\x47\x3a\x20\x6c\x6f\x67\x67\x65\x64\x20\x69\x6e\x74\x72\x75\x73\x69\x6f\x6e\x20\x61\x74\x74\x65\x6d\x70\x74\x20\x61\x67\x61\x69\x6e\x73\x74\x20\x6c\x69\x62\x2f\x61\x64\x6f\x64\x62\x2f\x74\x65\x73\x74\x73\x2f\x74\x6d\x73\x73\x71\x6c\x2e\x70\x68\x70" =
+Prover 1:      concatCEPreOp(atk_sigmaStar_1, tmp_0)
+Prover 1:    tmp_0 =
+Prover 1:      concatCEPreOp(atkPtn, atk_sigmaStar_2)
+Prover 2: Options: -stringSolver=ap.theories.strings.SeqStringTheory
+Prover 2: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 2: Preprocessing ...
+Prover 2: Constructing countermodel ...
+Prover 3: Options: -stringSolver=ostrich.OstrichStringTheory:+forwardPropagation,+backwardPropagation,+nielsenSplitter
+Prover 3: 
+Prover 3: Loading OSTRICH 2.0, a solver for string constraints
+Prover 3: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 3: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 3: For more information, see https://github.com/uuverifiers/ostrich
+Prover 3: 
+Prover 3: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 3: Preprocessing ...
+Prover 3: Constructing countermodel ...
+Prover 4: Options: -stringSolver=ostrich.OstrichStringTheory:+eager,+forwardPropagation,+backwardPropagation,-nielsenSplitter,+parikh
+Prover 4: 
+Prover 4: Loading OSTRICH 2.0, a solver for string constraints
+Prover 4: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 4: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 4: For more information, see https://github.com/uuverifiers/ostrich
+Prover 4: 
+Prover 4: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 4: Preprocessing ...
+Prover 4: Constructing countermodel ...
+Prover 1: proved (3156ms)
+Prover 2: stopped
+Prover 0: stopped
+Prover 3: stopped
+Prover 4: stopped
+
+
+25370ms
+
+real	0m25.493s
+user	0m35.382s
+sys	0m0.544s
+unsat
+Test (./lan_replace26.smt2):
+Loading ./lan_replace26.smt2 ...
+Prover 0: Options: -stringSolver=ostrich.OstrichStringTheory:-eager,-forwardPropagation,+backwardPropagation,+nielsenSplitter
+Prover 0: 
+Prover 0: Loading OSTRICH 2.0, a solver for string constraints
+Prover 0: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 0: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 0: For more information, see https://github.com/uuverifiers/ostrich
+Prover 0: 
+Prover 0: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 0: Preprocessing ...
+Prover 0: Constructing countermodel ...
+Prover 1: Options: +cea
+Prover 1: 
+Prover 1: Loading OSTRICH 2.0, a solver for string constraints
+Prover 1: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 1: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 1: For more information, see https://github.com/uuverifiers/ostrich
+Prover 1: 
+Prover 1: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 1: Preprocessing ...
+Prover 1: Constructing countermodel ...
+Prover 1:    "\x53\x45\x43\x55\x52\x49\x54\x59\x20\x57\x41\x52\x4e\x49\x4e\x47\x3a\x20\x6c\x6f\x67\x67\x65\x64\x20\x69\x6e\x74\x72\x75\x73\x69\x6f\x6e\x20\x61\x74\x74\x65\x6d\x70\x74\x20\x61\x67\x61\x69\x6e\x73\x74\x20\x6c\x69\x62\x2f\x61\x64\x6f\x64\x62\x2f\x74\x65\x73\x74\x73\x2f\x74\x6d\x73\x73\x71\x6c\x2e\x70\x68\x70" =
+Prover 1:      concatCEPreOp(atk_sigmaStar_1, tmp_0)
+Prover 1:    tmp_0 =
+Prover 1:      concatCEPreOp(atkPtn, atk_sigmaStar_2)
+Prover 2: Options: -stringSolver=ap.theories.strings.SeqStringTheory
+Prover 2: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 2: Preprocessing ...
+Prover 2: Constructing countermodel ...
+Prover 3: Options: -stringSolver=ostrich.OstrichStringTheory:+forwardPropagation,+backwardPropagation,+nielsenSplitter
+Prover 3: 
+Prover 3: Loading OSTRICH 2.0, a solver for string constraints
+Prover 3: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 3: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 3: For more information, see https://github.com/uuverifiers/ostrich
+Prover 3: 
+Prover 3: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 3: Preprocessing ...
+Prover 3: Constructing countermodel ...
+Prover 4: Options: -stringSolver=ostrich.OstrichStringTheory:+eager,+forwardPropagation,+backwardPropagation,-nielsenSplitter,+parikh
+Prover 4: 
+Prover 4: Loading OSTRICH 2.0, a solver for string constraints
+Prover 4: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 4: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 4: For more information, see https://github.com/uuverifiers/ostrich
+Prover 4: 
+Prover 4: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 4: Preprocessing ...
+Prover 4: Constructing countermodel ...
+Prover 1: proved (3206ms)
+Prover 0: stopped
+Prover 2: stopped
+Prover 4: stopped
+Prover 3: stopped
+
+
+27708ms
+
+real	0m27.834s
+user	0m40.896s
+sys	0m0.606s
+unsat
+Test (./lan_replace35.smt2):
+Loading ./lan_replace35.smt2 ...
+Prover 0: Options: -stringSolver=ostrich.OstrichStringTheory:-eager,-forwardPropagation,+backwardPropagation,+nielsenSplitter
+Prover 0: 
+Prover 0: Loading OSTRICH 2.0, a solver for string constraints
+Prover 0: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 0: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 0: For more information, see https://github.com/uuverifiers/ostrich
+Prover 0: 
+Prover 0: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 0: Preprocessing ...
+Prover 0: Constructing countermodel ...
+Prover 1: Options: +cea
+Prover 1: 
+Prover 1: Loading OSTRICH 2.0, a solver for string constraints
+Prover 1: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 1: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 1: For more information, see https://github.com/uuverifiers/ostrich
+Prover 1: 
+Prover 1: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 1: Preprocessing ...
+Prover 1: Constructing countermodel ...
+Prover 1:    "\x53\x45\x43\x55\x52\x49\x54\x59\x20\x57\x41\x52\x4e\x49\x4e\x47\x3a\x20\x6c\x6f\x67\x67\x65\x64\x20\x69\x6e\x74\x72\x75\x73\x69\x6f\x6e\x20\x61\x74\x74\x65\x6d\x70\x74\x20\x61\x67\x61\x69\x6e\x73\x74\x20\x6c\x69\x62\x2f\x61\x64\x6f\x64\x62\x2f\x74\x65\x73\x74\x73\x2f\x74\x6d\x73\x73\x71\x6c\x2e\x70\x68\x70" =
+Prover 1:      concatCEPreOp(atk_sigmaStar_1, tmp_0)
+Prover 1:    tmp_0 =
+Prover 1:      concatCEPreOp(atkPtn, atk_sigmaStar_2)
+Prover 2: Options: -stringSolver=ap.theories.strings.SeqStringTheory
+Prover 2: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 2: Preprocessing ...
+Prover 2: Constructing countermodel ...
+Prover 3: Options: -stringSolver=ostrich.OstrichStringTheory:+forwardPropagation,+backwardPropagation,+nielsenSplitter
+Prover 3: 
+Prover 3: Loading OSTRICH 2.0, a solver for string constraints
+Prover 3: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 3: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 3: For more information, see https://github.com/uuverifiers/ostrich
+Prover 3: 
+Prover 3: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 3: Preprocessing ...
+Prover 3: Constructing countermodel ...
+Prover 4: Options: -stringSolver=ostrich.OstrichStringTheory:+eager,+forwardPropagation,+backwardPropagation,-nielsenSplitter,+parikh
+Prover 4: 
+Prover 4: Loading OSTRICH 2.0, a solver for string constraints
+Prover 4: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 4: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 4: For more information, see https://github.com/uuverifiers/ostrich
+Prover 4: 
+Prover 4: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 4: Preprocessing ...
+Prover 4: Constructing countermodel ...
+Prover 1: proved (3936ms)
+Prover 0: stopped
+Prover 2: stopped
+Prover 3: stopped
+Prover 4: stopped
+
+
+28993ms
+
+real	0m29.104s
+user	0m42.364s
+sys	0m0.699s
+unsat
+Test (./lan_replace54.smt2):
+Loading ./lan_replace54.smt2 ...
+Prover 0: Options: -stringSolver=ostrich.OstrichStringTheory:-eager,-forwardPropagation,+backwardPropagation,+nielsenSplitter
+Prover 0: 
+Prover 0: Loading OSTRICH 2.0, a solver for string constraints
+Prover 0: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 0: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 0: For more information, see https://github.com/uuverifiers/ostrich
+Prover 0: 
+Prover 0: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 0: Preprocessing ...
+Prover 0: Constructing countermodel ...
+Prover 1: Options: +cea
+Prover 1: 
+Prover 1: Loading OSTRICH 2.0, a solver for string constraints
+Prover 1: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 1: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 1: For more information, see https://github.com/uuverifiers/ostrich
+Prover 1: 
+Prover 1: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 1: Preprocessing ...
+Prover 1: Constructing countermodel ...
+Prover 1:    "\x53\x45\x43\x55\x52\x49\x54\x59\x20\x57\x41\x52\x4e\x49\x4e\x47\x3a\x20\x6c\x6f\x67\x67\x65\x64\x20\x69\x6e\x74\x72\x75\x73\x69\x6f\x6e\x20\x61\x74\x74\x65\x6d\x70\x74\x20\x61\x67\x61\x69\x6e\x73\x74\x20\x6c\x69\x62\x2f\x61\x64\x6f\x64\x62\x2f\x74\x65\x73\x74\x73\x2f\x74\x6d\x73\x73\x71\x6c\x2e\x70\x68\x70" =
+Prover 1:      concatCEPreOp(atk_sigmaStar_1, tmp_0)
+Prover 1:    tmp_0 =
+Prover 1:      concatCEPreOp(atkPtn, atk_sigmaStar_2)
+Prover 2: Options: -stringSolver=ap.theories.strings.SeqStringTheory
+Prover 2: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 2: Preprocessing ...
+Prover 2: Constructing countermodel ...
+Prover 3: Options: -stringSolver=ostrich.OstrichStringTheory:+forwardPropagation,+backwardPropagation,+nielsenSplitter
+Prover 3: 
+Prover 3: Loading OSTRICH 2.0, a solver for string constraints
+Prover 3: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 3: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 3: For more information, see https://github.com/uuverifiers/ostrich
+Prover 3: 
+Prover 3: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 3: Preprocessing ...
+Prover 3: Constructing countermodel ...
+Prover 4: Options: -stringSolver=ostrich.OstrichStringTheory:+eager,+forwardPropagation,+backwardPropagation,-nielsenSplitter,+parikh
+Prover 4: 
+Prover 4: Loading OSTRICH 2.0, a solver for string constraints
+Prover 4: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 4: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 4: For more information, see https://github.com/uuverifiers/ostrich
+Prover 4: 
+Prover 4: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 4: Preprocessing ...
+Prover 4: Constructing countermodel ...
+Prover 1: proved (3184ms)
+Prover 4: stopped
+Prover 3: stopped
+Prover 0: stopped
+Prover 2: stopped
+
+
+26905ms
+
+real	0m27.026s
+user	0m38.297s
+sys	0m0.612s
+unsat
+Test (./lan_replace63.smt2):
+Loading ./lan_replace63.smt2 ...
+Prover 0: Options: -stringSolver=ostrich.OstrichStringTheory:-eager,-forwardPropagation,+backwardPropagation,+nielsenSplitter
+Prover 0: 
+Prover 0: Loading OSTRICH 2.0, a solver for string constraints
+Prover 0: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 0: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 0: For more information, see https://github.com/uuverifiers/ostrich
+Prover 0: 
+Prover 0: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 0: Preprocessing ...
+Prover 0: Constructing countermodel ...
+Prover 1: Options: +cea
+Prover 1: 
+Prover 1: Loading OSTRICH 2.0, a solver for string constraints
+Prover 1: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 1: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 1: For more information, see https://github.com/uuverifiers/ostrich
+Prover 1: 
+Prover 1: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 1: Preprocessing ...
+Prover 1: Constructing countermodel ...
+Prover 1:    "\x53\x45\x43\x55\x52\x49\x54\x59\x20\x57\x41\x52\x4e\x49\x4e\x47\x3a\x20\x6c\x6f\x67\x67\x65\x64\x20\x69\x6e\x74\x72\x75\x73\x69\x6f\x6e\x20\x61\x74\x74\x65\x6d\x70\x74\x20\x61\x67\x61\x69\x6e\x73\x74\x20\x6c\x69\x62\x2f\x61\x64\x6f\x64\x62\x2f\x74\x65\x73\x74\x73\x2f\x74\x6d\x73\x73\x71\x6c\x2e\x70\x68\x70" =
+Prover 1:      concatCEPreOp(atk_sigmaStar_1, tmp_0)
+Prover 1:    tmp_0 =
+Prover 1:      concatCEPreOp(atkPtn, atk_sigmaStar_2)
+Prover 1: proved (3134ms)
+Prover 0: stopped
+
+
+10595ms
+
+real	0m10.708s
+user	0m15.661s
+sys	0m0.328s
+unsat
+Test (./lan_replace77.smt2):
+Loading ./lan_replace77.smt2 ...
+Prover 0: Options: -stringSolver=ostrich.OstrichStringTheory:-eager,-forwardPropagation,+backwardPropagation,+nielsenSplitter
+Prover 0: 
+Prover 0: Loading OSTRICH 2.0, a solver for string constraints
+Prover 0: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 0: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 0: For more information, see https://github.com/uuverifiers/ostrich
+Prover 0: 
+Prover 0: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 0: Preprocessing ...
+Prover 0: Constructing countermodel ...
+Prover 1: Options: +cea
+Prover 1: 
+Prover 1: Loading OSTRICH 2.0, a solver for string constraints
+Prover 1: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 1: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 1: For more information, see https://github.com/uuverifiers/ostrich
+Prover 1: 
+Prover 1: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 1: Preprocessing ...
+Prover 1: Constructing countermodel ...
+Prover 1:    "\x53\x45\x43\x55\x52\x49\x54\x59\x20\x57\x41\x52\x4e\x49\x4e\x47\x3a\x20\x6c\x6f\x67\x67\x65\x64\x20\x69\x6e\x74\x72\x75\x73\x69\x6f\x6e\x20\x61\x74\x74\x65\x6d\x70\x74\x20\x61\x67\x61\x69\x6e\x73\x74\x20\x6c\x69\x62\x2f\x61\x64\x6f\x64\x62\x2f\x74\x65\x73\x74\x73\x2f\x74\x6d\x73\x73\x71\x6c\x2e\x70\x68\x70" =
+Prover 1:      concatCEPreOp(atk_sigmaStar_1, tmp_0)
+Prover 1:    tmp_0 =
+Prover 1:      concatCEPreOp(atkPtn, atk_sigmaStar_2)
+Prover 1: proven invalid (465ms)
+Prover 0: stopped
+
+
+7980ms
+
+real	0m8.098s
+user	0m11.727s
+sys	0m0.251s
+sat
+Test (./lan_replace80.smt2):
+Loading ./lan_replace80.smt2 ...
+Prover 0: Options: -stringSolver=ostrich.OstrichStringTheory:-eager,-forwardPropagation,+backwardPropagation,+nielsenSplitter
+Prover 0: 
+Prover 0: Loading OSTRICH 2.0, a solver for string constraints
+Prover 0: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 0: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 0: For more information, see https://github.com/uuverifiers/ostrich
+Prover 0: 
+Prover 0: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 0: Preprocessing ...
+Prover 0: Constructing countermodel ...
+Prover 1: Options: +cea
+Prover 1: 
+Prover 1: Loading OSTRICH 2.0, a solver for string constraints
+Prover 1: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 1: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 1: For more information, see https://github.com/uuverifiers/ostrich
+Prover 1: 
+Prover 1: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 1: Preprocessing ...
+Prover 1: Constructing countermodel ...
+Prover 1:    "\x53\x45\x43\x55\x52\x49\x54\x59\x20\x57\x41\x52\x4e\x49\x4e\x47\x3a\x20\x6c\x6f\x67\x67\x65\x64\x20\x69\x6e\x74\x72\x75\x73\x69\x6f\x6e\x20\x61\x74\x74\x65\x6d\x70\x74\x20\x61\x67\x61\x69\x6e\x73\x74\x20\x6c\x69\x62\x2f\x61\x64\x6f\x64\x62\x2f\x74\x65\x73\x74\x73\x2f\x74\x6d\x73\x73\x71\x6c\x2e\x70\x68\x70" =
+Prover 1:      concatCEPreOp(atk_sigmaStar_1, tmp_0)
+Prover 1:    tmp_0 =
+Prover 1:      concatCEPreOp(atkPtn, atk_sigmaStar_2)
+Prover 2: Options: -stringSolver=ap.theories.strings.SeqStringTheory
+Prover 2: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 2: Preprocessing ...
+Prover 2: Constructing countermodel ...
+Prover 3: Options: -stringSolver=ostrich.OstrichStringTheory:+forwardPropagation,+backwardPropagation,+nielsenSplitter
+Prover 3: 
+Prover 3: Loading OSTRICH 2.0, a solver for string constraints
+Prover 3: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 3: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 3: For more information, see https://github.com/uuverifiers/ostrich
+Prover 3: 
+Prover 3: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 3: Preprocessing ...
+Prover 3: Constructing countermodel ...
+Prover 4: Options: -stringSolver=ostrich.OstrichStringTheory:+eager,+forwardPropagation,+backwardPropagation,-nielsenSplitter,+parikh
+Prover 4: 
+Prover 4: Loading OSTRICH 2.0, a solver for string constraints
+Prover 4: (c) Matthew Hague, Denghang Hu, Philipp Rￃﾼmmer, 2018-2025
+Prover 4: With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+Prover 4: For more information, see https://github.com/uuverifiers/ostrich
+Prover 4: 
+Prover 4: Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Prover 4: Preprocessing ...
+Prover 4: Constructing countermodel ...
+Prover 3: stopped
+Prover 1: proved (131794ms)
+Prover 4: stopped
+Prover 0: stopped
+Prover 2: stopped
+
+
+547841ms

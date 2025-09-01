@@ -143,18 +143,6 @@ lemma copy_tran'_imp:
       and \<alpha>_ok: "\<alpha>' = sem' \<alpha> \<and> canonical_op' \<alpha>"
   shows "copy_tran'_imp q \<alpha> q' S \<le> \<Down> (br ddt\<alpha> ddtinvar) 
    (copy_tran' q \<alpha>' q' S')"
-  unfolding copy_tran'_imp_def copy_tran'_def
-  apply refine_rcg
-  apply (subgoal_tac "inj_on id {q. q \<in> s.\<alpha> S}")
-  apply assumption
-  apply force
-  using S_ok apply force
-  unfolding br_def ddt\<alpha>_def ddtinvar_def
-  apply simp
-  using ddt.correct
-  apply force
-  apply simp
-  apply (rule conjI)
 proof -
   {
     fix x it \<sigma> x' it' \<sigma>'
@@ -170,12 +158,12 @@ proof -
       using ddt.lts_add_correct(2) by auto
      
     from this
-    show "insert ((q, x), \<alpha>', q', x) (ba_to_set_prod_out ` ddt.\<alpha> \<sigma>) =
+    have "insert ((q, x), \<alpha>', q', x) (ba_to_set_prod_out ` ddt.\<alpha> \<sigma>) =
           ba_to_set_prod_out ` ddt.\<alpha> (ddt.add (q, x) \<alpha> (q', x) \<sigma>)"
       apply simp
       using \<alpha>_ok
       by force  
-    }
+    } note sgoal1 = this
     {
       fix x it \<sigma> x' it' \<sigma>'
       assume xin: "x \<in> it"
@@ -185,7 +173,7 @@ proof -
                   ddt.invar \<sigma> \<and> (\<forall>x\<in>ddt.\<alpha> \<sigma>. case x of (q, \<alpha>, q') \<Rightarrow> 
                   canonical_op' \<alpha>)"
 
-      show "ddt.invar (ddt.add (q, x) \<alpha> (q', x) \<sigma>) \<and>
+      have "ddt.invar (ddt.add (q, x) \<alpha> (q', x) \<sigma>) \<and>
                (\<forall>x\<in>ddt.\<alpha> (ddt.add (q, x) \<alpha> (q', x) \<sigma>).
                      case x of (q, \<alpha>, q') \<Rightarrow> canonical_op' \<alpha>)"
         apply (rule conjI)
@@ -193,7 +181,24 @@ proof -
         apply (simp add: pre ddt.lts_add_correct(1))
         using \<alpha>_ok
         by (simp add: ddt.lts_add_correct(2) pre)
-    }
+    } note sgoal2 = this
+    show ?thesis
+     unfolding copy_tran'_imp_def copy_tran'_def
+  apply refine_rcg
+  apply (subgoal_tac "inj_on id {q. q \<in> s.\<alpha> S}")
+  apply assumption
+  apply force
+  using S_ok apply force
+  unfolding br_def ddt\<alpha>_def ddtinvar_def
+  apply simp
+  using ddt.correct
+  apply force
+  apply simp
+  apply (rule conjI)
+  using sgoal1 
+   apply simp
+  using sgoal2 
+  by presburger
   qed
 
 
@@ -324,20 +329,20 @@ proof -
       apply (rule conjI)
       using c1 p1 
       apply (simp add: ddt.lts_add_correct(2))
-      apply (rule_tac conjI)
+      apply (rule conjI)
       using p1
       apply (simp add: ddt.lts_add_correct(1))
       apply (subgoal_tac 
              "ddt.\<alpha> (ddt.add (q, x1c) (the (F (M f) (intersect_op \<alpha> x1d))) (q', x2d) x1e) = 
               {((q, x1c), (the (F (M f) (intersect_op \<alpha> x1d))), (q', x2d))} \<union> (ddt.\<alpha> x1e)")
        apply simp
-      apply (rule_tac conjI)
+      apply (rule conjI)
       using F_ok'' p1 canox1d
       apply (simp add: \<alpha>_ok intersect_correct p4)
       using p1 apply simp
       using p1
       using ddt.lts_add_correct(2) by auto
-  }
+  } note sgoal1 = this
   {
     fix x1c x1d x2d x1e it x2e
     assume p1: "D1' \<union>
@@ -366,7 +371,10 @@ proof -
     from fe_ok x1dcan \<alpha>_ok
     show "fe (M f) (intersect_op \<alpha> x1d) = fe' (M' f') (\<alpha>' \<inter> sem x1d)"
       by (simp add: intersect_correct)
-  }
+  } note sgoal2 = this
+
+  
+
 qed
 
 
@@ -399,10 +407,7 @@ lemma inj_aux:
   shows "inj_on (\<lambda> (q, (\<alpha>, f), q'). (q, (if \<alpha> = None then None else
                                   Some (sem (the \<alpha>)), f), q'))  (dt.\<alpha> T)"
   unfolding inj_on_def
-  apply rule
-  apply rule
-  apply rule
-proof   -
+proof (rule ballI, rule ballI, rule impI)
   fix x y
   assume xin: "x \<in> dt.\<alpha> T"
      and yin: "y \<in> dt.\<alpha> T"
@@ -581,7 +586,7 @@ proof -
            xb)"
     from xx' x_def x'_def x2d_def x2_def
     have eqx1: "x1d = x1 \<and> x2f = x2b"
-      apply auto
+      apply auto[1]
       apply (simp add: x1e_def)
       by (simp add: x1e_def)
 
@@ -813,29 +818,29 @@ qed
 definition nft_states :: "'q_set \<times> 'dt \<times> 'q_set \<times> 'q_set \<times> 
                                     ('i \<Rightarrow> ('a option \<Rightarrow> 'c option)) \<Rightarrow> 'q_set" where
   "nft_states A = fst A"
-lemma [simp]: "nft_states (Q, D, I, F) = Q" by (simp add: nft_states_def)
+lemma nft_states_f [simp]: "nft_states (Q, D, I, F) = Q" by (simp add: nft_states_def)
 
 definition nft_trans :: "'q_set \<times> 'dt \<times> 'q_set \<times> 'q_set \<times> 
                                     ('i \<Rightarrow> ('a option \<Rightarrow>'c option)) \<Rightarrow> 'dt" where
   "nft_trans A = (fst (snd A))"
-lemma [simp]: "nft_trans (Q, D, I, F) = D" by (simp add: nft_trans_def)
+lemma nft_trans_f [simp]: "nft_trans (Q, D, I, F) = D" by (simp add: nft_trans_def)
 
 definition nft_initial :: "'q_set \<times> 'dt \<times> 'q_set \<times> 'q_set \<times> 
                                     ('i \<Rightarrow> ('a option \<Rightarrow> 'c option)) \<Rightarrow> 'q_set" where
   "nft_initial A = fst (snd (snd  A))"
-lemma [simp]: "nft_initial (Q, D, I, F) = I" by (simp add: nft_initial_def)
+lemma nft_initial_f [simp]: "nft_initial (Q, D, I, F) = I" by (simp add: nft_initial_def)
 
 definition nft_accepting :: "'q_set \<times> 'dt \<times> 'q_set \<times> 'q_set \<times> 
                                     ('i \<Rightarrow> ('a option \<Rightarrow> 'c option)) \<Rightarrow> 'q_set" where
   "nft_accepting A = fst (snd (snd (snd A)))"
-lemma [simp]: "nft_accepting (Q, D, I, F, Fun) = F" by (simp add: nft_accepting_def)
+lemma nft_accepting_f [simp]: "nft_accepting (Q, D, I, F, Fun) = F" by (simp add: nft_accepting_def)
 
 definition nft_tranfun :: "'q_set \<times> 'dt \<times> 'q_set \<times> 'q_set \<times> 
                                     ('i \<Rightarrow> ('a option \<Rightarrow> 'c option))\<Rightarrow> 
                                        ('i \<Rightarrow> ('a option \<Rightarrow> 'c option))" where
   "nft_tranfun A = snd (snd (snd (snd  A)))"
 
-lemma [simp]: "nft_tranfun (Q, D, I, F, Fun) = Fun" 
+lemma nft_tranfun_f [simp]: "nft_tranfun (Q, D, I, F, Fun) = Fun" 
     by (simp add: nft_tranfun_def)
 
   term trans_comp_imp
@@ -851,31 +856,31 @@ definition productT_impl where
 
 definition nfae_states :: "'qq_set \<times> 'ddt \<times> 'qqqq_set\<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qq_set" where
   "nfae_states A = fst A"
-lemma [simp]: "nfae_states (Q, D, D', I, F) = Q" by (simp add: nfae_states_def)
+lemma nfae_states_f [simp]: "nfae_states (Q, D, D', I, F) = Q" by (simp add: nfae_states_def)
 
 
 
 definition nfae_trans :: 
         "'qq_set \<times> 'ddt \<times> 'qqqq_set\<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'ddt" where
   "nfae_trans A = (fst (snd A))"
-lemma [simp]: "nfae_trans (Q, D, D', I, F) = D"
+lemma nfae_trans_f [simp]: "nfae_trans (Q, D, D', I, F) = D"
   by (simp add: nfae_trans_def)
 
 definition nfae_trans_ep :: 
         "'qq_set \<times> 'ddt \<times> 'qqqq_set\<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qqqq_set" where
   "nfae_trans_ep A = (fst (snd (snd A)))"
-lemma [simp]: "nfae_trans_ep (Q, D, D', I, F) = D'" 
+lemma nfae_trans_ep_f [simp]: "nfae_trans_ep (Q, D, D', I, F) = D'" 
   using nfae_trans_ep_def by force
 
 definition nfae_initial :: 
     "'qq_set \<times> 'ddt \<times> 'qqqq_set\<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qq_set" where
   "nfae_initial A = fst (snd (snd  (snd A)))"
-lemma [simp]: "nfae_initial (Q, D, D', I, F) = I" by (simp add: nfae_initial_def)
+lemma nfae_initial_f [simp]: "nfae_initial (Q, D, D', I, F) = I" by (simp add: nfae_initial_def)
 
 definition nfae_accepting :: "'qq_set \<times> 'ddt \<times> 'qqqq_set\<times> 'qq_set \<times> 'qq_set 
               \<Rightarrow> 'qq_set" where
   "nfae_accepting A = snd (snd (snd (snd A)))"
-lemma [simp]: "nfae_accepting (Q, D, D', I, F) = F" by (simp add: nfae_accepting_def)
+lemma nfae_accepting_f [simp]: "nfae_accepting (Q, D, D', I, F) = F" by (simp add: nfae_accepting_def)
 
 
 definition nfae_invar :: "'qq_set \<times> 'ddt \<times> 'qqqq_set\<times> 'qq_set \<times> 'qq_set \<Rightarrow> bool" where
@@ -1166,25 +1171,25 @@ schematic_goal nft_destruct_code:
 definition nfa_prod_states :: 
    "'qq_set \<times> 'ddt \<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qq_set" where
   "nfa_prod_states A = fst A"
-lemma [simp]: "nfa_prod_states (Q, D, I, F) = Q" 
+lemma nfa_prod_states_f [simp]: "nfa_prod_states (Q, D, I, F) = Q" 
     by (simp add: nfa_prod_states_def)
 
 
 definition nfa_prod_trans :: 
         "'qq_set \<times> 'ddt \<times>  'qq_set \<times> 'qq_set \<Rightarrow> 'ddt" where
   "nfa_prod_trans A = (fst (snd A))"
-lemma [simp]: "nfa_prod_trans (Q,  D,  I, F) = D" 
+lemma nfa_prod_trans_f [simp]: "nfa_prod_trans (Q,  D,  I, F) = D" 
       by (simp add: nfa_prod_trans_def)
 
 definition nfa_prod_initial :: 
     "'qq_set \<times> 'ddt \<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qq_set" where
   "nfa_prod_initial A = fst (snd (snd  A))"
-lemma [simp]: "nfa_prod_initial (Q, D, I, F) = I" by (simp add: nfa_prod_initial_def)
+lemma nfa_prod_initial_f [simp]: "nfa_prod_initial (Q, D, I, F) = I" by (simp add: nfa_prod_initial_def)
 
 definition nfa_prod_accepting :: "'qq_set \<times> 'ddt \<times> 'qq_set \<times> 'qq_set 
               \<Rightarrow> 'qq_set" where
   "nfa_prod_accepting A = (snd (snd (snd A)))"
-lemma [simp]: "nfa_prod_accepting (Q, D, I, F) = F" 
+lemma nfa_prod_accepting_f [simp]: "nfa_prod_accepting (Q, D, I, F) = F" 
       by (simp add: nfa_prod_accepting_def)
 
 

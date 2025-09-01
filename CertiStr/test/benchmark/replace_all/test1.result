@@ -1,0 +1,1531 @@
+Test (./lan_replace_all101.smt2):
+
+real	0m0.012s
+user	0m0.005s
+sys	0m0.005s
+unsat
+Test (./lan_replace_all107.smt2):
+
+real	0m0.026s
+user	0m0.019s
+sys	0m0.005s
+sat
+Test (./lan_replace_all11.smt2):
+
+real	0m0.011s
+user	0m0.005s
+sys	0m0.005s
+unsat
+Test (./lan_replace_all12.smt2):
+
+real	0m0.023s
+user	0m0.016s
+sys	0m0.005s
+sat
+Test (./lan_replace_all19.smt2):
+
+real	0m0.021s
+user	0m0.016s
+sys	0m0.004s
+sat
+Test (./lan_replace_all26.smt2):
+
+real	0m0.012s
+user	0m0.005s
+sys	0m0.005s
+unsat
+Test (./lan_replace_all35.smt2):
+
+real	0m0.012s
+user	0m0.005s
+sys	0m0.005s
+unsat
+Test (./lan_replace_all45.smt2):
+
+real	0m0.012s
+user	0m0.007s
+sys	0m0.004s
+unsat
+Test (./lan_replace_all46.smt2):
+
+real	0m0.013s
+user	0m0.007s
+sys	0m0.005s
+unsat
+Test (./lan_replace_all47.smt2):
+
+real	0m0.014s
+user	0m0.007s
+sys	0m0.005s
+unsat
+Test (./lan_replace_all48.smt2):
+
+real	0m0.014s
+user	0m0.007s
+sys	0m0.005s
+unsat
+Test (./lan_replace_all54.smt2):
+
+real	0m0.011s
+user	0m0.005s
+sys	0m0.005s
+unsat
+Test (./lan_replace_all6.smt2):
+
+real	0m0.023s
+user	0m0.017s
+sys	0m0.005s
+sat
+Test (./lan_replace_all63.smt2):
+
+real	0m15.127s
+user	0m14.907s
+sys	0m0.104s
+unsat
+Test (./lan_replace_all73.smt2):
+
+real	0m0.016s
+user	0m0.005s
+sys	0m0.006s
+sat
+Test (./lan_replace_all77.smt2):
+
+real	0m0.012s
+user	0m0.005s
+sys	0m0.005s
+sat
+Test (./lan_replace_all79.smt2):
+
+real	0m0.024s
+user	0m0.017s
+sys	0m0.005s
+sat
+Test (./lan_replace_all80.smt2):
+
+real	0m27.248s
+user	0m26.875s
+sys	0m0.107s
+unsat
+Test (./lan_replace_all87.smt2):
+
+real	0m1.334s
+user	0m1.315s
+sys	0m0.013s
+sat
+Test (./lan_replace_all96.smt2):
+
+real	0m5.522s
+user	0m5.480s
+sys	0m0.028s
+sat
+Test (./str_replace_all0.smt2):
+
+real	0m0.013s
+user	0m0.006s
+sys	0m0.006s
+unsat
+Test (./str_replace_all1.smt2):
+
+real	0m0.013s
+user	0m0.006s
+sys	0m0.006s
+unsat
+Test (./str_replace_all10.smt2):
+
+real	0m0.013s
+user	0m0.005s
+sys	0m0.006s
+unsat
+Test (./str_replace_all100.smt2):
+
+real	0m0.012s
+user	0m0.005s
+sys	0m0.005s
+unsat
+Test (./str_replace_all101.smt2):
+
+real	0m0.013s
+user	0m0.005s
+sys	0m0.006s
+unsat
+Test (./str_replace_all102.smt2):
+
+real	0m0.014s
+user	0m0.006s
+sys	0m0.006s
+unsat
+Test (./str_replace_all103.smt2):
+
+real	0m0.022s
+user	0m0.014s
+sys	0m0.006s
+sat
+Test (./str_replace_all104.smt2):
+
+real	0m0.014s
+user	0m0.006s
+sys	0m0.006s
+unsat
+Test (./str_replace_all105.smt2):
+
+real	0m0.012s
+user	0m0.005s
+sys	0m0.005s
+unsat
+Test (./str_replace_all106.smt2):
+
+real	0m0.011s
+user	0m0.005s
+sys	0m0.005s
+unsat
+Test (./str_replace_all107.smt2):
+
+real	0m0.011s
+user	0m0.005s
+sys	0m0.005s
+unsat
+Test (./str_replace_all108.smt2):
+
+real	0m0.011s
+user	0m0.004s
+sys	0m0.005s
+unsat
+Test (./str_replace_all109.smt2):
+
+real	0m0.012s
+user	0m0.005s
+sys	0m0.005s
+unsat
+Test (./str_replace_all11.smt2):
+
+real	0m0.010s
+user	0m0.004s
+sys	0m0.005s
+unsat
+Test (./str_replace_all110.smt2):
+
+real	0m0.012s
+user	0m0.005s
+sys	0m0.006s
+unsat
+Test (./str_replace_all111.smt2):
+
+real	0m0.012s
+user	0m0.005s
+sys	0m0.005s
+unsat
+Test (./str_replace_all112.smt2):
+
+real	0m0.012s
+user	0m0.005s
+sys	0m0.006s
+unsat
+Test (./str_replace_all113.smt2):
+
+real	0m0.012s
+user	0m0.006s
+sys	0m0.005s
+unsat
+Test (./str_replace_all114.smt2):
+
+real	0m0.013s
+user	0m0.006s
+sys	0m0.006s
+unsat
+Test (./str_replace_all115.smt2):
+
+real	0m0.015s
+user	0m0.006s
+sys	0m0.007s
+unsat
+Test (./str_replace_all116.smt2):
+
+real	0m0.013s
+user	0m0.006s
+sys	0m0.006s
+unsat
+Test (./str_replace_all117.smt2):
+
+real	0m0.013s
+user	0m0.006s
+sys	0m0.006s
+unsat
+Test (./str_replace_all118.smt2):
+
+real	0m0.012s
+user	0m0.005s
+sys	0m0.005s
+unsat
+Test (./str_replace_all119.smt2):
+
+real	0m0.012s
+user	0m0.005s
+sys	0m0.005s
+unsat
+Test (./str_replace_all12.smt2):
+
+real	0m0.014s
+user	0m0.006s
+sys	0m0.006s
+unsat
+Test (./str_replace_all120.smt2):
+
+real	0m0.013s
+user	0m0.006s
+sys	0m0.006s
+unsat
+Test (./str_replace_all121.smt2):
+
+real	0m0.012s
+user	0m0.005s
+sys	0m0.005s
+unsat
+Test (./str_replace_all122.smt2):
+
+real	0m0.013s
+user	0m0.006s
+sys	0m0.006s
+unsat
+Test (./str_replace_all123.smt2):
+
+real	0m0.009s
+user	0m0.004s
+sys	0m0.004s
+unsat
+Test (./str_replace_all124.smt2):
+
+real	0m0.012s
+user	0m0.005s
+sys	0m0.005s
+unsat
+Test (./str_replace_all125.smt2):
+
+real	0m0.011s
+user	0m0.005s
+sys	0m0.005s
+unsat
+Test (./str_replace_all126.smt2):
+
+real	0m0.012s
+user	0m0.006s
+sys	0m0.005s
+unsat
+Test (./str_replace_all127.smt2):
+
+real	0m0.013s
+user	0m0.006s
+sys	0m0.006s
+unsat
+Test (./str_replace_all128.smt2):
+
+real	0m0.010s
+user	0m0.005s
+sys	0m0.004s
+unsat
+Test (./str_replace_all129.smt2):
+
+real	0m0.014s
+user	0m0.006s
+sys	0m0.006s
+unsat
+Test (./str_replace_all13.smt2):
+
+real	0m0.011s
+user	0m0.005s
+sys	0m0.005s
+unsat
+Test (./str_replace_all130.smt2):
+
+real	0m6.105s
+user	0m6.073s
+sys	0m0.027s
+sat
+Test (./str_replace_all131.smt2):
+
+real	0m0.012s
+user	0m0.005s
+sys	0m0.006s
+unsat
+Test (./str_replace_all132.smt2):
+
+real	0m0.013s
+user	0m0.006s
+sys	0m0.006s
+unsat
+Test (./str_replace_all133.smt2):
+
+real	0m0.012s
+user	0m0.005s
+sys	0m0.005s
+unsat
+Test (./str_replace_all134.smt2):
+
+real	0m0.013s
+user	0m0.006s
+sys	0m0.006s
+unsat
+Test (./str_replace_all135.smt2):
+
+real	0m0.013s
+user	0m0.006s
+sys	0m0.006s
+unsat
+Test (./str_replace_all136.smt2):
+
+real	0m0.011s
+user	0m0.005s
+sys	0m0.005s
+unsat
+Test (./str_replace_all137.smt2):
+
+real	0m0.011s
+user	0m0.004s
+sys	0m0.005s
+unsat
+Test (./str_replace_all138.smt2):
+
+real	0m0.011s
+user	0m0.005s
+sys	0m0.005s
+unsat
+Test (./str_replace_all139.smt2):
+
+real	0m0.012s
+user	0m0.005s
+sys	0m0.006s
+unsat
+Test (./str_replace_all14.smt2):
+
+real	0m0.012s
+user	0m0.005s
+sys	0m0.005s
+unsat
+Test (./str_replace_all140.smt2):
+
+real	0m0.012s
+user	0m0.006s
+sys	0m0.006s
+unsat
+Test (./str_replace_all141.smt2):
+
+real	0m0.013s
+user	0m0.006s
+sys	0m0.006s
+unsat
+Test (./str_replace_all142.smt2):
+
+real	0m5.194s
+user	0m5.165s
+sys	0m0.023s
+sat
+Test (./str_replace_all143.smt2):
+
+real	0m0.014s
+user	0m0.004s
+sys	0m0.005s
+unsat
+Test (./str_replace_all144.smt2):
+
+real	0m0.011s
+user	0m0.005s
+sys	0m0.005s
+unsat
+Test (./str_replace_all145.smt2):
+
+real	0m0.013s
+user	0m0.006s
+sys	0m0.006s
+unsat
+Test (./str_replace_all146.smt2):
+
+real	0m0.012s
+user	0m0.004s
+sys	0m0.005s
+unsat
+Test (./str_replace_all147.smt2):
+
+real	0m0.008s
+user	0m0.003s
+sys	0m0.004s
+unsat
+Test (./str_replace_all148.smt2):
+
+real	0m0.019s
+user	0m0.012s
+sys	0m0.006s
+sat
+Test (./str_replace_all149.smt2):
+
+real	0m0.019s
+user	0m0.012s
+sys	0m0.005s
+sat
+Test (./str_replace_all15.smt2):
+
+real	0m0.013s
+user	0m0.006s
+sys	0m0.006s
+unsat
+Test (./str_replace_all150.smt2):
+
+real	0m0.020s
+user	0m0.013s
+sys	0m0.006s
+sat
+Test (./str_replace_all151.smt2):
+
+real	0m0.024s
+user	0m0.016s
+sys	0m0.006s
+sat
+Test (./str_replace_all152.smt2):
+
+real	0m0.019s
+user	0m0.012s
+sys	0m0.006s
+sat
+Test (./str_replace_all153.smt2):
+
+real	0m0.018s
+user	0m0.012s
+sys	0m0.005s
+sat
+Test (./str_replace_all154.smt2):
+
+real	0m0.021s
+user	0m0.013s
+sys	0m0.007s
+sat
+Test (./str_replace_all155.smt2):
+
+real	0m0.011s
+user	0m0.005s
+sys	0m0.005s
+unsat
+Test (./str_replace_all156.smt2):
+
+real	0m0.023s
+user	0m0.015s
+sys	0m0.007s
+sat
+Test (./str_replace_all157.smt2):
+
+real	0m0.009s
+user	0m0.004s
+sys	0m0.004s
+unsat
+Test (./str_replace_all158.smt2):
+
+real	0m0.021s
+user	0m0.014s
+sys	0m0.006s
+sat
+Test (./str_replace_all159.smt2):
+
+real	0m0.023s
+user	0m0.015s
+sys	0m0.006s
+sat
+Test (./str_replace_all16.smt2):
+
+real	0m0.012s
+user	0m0.005s
+sys	0m0.006s
+unsat
+Test (./str_replace_all160.smt2):
+
+real	0m0.013s
+user	0m0.005s
+sys	0m0.006s
+unsat
+Test (./str_replace_all161.smt2):
+
+real	0m0.020s
+user	0m0.014s
+sys	0m0.005s
+sat
+Test (./str_replace_all162.smt2):
+
+real	0m0.019s
+user	0m0.012s
+sys	0m0.005s
+sat
+Test (./str_replace_all163.smt2):
+cvc5 interrupted by SIGTERM.
+
+real	59m59.952s
+user	59m47.505s
+sys	0m7.325s
+TIMEOUT (1 hour limit exceeded)
+Test (./str_replace_all164.smt2):
+
+real	0m52.946s
+user	0m51.792s
+sys	0m0.267s
+sat
+Test (./str_replace_all165.smt2):
+
+real	16m57.263s
+user	1m17.374s
+sys	0m0.369s
+sat
+Test (./str_replace_all166.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all167.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all168.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all169.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all17.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all170.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all171.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all172.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all173.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all174.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all175.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all176.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all177.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all178.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all179.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all18.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all180.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all181.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all182.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all183.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all184.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all185.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all186.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all187.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all188.smt2):
+
+real	0m0.510s
+user	0m0.505s
+sys	0m0.005s
+unsat
+Test (./str_replace_all189.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all19.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all190.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all191.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all192.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all193.smt2):
+
+real	15m11.618s
+user	0m12.839s
+sys	0m0.028s
+sat
+Test (./str_replace_all194.smt2):
+
+real	0m0.010s
+user	0m0.004s
+sys	0m0.005s
+unsat
+Test (./str_replace_all195.smt2):
+
+real	0m0.008s
+user	0m0.003s
+sys	0m0.004s
+unsat
+Test (./str_replace_all196.smt2):
+
+real	0m0.008s
+user	0m0.003s
+sys	0m0.004s
+unsat
+Test (./str_replace_all197.smt2):
+
+real	0m0.008s
+user	0m0.003s
+sys	0m0.004s
+unsat
+Test (./str_replace_all198.smt2):
+
+real	0m0.009s
+user	0m0.004s
+sys	0m0.005s
+unsat
+Test (./str_replace_all199.smt2):
+
+real	0m0.008s
+user	0m0.003s
+sys	0m0.004s
+unsat
+Test (./str_replace_all2.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all20.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all200.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all201.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all202.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all203.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all204.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all205.smt2):
+
+real	0m0.511s
+user	0m0.505s
+sys	0m0.004s
+unsat
+Test (./str_replace_all206.smt2):
+
+real	0m10.657s
+user	0m10.614s
+sys	0m0.030s
+sat
+Test (./str_replace_all207.smt2):
+
+real	0m0.468s
+user	0m0.461s
+sys	0m0.005s
+unsat
+Test (./str_replace_all208.smt2):
+
+real	0m0.015s
+user	0m0.010s
+sys	0m0.003s
+sat
+Test (./str_replace_all209.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all21.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all210.smt2):
+
+real	0m0.014s
+user	0m0.010s
+sys	0m0.003s
+sat
+Test (./str_replace_all211.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all212.smt2):
+
+real	0m0.014s
+user	0m0.010s
+sys	0m0.003s
+sat
+Test (./str_replace_all213.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all214.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all215.smt2):
+
+real	0m0.014s
+user	0m0.010s
+sys	0m0.003s
+sat
+Test (./str_replace_all216.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all217.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all218.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all219.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all22.smt2):
+
+real	0m0.013s
+user	0m0.010s
+sys	0m0.003s
+sat
+Test (./str_replace_all220.smt2):
+
+real	0m0.007s
+user	0m0.004s
+sys	0m0.003s
+unsat
+Test (./str_replace_all221.smt2):
+
+real	0m9.896s
+user	0m9.850s
+sys	0m0.040s
+unsat
+Test (./str_replace_all222.smt2):
+
+real	0m0.014s
+user	0m0.010s
+sys	0m0.003s
+unsat
+Test (./str_replace_all223.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all224.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all225.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all226.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all228.smt2):
+
+real	0m0.013s
+user	0m0.009s
+sys	0m0.002s
+unsat
+Test (./str_replace_all229.smt2):
+
+real	0m18.539s
+user	0m18.396s
+sys	0m0.053s
+unsat
+Test (./str_replace_all23.smt2):
+
+real	0m0.027s
+user	0m0.022s
+sys	0m0.003s
+sat
+Test (./str_replace_all230.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all231.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all232.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all233.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all234.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all235.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all24.smt2):
+
+real	0m0.023s
+user	0m0.019s
+sys	0m0.003s
+sat
+Test (./str_replace_all25.smt2):
+
+real	0m0.025s
+user	0m0.021s
+sys	0m0.003s
+sat
+Test (./str_replace_all26.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all27.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all28.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all29.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all3.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all30.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all31.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all32.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all33.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all34.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all35.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all36.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all37.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all38.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all39.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all4.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all40.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all41.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all42.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all43.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all44.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all45.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all46.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all47.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all48.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all49.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all5.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all50.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all51.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all52.smt2):
+
+real	0m34.681s
+user	0m9.724s
+sys	0m0.023s
+sat
+Test (./str_replace_all53.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all54.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all55.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all56.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all57.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all58.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all59.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all6.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all60.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all61.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all62.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all63.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all64.smt2):
+
+real	0m8.305s
+user	0m8.284s
+sys	0m0.018s
+sat
+Test (./str_replace_all65.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all66.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all67.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all68.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all69.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all7.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all70.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all71.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all72.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all73.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all74.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all75.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all76.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all77.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all78.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all79.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all8.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all80.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all81.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all82.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all83.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all84.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all85.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all86.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all87.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all88.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all89.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all9.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all90.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all91.smt2):
+
+real	0m0.014s
+user	0m0.011s
+sys	0m0.002s
+sat
+Test (./str_replace_all92.smt2):
+
+real	0m0.007s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all93.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all94.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all95.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all96.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat
+Test (./str_replace_all97.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all98.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.002s
+unsat
+Test (./str_replace_all99.smt2):
+
+real	0m0.006s
+user	0m0.003s
+sys	0m0.003s
+unsat

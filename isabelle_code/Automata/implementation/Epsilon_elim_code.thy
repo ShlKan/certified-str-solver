@@ -79,6 +79,35 @@ lemma init_closure_impl_correct:
   assumes SS'_ok: " {q. q \<in> S'} = {q. q \<in> s.\<alpha> S}"
       and TT'_ok: "T' = ss.\<alpha> T \<and> ss.invar T"
   shows "init_closure_impl S T \<le> \<Down> (br (map_\<alpha>) (map_invar)) (init_closure S' T')"
+proof -
+{  
+  fix x it \<sigma> x' it' \<sigma>' onestep onestepa
+  assume p1: "ssm.invar \<sigma> \<and>
+       (\<forall>k. if ssm.\<alpha> \<sigma> k = None then True else s.invar (the (ssm.\<alpha> \<sigma> k)))"
+     and p2: "(onestep, onestepa) \<in> br s.\<alpha> s.invar"
+  from p2 
+  have onestep_eq: "onestepa = s.\<alpha> onestep \<and> s.invar onestep"
+    unfolding br_def
+    by auto
+  from this
+  have "(\<lambda>k. if ssm.\<alpha> \<sigma> k = None then None else Some (s.\<alpha> (the (ssm.\<alpha> \<sigma> k))))(x \<mapsto>
+       onestepa) =
+       (\<lambda>k. if ssm.\<alpha> (ssm.update x onestep \<sigma>) k = None then None
+            else Some (s.\<alpha> (the (ssm.\<alpha> (ssm.update x onestep \<sigma>) k)))) \<and>
+       ssm.invar (ssm.update x onestep \<sigma>) \<and>
+       (\<forall>k. (\<exists>y. ssm.\<alpha> (ssm.update x onestep \<sigma>) k = Some y) \<longrightarrow>
+            s.invar (the (ssm.\<alpha> (ssm.update x onestep \<sigma>) k)))"
+    apply simp
+    apply (rule conjI)
+     defer
+    apply (rule conjI)
+    using p1 
+    apply (simp add: ssm.update_correct(2))
+    using p1  
+    using onestep_eq ssm.correct
+    using p1 by auto
+} note sgoal = this
+  show ?thesis
   unfolding init_closure_impl_def init_closure_def
   apply (refine_rcg)
   apply (subgoal_tac "inj_on id {q. q \<in> s.\<alpha> S}")
@@ -94,32 +123,7 @@ lemma init_closure_impl_correct:
   using init_state_imp_correct TT'_ok
   apply force
   apply simp
-proof -
-  fix x it \<sigma> x' it' \<sigma>' onestep onestepa
-  assume p1: "ssm.invar \<sigma> \<and>
-       (\<forall>k. if ssm.\<alpha> \<sigma> k = None then True else s.invar (the (ssm.\<alpha> \<sigma> k)))"
-     and p2: "(onestep, onestepa) \<in> br s.\<alpha> s.invar"
-  from p2 
-  have onestep_eq: "onestepa = s.\<alpha> onestep \<and> s.invar onestep"
-    unfolding br_def
-    by auto
-  from this
-  show "(\<lambda>k. if ssm.\<alpha> \<sigma> k = None then None else Some (s.\<alpha> (the (ssm.\<alpha> \<sigma> k))))(x \<mapsto>
-       onestepa) =
-       (\<lambda>k. if ssm.\<alpha> (ssm.update x onestep \<sigma>) k = None then None
-            else Some (s.\<alpha> (the (ssm.\<alpha> (ssm.update x onestep \<sigma>) k)))) \<and>
-       ssm.invar (ssm.update x onestep \<sigma>) \<and>
-       (\<forall>k. (\<exists>y. ssm.\<alpha> (ssm.update x onestep \<sigma>) k = Some y) \<longrightarrow>
-            s.invar (the (ssm.\<alpha> (ssm.update x onestep \<sigma>) k)))"
-    apply simp
-    apply (rule_tac conjI)
-     defer
-    apply (rule_tac conjI)
-    using p1 
-    apply (simp add: ssm.update_correct(2))
-    using p1  
-    using onestep_eq ssm.correct
-    using p1 by auto
+  using sgoal by auto
 qed
 
 
@@ -142,28 +146,8 @@ lemma one_step_state_impl_correct:
       and qP_ok: "q \<in> dom P'"
       and dom_ok: "s.\<alpha> (the (ssm.lookup q P)) \<subseteq> dom P'"
   shows "one_step_state_impl q P \<le> \<Down> (br map_\<alpha> (map_invar_uniq q)) (one_step_state q P')"
-  unfolding one_step_state_impl_def one_step_state_def
-  apply (refine_rcg)
-  apply (subgoal_tac "inj_on id {q'. q' \<in> s.\<alpha> (the (ssm.lookup q P))}")
-  apply assumption
-  apply force
-  using PP'_ok2 qP_ok apply auto[1]
-  apply (subgoal_tac "(the (ssm.lookup q P), the (P' q)) \<in> (br s.\<alpha> s.invar)")
-  apply assumption
-  unfolding br_def
-  apply simp
-  using PP'_ok2 qP_ok apply auto[1]
-  defer
-  apply simp
-  unfolding map_\<alpha>_def 
-  apply (rule_tac conjI)
-  using map_upd_Some_unfold ssm.sng_correct(1) apply auto[1]
-  unfolding map_invar_uniq_def map_invar_def
-   apply simp
-  using ssm.correct(3) ssm.correct(4)
-  apply force
-  apply simp
 proof - 
+{  
   fix x it \<sigma> x' it' \<sigma>'
   assume xeq: "x' = x"
      and xin: "x \<in> it"
@@ -178,12 +162,37 @@ proof -
     by (metis Collect_mem_eq insert_subset itin' 
         qP_ok subsetI subset_antisym xin)
   from this
-  show "s.\<alpha> \<sigma> \<union> the (P' x) = s.\<alpha> (s.union \<sigma> (the (ssm.lookup x P))) \<and>
+  have "s.\<alpha> \<sigma> \<union> the (P' x) = s.\<alpha> (s.union \<sigma> (the (ssm.lookup x P))) \<and>
         s.invar (s.union \<sigma> (the (ssm.lookup x P)))"
-    apply (rule_tac conjI)
+    apply simp
+    apply (rule conjI)
     using s.correct(18)[of "\<sigma>" "the (ssm.lookup x P)"] p1 
     apply (metis PP'_ok2 dom_ok in_mono itin xin)
     by (meson PP'_ok2 dom_ok in_mono itin p1 s.union_correct(2) xin)
+} note sgoal = this
+  show ?thesis
+    unfolding one_step_state_impl_def one_step_state_def
+  apply (refine_rcg)
+  apply (subgoal_tac "inj_on id {q'. q' \<in> s.\<alpha> (the (ssm.lookup q P))}")
+  apply assumption
+  apply force
+  using PP'_ok2 qP_ok apply auto[1]
+  apply (subgoal_tac "(the (ssm.lookup q P), the (P' q)) \<in> (br s.\<alpha> s.invar)")
+  apply assumption
+  unfolding br_def
+  apply simp
+  using PP'_ok2 qP_ok apply auto[1]
+  defer
+  apply simp
+  unfolding map_\<alpha>_def 
+  apply (rule conjI)
+  using map_upd_Some_unfold ssm.sng_correct(1) apply auto[1]
+  unfolding map_invar_uniq_def map_invar_def
+   apply simp
+  using ssm.correct(3) ssm.correct(4)
+  apply force
+  apply simp
+  using sgoal by auto
 qed
 
 
@@ -280,13 +289,7 @@ proof -
 
     from c1 c2 c3 c4
     show "(ssm.update x (the (ssm.lookup x qM)) \<sigma>, \<sigma>' ++ qMa) 
-                \<in> br map_\<alpha> map_invar"
-      unfolding br_def map_\<alpha>_def map_invar_def
-      apply simp
-      apply (rule_tac conjI)
-      defer
-      apply (rule_tac conjI)
-      using ssm.update_correct(2) apply blast  
+                \<in> br map_\<alpha> map_invar" 
     proof -
       {
         assume domqMa: "dom qMa = {x} \<and> ssm.invar qM"
@@ -296,10 +299,9 @@ proof -
                           s.invar (the (ssm.\<alpha> qM k)))"
            and invar\<sigma>: "ssm.invar \<sigma> \<and> 
                     (\<forall>k. if ssm.\<alpha> \<sigma> k = None then True else s.invar (the (ssm.\<alpha> \<sigma> k)))"
-        show "\<forall>k. (\<exists>y. ssm.\<alpha> (ssm.update x (the (ssm.lookup x qM)) \<sigma>) k = Some y) \<longrightarrow>
+        have "\<forall>k. (\<exists>y. ssm.\<alpha> (ssm.update x (the (ssm.lookup x qM)) \<sigma>) k = Some y) \<longrightarrow>
                    s.invar (the (ssm.\<alpha> (ssm.update x (the (ssm.lookup x qM)) \<sigma>) k))"
-          apply rule apply rule
-        proof -
+        proof (rule allI, rule impI)
           fix k
           assume p1: "\<exists>y. ssm.\<alpha> (ssm.update x (the (ssm.lookup x qM)) \<sigma>) k = Some y"
           from this   
@@ -336,7 +338,7 @@ proof -
                 using p1 by auto  
             qed
           qed
-        }
+        } note sgoal1 = this
 
         {
            assume domqMa: "dom qMa = {x} \<and> ssm.invar qM"
@@ -346,11 +348,10 @@ proof -
                           s.invar (the (ssm.\<alpha> qM k)))"
            and invar\<sigma>: "ssm.invar \<sigma> \<and> 
                     (\<forall>k. if ssm.\<alpha> \<sigma> k = None then True else s.invar (the (ssm.\<alpha> \<sigma> k)))"
-           show "\<sigma>' ++ qMa =
+           have "\<sigma>' ++ qMa =
               (\<lambda>k. if ssm.\<alpha> (ssm.update x (the (ssm.lookup x qM)) \<sigma>) k = None then None
                 else Some (s.\<alpha> (the (ssm.\<alpha> (ssm.update x (the (ssm.lookup x qM)) \<sigma>) k))))"
-             apply rule
-           proof -
+           proof (rule iffI equalityI ext prod_eqI)
              fix k
              from domqMa
              obtain v where v_def: "qMa x = Some v"
@@ -398,8 +399,20 @@ proof -
                  by (simp add: in_br_conv)
              qed
            qed
-            }
-          qed
+            } note sgoal2 = this
+       show ?thesis
+       unfolding br_def map_\<alpha>_def map_invar_def
+      apply simp
+      apply (rule conjI)
+      defer
+      apply (rule conjI)
+      using ssm.update_correct(2)
+      using c4 apply blast 
+      using sgoal1
+      using c1 c2 c3 c4 apply fastforce
+      using sgoal2 
+      using c1 c2 c3 c4 by blast
+  qed
   }
 qed
 
@@ -433,9 +446,8 @@ proof
       by auto
     
     show "\<forall>q\<in>S. \<forall>q'\<in>the (R q). the (R q') \<subseteq> the (R q)"
-      apply auto
     proof -
-      fix q q' x
+      {  fix q q' x
       assume qin: "q \<in> S"
          and q'in: "q' \<in> the (R q)"
          and xin: "x \<in> the (R q')"
@@ -467,8 +479,12 @@ proof
       have "the (R q') \<subseteq>  the (R q)"
         using R'_OK \<open>q' \<in> S\<close> c3 c4 qin s.subset_correct by blast
       from this xin
-      show "x \<in> the (R q)"
+      have "x \<in> the (R q)"
         by auto
+    }  note sgoal = this
+    show ?thesis
+      apply auto[1]
+      using sgoal by auto
     qed
   }
   {
@@ -546,7 +562,8 @@ lemma reach_closure_impl_correct:
   using init_closure_impl_correct[of S S' R R'] RR'_OK SS'_OK
   apply force
   unfolding br_def map_\<alpha>_def map_invar_def
-  apply simp
+    apply simp
+  defer
 proof -
   {
     fix x x'
@@ -569,9 +586,9 @@ proof -
     from p2
     have c2: "dom (ssm.\<alpha> x) = dom x' \<and> (
                   \<forall>q\<in>S. s.\<alpha> (the (ssm.lookup q x)) = the (x' q))"
-      apply simp
-      apply (rule_tac conjI)
-      using p1
+     apply simp
+      apply (rule conjI)
+      defer
 proof -
   assume a1: "x' = (\<lambda>k. if ssm.\<alpha> x k = None then None else Some (s.\<alpha> (the (ssm.\<alpha> x k)))) \<and> ssm.invar x \<and> (\<forall>k. if ssm.\<alpha> x k = None then True else s.invar (the (ssm.\<alpha> x k)))"
   have f2: "{q. x' q \<noteq> None} = S"
@@ -602,7 +619,8 @@ next
     show "(ssm.\<alpha> x q = None \<longrightarrow> s.\<alpha> (the (ssm.lookup q x)) = the None) \<and>
          ((\<exists>y. ssm.\<alpha> x q = Some y) \<longrightarrow>
           s.\<alpha> (the (ssm.lookup q x)) = s.\<alpha> (the (ssm.\<alpha> x q)))"
-      apply (rule_tac conjI)
+      apply simp
+      apply (rule conjI)
       apply force
       using p1 p1' 
       by (simp add: ssm.lookup_correct)
@@ -793,26 +811,26 @@ lemma compute_ep_Trans_imp_correct:
 
 definition nfae_states :: "'q_set \<times>  'd \<times> 'qq_set\<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
   "nfae_states A = fst A"
-lemma [simp]: "nfae_states (Q,  D, D', I, F) = Q" by (simp add: nfae_states_def)
+lemma nfae_states_f [simp]: "nfae_states (Q,  D, D', I, F) = Q" by (simp add: nfae_states_def)
 
 
 definition nfae_trans :: 
         "'q_set \<times> 'd \<times> 'qq_set \<times> 'q_set \<times> 'q_set \<Rightarrow> 'd" where
   "nfae_trans A = (fst (snd A))"
-lemma [simp]: "nfae_trans (Q, D, D', I, F) = D" by (simp add: nfae_trans_def)
+lemma nfae_trans_f [simp]: "nfae_trans (Q, D, D', I, F) = D" by (simp add: nfae_trans_def)
 
 definition nfae_trans_ep :: 
         "'q_set \<times> 'd \<times> 'qq_set \<times> 'q_set \<times> 'q_set \<Rightarrow> 'qq_set" where
   "nfae_trans_ep A = (fst(snd (snd A)))"
-lemma [simp]: "nfae_trans_ep (Q, D, D', I, F) = D'" by (simp add: nfae_trans_ep_def)
+lemma nfae_trans_ep [simp]: "nfae_trans_ep (Q, D, D', I, F) = D'" by (simp add: nfae_trans_ep_def)
 
 definition nfae_initial :: "'q_set \<times> 'd \<times> 'qq_set \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
   "nfae_initial A = fst (snd (snd  (snd A)))"
-lemma [simp]: "nfae_initial (Q, D, D', I, F) = I" by (simp add: nfae_initial_def)
+lemma nfae_initial_f [simp]: "nfae_initial (Q, D, D', I, F) = I" by (simp add: nfae_initial_def)
 
 definition nfae_accepting :: "'q_set \<times>  'd \<times> 'qq_set \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
   "nfae_accepting A = snd (snd (snd (snd A)))"
-lemma [simp]: "nfae_accepting (Q, D, D', I, F) = F" by (simp add: nfae_accepting_def)
+lemma nfae_accepting_f [simp]: "nfae_accepting (Q, D, D', I, F) = F" by (simp add: nfae_accepting_def)
 
 
 definition nfae_invar :: "'q_set \<times> 'd \<times> 'qq_set \<times> 'q_set \<times> 'q_set \<Rightarrow> bool" where
@@ -876,7 +894,7 @@ lemma NFA_elim_imp_correct:
   apply (subgoal_tac "compute_ep_F_imp (nfae_accepting \<A>) (nfae_states \<A>) P
        \<le> \<Down> (br s.\<alpha> s.invar) (compute_ep_F (\<F>e \<A>') (\<Q>e \<A>') Pa)")
   apply assumption
-  
+  defer
 proof -
   {
     fix P Pa
@@ -913,7 +931,7 @@ proof -
       using p1 unfolding br_def
       apply simp
       unfolding map_\<alpha>_def 
-      apply (rule_tac conjI)
+      apply (rule conjI)
        defer
       using map_invar_def ssm.lookup_correct apply auto[1]
       apply (subgoal_tac "dom (\<lambda>k. if ssm.\<alpha> P k = None then None else 
@@ -972,12 +990,9 @@ proof -
             unfolding conc_fun_def br_def
             by simp
           
-          show ?thesis
-            apply (simp add: c1 rc_def rci_def)
-            unfolding conc_fun_def
-            apply simp
-          proof
-            fix x
+          show ?thesis         
+          proof -
+            {  fix x
             assume xin: "x \<in> rci"
             from c2 this
             have c2': "map_\<alpha> x \<in> rc \<and> map_invar x" by auto
@@ -997,14 +1012,22 @@ proof -
 
             have c4: "dom (map_\<alpha> x) = dom (ssm.\<alpha> x)"
               unfolding map_\<alpha>_def
-              apply auto
+              apply auto[1]
               using option.collapse by fastforce
 
             from c2'
-            show "x \<in> {c. map_\<alpha> c \<in> rc \<and> map_invar c \<and> dom (ssm.\<alpha> c) = \<Q>e \<A>'}"
+            have "x \<in> {c. map_\<alpha> c \<in> rc \<and> map_invar c \<and> dom (ssm.\<alpha> c) = \<Q>e \<A>'}"
               apply simp
               using c3 c4
               by auto
+          } note sgoal = this
+          show ?thesis
+            apply (simp add: c1 rc_def rci_def)
+            unfolding conc_fun_def
+            apply simp
+            apply (rule predicate2I predicate1I subsetI)
+            using sgoal
+            by presburger
         qed
       qed
     qed

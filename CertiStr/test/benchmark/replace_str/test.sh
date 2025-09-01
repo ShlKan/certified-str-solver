@@ -2,6 +2,10 @@
 
 for test in ./*.smt2; do
     echo "Test ($test):"
-    { time result=$(dune exec CertiStr -- --left-most $test); } 2>&1
-    echo "$result"
+    { time result=$(gtimeout 1800 ostrich -portfolio=strings $test); } 2>&1 #dune exec CertiStr -- --left-most $test
+    if [ $? -eq 124 ]; then
+        echo "TIMEOUT (1 hour limit exceeded)"
+    else
+        echo "$result"
+    fi
 done
