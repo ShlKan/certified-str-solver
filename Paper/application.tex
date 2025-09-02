@@ -375,17 +375,13 @@ We evaluate {CertiStrR} using benchmarks from SMT-LIB 2025~\cite{smtlib_benchmar
 \end{table*}
 
 
-The experimental evaluation was conducted on a laptop with an Apple M4 processor and 24 GB of memory, with a \textbf{one-hour} time limit per test. The results were classified into three categories: SAT (satisfiable), UNSAT (unsatisfiable), and Inconclusive. An "Inconclusive" result indicates that the solver cannot determine satisfiability due to the inherent incompleteness of the string solver's algorithm, not timeout (all tests completed within one minute). This occurs when the solver cannot determine whether string variables need to be assigned different values that satisfy all constraints.
+The experimental evaluation was conducted on a laptop with an Apple M4 processor and 24 GB of memory, with a \textbf{one-hour} time limit per test. Table~\ref{tab:string_operations} summarizes the results. The results from CertiStrR were classified into three categories: SAT (satisfiable), UNSAT (unsatisfiable), and Inconclusive. An "Inconclusive" result indicates that the solver cannot determine satisfiability due to the inherent incompleteness of the string solver's algorithm, not timeout (all tests completed within one minute). This occurs when the solver cannot determine whether string variables need to be assigned different values that satisfy all constraints.
 
-We also compare with two state-of-the-art string solvers: Ostrich \cite{pacmpl/ChenFHHHKLRW22} and CVC5 \cite{cvc5}. From the experimental results, we observe that string replacement 
+We also compare our approach with two state-of-the-art string solvers: Ostrich \cite{pacmpl/ChenFHHHKLRW22} and CVC5 \cite{cvc5}.
+The experimental results demonstrate that string replacement operations, particularly replace-all operations, pose significant challenges for existing state-of-the-art solvers.
+The "unknown" label in the table indicates instances where CVC5 cannot determine satisfiability. CertiStrR outperforms both Ostrich and CVC5 across most benchmark subgroups, with the notable exception of the "Replace Str" category where CVC5 achieves better performance (though it experiences one timeout). CertiStrR demonstrates particularly strong performance in the "Replace All" category.
 
-
-Table~\ref{tab:string_operations} summarizes the results, including the number of tests, counts of SAT, UNSAT, and Inconclusive results, as well as the average execution time for each subgroup of benchmarks.
-
-
-
-
-The most significant results appear in the "\texttt{Replace All}" subgroup, where CertiStrR efficiently handles diverse replace-all operations: 0.14 seconds for PCP (Post Correspondence Problem) tests, 2.81 seconds for RNA SAT, and 3.14 seconds for RNA UNSAT. The "\texttt{Rest}" category, encompassing various other string constraints, averages 0.79 seconds.
+CertiStrR employs a straightforward forward-propagation algorithm \cite{cpp/KanLRS22} combined with our SFT-based modeling of replacement operations. This combination not only resolves numerous test cases that state-of-the-art solvers fail to handle (either timing out or returning unknown results), but also achieves superior performance across most benchmark subgroups. These results demonstrate the effectiveness and efficiency of our certified SFT formalization and implementation.
 
 Notably, PCP and RNA benchmarks cannot be solved by most state-of-the-art string
 solvers, including CVC4 \cite{cvc4} and Z3 \cite{Z3-str3}, yet CertiStrR solves

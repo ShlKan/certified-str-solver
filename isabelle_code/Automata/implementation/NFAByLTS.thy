@@ -125,7 +125,7 @@ begin
 
 definition nfa_states :: "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
   "nfa_states A = fst A"
-lemma [simp]: "nfa_states (Q, D, I, F) = Q" by (simp add: nfa_states_def)
+lemma nfa_states_f [simp]: "nfa_states (Q, D, I, F) = Q" by (simp add: nfa_states_def)
 
 
 fun ba_to_set :: "'q \<times> 'b \<times> 'q \<Rightarrow> 'q \<times> 'a set \<times> 'q"  where
@@ -134,7 +134,7 @@ fun ba_to_set :: "'q \<times> 'b \<times> 'q \<Rightarrow> 'q \<times> 'a set \<
 definition nfa_trans :: 
         "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'd" where
   "nfa_trans A = (fst (snd A))"
-lemma [simp]: "nfa_trans (Q, D, I, F) = D" by (simp add: nfa_trans_def)
+lemma nfa_trans_f [simp]: "nfa_trans (Q, D, I, F) = D" by (simp add: nfa_trans_def)
 
 
     
@@ -142,31 +142,31 @@ lemma [simp]: "nfa_trans (Q, D, I, F) = D" by (simp add: nfa_trans_def)
 
 definition nfa_initial :: "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
   "nfa_initial A = fst (snd (snd  A))"
-lemma [simp]: "nfa_initial (Q, D, I, F) = I" by (simp add: nfa_initial_def)
+lemma nfa_initial_f [simp]: "nfa_initial (Q, D, I, F) = I" by (simp add: nfa_initial_def)
 
 definition nfa_accepting :: "'q_set \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
   "nfa_accepting A = snd (snd (snd  A))"
-lemma [simp]: "nfa_accepting (Q, D, I, F) = F" by (simp add: nfa_accepting_def)
+lemma nfa_accepting_f [simp]: "nfa_accepting (Q, D, I, F) = F" by (simp add: nfa_accepting_def)
 
 
 (***********)
 
 definition nfa_statep :: "'qq_set \<times> 'dd_nfa \<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qq_set" where
   "nfa_statep A = fst A"
-lemma [simp]: "nfa_statep (Q, D, I, F) = Q" by (simp add: nfa_statep_def)
+lemma nfa_statep_f [simp]: "nfa_statep (Q, D, I, F) = Q" by (simp add: nfa_statep_def)
 
 definition nfa_transp :: 
         "'qq_set \<times> 'dd_nfa \<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'dd_nfa" where
   "nfa_transp A = (fst (snd A))"
-lemma [simp]: "nfa_transp (Q, D, I, F) = D" by (simp add: nfa_transp_def)
+lemma nfa_transp_f [simp]: "nfa_transp (Q, D, I, F) = D" by (simp add: nfa_transp_def)
 
 definition nfa_initialp :: "'qq_set \<times> 'dd_nfa \<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qq_set" where
   "nfa_initialp A = fst (snd (snd  A))"
-lemma [simp]: "nfa_initialp (Q, D, I, F) = I" by (simp add: nfa_initialp_def)
+lemma nfa_initialp_f [simp]: "nfa_initialp (Q, D, I, F) = I" by (simp add: nfa_initialp_def)
 
 definition nfa_acceptingp :: "'qq_set \<times> 'dd_nfa \<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qq_set" where
   "nfa_acceptingp A = snd (snd (snd  A))"
-lemma [simp]: "nfa_acceptingp (Q, D, I, F) = F" by (simp add: nfa_acceptingp_def)
+lemma nfa_acceptingp_f [simp]: "nfa_acceptingp (Q, D, I, F) = F" by (simp add: nfa_acceptingp_def)
 
 lemmas nfa_selectors_def = nfa_accepting_def nfa_states_def 
        nfa_trans_def nfa_initial_def
@@ -857,7 +857,8 @@ proof -
     folded NFA_construct_reachable_init_ba_impl_def]
 
   from ind_proof' show ?thesis 
-   apply (rule_tac SPEC_refine)+
+    apply simp
+    apply (rule SPEC_refine)+
     apply (simp add: s.correct 
      I_def tmpsempty_def br_def
      state_map_\<alpha>_def state_map_invar_def single_valued_def
@@ -1004,9 +1005,9 @@ proof -
     hence "(q2_\<alpha> q, q2_\<alpha> q') \<in> LTS_forget_labels D"
       unfolding LTS_forget_labels_def 
       NFA_construct_reachable_impl_step_rel_def
-      by (metis (mono_tags, lifting) aq'_in_it 
+      by (metis (mono_tags, lifting)
                  case_prodD case_prodI 
-                 in_mono it_subset mem_Collect_eq)
+                 mem_Collect_eq)
     with q_in_S show ?thesis unfolding S_def accessible_def
       by (metis rtrancl_image_advance)
   qed
@@ -1071,7 +1072,7 @@ proof -
         aa (q2_\<alpha> q') =
          Some (states_enumerate n)"
         unfolding qm'_def[symmetric] ff_q''_eq aa_def
-        apply (auto simp add: br_def)
+        apply (auto simp add: br_def)[1]
         using invar_qm'_n apply blast
         using rm'_q' apply auto[1]
         apply (insert qm'_OK)
@@ -1256,86 +1257,9 @@ assumes f_inj_on: "inj_on f S"
     and FFP_OK: "\<And>q. q2_invar q \<Longrightarrow> q2_\<alpha> q \<in> S \<Longrightarrow> FFP q \<longleftrightarrow> FP (q2_\<alpha> q)"
 shows "NFA_construct_reachable_ba_impl S II FFP DS \<le>
    \<Down> R (NFA_construct_reachable_abstract2_impl I FP D)"
-unfolding NFA_construct_reachable_ba_impl_def 
-          NFA_construct_reachable_abstract2_impl_def 
-          WORKLISTT_def
-using [[goals_limit = 15]]
-apply (refine_rcg)
-(* preprocess goals
-   initialisation is OK *)
-  apply (unfold I_def)
-  apply (rule NFA_construct_reachable_init_ba_impl_correct)
-  apply (insert f_inj_on ff_OK dist_I invar_I)[4]
-  apply (simp_all add: S_def I_def)[4]
-  (* goal solved *)
-  apply (subgoal_tac "single_valued (rprod R' R)")
-  apply assumption
-  apply (simp add: rprod_sv R'_def R_def del: rprod_def br_def)
-  (* goal solved *)
-  apply (subgoal_tac "single_valued (build_rel q2_\<alpha> q2_invar)")
-  apply assumption
-  apply (simp del: br_def)
-  (* goal solved *)
-  apply (simp add: br_def R'_def R_def nfa_invar_def 
-          s.correct d.correct_common  nfa_\<alpha>_def)
-  (* goal solved *)
-  defer
-  apply simp
-  (* goal solved *)
-  apply simp
-  (* goal solved *)
-  apply (clarify, simp add: br_def)+
-  defer
-  apply (simp add: rprod_sv R'_def R_def del: rprod_def br_def)
-  (* goal solved *)
-  apply (simp add: br_def)
-  (* goal solved *)
-  apply (simp add: br_def)
-  (* goal solved *)
-  apply (simp add: S_def I_def)
-  (* goal solved *)
-  defer
-  defer
-  apply (simp add: S_def I_def)
-  apply (simp add: S_def I_def br_def)
-  apply (simp add: invar_I list.rel_map(2) list.rel_refl_strong)
-  apply (simp add: S_def I_def br_def R_def R'_def)
-  defer
-  (* goal solved
-    -- "step OK *)
-  apply (unfold I_def[symmetric])
-  apply (clarify, simp)+ 
-  apply (simp add: br_def)
-  apply (unfold I_def)
-  apply (rule_tac NFA_construct_reachable_impl_step_correct)
-  apply (unfold I_def[symmetric])
-  apply (simp_all add: nfa_invar_def f_inj_on[unfolded S_def] ff_OK[unfolded S_def] 
-                       d_add_OK DS_OK[unfolded S_def] nfa_\<alpha>_def) [14] 
-  (* goal solved *)
-  apply (simp add: rprod_sv R'_def R_def  br_def)
-  (* goal solved *)
-  apply (simp add: R_def br_def R'_def)
-  (* goal solved *)
-  apply (clarify, simp  add: R_def br_def)+
-  apply (unfold S_def[symmetric] nfa_accepting_def snd_conv)
-  apply (simp add: br_def nfa_invar_def)
-  apply (simp add: nfa_\<alpha>_def)
-  apply (simp add: rprod_sv R'_def R_def  br_def nfa_\<alpha>_def nfa_invar_def)
-  using DS_OK0
-  apply (clarify, simp add: br_def )
-  apply fastforce
-  using DS_OK0 DS_OK1 apply force
-  using DS_OK apply blast
-  apply (clarify, simp add: br_def DS_OK R'_def)
-  apply (clarify, simp add: br_def DS_OK R'_def)
-   apply (clarify, simp add: br_def nfa_invar_def DS_OK R'_def)
-  apply (rename_tac x1b x2a x2b q' \<A> qm n Qs DD Is Fs x2g qm' n' D' x2j r)
-  defer
-  apply (rename_tac x1b x2a x2b q qm n Qs DD Is Fs r)
 proof -
-  
-  fix \<A> rm q qm n Qs i DD Is Fs r
   {
+   fix \<A> rm q qm n Qs i DD Is Fs r
    assume rm_q: "state_map_\<alpha> (qm, n) (q2_\<alpha> q) = Some r" and
          in_R': "state_map_invar (qm, n)" and
          in_R: "nfa_invar (Qs,  DD, Is, Fs)" and
@@ -1348,11 +1272,11 @@ proof -
     unfolding R'_def 
     by (simp add: state_map_invar_def state_map_\<alpha>_def qm.correct br_def)
 
-  with in_R show "s.memb (the (qm.lookup (ff q) qm)) Qs = 
+  with in_R have "s.memb (the (qm.lookup (ff q) qm)) Qs = 
                 (r \<in> \<Q> (nfa_\<alpha> (Qs, DD, Is, Fs)))"
     unfolding R_def 
     by (simp add: nfa_invar_def s.correct nfa_\<alpha>_def)
-}
+  } note sgoal1 = this
   {
   fix x1b x2a x2b q' \<A> qm n Qs DD Is Fs x2g qm' n' D' x2j r
   assume r_nin_Q: "r \<notin> \<Q> \<A>" and 
@@ -1418,7 +1342,7 @@ proof -
                 nfa_invar_def invar_qm_n s.correct r_nin_Qs r_nin_Fs br_def)
     
   from this  
-  show "(FFP q' \<longrightarrow>
+  have "(FFP q' \<longrightarrow>
         (FP (q2_\<alpha> q') \<longrightarrow>
          ((s.ins_dj (the (qm.lookup (ff q') qm)) Qs,  D', Is,
            s.ins_dj (the (qm.lookup (ff q') qm)) Fs),
@@ -1441,7 +1365,86 @@ proof -
           \<lparr>\<Q> = insert r (\<Q> \<A>),  \<Delta> = ba_to_set ` d.\<alpha> D', \<I> = \<I> \<A>, \<F> = \<F> \<A>\<rparr>)
          \<in> R))"
     using rm_q' by auto
-}
+} note sgoal2 = this
+  show ?thesis
+  unfolding NFA_construct_reachable_ba_impl_def 
+          NFA_construct_reachable_abstract2_impl_def 
+          WORKLISTT_def
+  using [[goals_limit = 15]]
+  apply (refine_rcg)
+(* preprocess goals
+   initialisation is OK *)
+  apply (unfold I_def)
+  apply (rule NFA_construct_reachable_init_ba_impl_correct)
+  apply (insert f_inj_on ff_OK dist_I invar_I)[4]
+  apply (simp_all add: S_def I_def)[4]
+  (* goal solved *)
+  apply (subgoal_tac "single_valued (rprod R' R)")
+  apply assumption
+  apply (simp add: rprod_sv R'_def R_def del: rprod_def)
+  (* goal solved *)
+  apply (subgoal_tac "single_valued (build_rel q2_\<alpha> q2_invar)")
+  apply assumption
+  apply (simp del: br_def)
+  (* goal solved *)
+  apply (simp add: br_def R'_def R_def nfa_invar_def 
+          s.correct d.correct_common  nfa_\<alpha>_def)
+  (* goal solved *)
+  defer
+  apply simp
+  (* goal solved *)
+  apply simp
+  (* goal solved *)
+  apply (clarify, simp add: br_def)+
+  defer
+  apply (simp add: rprod_sv R'_def R_def del: rprod_def br_def)
+  (* goal solved *)
+  apply (simp add: br_def)
+  (* goal solved *)
+  apply (simp add: br_def)
+  (* goal solved *)
+  apply (simp add: S_def I_def)
+  (* goal solved *)
+  defer
+  defer
+  apply (simp add: S_def I_def)
+  apply (simp add: S_def I_def br_def)
+  apply (simp add: invar_I list.rel_map(2) list.rel_refl_strong)
+  apply (simp add: S_def I_def br_def R_def R'_def)
+  defer
+  (* goal solved
+    -- "step OK *)
+  apply (unfold I_def[symmetric])
+  apply (clarify, simp)+ 
+  apply (simp add: br_def)
+  apply (unfold I_def)
+  apply (rule NFA_construct_reachable_impl_step_correct)
+  apply (unfold I_def[symmetric])
+  apply (simp_all add: nfa_invar_def f_inj_on[unfolded S_def] ff_OK[unfolded S_def] 
+                       d_add_OK DS_OK[unfolded S_def] nfa_\<alpha>_def) [14] 
+  (* goal solved *)
+  apply (simp add: rprod_sv R'_def R_def  br_def)
+  (* goal solved *)
+  apply (simp add: R_def br_def R'_def)
+  (* goal solved *)
+  apply (clarify, simp  add: R_def br_def)+
+  apply (unfold S_def[symmetric] nfa_accepting_def snd_conv)
+  apply (simp add: br_def nfa_invar_def)
+  apply (simp add: nfa_\<alpha>_def)
+  apply (simp add: rprod_sv R'_def R_def  br_def nfa_\<alpha>_def nfa_invar_def)
+  using DS_OK0
+  apply (clarify, simp add: br_def )
+  apply fastforce
+  using DS_OK0 DS_OK1 apply force
+  using DS_OK apply blast
+  apply (clarify, simp add: br_def DS_OK R'_def)
+  apply (clarify, simp add: br_def DS_OK R'_def)
+   apply (clarify, simp add: br_def nfa_invar_def DS_OK R'_def)
+  apply (rename_tac x1b x2a x2b q' \<A> qm n Qs DD Is Fs x2g qm' n' D' x2j r)
+  defer
+   apply (rename_tac x1b x2a x2b q qm n Qs DD Is Fs r)
+  using sgoal1 apply force
+  using sgoal2 by blast
 qed
 
 lemma NFA_construct_reachable_ba_impl_alt_def :
@@ -1593,7 +1596,7 @@ proof -
     using NFA_construct_reachable_impl_correct 
         [OF f_inj_on[unfolded S_def] ff_OK[unfolded S_def] d_add_OK
           dist_I invar_I, of DS FFP FP] FFP_OK S_def 
-    apply (auto simp add: FFP_OK D_it_OK DS_OK0 DS_OK1)
+    apply (auto simp add: FFP_OK D_it_OK DS_OK0 DS_OK1)[1]
     using DS_OK0 DS_OK1 by force
       also note NFA_construct_reachable_abstract2_impl_correct
   also note NFA_construct_reachable_abstract_impl_correct
@@ -1778,7 +1781,7 @@ proof -
             ((sem a1, sem a2), q2_\<alpha> q')) xa) `
     DS q"
     apply (simp add: set_eq_iff)
-    apply (rule_tac allI)+
+    apply (rule allI)+
     by (metis (no_types, lifting) case_prod_beta case_prod_conv con1 image_cong mem_Collect_eq)
 qed
 
@@ -1838,7 +1841,7 @@ shows "NFA_construct_reachable_ba_impl_step_prod DS qm0 n D0 q \<le>
   apply assumption
   apply (insert DS_OK DS_OK1) []
   apply (simp only: NFA_construct_reachable_impl_step_prod_rel_def) 
-  apply (rule_tac inj_product_interval)
+  apply (rule inj_product_interval)
   apply (simp add: br_def )
   apply (simp add: DS_OK1)
   (* "goal solved" *)
@@ -1852,7 +1855,7 @@ shows "NFA_construct_reachable_ba_impl_step_prod DS qm0 n D0 q \<le>
         \<lambda>q'. ((sem a1, sem a2), q2_\<alpha> q')) xa) `
     DS q")
   apply simp
-  apply (rule_tac inj_same)
+  apply (rule inj_same)
   apply (simp)
   apply (simp add: DS_OK1)
   (* "goal solved" *)
@@ -1900,6 +1903,7 @@ shows "NFA_construct_reachable_ba_impl_step_prod DS qm0 n D0 q \<le>
   apply (clarify)
   defer
   apply (rename_tac it N i1 i2 q'' qm n D' t r' NN qm' i3 i4 q')
+  defer
 proof -
   fix it N i1 i2 q'' qm n D' NN i3 i4 q'
   assume aq'_in_it: "((i3, i4), q') \<in> it"
@@ -1946,16 +1950,7 @@ proof -
   with aq'_in_it it_subset have "?f ((i3, i4), q') \<in> 
           {(a, q'). (q2_\<alpha> q, a, q') \<in> D}"
     apply simp
-  proof -
-    assume pre1: "((i3, i4), q') \<in> it" and
-           pre2: "it \<subseteq> DS q"
-    show " ((sem i3, sem i4), q2_\<alpha> q')
-    \<in> (\<lambda>x. case x of
-            (x, xa) \<Rightarrow> (case x of (a1, a2) \<Rightarrow> \<lambda>q'. 
-            ((sem a1, sem a2), q2_\<alpha> q')) xa) `
-       DS q"
-      using image_iff pre1 pre2 by fastforce
-  qed
+    using image_iff  by fastforce
   from this have
      "((sem i3, sem i4), q2_\<alpha> q') \<in> 
           {(a, q'). (q2_\<alpha> q, a, q') \<in> D}"
@@ -2220,7 +2215,7 @@ apply (refine_rcg)
   apply (clarify, simp)+ 
   apply (simp add: br_def)
   apply (unfold I_def )
-  apply (rule_tac NFA_construct_reachable_impl_step_prod_correct)
+  apply (rule NFA_construct_reachable_impl_step_prod_correct)
   apply (unfold I_def[symmetric])
   apply (simp_all add: nfa_invar_def f_inj_on[unfolded S_def] ff_OK[unfolded S_def] 
                        d_add_OK DS_OK[unfolded S_def]) [14] 
@@ -2720,7 +2715,7 @@ proof (intro nfa_construct_prod.intro nfa_by_map_correct
   NFA_set_interval.NFA_isomorphic_wf
    (nfa_\<alpha> (NFA_construct_reachable_prod_ba_impl_code qm_ops ff I FP D_it))
    (NFA_set_interval.NFA_remove_unreachable_states \<A>)"
-apply (rule_tac correct)
+  apply (rule correct)
           apply (simp_all add: I_OK d_OK FP_OK 
             reach.NFA_construct_reachable_impl_step_prod_rel_def)
     apply (insert D_OK f_OK)
@@ -2804,7 +2799,8 @@ proof (intro nfa_construct.intro nfa_by_map_correct nfa_construct_axioms.intro)
   NFA_set_interval.NFA_isomorphic_wf
    (nfa_\<alpha> (NFA_construct_reachable_ba_impl_code qm_ops ff I FP D_it))
    (NFA_set_interval.NFA_remove_unreachable_states \<A>)"
-    apply (rule_tac correct)
+    apply simp
+    apply (rule correct)
           apply (simp_all add: I_OK d_OK FP_OK 
             reach.NFA_construct_reachable_impl_step_rel_def)
     apply (insert D_OK f_OK)
@@ -3092,19 +3088,22 @@ proof (intro nfa_concat.intro
                  {(q, a, q')| q a q'' q'.  (q, a, q'') \<in> \<Delta> (\<alpha>1 n1)
                         \<and> q'' \<in> \<F> (\<alpha>1 n1) 
                         \<and> q' \<in> \<I> (\<alpha>2 n2)}"
-    apply auto
-    apply fastforce
     proof -
-       fix q ab q'' q'
+      {  fix q ab q'' q'
        assume a1: "q'' \<in> \<F> (\<alpha>1 n1)"
        assume a2: "(q, ab, q'') \<in> \<Delta> (\<alpha>1 n1)"
        assume " {(q, sem a, q') |q a q'. (q, a, q') \<in> D1} =
                   NFA_set_interval.NFA_rec.\<Delta> (\<alpha>1 n1)"
        then have "\<exists>b c ba. (q, ab, q'') = (b, sem c, ba) \<and> (b, c, ba) \<in> D1"
          using a2 by blast
-       then show "\<exists>a. ab = sem a \<and>
+       then have "\<exists>a. ab = sem a \<and>
            (\<exists>q''. (q, a, q'') \<in> D1 \<and> q'' \<in> NFA_set_interval.NFA_rec.\<F> (\<alpha>1 n1))"
-          using a1 by blast
+         using a1 by blast } note sgoal3 = this
+     show ?thesis
+       apply auto[1]
+       using \<alpha>1_\<Delta>_eq apply blast
+       using sgoal3
+       using \<alpha>1_\<Delta>_eq by blast
       qed
   have finite_I_n2: "finite (\<I> (\<alpha>2 n2))"
     by (meson NFA.finite_\<I> invar_2 nfa.nfa_is_wellformed nfa_2_OK)
@@ -3114,7 +3113,7 @@ proof (intro nfa_concat.intro
                        }" 
     apply (subgoal_tac "{(q, a, q''). (q, a, q'') \<in> D1
                         \<and> q'' \<in> \<F> (\<alpha>1 n1)} \<subseteq> D1")
-    apply auto
+    apply auto[2]
     by (simp add: rev_finite_subset)
   have finiteeq: "\<And> A B. finite A \<Longrightarrow> A = B \<Longrightarrow> finite B " by auto
   from finite_F finite_I_n2 have con2: "\<And> a. a \<in> \<I> (\<alpha>2 n2) \<Longrightarrow> 
@@ -3133,15 +3132,14 @@ proof (intro nfa_concat.intro
       assume p1: "q'' \<in> \<I> (\<alpha>2 n2)" 
       from this finite_F show "finite
             ((\<lambda>(q, a, q'). (q, a, q'')) `
-             {(q, a, q'). (q, a, q') \<in> D1 \<and> q' \<in> \<F> (\<alpha>1 n1)})"       
-        apply (rule_tac finite_imageI)
-        using finite_F by simp
+             {(q, a, q'). (q, a, q') \<in> D1 \<and> q' \<in> \<F> (\<alpha>1 n1)})" 
+        by simp
     qed
     have "(\<lambda> (q, b, q'). (q, b, a)) `
                        {(q, a, q'). (q, a, q') \<in> D1
                         \<and> q' \<in> \<F> (\<alpha>1 n1)} = {(q, b, q'). \<exists> q''. (q, b, q'') \<in> D1
                         \<and> q'' \<in> \<F> (\<alpha>1 n1) \<and> q' = a}"
-      apply (auto simp add: set_eq_iff)
+      apply (auto simp add: set_eq_iff)[1]
       by force
     from this con1[OF p1] show 
       "finite {(q, b, q'). \<exists>q''. (q, b, q'') \<in> D1 \<and> q'' \<in> \<F> (\<alpha>1 n1) \<and> q' = a}"
@@ -3229,7 +3227,7 @@ proof (intro nfa_concat.intro
     by (simp add: NFA_concatenation_def)
 
   from invar_1 invar_2 nfa_1_OK nfa_2_OK have AA'_wf: "NFA ?AA'"
-    apply (rule_tac NFA_concatenation___is_well_formed)
+    apply (subst NFA_concatenation___is_well_formed)
     apply (simp_all add: nfa_def Q1_Q2_empty)
     done
 
@@ -3257,8 +3255,7 @@ proof (intro nfa_concat.intro
   proof {
       assume p1: "\<I> (\<alpha>1 n1) \<inter> \<F> (\<alpha>1 n1) = {}"
       show "c_nempty (c_inter (I1' n1) (F1' n1)) \<longrightarrow> \<I> (\<alpha>1 n1) \<union> \<I> (\<alpha>2 n2) = \<I> (\<alpha>1 n1)"
-        apply (rule impI)
-      proof -
+      proof (rule impI)
         assume p2: "c_nempty (c_inter (I1' n1) (F1' n1))"
         
         from p2 invar_1 I1'_F1'_OK[OF invar_1] 
@@ -3272,8 +3269,7 @@ proof (intro nfa_concat.intro
      {
        assume p1: "\<I> (\<alpha>1 n1) \<inter> \<F> (\<alpha>1 n1) \<noteq> {}"
        show "\<not> c_nempty (c_inter (I1' n1) (F1' n1)) \<longrightarrow> \<I> (\<alpha>1 n1) = \<I> (\<alpha>1 n1) \<union> \<I> (\<alpha>2 n2)"
-         apply (rule impI)
-       proof -
+       proof (rule impI)
        assume p2: "\<not> c_nempty (c_inter (I1' n1) (F1' n1))"
         from p2 invar_1 I1'_F1'_OK[OF invar_1] 
         have "(\<I> (\<alpha>1 n1) \<inter> \<F> (\<alpha>1 n1) = {})" by auto
@@ -3290,14 +3286,12 @@ proof (intro nfa_concat.intro
  
   let ?FP = "(\<lambda> q. FP2 n2 q)"  
   from con6 FP21_OK[OF invar_1] FP2_OK[OF invar_2]
-  have FP_OK: "\<And>q. q \<in> \<Q> ?AA' \<Longrightarrow> ?FP q = (q \<in> \<F> ?AA')" 
-    unfolding NFA_concatenation_def
-    apply (simp add: if_splits)
+  have FP_OK: "\<And>q. q \<in> \<Q> ?AA' \<Longrightarrow> ?FP q = (q \<in> \<F> ?AA')"
   proof -
-    fix q
+    { fix q
     assume p1: "q \<in> \<Q> (\<alpha>1 n1) \<or> q \<in> \<Q> (\<alpha>2 n2)" and
            p2: "(\<And>q. q \<in> \<Q> (\<alpha>2 n2) \<Longrightarrow> FP2 n2 q = (q \<in> \<F> (\<alpha>2 n2)))"
-    show "FP2 n2 q = (q \<in> \<F> (\<alpha>2 n2))" 
+    have "FP2 n2 q = (q \<in> \<F> (\<alpha>2 n2))" 
     proof (cases "q \<in> \<Q> (\<alpha>1 n1)")
       case True
       assume p3: "q \<in> \<Q> (\<alpha>1 n1)"
@@ -3311,7 +3305,13 @@ next
   assume p5: "q \<notin> \<Q> (\<alpha>1 n1)"
   from p1 p5 have "q \<in> \<Q> (\<alpha>2 n2)" by auto
   from this FP2_OK[OF invar_2] show ?thesis by auto
-qed
+qed}
+  note sgoal = this
+  show "\<And>q. q \<in> \<Q> ?AA' \<Longrightarrow> ?FP q = (q \<in> \<F> ?AA')"
+    unfolding NFA_concatenation_def
+    apply (simp add: if_splits)
+    using sgoal
+    using FP2_OK invar_2 by force
 qed
 
   let ?D_it = "tri_union_iterator (it_1 n1) (it_2 n2) 
@@ -3319,12 +3319,12 @@ qed
 
  
   have NFA_\<alpha>1_n1: "NFA (\<alpha>1 n1)" 
-    apply (rule_tac nfa.nfa_is_wellformed[of \<alpha>1 invar1 n1])
+    apply (rule nfa.nfa_is_wellformed[of \<alpha>1 invar1 n1])
     apply (simp add: nfa_1_OK)
     apply (simp add: invar_1)
     done
    have NFA_\<alpha>2_n2: "NFA (\<alpha>2 n2)" 
-    apply (rule_tac nfa.nfa_is_wellformed[of \<alpha>2 invar2 n2])
+    apply (rule nfa.nfa_is_wellformed[of \<alpha>2 invar2 n2])
     apply (simp add: nfa_2_OK)
     apply (simp add: invar_2)
      done
@@ -3659,13 +3659,8 @@ proof -
         NFA_isomorphic_wf
          (\<alpha>3 (concat_rename_impl_aux c_inter c_nempty const f it_1 it_2 it_3 I1 I2 I1' F1' I2' FP1 FP2 rename1 rename2 f1 f2 n1 n2))
          (efficient_NFA_rename_concatenation f1 f2 (\<alpha>1' n1) (\<alpha>2' n2)))"
-      apply (rule conjI)
-      using nfa_1_OK nfa_2_OK apply simp
-      apply (rule conjI)
-      using p1 apply simp
-      apply (rule allI impI) +
     proof -
-      fix n1 n2
+      { fix n1 n2
       assume p2: "invar1' n1"
          and p3: "invar2' n2"
          and p4: "inj_on f1 (\<Q> (\<alpha>1' n1))"
@@ -3694,21 +3689,28 @@ proof -
         by auto
 
       from this 
-      show "invar3
+      have "invar3
         (concat_rename_impl_aux c_inter c_nempty const f it_1 it_2 it_3 I1 I2 I1'
           F1' I2' FP1 FP2 rename1 rename2 f1 f2 n1 n2) \<and>
        NFA_isomorphic_wf
         (\<alpha>3 (concat_rename_impl_aux c_inter c_nempty const f it_1 it_2 it_3 I1 I2
                I1' F1' I2' FP1 FP2 rename1 rename2 f1 f2 n1 n2))
         (efficient_NFA_rename_concatenation f1 f2 (\<alpha>1' n1) (\<alpha>2' n2))"
-        apply (rule_tac conjI)
+        apply (subst conjI)
         unfolding concat_rename_impl_aux_def
         apply force
-        apply auto
+        apply auto[1]
         unfolding efficient_NFA_rename_concatenation_def
                   efficient_NFA_concatenation_def
         using rename1_OK rename2_OK
-        by (simp add: p2 p3)
+        by (simp add: p2 p3)} note sgoal = this
+    show ?thesis
+      apply (rule conjI)
+      using nfa_1_OK nfa_2_OK apply simp
+      apply (rule conjI)
+      using p1 apply simp
+      apply (rule allI impI) +
+      using sgoal by blast
   qed qed qed
       
     
@@ -3882,7 +3884,7 @@ proof (intro nfa_bool_comb.intro
       using f_inj_on by (simp add: bool_comb_NFA_def)
 
   from invar_1 invar_2 nfa_1_OK nfa_2_OK have AA'_wf: "NFA ?AA'"
-    apply (rule_tac bool_comb_NFA___is_well_formed)
+    apply (subst bool_comb_NFA___is_well_formed)
     apply (simp_all add: nfa_def)
   done
 
@@ -3906,12 +3908,12 @@ proof (intro nfa_bool_comb.intro
                 (q2,a2,q2') \<in> D2}"
 
   have NFA_\<alpha>1_n1: "NFA (\<alpha>1 n1)" 
-    apply (rule_tac nfa.nfa_is_wellformed[of \<alpha>1 invar1 n1])
+    apply (subst nfa.nfa_is_wellformed[of \<alpha>1 invar1 n1])
     apply (simp add: nfa_1_OK)
     apply (simp add: invar_1)
-    done
+    by auto
    have NFA_\<alpha>2_n2: "NFA (\<alpha>2 n2)" 
-    apply (rule_tac nfa.nfa_is_wellformed[of \<alpha>2 invar2 n2])
+    apply (rule nfa.nfa_is_wellformed[of \<alpha>2 invar2 n2])
     apply (simp add: nfa_2_OK)
     apply (simp add: invar_2)
     done
@@ -3924,15 +3926,13 @@ proof (intro nfa_bool_comb.intro
                ((q1, q2), (a1, a2), q1', q2')"
     have "?D = ?ff ` {((q1, a1, q1'), (q2, a2, q2')) |q1 a1 q1' q2 a2 q2'.
       (q1, a1, q1') \<in> D1 \<and> (q2, a2, q2') \<in> D2}" 
-      apply (simp)
-      apply auto
     proof -
-      fix q1 a1 q1' q2 a2 q2'
+      { fix q1 a1 q1' q2 a2 q2'
       assume D1_p: "(q1, a1, q1') \<in> D1" and
              D2_p: "(q2, a2, q2') \<in> D2" 
       from this have "?ff ((q1, a1, q1'), (q2, a2, q2')) = 
         ((q1, q2), (a1, a2), q1', q2')" by auto
-      from this D1_p D2_p show "((q1, q2), (a1, a2), q1', q2')
+      from this D1_p D2_p have "((q1, q2), (a1, a2), q1', q2')
        \<in> (\<lambda>x. case x of
                (x, xa) \<Rightarrow>
                  (case x of
@@ -3941,26 +3941,29 @@ proof (intro nfa_bool_comb.intro
           {((q1, a1, q1'), q2, a2, q2') |q1 a1 q1' q2 a2 q2'.
            (q1, a1, q1') \<in> D1 \<and> (q2, a2, q2') \<in> D2}"
         by (metis (mono_tags, lifting) image_eqI mem_Collect_eq)
-    qed
+    } note sgoal = this
+    show ?thesis
+      apply (simp)
+      apply auto[1]
+      using sgoal by blast
+    qed 
     from this finite_D1 finite_D2  inte1 inte2 show "finite
      {((q1, q2), (a1, a2), q1', q2') |q1 a1 q1' q2 a2 q2'.
       (q1, a1, q1') \<in> D1 \<and> (q2, a2, q2') \<in> D2}"
       by auto
-  qed
+  qed 
 
   have D_\<A>: "{(q, sem (fst a) \<inter> sem (snd a), q') |q a q'. (q, a, q') \<in> ?D} =
   \<Delta> (bool_comb_NFA bc (\<alpha>1 n1) (\<alpha>2 n2))" 
-    apply (simp add: LTS_product_def)
   proof -
-    show "{((a, b), sem aa \<inter> sem ba, ab, bb) |a b aa ba ab bb.
+    have "{((a, b), sem aa \<inter> sem ba, ab, bb) |a b aa ba ab bb.
      (a, aa, ab) \<in> D1 \<and> (b, ba, bb) \<in> D2} =
-    {((p, q), \<sigma>1 \<inter> \<sigma>2, p', q') |p p' \<sigma>1 \<sigma>2 q q'.
+     {((p, q), \<sigma>1 \<inter> \<sigma>2, p', q') |p p' \<sigma>1 \<sigma>2 q q'.
      (p, \<sigma>1, p') \<in> NFA_set_interval.NFA_rec.\<Delta> (\<alpha>1 n1) \<and>
      (q, \<sigma>2, q') \<in> NFA_set_interval.NFA_rec.\<Delta> (\<alpha>2 n2)}"
-      apply (simp only: set_eq_iff)
-      proof
-      fix x
-      show "(x \<in> {((a, b), sem aa \<inter> sem ba, ab, bb) |a b aa ba ab bb.
+      proof -
+      {fix x
+       have "(x \<in> {((a, b), sem aa \<inter> sem ba, ab, bb) |a b aa ba ab bb.
                (a, aa, ab) \<in> D1 \<and> (b, ba, bb) \<in> D2}) =
          (x \<in> {((p, q), \<sigma>1 \<inter> \<sigma>2, p', q') |p p' \<sigma>1 \<sigma>2 q q'.
                 (p, \<sigma>1, p') \<in> NFA_set_interval.NFA_rec.\<Delta> (\<alpha>1 n1) \<and>
@@ -3986,7 +3989,8 @@ proof (intro nfa_bool_comb.intro
                 (p, \<sigma>1, p') \<in> \<Delta> (\<alpha>1 n1) \<and> (q, \<sigma>2, q') \<in> \<Delta> (\<alpha>2 n2)})" 
         by auto
        
-    }{
+    }
+    {
       assume pre2: "(x \<in> {((p, q), \<sigma>1 \<inter> \<sigma>2, p', q') |p p' \<sigma>1 \<sigma>2 q q'.
                 (p, \<sigma>1, p') \<in> \<Delta> (\<alpha>1 n1) \<and> (q, \<sigma>2, q') \<in> \<Delta> (\<alpha>2 n2)})"
 
@@ -4002,10 +4006,22 @@ proof (intro nfa_bool_comb.intro
                "(b, sem ab, bc) = (q,\<sigma>2,q')" 
         by (smt mem_Collect_eq old.prod.exhaust)    
     from this pre2 \<alpha>2_\<Delta>_eq \<alpha>1_\<Delta>_eq n1_in n2_in x_in 
-      show con2: "x \<in> {((a, b), sem aa \<inter> sem ba, ab, bb) |a b aa ba ab bb.
+    show con2: "x \<in> {((a, b), sem aa \<inter> sem ba, ab, bb) |a b aa ba ab bb.
           (a, aa, ab) \<in> D1 \<and> (b, ba, bb) \<in> D2}" by auto
-    }
-  qed qed qed
+  } 
+  
+qed} note sgoal = this
+  show ?thesis
+    apply (simp only: set_eq_iff)
+    apply (rule allI)
+    using sgoal
+    by presburger
+qed 
+  note sgoal = this
+  show ?thesis 
+    apply (simp add: LTS_product_def)
+    using sgoal by auto
+qed
  
 
   have it_1_OK'' : "\<And>q. (set_iterator_genord (it_1 n1 q)
@@ -4020,12 +4036,13 @@ proof (intro nfa_bool_comb.intro
          OF it_1_OK' it_2_OK']
     have D_it_OK: "\<And>q. set_iterator (product_iterator (it_1 n1) (it_2 n2) q)
      {(a, q'). (q, a, q') \<in> ?D}"
-    unfolding set_iterator_def
+      unfolding set_iterator_def
     apply (case_tac q) 
     apply (simp_all add: split_def product_iterator_correct prod.exhaust)
-    apply auto
+    apply auto[1] defer
   proof -
-    fix aa ba
+    {
+      fix aa ba
     assume pre1: "(\<And>q1 q2. invar1 n1 \<Longrightarrow>
            invar2 n2 \<Longrightarrow>
            set_iterator_genord (product_iterator (it_1 n1) (it_2 n2) (q1, q2))
@@ -4046,6 +4063,7 @@ proof (intro nfa_bool_comb.intro
                (\<exists>q2'. snd p = (q1', q2') \<and> (aa, a1, q1') \<in> D1 \<and> (ba, a2, q2') \<in> D2)}
         (\<lambda>_ _. True)"
       by simp
+  } note sgoal = this
   qed 
   
   note sem_OK' = sem_OK[of D1 n1 D2 n2, OF \<alpha>1_\<Delta>_eq \<alpha>2_\<Delta>_eq invar_1 invar_2]
@@ -4223,7 +4241,7 @@ proof (intro nfa_bool_comb_same.intro
       show ?thesis 
         apply (simp add: nfa_dfa_invar_def  nfa_dfa_\<alpha>_def)
         thm correct_nfa'' s.correct
-        apply (rule_tac correct_nfa'')
+        apply (rule correct_nfa'')
         apply (insert \<Delta>_\<A>1 \<Delta>_\<A>2 \<Delta>_it_ok1 \<Delta>_it_ok2 sem_OK)
         apply (simp)
         defer
@@ -4296,7 +4314,7 @@ proof (intro nfa_bool_comb_same.intro
         NFA_isomorphic_wf
         (nfa_dfa_\<alpha> (bool_comb_impl qm_ops it_1_nfa it_2_nfa bc a1 a2))
         (efficient_bool_comb_NFA bc (nfa_dfa_\<alpha> a1) (nfa_dfa_\<alpha> a2))"
-    by (case_tac a1, simp_all)
+    by (cases a1, simp_all)
 qed
 
 
@@ -4434,16 +4452,6 @@ proof (intro nfa_concat_same.intro
                     [OF nfa.nfa_by_map_correct', where ?n2.0 = n2]
       from invar_1 invar_2  
       show ?thesis 
-        apply (simp add: nfa_dfa_invar_def  nfa_dfa_\<alpha>_def)
-        apply (rule_tac correct_nfa'')
-        apply (simp_all)
-        apply (insert \<Delta>_\<A>1 \<Delta>_\<A>2 \<Delta>_it_ok1 \<Delta>_it_ok2 \<Delta>_it_ok3 Q1Q2_empty  inj_12)  
-        apply auto
-        apply (simp_all add: 
-              nfa.nfa_trans_def 
-              set_iterator_def nfa.nfa_\<alpha>_def
-              s.correct nfa.nfa_invar_NFA'_def 
-              nfa.nfa_invar_def )
       proof -
         {
           fix a aa ab b x
@@ -4452,9 +4460,9 @@ proof (intro nfa_concat_same.intro
                  p3: "x \<in> s.\<alpha> b"
           from this have "s.\<alpha> ab \<inter> s.\<alpha> b \<noteq> {}"
             by auto
-          from p1 this show "False"
+          from p1 this have "False"
             by blast
-        }
+        } note sgoal1 = this
  {
         fix a aa ab ac b ad ae af ag ba q
         assume p1: "s.invar a \<and>
@@ -4496,8 +4504,8 @@ proof (intro nfa_concat_same.intro
           by force+
         from this con1 have "s.\<alpha> a \<inter> s.\<alpha> ba = {}" by auto
         from this p5 have "q \<notin> s.\<alpha> ba" by auto
-        from this p4 show False by auto 
-      }
+        from this p4 have False by auto 
+      } note sgoal2= this
         {
         fix q a aa ab b ac ad ae ba D1 af bc ag bb
         assume 
@@ -4540,7 +4548,7 @@ proof (intro nfa_concat_same.intro
         from p1[OF p2 p3 p4 p5, of q] 
         have "set_iterator_genord (it_3_nfa ab b ag q)
    {(a, q'). \<exists>q''. (q, a, q'') \<in> D1 \<and> q'' \<in> s.\<alpha> b \<and> q' \<in> s.\<alpha> ag} (\<lambda>_ _. True)" by auto
-        from this show "set_iterator_genord (it_3_nfa ab b ag q)
+        from this have "set_iterator_genord (it_3_nfa ab b ag q)
         {uu. \<exists>a q'' q'. uu = (a, q') \<and> (q, a, q'') \<in> D1 \<and> q'' \<in> s.\<alpha> b \<and> q' \<in> s.\<alpha> ag}
         (\<lambda>_ _. True)"
          apply (subgoal_tac "{uu.
@@ -4549,8 +4557,29 @@ proof (intro nfa_concat_same.intro
           {(a, q'). \<exists>q''. (q, a, q'') \<in> D1 \<and> q'' \<in> s.\<alpha> b \<and> q' \<in> s.\<alpha> ag}")
            apply simp
           by fastforce
-      }
-     
+      } note sgoal3 = this
+      from invar_1 invar_2  
+      show ?thesis
+        apply (simp add: nfa_dfa_invar_def  nfa_dfa_\<alpha>_def)
+        apply (rule correct_nfa'')
+        apply (simp_all)
+        apply (insert \<Delta>_\<A>1 \<Delta>_\<A>2 \<Delta>_it_ok1 \<Delta>_it_ok2 \<Delta>_it_ok3 Q1Q2_empty  inj_12)  
+        apply auto
+        apply (simp_all add: 
+              nfa.nfa_trans_def 
+              set_iterator_def nfa.nfa_\<alpha>_def
+              s.correct nfa.nfa_invar_NFA'_def 
+              nfa.nfa_invar_def invar_1 invar_2)
+        using sgoal1 
+        apply auto[1]
+        apply (meson sgoal1)
+        apply (subst sgoal3)
+        apply force
+        apply force
+        apply force
+        apply force
+        apply force
+        by force
     qed 
   qed 
 qed 
@@ -4634,7 +4663,7 @@ proof (intro nfa_concat_same.intro
        NFA_isomorphic_wf
         (nfa_dfa_\<alpha> (nfa_concat_impl qm_ops it_1_nfa it_2_nfa it_3_nfa n1 n2))
         (efficient_NFA_concatenation (nfa_dfa_\<alpha> n1) (nfa_dfa_\<alpha> n2))"
-    by (case_tac n1, simp_all)
+    by (cases n1, simp_all)
 qed
 
 
@@ -4753,16 +4782,13 @@ interpret im2: lts_image d_nfa.\<alpha> d_nfa.invar dd_nfa.\<alpha> dd_nfa.invar
                      ss.correct NFA_rename_states_def dd_nfa.correct_common
                      s.correct d_nfa.correct_common
                      im.image_correct im2.lts_image_correct 
-                     nfa.rename_states_gen_impl.simps
                      nfa_invarp_def nfa_\<alpha>p_def
-                     semI_def wf NFA_def prod.inject
-                     ba_to_set.simps)
-    apply (simp add: semI_def 
-                          ba_to_set.simps)
+                     semI_def wf NFA_def)
+    apply (simp add: semI_def)
     
     apply (simp add: image_iff)
     apply (simp add: set_eq_iff)    
-    apply (auto)
+    apply auto[1]
     apply fastforce
     apply fastforce
     defer
@@ -4857,15 +4883,13 @@ interpret im2: lts_image d_nfa.\<alpha> d_nfa.invar dd_nfa.\<alpha> dd_nfa.invar
                      ss.correct NFA_rename_states_def dd_nfa.correct_common
                      s.correct d_nfa.correct_common
                      im.image_correct im2.lts_image_correct 
-                     nfa.rename_states_gen_impl.simps
                      nfa_invarp_def nfa_\<alpha>p_def
-                     semI_def wf NFA_def prod.inject
-                     ba_to_set.simps)
+                     semI_def wf NFA_def)
     apply (simp add: semI_def)
     
     apply (simp add: image_iff)
     apply (simp add: set_eq_iff)    
-    apply (auto)
+    apply auto[1]
     apply fastforce
     apply fastforce
     defer
@@ -5073,32 +5097,8 @@ proof (intro nfa_concat_rename_same.intro
                       where ?\<alpha>1.1 = "nfa_\<alpha>p",
                       where ?\<alpha>2.1 = "nfa_\<alpha>p"
                       
-                      ]
-      from invar_1 invar_2  
+                      ]  
       show ?thesis 
-        apply (simp add: nfa_dfa_invar_def  nfa_dfa_\<alpha>_def)
-        apply (rule_tac correct_nfa'')
-        defer defer
-        using Q1Q2_empty c4 c5
-                  
-        apply (simp_all add: 
-              nfa.nfa_transp_def 
-              set_iterator_def (*nfa.nfa_\<alpha>_def*)
-              s.correct nfa.nfa_invar_NFA'_def inj_12
-              nfa.nfa_invar_def c3 ss.correct)
-        using nfa_\<alpha>p_def
-        apply simp
-        using nfa_invarp_NFA_def ss.correct
-              nfa_\<alpha>p_def nfa_invarp_def
-                     apply auto[4]
-        defer
-        using \<Delta>_\<A>1 \<Delta>_\<A>1 apply auto[2]     
-        defer defer defer 
-
-        using inj_1 nfa_dfa_\<alpha>_def apply auto[1]
-
-        using inj_f2
-        using inj_2 nfa_dfa_\<alpha>_def apply auto[1]
       proof -
         {
           fix n1a n2a q
@@ -5134,9 +5134,9 @@ proof (intro nfa_concat_rename_same.intro
           have "ss.invar (nfa.nfa_acceptingp n2a)"
             by simp
           from cp1 this cc2 ss.correct(5)[of "nfa.nfa_acceptingp n2a" q]
-          show "\<not> ss.memb q (nfa.nfa_acceptingp n2a)"
+          have "\<not> ss.memb q (nfa.nfa_acceptingp n2a)"
             by simp
-        }   
+        }  note sgoal1 = this  
         {
           fix q n1a D1
           assume pb1: "{((a, b), sem aa, ab, ba) |a b aa ab ba. ((a, b), aa, ab, ba) \<in> D1} =
@@ -5153,10 +5153,10 @@ proof (intro nfa_concat_rename_same.intro
             by blast
 
           from this \<Delta>_it_ok1[OF pb1' pb2 pb3, of q] nfa.nfa_transp_def[of n1a]
-          show "set_iterator_genord (it_1_nfa (fst (snd n1a)) q) {(a, q'). (q, a, q') \<in> D1}
+          have "set_iterator_genord (it_1_nfa (fst (snd n1a)) q) {(a, q'). (q, a, q') \<in> D1}
                (\<lambda>_ _. True)"
             by auto
-        }
+        } note sgoal2 = this
   {
           fix q n2a D2
           assume pb1: "{((a, b), sem aa, ab, ba) 
@@ -5174,11 +5174,11 @@ proof (intro nfa_concat_rename_same.intro
             by blast
 
           from this \<Delta>_it_ok2[OF pb1' pb2 pb3, of q] nfa.nfa_transp_def[of n2a]
-          show "set_iterator_genord (it_2_nfa (fst (snd n2a)) q) 
+          have "set_iterator_genord (it_2_nfa (fst (snd n2a)) q) 
                 {(a, q'). (q, a, q') \<in> D2}
                (\<lambda>_ _. True)"
             by auto
-        }
+        } note sgoal3 = this
         {
           fix q n1a n2a D1
           
@@ -5216,7 +5216,7 @@ proof (intro nfa_concat_rename_same.intro
             by force
 
           from this \<Delta>_it_ok3[OF pb1' pb2 pb3 pb5, of q] nfa.nfa_transp_def[of n1a]
-          show "set_iterator_genord
+          have "set_iterator_genord
         (it_3_nfa (fst (snd n1a)) (nfa.nfa_acceptingp n1a) 
                   (nfa.nfa_initialp n2a) q)
         {uu.
@@ -5227,7 +5227,37 @@ proof (intro nfa_concat_rename_same.intro
             (ab, ba) \<in> NFA_rec.\<I> (nfa_\<alpha>p n2a)}
         (\<lambda>_ _. True)"
             by force
-        }
+        } note sgoal4 = this
+
+        from invar_1 invar_2
+        show ?thesis
+                apply (simp add: nfa_dfa_invar_def  nfa_dfa_\<alpha>_def)
+        apply (rule correct_nfa'')
+        defer defer
+        using Q1Q2_empty c4 c5
+                  
+        apply (simp_all add: 
+              nfa.nfa_transp_def 
+              set_iterator_def (*nfa.nfa_\<alpha>_def*)
+              s.correct nfa.nfa_invar_NFA'_def inj_12
+              nfa.nfa_invar_def c3 ss.correct)
+        using nfa_\<alpha>p_def
+        apply simp
+        using nfa_invarp_NFA_def ss.correct
+              nfa_\<alpha>p_def nfa_invarp_def
+                     apply auto[4]
+        defer
+        using \<Delta>_\<A>1 \<Delta>_\<A>1 apply auto[2]     
+        defer defer defer 
+
+        using inj_1 nfa_dfa_\<alpha>_def apply auto[1]
+
+        using inj_f2
+        using inj_2 nfa_dfa_\<alpha>_def apply auto[1]
+        using sgoal1 apply blast
+        using sgoal2 apply fastforce
+        using sgoal3 apply fastforce
+        using sgoal4 by fastforce
       qed 
     qed 
   qed 
@@ -6620,15 +6650,8 @@ definition nfa_union_imp where
 lemma union_rename_impl_aux_correct:
   shows "nfa_union nfa.nfa_\<alpha> nfa.nfa_invar_NFA nfa.nfa_\<alpha> nfa.nfa_invar_NFA
                    nfa.nfa_\<alpha> nfa.nfa_invar_NFA (nfa_union_imp)"
-  unfolding nfa_union_def nfa_union_axioms_def
-  apply (rule conjI)
-  using nfa.nfa_by_map_correct 
-  apply simp
-  apply (rule conjI)
-  using nfa.nfa_by_map_correct 
-  apply simp
-  apply (rule allI impI)+
 proof -
+  { 
   fix n1 n2
   assume invarn1: "nfa.nfa_invar_NFA n1"
      and invarn2: "nfa.nfa_invar_NFA n2"
@@ -6712,7 +6735,7 @@ proof -
         finite (\<Q> (nfa.nfa_\<alpha> n2))"
     by auto
 
-  show "NFA_isomorphic_wf (nfa.nfa_\<alpha> (nfa_union_imp n1 n2))
+  have "NFA_isomorphic_wf (nfa.nfa_\<alpha> (nfa_union_imp n1 n2))
         (NFA_union (nfa.nfa_\<alpha> n1) (nfa.nfa_\<alpha> n2))"
     unfolding NFA_union_def 
               nfa_union_imp_def nfa.nfa_\<alpha>_def
@@ -6728,6 +6751,17 @@ proof -
     using t1 t2 n1_def n2_def nfa.nfa_\<alpha>_def
     apply simp
     by blast
+} note sgoal = this
+  show ?thesis
+  unfolding nfa_union_def nfa_union_axioms_def
+  apply (rule conjI)
+  using nfa.nfa_by_map_correct 
+  apply simp
+  apply (rule conjI)
+  using nfa.nfa_by_map_correct 
+  apply simp
+  apply (rule allI impI)+
+  using sgoal by auto
 qed
 
 schematic_goal nfa_union_imp_code:

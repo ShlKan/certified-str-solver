@@ -27,20 +27,9 @@ assumes succ_list_OK: "\<And>q. set (succ_list q) = {q'. (q,q') \<in> R}"
     and invar_rs: "invar rs"
 shows "accessible_abort_impl exit succ_list rs wl \<le> 
          \<Down>(WORKLISTIT_refine_rel (build_rel (\<lambda>s. (fst s, \<alpha> (snd s))) (\<lambda>s. invar (snd s))) Id)
-       (accessible_worklist exit R (\<alpha> rs) wl)"
-  unfolding accessible_abort_impl_def accessible_worklist_def WORKLISTT_def
-  apply (rule WORKLISTIT_refine)
-  apply (simp only: br_sv)
-  apply (simp_all add: invar_rs list_all2_refl)
-  apply (simp add: br_def)
-  apply (simp add: invar_rs)
-  apply (simp add: br_def)+
-  apply (auto simp add: correct invar_rs succ_list_OK pw_le_iff 
-                      list_all2_eq[symmetric]) 
-  apply (auto simp add: inres_def nofail_def)
-  
+       (accessible_worklist exit R (\<alpha> rs) wl)"  
 proof -
-  fix a b e'
+  { fix a b e'
   define mx where "mx = (succ_list e')"
   define mm where "mm = RETURN ((exit e', ins e' b), succ_list e') "
   define m\<psi> where "m\<psi> = (\<lambda>wl. set wl = {y. (e', y) \<in> R})"
@@ -56,17 +45,30 @@ proof -
    "mm \<le> \<Down>(WORKLISTIT_refine_rel {(c, a). a = (fst c, \<alpha> (snd c)) \<and> invar (snd c)} Id)
     (mf' mx)"
     unfolding mf'_def mx_def mm_def
-    apply (auto)
+    apply auto[1]
     apply (simp add: ins_correct(1) invar_b)
     apply (simp add: ins_correct(1) invar_b)
     using ins_correct(1) invar_b apply blast
     apply (simp add: ins_correct(2) invar_b)
     by (simp add: list.rel_eq)
-  from PRE1 PRE2 show "mm
+  from PRE1 PRE2 have "mm
        \<le> \<Down> (WORKLISTIT_refine_rel {(c, a). a = (fst c, \<alpha> (snd c)) \<and> invar (snd c)} Id)
            (SPEC m\<psi> \<bind> mf')"
-    apply (auto simp add: PRE1 PRE2 rhs_step_bind_SPEC)
-    using PRE1 PRE2 rhs_step_bind_SPEC by fastforce
+    apply (auto simp add: PRE1 PRE2 rhs_step_bind_SPEC)[1]
+    using PRE1 PRE2 rhs_step_bind_SPEC by fastforce}
+  note sgoal = this
+  show ?thesis
+    unfolding accessible_abort_impl_def accessible_worklist_def WORKLISTT_def
+  apply (rule WORKLISTIT_refine)
+  apply (simp only: br_sv)
+  apply (simp_all add: invar_rs list_all2_refl)
+  apply (simp add: br_def)
+  apply (simp add: invar_rs)
+  apply (simp add: br_def)+
+  apply (auto simp add: correct invar_rs succ_list_OK pw_le_iff 
+                      list_all2_eq[symmetric])[1]
+    apply (auto simp add: inres_def nofail_def)[1]
+    using sgoal by auto
 qed
 
 
@@ -133,13 +135,13 @@ apply (rule bind_refine
    [where R' = "WORKLISTIT_refine_rel (build_rel (Pair False) (\<lambda>_. True)) Id"])
 apply (rule WORKLISTIT_refine)
 apply (simp only: br_sv)
-      apply (auto simp add: list_all2_eq[symmetric] pw_le_iff refine_pw_simps)
+     apply (auto simp add: list_all2_eq[symmetric] pw_le_iff refine_pw_simps)
      apply (simp add: br_def)
      apply (simp add: br_def)
      apply (simp add: br_def)
      apply (simp add: br_def)
      apply (simp add: br_def)
-  apply (auto)
+  apply (auto)[1]
 apply (simp add: br_def)
      
 done
@@ -206,7 +208,7 @@ proof -
   note step5 = ref_two_step [OF order_trans [OF step1 step3] step4]
   thus ?thesis 
      apply (erule_tac RETURN_ref_SPECD)
-     apply (simp add: Image_iff Let_def rs'_def br_def)
+     apply (simp add: rs'_def br_def)
   done
 qed
 
@@ -219,17 +221,17 @@ shows "let rs = accessible_restrict_code succ_list (empty ()) wl in
 proof -
   define uempty where "uempty = empty ()"
   note accessible_restrict_code_correctIns =  accessible_restrict_code_correct [of R uempty wl succ_list] assms
-  have invar_uempty: "invar uempty" apply (auto simp add: uempty_def)
+  have invar_uempty: "invar uempty" apply (auto simp add: uempty_def)[1]
     by (simp add: local.empty_correct(2))
   have finite_access_restrict: "finite (accessible_restrict R (\<alpha> uempty) (set wl))"
-    apply (auto simp add: uempty_def)
-    apply (auto simp add: accessible_restrict_def)
+    apply (auto simp add: uempty_def)[1]
+    apply (auto simp add: accessible_restrict_def)[1]
     using invar_uempty uempty_def apply auto[1]
     by (simp add: fin_res local.empty_correct(1))
   from invar_uempty finite show ?thesis
   
     apply (auto simp add: invar_uempty finite_access_restrict
-            accessible_restrict_code_correctIns uempty_def )
+            accessible_restrict_code_correctIns uempty_def )[1]
     using accessible_restrict_code_correctIns(1) 
           finite_access_restrict succ_list_OK uempty_def 
       apply blast

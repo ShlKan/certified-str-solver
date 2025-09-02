@@ -130,7 +130,7 @@ begin
 
 definition nfa_states :: "'q_set \<times> 'b \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
   "nfa_states A = fst A"
-lemma [simp]: "nfa_states (Q, E, D, I, F) = Q" by (simp add: nfa_states_def)
+lemma nfa_states_f [simp]: "nfa_states (Q, E, D, I, F) = Q" by (simp add: nfa_states_def)
 
 
 fun ba_to_set :: "'q \<times> 'b \<times> 'q \<Rightarrow> 'q \<times> 'a set \<times> 'q"  where
@@ -139,7 +139,7 @@ fun ba_to_set :: "'q \<times> 'b \<times> 'q \<Rightarrow> 'q \<times> 'a set \<
 definition nfa_trans :: 
         "'q_set \<times> 'b \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'd" where
   "nfa_trans A = (fst (snd (snd A)))"
-lemma [simp]: "nfa_trans (Q, E, D, I, F) = D" by (simp add: nfa_trans_def)
+lemma  nfa_trans_f [simp]: "nfa_trans (Q, E, D, I, F) = D" by (simp add: nfa_trans_def)
 
 fun nfa_tranlabel :: "('q \<times> 'b \<times> 'q) list \<Rightarrow> 'ai_set" where
     "nfa_tranlabel [] = lt.empty ()"
@@ -151,38 +151,38 @@ definition nfa_labels:: "'q_set \<times> 'b \<times> 'd \<times> 'q_set \<times>
 definition nfa_alphabet :: 
         "'q_set \<times> 'b \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'b" where
   "nfa_alphabet A = (fst (snd A))"
-lemma [simp]: "nfa_alphabet (Q, E, D, I, F) = E" by (simp add: nfa_alphabet_def)
+lemma nfa_alphabet_f [simp]: "nfa_alphabet (Q, E, D, I, F) = E" by (simp add: nfa_alphabet_def)
 
     
 
 
 definition nfa_initial :: "'q_set \<times> 'b \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
   "nfa_initial A = fst (snd (snd (snd  A)))"
-lemma [simp]: "nfa_initial (Q, E, D, I, F) = I" by (simp add: nfa_initial_def)
+lemma nfa_initial_f [simp]: "nfa_initial (Q, E, D, I, F) = I" by (simp add: nfa_initial_def)
 
 definition nfa_accepting :: "'q_set \<times> 'b \<times> 'd \<times> 'q_set \<times> 'q_set \<Rightarrow> 'q_set" where
   "nfa_accepting A = snd (snd (snd (snd  A)))"
-lemma [simp]: "nfa_accepting (Q, E, D, I, F) = F" by (simp add: nfa_accepting_def)
+lemma nfa_accepting_f [simp]: "nfa_accepting (Q, E, D, I, F) = F" by (simp add: nfa_accepting_def)
 
 
 (***********)
 
 definition nfa_statep :: "'qq_set \<times> 'dd_nfa \<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qq_set" where
   "nfa_statep A = fst A"
-lemma [simp]: "nfa_statep (Q, D, I, F) = Q" by (simp add: nfa_statep_def)
+lemma nfa_statep_f [simp]: "nfa_statep (Q, D, I, F) = Q" by (simp add: nfa_statep_def)
 
 definition nfa_transp :: 
         "'qq_set \<times> 'dd_nfa \<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'dd_nfa" where
   "nfa_transp A = (fst (snd A))"
-lemma [simp]: "nfa_transp (Q, D, I, F) = D" by (simp add: nfa_transp_def)
+lemma nfa_transp_f [simp]: "nfa_transp (Q, D, I, F) = D" by (simp add: nfa_transp_def)
 
 definition nfa_initialp :: "'qq_set \<times> 'dd_nfa \<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qq_set" where
   "nfa_initialp A = fst (snd (snd  A))"
-lemma [simp]: "nfa_initialp (Q, D, I, F) = I" by (simp add: nfa_initialp_def)
+lemma nfa_initialp_f [simp]: "nfa_initialp (Q, D, I, F) = I" by (simp add: nfa_initialp_def)
 
 definition nfa_acceptingp :: "'qq_set \<times> 'dd_nfa \<times> 'qq_set \<times> 'qq_set \<Rightarrow> 'qq_set" where
   "nfa_acceptingp A = snd (snd (snd  A))"
-lemma [simp]: "nfa_acceptingp (Q, D, I, F) = F" by (simp add: nfa_acceptingp_def)
+lemma nfa_acceptingp_f [simp]: "nfa_acceptingp (Q, D, I, F) = F" by (simp add: nfa_acceptingp_def)
 
 lemmas nfa_selectors_def = nfa_accepting_def nfa_states_def 
        nfa_trans_def nfa_initial_def
@@ -328,7 +328,7 @@ proof (intro nfa_rename_states.intro
     apply fastforce
     apply (simp add: image_iff)
     apply (simp add: set_eq_iff)
-    apply auto
+    apply auto[1]
     apply (metis (no_types, lifting) Pair_inject 
            automaton_by_lts_bool_algebra_syntax.ba_to_set.simps)
   proof -
@@ -972,7 +972,7 @@ proof -
     folded NFA_construct_reachable_init_ba_impl_def]
 
   from ind_proof' show ?thesis 
-   apply (rule_tac SPEC_refine)+
+    apply (subst SPEC_refine)+
     apply (simp add: s.correct 
      I_def tmpsempty_def br_def
      state_map_\<alpha>_def state_map_invar_def single_valued_def
@@ -1185,9 +1185,9 @@ proof -
     hence "(q2_\<alpha> q, q2_\<alpha> q') \<in> LTS_forget_labels D"
       unfolding LTS_forget_labels_def 
       NFA_construct_reachable_impl_step_rel_def
-      by (metis (mono_tags, lifting) aq'_in_it 
+      by (metis (mono_tags, lifting) 
                  case_prodD case_prodI 
-                 in_mono it_subset mem_Collect_eq)
+                  mem_Collect_eq)
     with q_in_S show ?thesis unfolding S_def accessible_def
       by (metis rtrancl_image_advance)
   qed
@@ -1253,7 +1253,7 @@ proof -
         aa (q2_\<alpha> q') =
          Some (states_enumerate n)"
         unfolding qm'_def[symmetric] ff_q''_eq aa_def
-        apply (auto simp add: br_def)
+        apply (auto simp add: br_def)[1]
         using invar_qm'_n apply blast
         using rm'_q' apply auto[1]
         apply (insert qm'_OK)
@@ -1414,7 +1414,7 @@ apply (refine_rcg)
   apply (clarify, simp)+ 
   apply (simp add: br_def)
   apply (unfold I_def)
-  apply (rule_tac NFA_construct_reachable_impl_step_correct)
+  apply (rule NFA_construct_reachable_impl_step_correct)
   apply (unfold I_def[symmetric])
   apply (simp_all add: nfa_invar_def f_inj_on[unfolded S_def] ff_OK[unfolded S_def] 
                        d_add_OK DS_OK[unfolded S_def] nfa_\<alpha>_def) [14] 
@@ -1712,7 +1712,7 @@ proof -
     using NFA_construct_reachable_impl_correct 
         [OF f_inj_on[unfolded S_def] sigsigi ff_OK[unfolded S_def] d_add_OK
           dist_I invar_I, of DS FFP FP] FFP_OK S_def 
-    apply (auto simp add: FFP_OK D_it_OK DS_OK0 DS_OK1)
+    apply (auto simp add: FFP_OK D_it_OK DS_OK0 DS_OK1)[1]
     using DS_OK0 DS_OK1 by force
       also note NFA_construct_reachable_abstract2_impl_correct
   also note NFA_construct_reachable_abstract_impl_correct
