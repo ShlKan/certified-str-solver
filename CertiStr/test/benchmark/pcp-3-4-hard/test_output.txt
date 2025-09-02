@@ -1,0 +1,14 @@
+Loading unsolved_pcp_instance_0.smt2 ...
+
+Loading OSTRICH 2.0, a solver for string constraints
+(c) Matthew Hague, Denghang Hu, Philipp Rümmer, 2018-2025
+With contributions by Riccardo De Masellis, Zhilei Han, Oliver Markgraf.
+For more information, see https://github.com/uuverifiers/ostrich
+
+Warning: exit is only supported in incremental mode (option +incremental), ignoring it
+Preprocessing ...
+Constructing countermodel ...
+
+sat
+
+383ms

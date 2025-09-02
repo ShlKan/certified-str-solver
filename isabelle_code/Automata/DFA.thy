@@ -69,12 +69,6 @@ lemma (in weak_DFA) \<delta>_to_\<Delta> [simp] : "DLTS_to_LTS (\<delta> \<A>) =
 lemma (in weak_DFA) weak_DFA_LTS_is_reachable_DLTS_reach_simp :
   "(\<exists> \<pi>. inPath w \<pi> \<and> (DLTS_reach (\<delta> \<A>) q \<pi> = Some q'))
            \<longleftrightarrow>  LTS_is_reachable (\<Delta> \<A>) q w q'"
-  apply (simp add: eq_iff) 
-  apply (simp add: LTS_is_reachable_weak_determistic weak_deterministic \<delta>_def)
-  apply (rule_tac conjI)
-  apply (rule impI)+
-  defer
-  apply (rule impI)  
 proof -
   {
     assume left: "(\<exists>\<pi>. inPath w \<pi> \<and> DLTS_reach (LTS_to_DLTS (\<Delta> \<A>)) q \<pi> = Some q')"
@@ -82,20 +76,29 @@ proof -
       where \<pi>_def: "inPath w \<pi> \<and> DLTS_reach (LTS_to_DLTS (\<Delta> \<A>)) q \<pi> = Some q'"
       by auto
     from \<pi>_def
-    show "LTS_is_reachable (\<Delta> \<A>) q w q'"
+    have "LTS_is_reachable (\<Delta> \<A>) q w q'"
       apply (induction w arbitrary: \<pi> q')
       using LTS_is_reachable_DLTS_to_LTS apply fastforce
       by (metis LTS_is_reachable_DLTS_to_LTS \<delta>_def \<delta>_to_\<Delta>)
-  }
+  } note sgoal1 = this
   {
     assume right: "LTS_is_reachable (\<Delta> \<A>) q w q'"
     from this
-    show "\<exists>\<pi>. inPath w \<pi> \<and> DLTS_reach (LTS_to_DLTS (\<Delta> \<A>)) q \<pi> = Some q'"
+    have "\<exists>\<pi>. inPath w \<pi> \<and> DLTS_reach (LTS_to_DLTS (\<Delta> \<A>)) q \<pi> = Some q'"
       apply (induction w arbitrary: q)
       using inPath.simps(1) apply fastforce
       by (meson LTS_is_deterministic_def 
                 LTS_is_reachable_weak_determistic3 weak_deterministic)
-  }
+  } note sgoal2 = this
+  show ?thesis
+  apply (simp add: eq_iff) 
+  apply (simp add: LTS_is_reachable_weak_determistic weak_deterministic \<delta>_def)
+  apply (rule conjI)
+  apply (rule impI)+
+  defer
+  apply (rule impI)  
+  using sgoal2 apply auto[1]
+  using sgoal1 by auto
 qed
 
 
@@ -157,7 +160,7 @@ lemma (in DFA) \<delta>_to_\<Delta> [simp] : "DLTS_to_LTS (\<delta> \<A>) = \<De
 lemma (in detNFA) \<delta>_in_\<Delta>_iff :
   "(q, \<sigma>, q') \<in> \<Delta> \<A> \<longleftrightarrow> (\<delta> \<A>) (q, \<sigma>) = Some q'"
   unfolding \<delta>_def 
-  using LTS_to_DLTS_is_some_det deterministic
+  using deterministic
         LTS_is_deterministic_def
   by (metis LTS_Sig.LTS_to_DLTS_is_some_det LTS_set.LTS_to_DLTS_in
       LTS_set.LTS_to_DLTS_is_some)
@@ -173,12 +176,6 @@ subsection \<open> Lemmas about deterministic automata \<close>
 lemma (in DFA) DFA_LTS_is_reachable_DLTS_reach_simp :
   "(\<exists> \<pi>. inPath w \<pi> \<and> (DLTS_reach (\<delta> \<A>) q \<pi> = Some q'))
            \<longleftrightarrow>  LTS_is_reachable (\<Delta> \<A>) q w q'"
-  apply (simp add: eq_iff) 
-  apply (simp add: LTS_is_reachable_weak_determistic deterministic \<delta>_def)
-  apply (rule_tac conjI)
-  apply (rule impI)+
-  defer
-  apply (rule impI)  
 proof -
   {
     assume left: "(\<exists>\<pi>. inPath w \<pi> \<and> DLTS_reach (LTS_to_DLTS (\<Delta> \<A>)) q \<pi> = Some q')"
@@ -186,21 +183,30 @@ proof -
       where \<pi>_def: "inPath w \<pi> \<and> DLTS_reach (LTS_to_DLTS (\<Delta> \<A>)) q \<pi> = Some q'"
       by auto
     from \<pi>_def
-    show "LTS_is_reachable (\<Delta> \<A>) q w q'"
+    have "LTS_is_reachable (\<Delta> \<A>) q w q'"
       apply (induction w arbitrary: \<pi> q')
       using LTS_is_reachable_DLTS_to_LTS apply fastforce
       by (metis LTS_is_reachable_DLTS_to_LTS \<delta>_def \<delta>_to_\<Delta>)
-  }
+  } note sgoal1 = this
   {
     assume right: "LTS_is_reachable (\<Delta> \<A>) q w q'"
     from this
-    show "\<exists>\<pi>. inPath w \<pi> \<and> DLTS_reach (LTS_to_DLTS (\<Delta> \<A>)) q \<pi> = Some q'"
+    have "\<exists>\<pi>. inPath w \<pi> \<and> DLTS_reach (LTS_to_DLTS (\<Delta> \<A>)) q \<pi> = Some q'"
       apply (induction w arbitrary: q)
       using inPath.simps(1) apply fastforce
       by (smt (verit, del_insts) LTS_Sig.LTS_is_weak_deterministic_def
           LTS_is_deterministic_def LTS_set.LTS_is_reachable_weak_determistic3
           LTS_set.LTS_is_weak_deterministic_def deterministic)
-  }
+  } note sgoal2 = this
+  show ?thesis
+  apply (simp add: eq_iff) 
+  apply (simp add: LTS_is_reachable_weak_determistic deterministic \<delta>_def)
+  apply (rule conjI)
+  apply (rule impI)+
+  defer
+  apply (rule impI) 
+    using sgoal2 apply blast
+    using sgoal1 by auto
 qed
 
 (*

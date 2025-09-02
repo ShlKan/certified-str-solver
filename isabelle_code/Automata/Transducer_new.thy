@@ -143,10 +143,9 @@ lemma productT_correct:
       and wfTA: "NFT_wf \<T> \<and> NFA \<A>"
     shows "\<L>e (productT \<T> \<A> F) = outputL \<T> (\<M> \<T>) \<A>"
   unfolding \<L>e_def outputL_def NFAe_accept_def
-  apply simp
-  apply rule
-  apply rule 
-proof 
+proof (rule refl iffI equalityI ext prod_eqI, 
+       rule ext predicate1I subsetI,
+       rule CollectI set_rev_mp set_mp)
   {
     fix x
     assume xin:"x \<in> {w. \<exists>q\<in>\<I>e (productT \<T> \<A> F).
@@ -176,15 +175,13 @@ proof
     from w_def' 
     have "\<exists> \<pi>. x = outputE \<pi> \<and> LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) (fst q) \<pi> (fst q') 
                 \<and> LTS_is_reachable (\<Delta> \<A>) (snd q) (inputE \<pi>) (snd q')"
-      apply (induction x arbitrary: q)
-      apply simp
-    proof -
+    proof (induction x arbitrary: q)
       {
         fix q
         assume qin: "q \<in> \<Q>e (productT \<T> \<A> F) \<and>
          q' \<in> \<Q>e (productT \<T> \<A> F) \<and>
-         (\<exists>l. l \<noteq> [] \<and>
-              epsilon_reach l (\<Delta>e' (productT \<T> \<A> F)) \<and> hd l = q \<and> last l = q')"
+         LTS_is_reachable_epsilon (\<Delta>e (productT \<T> \<A> F)) (\<Delta>e' (productT \<T> \<A> F)) q
+          [] q'"
 
         from this obtain q1 q1' q2 q2' where
         q12_def: "q = (q1, q1') \<and> q' = (q2, q2')"
@@ -197,9 +194,17 @@ proof
        have "\<exists>\<pi>. [] = outputE \<pi> \<and>
                 LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) q1 \<pi> q2 \<and> 
                     LTS_is_reachable (\<Delta> \<A>) q1' (inputE \<pi>) q2'"
-          apply (induction l arbitrary: q q1 q1')
-          apply simp
-        proof -
+       proof (induction l arbitrary: q q1 q1') 
+       { 
+         show "\<And>q q1 q1'.
+          [] \<noteq> [] \<and>
+          epsilon_reach [] (\<Delta>e' (productT \<T> \<A> F)) \<and> hd [] = q \<and> last [] = q' \<Longrightarrow>
+          q = (q1, q1') \<and> q' = (q2, q2') \<Longrightarrow>
+          \<exists>\<pi>. [] = outputE \<pi> \<and>
+           LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) q1 \<pi> q2 \<and>
+           LTS_is_reachable (\<Delta> \<A>) q1' (inputE \<pi>) q2'"
+           by simp
+       }
           fix a l q q1 q1'
           assume ind_hyp: "\<And>q q1 q1'.
            l \<noteq> [] \<and>
@@ -352,9 +357,13 @@ proof
 
         from this 
         have qiin:  "qi \<in> \<Q>e (productT \<T> \<A> F)"
-          apply (induction l arbitrary: q)  
-          apply simp
-        proof -
+        proof (induction l arbitrary: q)
+          {
+            show "\<And>q. [] \<noteq> [] \<and> epsilon_reach [] (\<Delta>e' (productT \<T> \<A> F)) \<and>
+                  hd [] = q \<and> last [] = qi \<and> q \<in> \<Q>e (productT \<T> \<A> F) \<Longrightarrow>
+                  qi \<in> \<Q>e (productT \<T> \<A> F)"
+              by simp
+          }
           fix a l q
           assume ind_hyp: "(\<And>q. l \<noteq> [] \<and>
             epsilon_reach l (\<Delta>e' (productT \<T> \<A> F)) \<and>
@@ -417,9 +426,15 @@ proof
         have fst_half: "\<exists> \<pi>. [] = outputE \<pi> \<and>
            LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) (fst q) \<pi> (fst qi) \<and>
            LTS_is_reachable (\<Delta> \<A>) (snd q) (inputE \<pi>) (snd qi)"
-           apply (induction l' arbitrary: q)
-           apply simp
-        proof -
+        proof (induction l' arbitrary: q)
+          {
+            show "\<And>q. [] \<noteq> [] \<and>
+         epsilon_reach [] (\<Delta>e' (productT \<T> \<A> F)) \<and> hd [] = q \<and> last [] = qi \<Longrightarrow>
+         \<exists>\<pi>. [] = outputE \<pi> \<and>
+             LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) (fst q) \<pi> (fst qi) \<and>
+             LTS_is_reachable (\<Delta> \<A>) (snd q) (inputE \<pi>) (snd qi)"
+              by simp
+          }
           fix a l' q
           assume ind_hyp: "(\<And>q. l' \<noteq> [] \<and>
              epsilon_reach l' (\<Delta>e' (productT \<T> \<A> F)) \<and> hd l' = q \<and> last l' = qi \<Longrightarrow>
@@ -551,8 +566,7 @@ proof
             "\<exists>\<pi>. a # x = outputE \<pi> \<and>
                    LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) (fst qi) \<pi> (fst q') \<and>
                    LTS_is_reachable (\<Delta> \<A>) (snd qi) (inputE \<pi>) (snd q')"
-          apply (induction x arbitrary: qi a qj \<sigma>)
-        proof -
+        proof (induction x arbitrary: qi a qj \<sigma>)
           {
             fix qi a qj \<sigma>
             assume p1: "a \<in> \<sigma> \<and> (qi, \<sigma>, qj) \<in> \<Delta>e (productT \<T> \<A> F) \<and>
@@ -576,9 +590,16 @@ proof
             have "\<exists>\<pi>. [] = outputE \<pi> \<and> 
                        LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) (fst qj) \<pi> (fst q') \<and>
                        LTS_is_reachable (\<Delta> \<A>) (snd qj) (inputE \<pi>) (snd q')"
-              apply (induction l arbitrary: qj)
-              apply simp
-            proof -
+            proof (induction l arbitrary: qj)
+              {
+                show "\<And>qj. [] \<noteq> [] \<and>
+                 epsilon_reach [] (\<Delta>e' (productT \<T> \<A> F)) \<and>
+                  hd [] = qj \<and> last [] = q' \<Longrightarrow>
+                  \<exists>\<pi>. [] = outputE \<pi> \<and>
+                    LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) (fst qj) \<pi> (fst q') \<and>
+                    LTS_is_reachable (\<Delta> \<A>) (snd qj) (inputE \<pi>) (snd q')"
+                  by simp
+              }
               fix a l qj
               assume ind_hyp: "(\<And>qj. l \<noteq> [] \<and>
               epsilon_reach l (\<Delta>e' (productT \<T> \<A> F)) \<and> hd l = qj \<and> last l = q' \<Longrightarrow>
@@ -664,7 +685,7 @@ proof
                   obtain e where e_def: "e \<in> \<sigma>1 \<inter> \<sigma>2 \<and> (\<M> \<T>) f (Some e) = None" by auto
                   have s1: "LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) (fst qj) 
                                   ((Some e, None) # \<pi>) (fst q')"
-                    by (metis F_ok1 IntD1 LTTS_reachable.simps(2) 
+                    by (metis IntD1 LTTS_reachable.simps(2) 
                               \<pi>_def \<sigma>12f_def e_def matche.simps(1) 
                               matche.simps(2) matcht.simps)
                   have s2: "LTS_is_reachable (\<Delta> \<A>) (snd qj) 
@@ -780,10 +801,16 @@ proof
         have "\<exists> \<pi>. a # x = outputE \<pi> \<and>
         LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) (fst qj) \<pi> (fst q') \<and>
         LTS_is_reachable (\<Delta> \<A>) (snd qj) (inputE \<pi>) (snd q')"  
-          apply (induction l arbitrary: qj)
-           apply simp
-          apply (rename_tac a' l qj)
-        proof -
+         
+        proof (induction l arbitrary: qj)
+        {
+            show "\<And>qj. [] \<noteq> [] \<and> epsilon_reach [] (\<Delta>e' (productT \<T> \<A> F)) \<and>
+          hd [] = qj \<and> last [] = qk \<Longrightarrow>
+          \<exists>\<pi>. a # x = outputE \<pi> \<and>
+              LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) (fst qj) \<pi> (fst q') \<and>
+              LTS_is_reachable (\<Delta> \<A>) (snd qj) (inputE \<pi>) (snd q')"
+              by simp
+         }
           fix a' l qj
           assume ind_hyp: "\<And>qj. l \<noteq> [] \<and>
               epsilon_reach l (\<Delta>e' (productT \<T> \<A> F)) \<and> hd l = qj \<and> last l = qk \<Longrightarrow>
@@ -818,7 +845,6 @@ proof
                   LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) (fst b) \<pi> (fst q') \<and>
                   LTS_is_reachable (\<Delta> \<A>) (snd b) (inputE \<pi>) (snd q')"
               by auto
-            from p1 bl'_def productT_def
             have branch: 
                   "(\<exists> f. snd qj \<in> \<Q> \<A> \<and> (fst qj, (None, f), fst b) \<in> \<Delta>T \<T> \<and> 
                           (\<M> \<T>) f None = None \<and> snd qj = snd b) \<or>
@@ -827,9 +853,9 @@ proof
              (snd qj, \<sigma>2, snd b) \<in> \<Delta> \<A> \<and> \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> 
                     (\<exists> x \<in> \<sigma>1 \<inter> \<sigma>2. (\<M> \<T>) f (Some x) = None))"
               unfolding productT_def
-              apply simp
             proof -
-              assume p1: "((\<exists>p p'.
+            {
+              assume p1: "((\<exists> p p'.
          a' = (p, p') \<and>
          (\<exists>q. b = (q, p') \<and>
               p' \<in> \<Q> \<A> \<and> (\<exists>f. (p, (None, f), q) \<in> \<Delta>T \<T> \<and> (\<M> \<T>) f None = None))) \<or>
@@ -890,12 +916,18 @@ proof
                 apply simp
                 by (metis fst_conv snd_conv)
               from s1 s2
-              show "snd qj \<in> \<Q> \<A> \<and>
+              have "snd qj \<in> \<Q> \<A> \<and>
     (\<exists>f. (fst qj, (None, f), fst b) \<in> \<Delta>T \<T> \<and> (\<M> \<T>) f None = None \<and> snd qj = snd b) \<or>
     (\<exists>\<sigma>1 \<sigma>2 f.
         (fst qj, (Some \<sigma>1, f), fst b) \<in> \<Delta>T \<T> \<and>
         (snd qj, \<sigma>2, snd b) \<in> \<Delta> \<A> \<and> \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. (\<M> \<T>) f (Some x) = None))"
                 by auto
+            } note sgoal = this 
+            from p1 bl'_def productT_def
+            show ?thesis
+              unfolding productT_def
+              apply simp
+              by (rule sgoal)
             qed
             show ?thesis 
            proof (cases "(\<exists> f. snd qj \<in> \<Q> \<A> \<and> (fst qj, (None, f), fst b) \<in> \<Delta>T \<T> \<and> 
@@ -923,7 +955,7 @@ proof
                 obtain c where c_def: "c \<in> \<sigma>1 \<inter> \<sigma>2 \<and> (\<M> \<T>) f (Some c) = None" by force
                 from this
                 have s1: "LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) (fst qj) ((Some c, None) # \<pi>) (fst q')"
-                  by (metis F_ok1 IntD1 LTTS_reachable.simps(2) 
+                  by (metis IntD1 LTTS_reachable.simps(2) 
                           \<pi>_def \<sigma>12f_def matche.simps(1) matche.simps(2) matcht.simps)
                 have s2: "LTS_is_reachable (\<Delta> \<A>) (snd qj) 
                             (inputE ((Some c, None) # \<pi>)) (snd q')" 
@@ -1056,23 +1088,24 @@ proof
       apply simp
       by fastforce
     from this fstqI \<pi>_def
-    show "\<exists>\<pi>. x = outputE \<pi> \<and>
-             (\<exists>q. q \<in> \<I>T \<T> \<and>
-                  (\<exists>q'. q' \<in> \<F>T \<T> \<and>
-                        LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) q \<pi> q' \<and> inputE \<pi> \<in> \<L> \<A>))"
+    show "\<exists>\<pi> q q'.
+            x = outputE \<pi> \<and>
+            q \<in> \<I>T \<T> \<and>
+            q' \<in> \<F>T \<T> \<and> LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) q \<pi> q' \<and> inputE \<pi> \<in> \<L> \<A>"
       by force
     }
     {
-      show "{outputE \<pi> |\<pi>.
-     \<exists>q. q \<in> \<I>T \<T> \<and>
-         (\<exists>q'. q' \<in> \<F>T \<T> \<and> LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) q \<pi> q' \<and> inputE \<pi> \<in> \<L> \<A>)}
+      show "{uu.
+     \<exists>\<pi> q q'.
+        uu = outputE \<pi> \<and>
+        q \<in> \<I>T \<T> \<and>
+        q' \<in> \<F>T \<T> \<and> LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) q \<pi> q' \<and> inputE \<pi> \<in> \<L> \<A>}
     \<subseteq> {w. \<exists>q\<in>\<I>e (productT \<T> \<A> F).
-              \<exists>x\<in>\<F>e (productT \<T> \<A> F).
-                 LTS_is_reachable_epsilon (\<Delta>e (productT \<T> \<A> F))
-                  (\<Delta>e' (productT \<T> \<A> F)) q w x}"
-        apply rule
-        apply rule
+              Bex (\<F>e (productT \<T> \<A> F))
+               (LTS_is_reachable_epsilon (\<Delta>e (productT \<T> \<A> F))
+                 (\<Delta>e' (productT \<T> \<A> F)) q w)}"
       proof -
+      { 
         fix x
         assume xin: "x \<in> {outputE \<pi> |\<pi>.
               \<exists>q. q \<in> \<I>T \<T> \<and>
@@ -1100,9 +1133,16 @@ proof
         have ep_reach: "LTS_is_reachable_epsilon (\<Delta>e (productT \<T> \<A> F)) 
                                        (\<Delta>e' (productT \<T> \<A> F))
                      (q,q1) x (q', q1')"
-          apply (induction \<pi> arbitrary: q q1 x)
-          apply force
-        proof -
+        proof (induction \<pi> arbitrary: q q1 x)
+          {
+            show "\<And>q q1 x.
+       x = outputE [] \<and>
+       LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) q [] q' \<and>
+       LTS_is_reachable (\<Delta> \<A>) q1 (inputE []) q1' \<and> q1 \<in> \<Q> \<A> \<Longrightarrow>
+       LTS_is_reachable_epsilon (\<Delta>e (productT \<T> \<A> F)) (\<Delta>e' (productT \<T> \<A> F))
+        (q, q1) x (q', q1')"
+              by force
+          }
           fix a \<pi> q q1 x
           assume ind_hyp: "(\<And>q q1 x. x = outputE \<pi> \<and>
             LTTS_reachable (\<Delta>T \<T>) (\<M> \<T>) q \<pi> q' \<and>
@@ -1326,11 +1366,18 @@ proof
           apply simp
           using q1_def' by linarith
         from s1 s2 ep_reach
-        show "\<exists>q\<in>\<I>e (productT \<T> \<A> F).
+        have "\<exists>q\<in>\<I>e (productT \<T> \<A> F).
             \<exists>xa\<in>\<F>e (productT \<T> \<A> F).
                LTS_is_reachable_epsilon (\<Delta>e (productT \<T> \<A> F)) (\<Delta>e' (productT \<T> \<A> F))
                 q x xa"
           by auto
+      } note sgoal = this
+      show ?thesis
+        apply simp
+        apply (rule predicate2I predicate1I subsetI refl)
+        apply (rule CollectI set_rev_mp set_mp)
+        using sgoal
+        by blast
       qed
     }
   qed
@@ -1489,18 +1536,6 @@ lemma trans_comp_correct:
                   | p p' \<sigma>1 \<sigma>2 q q' f.
                (p, (Some \<sigma>1, f), q) \<in> T1 \<and> (p', \<sigma>2, q') \<in> T2 \<and>
                      \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists> x \<in> (\<sigma>1 \<inter> \<sigma>2). (M f) (Some x) = None)})"
-  unfolding trans_comp_def
-  apply (refine_vcg)
-  using finiteT apply force
-  apply simp
-  apply simp
-  apply simp
-  using copy_tran_correct[OF finiteQ]
-  defer defer defer
-  apply auto[1]
-  apply auto[1]
-  defer apply simp
-  defer apply (simp)
 proof -
   {
     fix x it \<sigma> x1 x2 x1a x1b x2a x2b x1c x2c
@@ -1550,10 +1585,10 @@ proof -
                             (p', \<sigma>2, q') \<in> T2 \<and>
                             \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. (M f) (Some x) = None))})"
       apply simp
-      apply auto
+      apply auto[1]
       using itin x2a_def xin by blast
       
-    show "copy_tran x1 x2b Q
+    have "copy_tran x1 x2b Q
        \<le> SPEC (\<lambda>D2'. {((p, p'), the ((M f) None), q, p') |p p' q f.
                        p' \<in> Q \<and>
                        (p, (None, f), q) \<in> T1 \<and>
@@ -1600,7 +1635,9 @@ proof -
       using eq1 apply simp
       using c2 c1
       by (simp add: SPEC_trans)
-  }{
+  } note sgoal1 = this
+  
+  {
     fix x it \<sigma> x1 x2 x1a x1b x2a x2b x1c x2c
     assume xin: "(x1, (None, x2a), x2b) \<in> it"
        and itin: "it \<subseteq> T1"
@@ -1644,14 +1681,14 @@ proof -
                     (p', \<sigma>2, q') \<in> T2 \<and>
                     \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>So. F (M f) (\<sigma>1 \<inter> \<sigma>2) = Some So)})"
       apply simp 
-      apply auto
+      apply auto[1]
       apply (metis option.sel)
       using itin x2a_def xin apply blast
       apply (metis option.sel)
       apply (metis option.sel)
       by (metis option.sel)
 
-    show "copy_tran' x1 (the (M x2a None)) x2b Q
+    have "copy_tran' x1 (the (M x2a None)) x2b Q
        \<le> SPEC (\<lambda>D1'. {((p, p'), the (M f None), q, p') |p p' q f.
                        p' \<in> Q \<and>
                        (p, (None, f), q) \<in> T1 \<and>
@@ -1697,7 +1734,7 @@ proof -
                                \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. (M f) (Some x) = None))})"
       using eq1 apply simp
       using c1 c2 by (simp add: SPEC_trans)
-  }
+  } note sgoal2 = this
   {
     fix x it \<sigma> x1 x2 x1a x1b x2a x2b x1c x2c
     assume xinit: "(x1, (x1b, x2a), x2b) \<in> it"
@@ -1785,13 +1822,18 @@ proof -
                          (p', \<sigma>2, q') \<in> T2 \<and>
                          \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. M f (Some x) = None))})}"
       apply simp
-      apply (rule_tac conjI)
+      apply (rule conjI)
       apply (simp add:eq1)
-      apply rule
-      apply rule
-        defer apply rule
-      defer apply rule apply rule
-         defer apply rule defer
+      apply (rule refl iffI equalityI ext prod_eqI)
+      apply (rule predicate2I predicate1I subsetI refl) 
+      
+      defer apply (rule predicate2I predicate1I subsetI refl) 
+      defer 
+      apply (rule refl iffI equalityI ext prod_eqI) 
+      apply (rule predicate2I predicate1I subsetI refl)
+      defer 
+      using [[rule_trace]] apply (rule predicate2I predicate1I subsetI refl) 
+      defer
     proof -
       {
         fix x
@@ -2117,7 +2159,7 @@ from this xinit itin x1b_def y_def
                   (p, (Some \<sigma>1, f), q) \<notin> it \<and>
                   (p', \<sigma>2, q') \<in> T2 \<and>
                   \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. (M f) (Some x) = None))})"]
-    show "subtrans_comp M x1 (the x1b) x2a x2b F fe T2
+    have "subtrans_comp M x1 (the x1b) x2a x2b F fe T2
         ({((p, p'), the (M f None), q, p') |p p' q f.
           p' \<in> Q \<and>
           (p, (None, f), q) \<in> T1 \<and> (p, (None, f), q) \<notin> it \<and> (\<exists>So. (M f) None = Some So)} \<union>
@@ -2162,7 +2204,23 @@ from this xinit itin x1b_def y_def
                          \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. (M f) (Some x) = None))})}"
       by (simp add: SPEC_trans)
       
-  }
+  } note sgoal3 = this
+  show ?thesis
+  unfolding trans_comp_def
+  apply (refine_vcg)
+  using finiteT apply force
+  apply simp
+  apply simp
+  apply simp
+  using copy_tran_correct[OF finiteQ]
+  defer defer defer
+  apply auto[1]
+  apply auto[1]
+  defer apply simp
+  defer apply (simp)
+  using sgoal3 apply blast
+  using sgoal1 apply blast
+  using sgoal2 by blast  
 qed
 
 definition prods where
@@ -2212,10 +2270,7 @@ lemma productT_imp_correct:
       and fe_ok: "\<forall>f \<alpha>. fe f \<alpha> = (\<exists>x\<in>\<alpha>. f (Some x) = None)"
   shows "productT_imp \<T> \<A> F fe \<le> SPEC (\<lambda> A. A = productT \<T> \<A> F)"
   unfolding productT_imp_def
-  apply (refine_vcg)
-proof -
-  thm prods_correct[OF finite_TQ finite_Q]
-
+proof (refine_vcg)
   have c1: "SPEC (\<lambda>Q. Q = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>) \<le>
             SPEC (\<lambda>Q. trans_comp (\<M> \<T>) F fe (\<Delta>T \<T>) (NFA_rec.\<Delta> \<A>)
                        (NFA_rec.\<Q> \<A>) \<bind>
@@ -2226,9 +2281,8 @@ proof -
                                      \<lparr>\<Q>e = Q, \<Delta>e = D1, \<Delta>e' = D2, \<I>e = I,
                                         \<F>e = F\<rparr>)))
                  \<le> SPEC (\<lambda>A. A = productT \<T> \<A> F))"
-    apply simp
   proof -
-    have "trans_comp (\<M> \<T>) F fe (\<Delta>T \<T>) (NFA_rec.\<Delta> \<A>)
+    { have "trans_comp (\<M> \<T>) F fe (\<Delta>T \<T>) (NFA_rec.\<Delta> \<A>)
      (NFA_rec.\<Q> \<A>) \<bind>
     (\<lambda>(D1, D2).
         prods (\<I>T \<T>) (NFA_rec.\<I> \<A>) \<bind>
@@ -2237,9 +2291,7 @@ proof -
                    \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>, \<Delta>e = D1,
                       \<Delta>e' = D2, \<I>e = I, \<F>e = F\<rparr>)))
     \<le> SPEC (\<lambda> A. A = productT \<T> \<A> F)"
-      apply refine_vcg
-    proof -
-
+    proof (refine_vcg)
       have "SPEC (\<lambda>(Dn1, Dn2).
             Dn1 =
             {((p, p'), the ((\<M> \<T>) f None), q, p') |p p' q f.
@@ -2269,11 +2321,9 @@ proof -
                                \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>,
                                   \<Delta>e = D1, \<Delta>e' = D2, \<I>e = I, \<F>e = F\<rparr>)))
                  \<le> SPEC (\<lambda>A. A = productT \<T> \<A> F))"
-        apply simp
-        unfolding productT_def
-        apply simp
+        
       proof -
-        have "prods (\<I>T \<T>) (NFA_rec.\<I> \<A>) \<bind>
+        { have "prods (\<I>T \<T>) (NFA_rec.\<I> \<A>) \<bind>
     (\<lambda>I. prods (\<F>T \<T>) (NFA_rec.\<F> \<A>) \<bind>
          (\<lambda>Fa. RETURN
                 \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>, 
@@ -2316,8 +2366,8 @@ proof -
                           \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. \<M> \<T> f (Some x) = None))},
                \<I>e = \<I>T \<T> \<times> NFA_rec.\<I> \<A>,
                \<F>e = \<F>T \<T> \<times> NFA_rec.\<F> \<A>\<rparr>)"
-          apply (refine_vcg)
-        proof -
+
+        proof (refine_vcg)
           have "SPEC (\<lambda>Q. Q = \<I>T \<T> \<times> NFA_rec.\<I> \<A>) \<le>
                 SPEC (\<lambda>I. prods (\<F>T \<T>) (NFA_rec.\<F> \<A>) \<bind>
                  (\<lambda>Fa. RETURN
@@ -2369,9 +2419,9 @@ p p' \<sigma>1 \<sigma>2 q q' f.
    \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. \<M> \<T> f (Some x) = None))},
                                      \<I>e = \<I>T \<T> \<times> NFA_rec.\<I> \<A>,
                                      \<F>e = \<F>T \<T> \<times> NFA_rec.\<F> \<A>\<rparr>))"
-            apply simp
+            
           proof -
-            have "prods (\<F>T \<T>) (NFA_rec.\<F> \<A>) \<bind>
+            { have "prods (\<F>T \<T>) (NFA_rec.\<F> \<A>) \<bind>
     (\<lambda>Fa. RETURN
            \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>, 
               \<Delta>e = {((p, p'), the (\<M> \<T> f None), q, p') |p p' q f.
@@ -2412,8 +2462,7 @@ p p' \<sigma>1 \<sigma>2 q q' f.
                           \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. \<M> \<T> f (Some x) = None))},
                \<I>e = \<I>T \<T> \<times> NFA_rec.\<I> \<A>,
                \<F>e = \<F>T \<T> \<times> NFA_rec.\<F> \<A>\<rparr>)"
-              apply refine_vcg
-            proof -
+            proof (refine_vcg)
               have "SPEC (\<lambda>Q. Q = \<F>T \<T> \<times> NFA_rec.\<F> \<A>) \<le> 
                     SPEC (\<lambda>Fa. RETURN
                    \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>,
@@ -2513,52 +2562,11 @@ uu = ((p, p'), q, q') \<and>
                 apply (simp)
                 using prods_correct[OF finite_TF finite_F]
                 by force
-            qed
-
-            from this
-            show "prods (\<F>T \<T>) (NFA_rec.\<F> \<A>) \<bind>
-    (\<lambda>Fa. RETURN
-           \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>,
-              \<Delta>e = {((p, p'), the (\<M> \<T> f None), q, p') |p p' q f.
-                     p' \<in> NFA_rec.\<Q> \<A> \<and>
-                     (p, (None, f), q) \<in> \<Delta>T \<T> \<and> (\<exists>So. \<M> \<T> f None = Some So)} \<union>
-                    {((p, p'), the (F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2)), q, q') |p p' \<sigma>1 \<sigma>2 q q' f.
-                     (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                     (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
-                     \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>So. F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2) = Some So)},
-              \<Delta>e' =
-                {((p, p'), q, p') |p p' q.
-                 p' \<in> NFA_rec.\<Q> \<A> \<and>
-                 (\<exists>f. (p, (None, f), q) \<in> \<Delta>T \<T> \<and> \<M> \<T> f None = None)} \<union>
-                {uu.
-                 \<exists>p p' \<sigma>1 \<sigma>2 q q'.
-                    uu = ((p, p'), q, q') \<and>
-                    (\<exists>f. (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                         (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
-                         \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. \<M> \<T> f (Some x) = None))},
-              \<I>e = \<I>T \<T> \<times> NFA_rec.\<I> \<A>, \<F>e = Fa\<rparr>)
-    \<le> RES {\<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>,
-               \<Delta>e = {((p, p'), the (\<M> \<T> f None), q, p') |p p' q f.
-                      p' \<in> NFA_rec.\<Q> \<A> \<and>
-                      (p, (None, f), q) \<in> \<Delta>T \<T> \<and> (\<exists>So. \<M> \<T> f None = Some So)} \<union>
-                     {((p, p'), the (F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2)), q, q') |p p' \<sigma>1 \<sigma>2 q q' f.
-                      (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                      (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
-                      \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>So. F (\<M> \<T> f) (\<sigma>1 \<inter> \<sigma>2) = Some So)},
-               \<Delta>e' =
-                 {((p, p'), q, p') |p p' q.
-                  p' \<in> NFA_rec.\<Q> \<A> \<and>
-                  (\<exists>f. (p, (None, f), q) \<in> \<Delta>T \<T> \<and> \<M> \<T> f None = None)} \<union>
-                 {uu.
-                  \<exists>p p' \<sigma>1 \<sigma>2 q q'.
-                     uu = ((p, p'), q, q') \<and>
-                     (\<exists>f. (p, (Some \<sigma>1, f), q) \<in> \<Delta>T \<T> \<and>
-                          (p', \<sigma>2, q') \<in> NFA_rec.\<Delta> \<A> \<and>
-                          \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. \<M> \<T> f (Some x) = None))},
-               \<I>e = \<I>T \<T> \<times> NFA_rec.\<I> \<A>,
-               \<F>e = \<F>T \<T> \<times> NFA_rec.\<F> \<A>\<rparr>}"
-              by auto
-          qed
+            qed } note sgoal2 = this
+          show ?thesis
+            apply simp
+            using sgoal2 by auto
+        qed
           from this prods_correct[OF finite_TI finite_I]
           show "prods (\<I>T \<T>) (NFA_rec.\<I> \<A>)
     \<le> SPEC (\<lambda>I. prods (\<F>T \<T>) (NFA_rec.\<F> \<A>) \<bind>
@@ -2659,7 +2667,7 @@ p p' \<sigma>1 \<sigma>2 q q' f.
                \<F>e = \<F>T \<T> \<times> NFA_rec.\<F> \<A>\<rparr>}"
           by auto
         from this
-        show "prods (\<I>T \<T>) (NFA_rec.\<I> \<A>) \<bind>
+        have "prods (\<I>T \<T>) (NFA_rec.\<I> \<A>) \<bind>
     (\<lambda>I. prods (\<F>T \<T>) (NFA_rec.\<F> \<A>) \<bind>
          (\<lambda>Fa. RETURN
                 \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>,
@@ -2702,8 +2710,13 @@ p p' \<sigma>1 \<sigma>2 q q' f.
                           \<sigma>1 \<inter> \<sigma>2 \<noteq> {} \<and> (\<exists>x\<in>\<sigma>1 \<inter> \<sigma>2. \<M> \<T> f (Some x) = None))},
                \<I>e = \<I>T \<T> \<times> NFA_rec.\<I> \<A>,
                \<F>e = \<F>T \<T> \<times> NFA_rec.\<F> \<A>\<rparr>}"
-          by auto
-      qed
+          by auto} note sgoal3 = this
+      show ?thesis
+        apply simp
+        unfolding productT_def
+        apply simp
+        using sgoal3 by auto
+    qed
 
       from this trans_comp_correct[of  "\<Delta>T \<T>" "\<Delta> \<A>" "\<Q> \<A>" fe "\<M> \<T>" F, 
                          OF finite_TT finite_TA finite_Q fe_ok]
@@ -2719,19 +2732,13 @@ p p' \<sigma>1 \<sigma>2 q q' f.
                  \<le> SPEC (\<lambda>A. A = productT \<T> \<A> F))"
         using SPEC_trans 
         by force
-    qed
-    from this
-    show "trans_comp (\<M> \<T>) F fe (\<Delta>T \<T>) (NFA_rec.\<Delta> \<A>)
-     (NFA_rec.\<Q> \<A>) \<bind>
-    (\<lambda>(D1, D2).
-        prods (\<I>T \<T>) (NFA_rec.\<I> \<A>) \<bind>
-        (\<lambda>I. prods (\<F>T \<T>) (NFA_rec.\<F> \<A>) \<bind>
-             (\<lambda>F. RETURN
-                   \<lparr>\<Q>e = \<Q>T \<T> \<times> NFA_rec.\<Q> \<A>, \<Delta>e = D1,
-                      \<Delta>e' = D2, \<I>e = I, \<F>e = F\<rparr>)))
-    \<le> RES {productT \<T> \<A> F}"
-      by auto
+    qed} note sgoal1 = this
+  show ?thesis
+    apply simp
+    using sgoal1
+    by auto
   qed
+   
   from this prods_correct[OF finite_TQ finite_Q]
   have "prods (\<Q>T \<T>) (NFA_rec.\<Q> \<A>)
     \<le> SPEC (\<lambda>Q.  trans_comp (\<M> \<T>) F fe (\<Delta>T \<T>) (NFA_rec.\<Delta> \<A>)

@@ -39,5 +39,4 @@ In addition, the RNA string is required to contain a specific pattern.
 (assert (= y (str.++ tmp suf)))
 
 (check-sat)
-(get-value (y))
 (exit)
