@@ -2,61 +2,63 @@
 We evaluate our formalization and implementation of the SFT product operation across two key application domains: string sanitization and string replacement in string solving. These case studies highlight the practical value of our certified SFT product operation in real-world scenarios.
 \subsection{Sanitizer}
 
-An important application of our formalization lies in string sanitization for web applications. Sanitizers are crucial for preventing security vulnerabilities such as cross-site scripting (XSS) attacks by ensuring that user inputs are properly encoded before rendering in web browsers. Listing \ref{lst-html-encode} presents a C\# code snippet implementing an HTML encoding function—a fundamental sanitization operation. This function iterates through each character in the input string and encodes characters that are unsafe for HTML rendering.
+An important application of our formalization lies in string sanitization for web applications. Sanitizers are crucial for preventing security vulnerabilities such as cross-site scripting (XSS) attacks by ensuring that user inputs are properly encoded before rendering in web browsers. 
+
+% Listing \ref{lst-html-encode} presents a C\# code snippet implementing an HTML encoding function—a fundamental sanitization operation. This function iterates through each character in the input string and encodes characters that are unsafe for HTML rendering.
 
 
 
-\begin{lstlisting}[language={[Sharp]C}, caption={C\# Code for AntiXSS.EncodeHtml version 2.0.}, label={lst-html-encode}, float=htbp]
-static string EncodeHtml(string t)
-{
-  if (t == null) { return null; }
-  if (t.Length == 0) {
-    return string.Empty;
-  }
-  StringBuilder builder = new
-    StringBuilder("", t.Length * 2);
-  foreach (char c in t) {
-    if ((((c > ''') && (c < '{')) |$\mid\mid$|
-         ((c > '@') && (c < '['))) |$\mid\mid$|
-         (((c == ' ') || ((c > '/') && (c < ':'))) |$\mid\mid$|
-         (((c == '.') || (c == ',')) |$\mid\mid$|
-         ((c == '-') || (c == '_'))))) {
-          builder.Append(c);
-      }
-      else {
-          builder.Append("&#" +
-          ((int) c).ToString() + ";");
-      }
-  }
-  return builder.ToString();
-}
-\end{lstlisting}
+% \begin{lstlisting}[language={[Sharp]C}, caption={C\# Code for AntiXSS.EncodeHtml version 2.0.}, label={lst-html-encode}, float=htbp]
+% static string EncodeHtml(string t)
+% {
+%   if (t == null) { return null; }
+%   if (t.Length == 0) {
+%     return string.Empty;
+%   }
+%   StringBuilder builder = new
+%     StringBuilder("", t.Length * 2);
+%   foreach (char c in t) {
+%     if ((((c > ''') && (c < '{')) |$\mid\mid$|
+%          ((c > '@') && (c < '['))) |$\mid\mid$|
+%          (((c == ' ') || ((c > '/') && (c < ':'))) |$\mid\mid$|
+%          (((c == '.') || (c == ',')) |$\mid\mid$|
+%          ((c == '-') || (c == '_'))))) {
+%           builder.Append(c);
+%       }
+%       else {
+%           builder.Append("&#" +
+%           ((int) c).ToString() + ";");
+%       }
+%   }
+%   return builder.ToString();
+% }
+% \end{lstlisting}
 
-Figure \ref{fig:html-sanitizer-sft} illustrates the SFT representation of the HTML encoding sanitizer function. The transducer accepts any input string and produces an output where safe characters are preserved using the identity function $\texttt{id}$, while unsafe characters are encoded as HTML entities. The set of safe characters is defined as $\texttt{safe\_chars} = [\texttt{' '}, \texttt{','}, \texttt{'.'}, \texttt{'-'}, \texttt{'\_'}] \cup [\texttt{'0'}-\texttt{'9'}] \cup [\texttt{'A'}-\texttt{'Z'}] \cup [\texttt{'a'}-\texttt{'z'}]$, which can be efficiently represented using the interval algebra we formalized. Unsafe characters are transformed using the encoding function $\texttt{encode}(c) = \texttt{``\&\#''} + \texttt{toString}(\texttt{ord}(c)) + \texttt{``\;''}$. When the alphabet is set to Unicode $[\mathtt{0x0000}, \mathtt{0x10FFFF}]$, the complement $\neg\texttt{safe\_chars}$ represents all Unicode characters outside the safe set, which can also be efficiently represented using our formalized interval operations.
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}[shorten >=1pt, node distance=2.5cm, on grid, auto]
-  % States
-  \node[state, initial, accepting] (q0) {$q_0$};
-  \node[state] (q1) [right=3.5cm of q0] {$q_1$};
-  \node[state] (q2) [below=of q0] {$q_2$};
+% Figure \ref{fig:html-sanitizer-sft} illustrates the SFT representation of the HTML encoding sanitizer function. The transducer accepts any input string and produces an output where safe characters are preserved using the identity function $\texttt{id}$, while unsafe characters are encoded as HTML entities. The set of safe characters is defined as $\texttt{safe\_chars} = [\texttt{' '}, \texttt{','}, \texttt{'.'}, \texttt{'-'}, \texttt{'\_'}] \cup [\texttt{'0'}-\texttt{'9'}] \cup [\texttt{'A'}-\texttt{'Z'}] \cup [\texttt{'a'}-\texttt{'z'}]$, which can be efficiently represented using the interval algebra we formalized. Unsafe characters are transformed using the encoding function $\texttt{encode}(c) = \texttt{``\&\#''} + \texttt{toString}(\texttt{ord}(c)) + \texttt{``\;''}$. When the alphabet is set to Unicode $[\mathtt{0x0000}, \mathtt{0x10FFFF}]$, the complement $\neg\texttt{safe\_chars}$ represents all Unicode characters outside the safe set, which can also be efficiently represented using our formalized interval operations.
+% \begin{figure}[htbp]
+% \centering
+% \begin{tikzpicture}[shorten >=1pt, node distance=2.5cm, on grid, auto]
+%   % States
+%   \node[state, initial, accepting] (q0) {$q_0$};
+%   \node[state] (q1) [right=3.5cm of q0] {$q_1$};
+%   \node[state] (q2) [below=of q0] {$q_2$};
   
-  \path[->] 
-    % Transition for safe characters
-    (q0) edge[bend left=20] node[above,midway=1] {$\texttt{safe\_chars}, \texttt{id}$} (q1)
-    % Transition for unsafe characters  
-    (q0) edge[bend right=20] node[left,midway] {$\neg\texttt{safe\_chars}, \texttt{encode}$} (q2)
-    % Epsilon transitions back to q0
-    (q1) edge[bend left=30] node[below,midway] {$\varepsilon, \lambda\varepsilon$} (q0)
-    (q2) edge[bend right=20] node[right,midway] {$\varepsilon, \lambda\varepsilon$} (q0);
-\end{tikzpicture}
-\caption{SFT representation of the HTML encoding sanitizer function.}
-\label{fig:html-sanitizer-sft1}
-\end{figure}
+%   \path[->] 
+%     % Transition for safe characters
+%     (q0) edge[bend left=20] node[above,midway=1] {$\texttt{safe\_chars}, \texttt{id}$} (q1)
+%     % Transition for unsafe characters  
+%     (q0) edge[bend right=20] node[left,midway] {$\neg\texttt{safe\_chars}, \texttt{encode}$} (q2)
+%     % Epsilon transitions back to q0
+%     (q1) edge[bend left=30] node[below,midway] {$\varepsilon, \lambda\varepsilon$} (q0)
+%     (q2) edge[bend right=20] node[right,midway] {$\varepsilon, \lambda\varepsilon$} (q0);
+% \end{tikzpicture}
+% \caption{SFT representation of the HTML encoding sanitizer function.}
+% \label{fig:html-sanitizer-sft1}
+% \end{figure}
 
-We evaluate the performance of our SFT product operation by computing the product of the HTML encoding sanitizer SFT with SFAs constructed from randomly generated Unicode user inputs. This experimental setup reflects realistic usage scenarios where diverse character sets and input patterns are encountered. The experimental evaluation was conducted on a laptop with an Apple M4 processor and 24 GB of memory, with a one-minute time limit per test.
+We first evaluate the performance of our SFT product operation by computing the product of the HTML encoding sanitizer SFT shown in Figure \ref{fig:html-sanitizer-sft} (see Section \ref{sec:motivation} for motivation) with SFAs constructed from randomly generated Unicode sequences. This product represents the sanitization result produced by the SFT. The experimental evaluation was conducted on a laptop equipped with an Apple M4 processor and 24 GB of memory, with a one-minute time limit imposed for each test.
 
-Figure \ref{fig:benchmark-results} demonstrates the scalability characteristics of our SFT product implementation. The computation requires approximately 1 second for 100,000-character inputs and 10 seconds for 1,000,000-character inputs. These performance metrics confirm that our certified implementation maintains computational efficiency suitable for practical string processing applications at scale.
+
 
 \begin{figure}
 \centering
@@ -64,6 +66,8 @@ Figure \ref{fig:benchmark-results} demonstrates the scalability characteristics 
 \caption{Experimental results for the sanitizer product}
 \label{fig:benchmark-results}
 \end{figure}
+
+Figure \ref{fig:benchmark-results} demonstrates the scalability characteristics of our SFT product implementation. The computation requires approximately 1 second for 100,000-character inputs and 10 seconds for 1,000,000-character inputs. These performance metrics confirm that our certified implementation maintains computational efficiency suitable for practical string processing applications at scale.
 
 Beyond performance evaluation, our SFT formalization also supports the formal verification of string sanitizer correctness. A sanitizer transforms user inputs into safe outputs, ensuring that the result contains no unsafe characters. However, sanitizers—like any other programs—are error-prone. Manual reviews or testing alone are often insufficient to guarantee their correctness.
 
@@ -379,13 +383,15 @@ The experimental evaluation was conducted on a laptop with an Apple M4 processor
 
 We also compare our approach with two state-of-the-art string solvers: Ostrich \cite{pacmpl/ChenFHHHKLRW22} and CVC5 \cite{cvc5}.
 The experimental results demonstrate that string replacement operations, particularly replace-all operations, pose significant challenges for existing state-of-the-art solvers.
-The "unknown" label in the table indicates instances where CVC5 cannot determine satisfiability. CertiStrR outperforms both Ostrich and CVC5 across most benchmark subgroups, with the notable exception of the "Replace Str" category where CVC5 achieves better performance (though it experiences one timeout). CertiStrR demonstrates particularly strong performance in the "Replace All" category.
+The "unknown" label in the table indicates instances where CVC5 cannot determine satisfiability. 
+Notably, PCP and RNA benchmarks cannot be solved by most state-of-the-art string
+solvers, including CVC5 \cite{cvc5} and Z3Str \cite{Z3-str3}, yet CertiStrR solves
+them efficiently. Among existing solvers, only OSTRICH \cite{pacmpl/ChenFHHHKLRW22} can handle these benchmarks.
+CertiStrR outperforms both Ostrich and CVC5 across most benchmark subgroups, with the only exception of the "Replace Str" category where CVC5 achieves better performance (though it experiences one timeout). CertiStrR demonstrates particularly strong performance in the "Replace All" category.
 
 CertiStrR employs a straightforward forward-propagation algorithm \cite{cpp/KanLRS22} combined with our SFT-based modeling of replacement operations. This combination not only resolves numerous test cases that state-of-the-art solvers fail to handle (either timing out or returning unknown results), but also achieves superior performance across most benchmark subgroups. These results demonstrate the effectiveness and efficiency of our certified SFT formalization and implementation.
 
-Notably, PCP and RNA benchmarks cannot be solved by most state-of-the-art string
-solvers, including CVC4 \cite{cvc4} and Z3 \cite{Z3-str3}, yet CertiStrR solves
-them efficiently. Among existing solvers, only OSTRICH \cite{pacmpl/ChenFHHHKLRW22} can handle these benchmarks.
+
 
 
 \paragraph{Transducers vs. Replacement Operations.}  
