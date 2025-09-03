@@ -253,8 +253,9 @@ proof -
               by simp
             from this c2 p4
             show ?thesis 
-              apply (rule_tac conjI)
+              apply (subst conjI)
               apply force
+              apply (simp add: l.ins_correct(1) p1 p3)
               by (simp add: l.ins_correct(1) p1 p3)
           qed
         qed
@@ -320,18 +321,14 @@ proof -
        \<in> {(i, a).
            a = semIs ` l.\<alpha> i \<and> l.invar i \<and>
            card a = card (l.\<alpha> i) \<and> Ball (l.\<alpha> i) canonicalIs \<and> l.invar i}"
-      from \<sigma>\<sigma>'
       show "(l.ins x \<sigma>, \<sigma>' \<union> {x'})
              \<in> {(i, a).
               a = semIs ` l.\<alpha> i \<and> l.invar i \<and>
               card a = card (l.\<alpha> i) \<and> Ball (l.\<alpha> i) canonicalIs \<and> l.invar i}"
-        apply simp
-        apply (rule_tac conjI)
-        apply (simp add: l.ins_correct(1) x'x)
       proof -
-        assume p1: "\<sigma>' = semIs ` l.\<alpha> \<sigma> \<and>
+        {  assume p1: "\<sigma>' = semIs ` l.\<alpha> \<sigma> \<and>
     l.invar \<sigma> \<and> card \<sigma>' = card (l.\<alpha> \<sigma>) \<and> (\<forall>x\<in>l.\<alpha> \<sigma>. canonicalIs x) \<and> l.invar \<sigma>"
-        show "l.invar (l.ins x \<sigma>) \<and>
+        have "l.invar (l.ins x \<sigma>) \<and>
     card (insert x' (semIs ` l.\<alpha> \<sigma>)) = card (l.\<alpha> (l.ins x \<sigma>)) \<and>
     (\<forall>x\<in>l.\<alpha> (l.ins x \<sigma>). canonicalIs x) \<and> l.invar (l.ins x \<sigma>)"
         proof (cases "x \<notin> l.\<alpha> \<sigma>")
@@ -362,7 +359,14 @@ proof -
           case False
             then show ?thesis 
               by (metis image_insert insert_absorb l.ins_correct(1) l.ins_correct(2) p1 x'x)
-          qed
+          qed}
+        note sgoal = this
+        from \<sigma>\<sigma>'
+        show ?thesis
+          apply simp
+          apply (rule conjI)
+          apply (simp add: l.ins_correct(1) x'x)
+          using sgoal by auto  
         qed
   }
 qed
@@ -394,17 +398,9 @@ lemma split_mult_impl_correct:
       and f1_cons: "\<forall> a. a < f1 a \<and> (\<forall> b. a < b \<longrightarrow> f1 a \<le> b)"
      and  f2_cons: "\<forall> a. a > f2 a \<and> (\<forall> b. a > b \<longrightarrow> f2 a \<ge> b)"
   shows "(split_mult_impl f1 f2 lbs a) \<le>\<Down> sr (split_mult lbs' a')"
-  unfolding split_mult_def split_mult_impl_def 
-  apply (refine_rcg)
-  apply (subgoal_tac "inj_on semIs {a. a \<in> l.\<alpha> lbs}")
-  apply assumption
-  using S'_OK1 inj_semIs
-  apply (simp add: inj_semIs inj_on_def)
-  using S'_OK2 apply simp
-  apply (simp add: a_OK l.correct sr_def)
 proof -
-  fix x it \<sigma> x' it' \<sigma>'
-  show "x' = semIs x \<Longrightarrow>
+  { fix x it \<sigma> x' it' \<sigma>'
+    have "x' = semIs x \<Longrightarrow>
        x \<in> it \<Longrightarrow>
        x' \<in> it' \<Longrightarrow>
        it' = semIs ` it \<Longrightarrow>
@@ -443,7 +439,17 @@ proof -
   from split_sing_impl_correct[of \<sigma> \<sigma>' x x' f1 f2, OF pre1 pre2 pre3 f1_cons f2_cons]
   show "split_sing_impl f1 f2 x \<sigma> \<le> \<Down> sr (split_sing x' \<sigma>')"
     by simp
-qed
+qed} note sgoal = this
+  show ?thesis
+  unfolding split_mult_def split_mult_impl_def 
+  apply (refine_rcg)
+  apply (subgoal_tac "inj_on semIs {a. a \<in> l.\<alpha> lbs}")
+  apply assumption
+  using S'_OK1 inj_semIs
+  apply (simp add: inj_semIs inj_on_def)
+  using S'_OK2 apply simp
+   apply (simp add: a_OK l.correct sr_def)
+  using sgoal by auto
 qed
 
 
@@ -637,8 +643,7 @@ proof -
       case False
       from this xx' cnIx c2 \<sigma>qq'
       have "\<forall> a. (q, a, q') \<in> interval_to_set ` d_nfa.\<alpha> \<sigma> \<longrightarrow> a \<noteq> x'"
-        apply (rule_tac allI impI)+
-      proof -
+      proof (rule_tac allI impI)+
         fix a
         assume p1: "(q, a, q') \<in> interval_to_set ` d_nfa.\<alpha> \<sigma>"
         show "a \<noteq> x'"
@@ -680,12 +685,12 @@ proof -
       from finite\<sigma> notin cd0 plus1card
       have cd1: "card (insert (q, x', q') (interval_to_set ` d_nfa.\<alpha> \<sigma>)) = 
                 1 + card (interval_to_set ` d_nfa.\<alpha> \<sigma>)"
-        apply (rule_tac plus1card)
+        apply (subst plus1card)
         by auto
 
       have cd2: "card (insert (q, x, q') (d_nfa.\<alpha> \<sigma>)) = 
                 1 + card (d_nfa.\<alpha> \<sigma>)"
-        apply (rule_tac plus1card)
+        apply (rule plus1card)
         using False invar\<sigma> by blast
 
       from cd1 cd2
@@ -747,13 +752,11 @@ proof -
       obtain q a q' where qaq'_def: "x = (q, a, q')" 
         using interval_to_set.cases by blast
       
-      from this l\<sigma> xin itin
       show "(case x of (q, a, q') \<Rightarrow> \<lambda>S. RETURN (l.ins a S)) \<sigma>
              \<le> SPEC (\<lambda>S2. l.invar S2 \<and> l.\<alpha> S2 =
                   {uu. \<exists>q a q'. uu = a \<and> (q, a, q') \<in> {\<alpha>'. \<alpha>' \<in> d_nfa.\<alpha> T'} - (it - {x})})"
-        apply simp
       proof -
-        from l\<sigma> xin itin
+        {from l\<sigma> xin itin
         have c1: "l.\<alpha> (l.ins a \<sigma>) = {a} \<union> (l.\<alpha> \<sigma>)"
           using l.ins_correct(1) by auto
         from xin itin qaq'_def
@@ -762,14 +765,18 @@ proof -
         (qa, uu, q'a) \<in> d_nfa.\<alpha> T' \<and> ((qa, uu, q'a) \<in> it \<longrightarrow> uu = a \<and> qa = q \<and> q'a = q')} = 
         {a} \<union> {uu. \<exists>q q'. (q, uu, q') \<in> d_nfa.\<alpha> T' \<and> (q, uu, q') \<notin> it}"
           by force
-        show " l.invar (l.ins a \<sigma>) \<and>
+        have " l.invar (l.ins a \<sigma>) \<and>
     l.\<alpha> (l.ins a \<sigma>) =
     {uu.
      \<exists>qa q'a.
         (qa, uu, q'a) \<in> d_nfa.\<alpha> T' \<and> ((qa, uu, q'a) \<in> it \<longrightarrow> uu = a \<and> qa = q \<and> q'a = q')}"
           apply (rule conjI)
           using l\<sigma> l.correct apply force
-          using c1 c2 l\<sigma> by force
+          using c1 c2 l\<sigma> by force} note sgoal = this
+      from qaq'_def l\<sigma> xin itin
+      show ?thesis
+        apply simp
+        using sgoal by auto
       qed
     qed
   }
@@ -981,7 +988,7 @@ proof -
 
     from split_tran_pre1 eqxx' itin xit T_OK2
     have split_tran_pre3: "canonicalIs x1c \<and> x1a = semIs x1c"
-      apply auto    
+      apply auto [1]   
       using x_def' by force
   
     from split_tran_impl_correct[of lbs lbsa x1c x1a f1 f2 x1b x2c, 
@@ -1244,13 +1251,9 @@ lemma diffS_correct:
      and i_ok: "canonicalIs i"
    shows "semIs (diffS f1 f2 i s) = (semIs i - \<Union> {semIs x| x. x \<in> set s})
           \<and> canonicalIs (diffS f1 f2 i s)"
-  unfolding diffS_def 
-  using s_cano i_ok
-  apply (induction s arbitrary: i)
-  apply simp 
 proof -
-  fix a s i
-  show "(\<And>i. Ball (set s) canonicalIs \<Longrightarrow>
+  { fix a s i
+  have "(\<And>i. Ball (set s) canonicalIs \<Longrightarrow>
              canonicalIs i \<Longrightarrow>
              semIs (foldl (diffIs f1 f2) i s) = semIs i - \<Union> {semIs x |x. x \<in> set s}\<and>
              canonicalIs (foldl (diffIs f1 f2) i s)) \<Longrightarrow>
@@ -1284,7 +1287,13 @@ proof -
     apply simp
     by (simp add: \<open>semIs (diffIs f1 f2 i a) = semIs i - semIs a \<and> canonicalIs (diffIs f1 f2 i a)\<close> 
           ind_hyp pre set_diff_diff_left)
-    qed
+qed} note sgoal = this
+  show ?thesis
+    unfolding diffS_def 
+  using s_cano i_ok
+  apply (induction s arbitrary: i)
+   apply simp 
+  using sgoal by auto
 qed
 
 

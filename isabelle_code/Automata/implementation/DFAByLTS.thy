@@ -304,35 +304,12 @@ proof (intro nfa_rename_states.intro
   let ?nfa_\<alpha>' = "automaton_by_lts_bool_algebra_syntax.nfa_\<alpha> s_ops' d_ops' sem"
   let ?nfa_invar' = "automaton_by_lts_bool_algebra_syntax.nfa_invar s_ops' d_ops'"
   let ?nfa_invar_NFA' = "automaton_by_lts_bool_algebra_syntax.nfa_invar_NFA s_ops' d_ops'"
-  thm im.image_correct
-  from invar_weak pre
+ 
   have "?nfa_invar' (rename_states_gen_impl im im2 n f) \<and>
         ?nfa_\<alpha>' (rename_states_gen_impl im im2 n f) = 
          NFA_rename_states (nfa_\<alpha> n) f"
-    
-    apply (simp add: nfa_var 
-                     automaton_by_lts_bool_algebra_syntax.nfa_invar_def 
-                     automaton_by_lts_bool_algebra_syntax.nfa_\<alpha>_def
-                     automaton_by_lts_bool_algebra_syntax.nfa_selectors_def
-                     NFA_rename_states_def 
-                     im.image_correct im2.lts_image_correct)
-    apply (subgoal_tac "automaton_by_lts_bool_algebra_syntax.nfa_alphabet
-              (im f QL, SigL, im2 (\<lambda>qaq. (f (fst qaq), fst (snd qaq), f (snd (snd qaq)))) DL,
-               im f IL, im f FL) = SigL")
-     defer
-    using automaton_by_lts_bool_algebra_syntax.nfa_alphabet_def
-          [of sem empty_op noempty_op intersect_op diff_op elem_op 
-          canonical_op  
-          "(im f QL, SigL, im2 (\<lambda>qaq. (f (fst qaq), fst (snd qaq), f (snd (snd qaq)))) DL, im f IL,
-      im f FL)", OF pre]
-    apply fastforce
-    apply (simp add: image_iff)
-    apply (simp add: set_eq_iff)
-    apply auto[1]
-    apply (metis (no_types, lifting) Pair_inject 
-           automaton_by_lts_bool_algebra_syntax.ba_to_set.simps)
   proof -
-    fix aa a ac b 
+  { fix aa a ac b 
     assume p1: "\<forall>x. (x \<in> aa) = (x \<in> sem ac)" and
            p2: "(a, ac, b) \<in> d.\<alpha> DL" 
     from p2 have c1: "automaton_by_lts_bool_algebra_syntax.ba_to_set sem
@@ -344,10 +321,34 @@ proof (intro nfa_rename_states.intro
     from this p1 have "automaton_by_lts_bool_algebra_syntax.ba_to_set sem 
        (f a, ac, f b) = (f a, aa ,f b)"
       by (meson automaton_by_lts_bool_algebra_syntax.ba_to_set.simps pre)
-    from this c1 show "(f a, aa, f b)
-       \<in> automaton_by_lts_bool_algebra_syntax.ba_to_set sem `
+    from this c1 have "(f a, aa, f b)
+       \<in> automaton_by_lts_bool_algebra_syntax.ba_to_set sem `   
           (\<lambda>qaq. (f (fst qaq), fst (snd qaq), f (snd (snd qaq)))) ` d.\<alpha> DL"
-      by auto
+      by auto} note sgoal = this
+  from invar_weak pre
+  show ?thesis
+        apply (simp add: nfa_var 
+                     automaton_by_lts_bool_algebra_syntax.nfa_invar_def 
+                     automaton_by_lts_bool_algebra_syntax.nfa_\<alpha>_def
+                     automaton_by_lts_bool_algebra_syntax.nfa_selectors_def
+                     NFA_rename_states_def 
+                     im.image_correct im2.lts_image_correct)
+    apply (subgoal_tac "automaton_by_lts_bool_algebra_syntax.nfa_alphabet
+              (im f QL, SigL, im2 (\<lambda>qaq. (f (fst qaq), fst (snd qaq), f (snd (snd qaq)))) DL,
+               im f IL, im f FL) = SigL")
+    defer
+    using automaton_by_lts_bool_algebra_syntax.nfa_alphabet_def
+          [of sem empty_op noempty_op intersect_op diff_op elem_op 
+          canonical_op  
+          "(im f QL, SigL, im2 (\<lambda>qaq. (f (fst qaq), fst (snd qaq), f (snd (snd qaq)))) DL, im f IL,
+      im f FL)", OF pre]
+    apply fastforce
+    apply (simp add: image_iff)
+    apply (simp add: set_eq_iff)
+    apply auto[1]
+    apply (metis (no_types, lifting) Pair_inject 
+           automaton_by_lts_bool_algebra_syntax.ba_to_set.simps)
+    using sgoal by auto
   qed
   thus "?nfa_\<alpha>' (rename_states_gen_impl im im2 n f) = 
         NFA_rename_states (nfa_\<alpha> n) f"
@@ -454,20 +455,22 @@ declare nfa_construct_ba.simps [simp del]
 
 lemma nfa_construct_ba_aux_\<Sigma>: 
     "nfa_alphabet (nfa_construct_ba_aux (QL, SigL, DL, IL, FL) qlq) = SigL"
-  unfolding nfa_construct_ba_aux_def nfa_alphabet_def
-  using split
-  apply simp
 proof -
-  obtain q l q' where qlq'_def: "qlq = (q, l, q')"  
+  {obtain q l q' where qlq'_def: "qlq = (q, l, q')"  
     using ba_to_set.cases by blast
   from this
-  show "fst (snd (case qlq of
+  have "fst (snd (case qlq of
               (q1, l, q2) \<Rightarrow>
                 (s.ins q1 (s.ins q2 QL), SigL, d.add q1 
                 (intersect_op l SigL) q2 DL, IL,
                  FL))) =
     SigL"
-    using split by simp
+    using split by simp} note sgoal = this
+  show ?thesis
+  unfolding nfa_construct_ba_aux_def nfa_alphabet_def
+  using split
+  apply simp
+  using sgoal by auto
 qed
 
 lemma nfa_construct_interval_\<Sigma>: 
@@ -1076,8 +1079,7 @@ shows "NFA_construct_reachable_impl_step_ba DS qm0 n D0 q \<le>
            (\<lambda> d. ba_to_set ` d.\<alpha> d) d.invar) 
            (map_list_rel (build_rel q2_\<alpha> q2_invar))))
      (NFA_construct_reachable_abstract_impl_step S D rm (\<Delta> \<A>) 
-                                                        (q2_\<alpha> q))"
-
+                                                     (q2_\<alpha> q))"
   apply (subgoal_tac "NFA_construct_reachable_impl_step_ba DS qm0 n D0 q \<le> 
   \<Down> (rprod (build_rel state_map_\<alpha> state_map_invar) (rprod (build_rel 
            (\<lambda> d. ba_to_set ` d.\<alpha> d) d.invar) 
@@ -1143,11 +1145,13 @@ shows "NFA_construct_reachable_impl_step_ba DS qm0 n D0 q \<le>
   apply (clarify, simp add: br_def)+
   apply (rename_tac it N i1 q'' qm n D' NN r' qm' n' i2 q')
   defer
-     apply (simp add: br_def D0'_eq)
-    apply (rename_tac it N i1  q'' qm n D' NN i2 q')
+  apply (simp add: br_def D0'_eq)
+  apply (rename_tac it N i1  q'' qm n D' NN i2 q')
   defer
   apply (rename_tac it N i1 q'' qm n D' NN i2 q' r)
+  defer
 proof -
+  {
   fix it N i1 q'' qm n qm' NN r' D' n' i2 q'
   
   assume aq'_in_it: "(i2, q') \<in> it"
@@ -1263,7 +1267,7 @@ proof -
         done
       from this show ?thesis by auto
     qed
-  }
+  } note sgoal1 = this
   (*  "Consider the case that the map does not need to be extended" *)
   { fix r
     assume "qm.lookup (ff q'') qm = Some r"
@@ -1280,7 +1284,7 @@ proof -
            NFA_construct_reachable_map_OK S (state_map_\<alpha> (qm, n)) {q2_\<alpha> q'} aa \<and>
            aa (q2_\<alpha> q') = qm.lookup (ff q'') qm"
       by auto
-  }
+  } note sgoal2 = this
  
   { (* It remains to show that adding to the transition systems works. 
         Here, a case distinction
@@ -1312,7 +1316,10 @@ proof -
           q2_invar q''"   
       apply (simp add: r_intro1 r_intro2 invar_q'' )
       by (smt image_insert ba_to_set.simps)
-  } 
+  } note sgoal3 = this
+  
+} 
+
 qed
 
 
@@ -2014,10 +2021,8 @@ proof (intro nfa_determinise.intro nfa_OK dfa_by_map_correct2 nfa_determinise_ax
     by (simp add: StdSet.correct(29) ss_ops_OK)
 
   have uniq_label_n: "uniq_label_NFA (\<alpha> n)"
-    unfolding uniq_label_NFA_def 
-    apply (rule_tac allI impI)+
   proof -
-    fix q1 \<alpha>1 q1' q2 \<alpha>2 q2'
+    { fix q1 \<alpha>1 q1' q2 \<alpha>2 q2'
     assume in\<Delta>: "(q1, \<alpha>1, q1') \<in> \<Delta> (\<alpha> n) \<and>
                   (q2, \<alpha>2, q2') \<in> \<Delta> (\<alpha> n)"
 
@@ -2044,7 +2049,7 @@ proof (intro nfa_determinise.intro nfa_OK dfa_by_map_correct2 nfa_determinise_ax
       by blast
 
     from \<alpha>1I_def \<alpha>2I_def
-    show "\<alpha>1 = \<alpha>2 \<or> \<alpha>1 \<inter> \<alpha>2 = {}"
+    have "\<alpha>1 = \<alpha>2 \<or> \<alpha>1 \<inter> \<alpha>2 = {}"
     proof (cases "\<alpha>1I = \<alpha>2I")
       case True
       from this \<alpha>1I_def \<alpha>2I_def
@@ -2065,7 +2070,11 @@ proof (intro nfa_determinise.intro nfa_OK dfa_by_map_correct2 nfa_determinise_ax
           bool_algebra.intersect_intervals_sem iv by fastforce
       from this \<alpha>1I_def \<alpha>2I_def
       show ?thesis by auto
-    qed
+    qed} note sgoal = this
+  show ?thesis
+   unfolding uniq_label_NFA_def 
+   apply (rule allI impI)+
+   using sgoal by auto
   qed
 
   from I_OK[of n] I_nempty[of n]
@@ -2074,8 +2083,9 @@ proof (intro nfa_determinise.intro nfa_OK dfa_by_map_correct2 nfa_determinise_ax
 
   from invar_n nfa_OK this uniq_label_n
   have AA'_wf: "weak_DFA ?AA'"
-    apply (rule_tac determinise_NFA___DFA)
-    apply (simp add: nfa_def) 
+    apply (subst determinise_NFA___DFA)
+    apply (simp add: nfa_def)
+    apply (meson nfa.nfa_is_wellformed nfa_OK)
     by (metis prod_cases5)
 
   let ?DS' = "\<lambda> q. {x \<in> ((\<lambda>a. (a, determinise_next_state ss_ops (it_S q) (\<lambda>q. it_D n q a))) `
@@ -2137,37 +2147,6 @@ proof (intro nfa_determinise.intro nfa_OK dfa_by_map_correct2 nfa_determinise_ax
               (\<forall>a q'. (a, q') \<in> (?DS' q) \<longrightarrow>
                       (\<forall>q''. (a, q'') \<in> (?DS' q) \<longrightarrow>
                              (set_op_\<alpha> ss_ops q' = set_op_\<alpha> ss_ops q'') = (q' = q'')))" 
-      apply (simp add: D_it_OK image_iff det_next_state_eval)
-      apply (rule conjI)
-      using D_it_OK 
-      apply (subgoal_tac "{x \<in> (\<lambda>a. (a, determinise_next_state ss_ops (it_S q) (\<lambda>q. it_D n q a))) `
-         {a. \<exists>q q'. (q, a, q') \<in> T n}.
-    \<not> set_op_isEmpty ss_ops (snd x)} = {DS_q.
-      (\<exists>x. (\<exists>q q'. (q, x, q') \<in> T n) \<and>
-           DS_q = (x, determinise_next_state ss_ops (it_S q) (\<lambda>q. it_D n q x))) \<and>
-      \<not> set_op_isEmpty ss_ops (snd DS_q)}")
-        apply force
-      apply blast
-      apply (rule set_eqI)
-      apply (insert q_subset)
-      apply (auto simp add: image_iff det_next_state_eval)
-      defer
-      unfolding determinise_NFA_def
-      apply simp
-      apply (rule_tac conjI)
-      using L_OK[OF invar_n] q_nempty
-      apply auto[1] 
-      defer
-      defer
-      using T_OK q_nempty
-      apply (rule_tac conjI)
-      using q_nempty apply simp
-      apply (rule_tac conjI)
-      defer
-      using T_OK
-      apply simp
-      apply blast
-      apply (simp add: determinise_NFA_def)
     proof -
       {
         fix a x
@@ -2195,13 +2174,7 @@ proof (intro nfa_determinise.intro nfa_OK dfa_by_map_correct2 nfa_determinise_ax
            a = sem ai \<and>
            {q'. \<exists>q\<in>set_op_\<alpha> ss_ops q. (q, a, q') \<in>\<Delta> (\<alpha> n)} =
            {q'. \<exists>qa. qa \<in> set_op_\<alpha> ss_ops q \<and> (qa, ai, q') \<in> T n}"
-          apply (rule_tac conjI)
-          using ai_def apply force
-          apply (rule_tac conjI)
-          using ai_def apply force
-          using L_OK[OF invar_n]
-          apply auto
-          using qaq'_def
+         
         proof -
           {
             fix x qb
@@ -2218,11 +2191,11 @@ proof (intro nfa_determinise.intro nfa_OK dfa_by_map_correct2 nfa_determinise_ax
             have "(qb, ai, x) \<in> T n" 
               by (metis ai_def bool_algebra.inj_semIs_aux iv old.prod.case)
             from this  p1
-            show "\<exists>qa. qa \<in> set_op_\<alpha> ss_ops q \<and> (qa, ai, x) \<in> T n" by auto
-          }
+            have "\<exists>qa. qa \<in> set_op_\<alpha> ss_ops q \<and> (qa, ai, x) \<in> T n" by auto
+          } note sgoal1 = this
           {
             fix x qaa
-            show "{(q, sem a, q') |q a q'. (q, a, q') \<in> T n} = 
+            have "{(q, sem a, q') |q a q'. (q, a, q') \<in> T n} = 
                   \<Delta> (\<alpha> n) \<Longrightarrow>
        (qa, ai, q') \<in> T n \<Longrightarrow>
        a = sem ai \<Longrightarrow>
@@ -2231,7 +2204,16 @@ proof (intro nfa_determinise.intro nfa_OK dfa_by_map_correct2 nfa_determinise_ax
        qa \<in> set_op_\<alpha> ss_ops q \<and> (qa, a, q') \<in> \<Delta> (\<alpha> n) \<Longrightarrow>
        \<exists>q\<in>set_op_\<alpha> ss_ops q. (q, sem ai, x) \<in> \<Delta> (\<alpha> n)"
               by blast
-          }
+          } note sgoal2 = this
+          from ai_def show ?thesis
+           apply (subst conjI)
+          using ai_def apply force
+          apply (rule conjI)
+          using ai_def apply force
+          using L_OK[OF invar_n]
+          apply auto[1]
+          using \<open>{(q, sem a, q') |q a q'. (q, a, q') \<in> T n} = \<Delta> (\<alpha> n)\<close> qaq'_def sgoal1
+            sgoal2 by force
         qed
         from this 
         have c4: "{q'. \<exists>qa. qa \<in> set_op_\<alpha> ss_ops q \<and> (qa, ai, q') \<in> T n} \<noteq> {}"
@@ -2252,14 +2234,14 @@ proof (intro nfa_determinise.intro nfa_OK dfa_by_map_correct2 nfa_determinise_ax
           by (simp add: StdSet.correct(12) ss_ops_OK)
 
         from this c1
-        show "\<exists>aa. (\<exists>q q'. (q, aa, q') \<in> T n) \<and>
+        have "\<exists>aa. (\<exists>q q'. (q, aa, q') \<in> T n) \<and>
             \<not> set_op_isEmpty ss_ops
                 (determinise_next_state ss_ops (it_S q) (\<lambda>q. it_D n q aa)) \<and>
             a = sem aa \<and>
             {q'. \<exists>q\<in>set_op_\<alpha> ss_ops q. (q, a, q') \<in> \<Delta> (\<alpha> n)} =
             set_op_\<alpha> ss_ops (determinise_next_state ss_ops (it_S q) (\<lambda>q. it_D n q aa))"
           using c3 by fastforce
-      }
+      } note sgoal1 = this
       {
         fix x aa qa q' xa xb
         assume p1: "(qa, aa, q') \<in> T n"
@@ -2273,9 +2255,9 @@ proof (intro nfa_determinise.intro nfa_OK dfa_by_map_correct2 nfa_determinise_ax
         have "xb \<in> {q'. \<exists>qa. qa \<in> set_op_\<alpha> ss_ops q \<and> (qa, aa, q') \<in> T n}"
           by blast
         from this L_OK[OF invar_n]
-        show "\<exists>q\<in>set_op_\<alpha> ss_ops q. (q, sem aa, xb) \<in> \<Delta> (\<alpha> n)"
+        have "\<exists>q\<in>set_op_\<alpha> ss_ops q. (q, sem aa, xb) \<in> \<Delta> (\<alpha> n)"
           by blast
-      }
+      } note sgoal2 = this
       {
         fix x aa qa q' xa xb qaa
         assume p1: "qaa \<in> set_op_\<alpha> ss_ops q"
@@ -2302,10 +2284,10 @@ proof (intro nfa_determinise.intro nfa_OK dfa_by_map_correct2 nfa_determinise_ax
         have "xb \<in> {q'. \<exists>qa. qa \<in> set_op_\<alpha> ss_ops q \<and> (qa, aa, q') \<in> T n}"
           by auto
         from this c1
-        show "xb \<in> set_op_\<alpha> ss_ops (determinise_next_state ss_ops (it_S q) 
+        have "xb \<in> set_op_\<alpha> ss_ops (determinise_next_state ss_ops (it_S q) 
                                         (\<lambda>q. it_D n q aa))"
           by auto
-      }
+      } note sgoal3 = this
       {
         fix x aa qa q'
         assume p1: "(qa, aa, q') \<in> T n"
@@ -2325,10 +2307,51 @@ proof (intro nfa_determinise.intro nfa_OK dfa_by_map_correct2 nfa_determinise_ax
         q1aaq2: "q1 \<in> set_op_\<alpha> ss_ops q \<and> (q1, aa, q2) \<in> T n" 
           by auto
         from L_OK[OF invar_n] q1aaq2
-        show " \<exists>qa. qa \<in> set_op_\<alpha> ss_ops q \<and>
+        have " \<exists>qa. qa \<in> set_op_\<alpha> ss_ops q \<and>
             (\<exists>q'. (qa, sem aa, q') \<in> \<Delta> (\<alpha> n))"
           by force
-      }
+      } note sgoal4 = this
+      show ?thesis
+            apply (simp add: D_it_OK image_iff det_next_state_eval)
+      apply (rule conjI)
+      using D_it_OK 
+      apply (subgoal_tac "{x \<in> (\<lambda>a. (a, determinise_next_state ss_ops (it_S q) (\<lambda>q. it_D n q a))) `
+         {a. \<exists>q q'. (q, a, q') \<in> T n}.
+    \<not> set_op_isEmpty ss_ops (snd x)} = {DS_q.
+      (\<exists>x. (\<exists>q q'. (q, x, q') \<in> T n) \<and>
+           DS_q = (x, determinise_next_state ss_ops (it_S q) (\<lambda>q. it_D n q x))) \<and>
+      \<not> set_op_isEmpty ss_ops (snd DS_q)}")
+        apply force
+      apply blast
+      apply (rule set_eqI)
+      apply (insert q_subset)
+      apply (auto simp add: image_iff det_next_state_eval)
+      defer
+      unfolding determinise_NFA_def
+      apply simp
+      apply (rule conjI)
+      using L_OK[OF invar_n] q_nempty
+      apply auto[1] 
+      defer
+      defer
+      using T_OK q_nempty
+      apply (rule_tac conjI)
+      using q_nempty 
+      apply simp
+      apply (rule conjI)
+      defer
+      using T_OK
+      apply simp
+      apply blast
+      apply (simp add: determinise_NFA_def)
+      using sgoal1 sgoal2 sgoal3 sgoal4
+      apply presburger
+      using sgoal1 sgoal2 sgoal3 sgoal4
+      apply meson
+      using sgoal1 sgoal2 sgoal3 sgoal4
+      apply meson
+      using sgoal1 sgoal2 sgoal3 sgoal4
+      by meson
     qed
       
   } note D_it_OK' = this   
@@ -2349,12 +2372,12 @@ proof (intro nfa_determinise.intro nfa_OK dfa_by_map_correct2 nfa_determinise_ax
           (nfa_\<alpha> (determinise_impl_aux const ss_ops ff it_A it_D it_S I A FP n))
           (efficient_determinise_NFA (\<alpha> n))"
     unfolding determinise_impl_aux_def efficient_determinise_NFA_def
-    apply (rule_tac construct_correct) 
+    apply (rule construct_correct) 
     apply (simp_all add: I_OK[OF invar_n] A_OK[OF invar_n] FP_OK[OF invar_n]
                          f_props  determinise_NFA_def ff_OK[OF invar_n]
                          A_OK'[OF invar_n] )
     using f_props 
-       apply (simp add: inj_on_def)
+    apply (simp add: inj_on_def)
     defer
     using labels_OK1
     apply force
@@ -2369,8 +2392,7 @@ proof (intro nfa_determinise.intro nfa_OK dfa_by_map_correct2 nfa_determinise_ax
                 \<in> (\<lambda>a. (a, determinise_next_state ss_ops (it_S q) (\<lambda>q. it_D n q a))) `
                    {a. \<exists>q q'. (q, a, q') \<in> T n}) \<and>
            \<not> set_op_isEmpty ss_ops q'} \<longrightarrow> set_op_invar ss_ops q'"
-        apply (rule_tac allI impI)+
-      proof -
+      proof (rule allI impI)+
         fix q'
         assume p2: "q' \<in> {q'. (\<exists>a. (a, q')
                          \<in> (\<lambda>a. (a, determinise_next_state ss_ops (it_S q)
@@ -2735,8 +2757,7 @@ lemma set_iteratei_alt_D :
    invar s \<Longrightarrow> set_iterator (\<lambda>c f \<sigma>. it s c f \<sigma>) (\<alpha> s)"
 by (simp add: set_iteratei_alt_def)
 lemma nfa_labels_invar: "d_nfa.invar (nfa.nfa_trans n) \<longrightarrow> lt.invar (nfa.nfa_labels n)"
-  apply (rule impI)
-proof -
+proof (rule impI)
   assume n_invar: "d_nfa.invar (nfa.nfa_trans n)"
   obtain q1 a1 d1 i1 f1 where n_def: "n = (q1, a1, d1, i1, f1)" 
     using prod_cases5 by blast
@@ -2785,10 +2806,12 @@ proof -
         have "x \<in> {uu. \<exists>q q'. (q, uu, q') \<in> set (dl)}" by auto
         from this
         have "x \<in> lt.\<alpha> (nfa.nfa_tranlabel dl)"
-          apply (induction dl)
-          apply simp
-        proof -
-          fix a dl
+        proof (induction dl)
+          {
+            show "x \<in> {uu. \<exists>q q'. (q, uu, q') \<in> set []} \<Longrightarrow> x \<in> lt.\<alpha> (nfa.nfa_tranlabel [])"
+              by simp
+          }
+         fix a dl
           assume p1: "x \<in> {uu. \<exists>q q'. (q, uu, q') \<in> set dl} \<Longrightarrow> x \<in> lt.\<alpha> (nfa.nfa_tranlabel dl)"
               and p2: "x \<in> {uu. \<exists>q q'. (q, uu, q') \<in> set (a # dl)}"
 
@@ -2833,9 +2856,14 @@ proof -
 
         from invardl
         have "lt.\<alpha> (nfa.nfa_tranlabel dl) = {a | q a q'. (q, a, q') \<in> set dl}"
-          apply (induction dl)
-          using lt.correct apply simp 
-        proof -
+          
+          
+        proof (induction dl)
+          {
+            show "lt.invar (nfa.nfa_tranlabel []) \<Longrightarrow>
+    lt.\<alpha> (nfa.nfa_tranlabel []) = {uu. \<exists>q a q'. uu = a \<and> (q, a, q') \<in> set []}"
+            using lt.correct by simp 
+          }
           fix a dl  
           assume ind: "(lt.invar (nfa.nfa_tranlabel dl) \<Longrightarrow>
                lt.\<alpha> (nfa.nfa_tranlabel dl) = {uu. \<exists>q a q'. uu = a \<and> (q, a, q') \<in> set dl})"

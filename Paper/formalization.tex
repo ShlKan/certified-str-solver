@@ -4,7 +4,7 @@
 
 In this section, we present our formalization of SFTs. We begin by outlining the basic architecture of our Isabelle/HOL formalization, which is organized into three distinct layers.
 
-The \textbf{abstract layer} defines transition labels as \textbf{sets}, states are stored in sets as well.  This abstract formalization, which abstracts away implementation details, enables straightforward correctness proofs for SFT operations.
+The \textbf{abstract layer} represents transition labels as \textbf{sets}, with states likewise stored in sets. This abstraction, which deliberately omits implementation details, closely aligns with the SFT definitions presented in Section~\ref{sec:sft}.
 
 The \textbf{implementation layer} refines the abstract transition labels to a locale where a boolean algebra is defined as type variable $'\texttt{b}$ together with a collection of operations and assumptions. State sets are refined using Refine\_Monadic \cite{Refine_Monadic-AFP}, a framework in Isabelle/HOL for data refinement that automatically transforms general sets into efficient data structures such as hashmaps and red-black trees.
 
@@ -42,7 +42,7 @@ Accepting a set of $'a$ elements aims to express the same but more abstract sema
 %
 The value $\texttt{None}$ represents the empty string $\varepsilon$ in our formalization, indicating a transition that consumes no input but may still produce output elements. This design choice facilitates the modeling of real-world applications in SFTs, as we will demonstrate in our application to string solvers.
 
-The second element of type $'i$ serves as an index into the output function space. 
+The second element of type $'i$ in LTTS serves as an index into the output function space. 
 %
 We use indices instead of functions themselves to enable the reuse of the same output functions for different transitions.
 %
@@ -140,7 +140,7 @@ Given a trace $\pi$, we define two key projection functions:
 (1) \texttt{inputE}, which corresponds to ${in}(\pi)$ and extracts the input sequence
 (2) \texttt{outputE}, which corresponds to ${out}(\pi)$ and extracts the output sequence.
 
-The definition \texttt{outputL} generalizes \texttt{outputE} to characterize the set of all possible outputs that an SFT $\mathcal{T}$ can generate when processing inputs from the language accepted by the SFA $\mathcal{A}$. The reachability of a trace $\pi$ between states $q$ and $q'$ in an SFT $\mathcal{T}$ is verified by the predicate $\texttt{LTTS\_reachable}~\mathcal{T}~q~\pi~q'$.
+The definition \texttt{outputL} generalizes \texttt{outputE} to characterize the set of all possible outputs that an SFT $\mathcal{T}$ can generate when processing inputs from the language accepted by the SFA $\mathcal{A}$. The reachability of a trace $\pi$ between states $q$ and $q'$ is checked by the predicate $\texttt{LTTS\_reachable}~\mathcal{T}~q~\pi~q'$.
 
 
 
@@ -201,7 +201,7 @@ The conclusion, marked by \textcolor{blue}{\texttt{shows}}, demonstrates that th
 
 \subsection{Implementation Layer Refinement}
 \label{sec_alg_refinement}
-Having established the abstract definition of the SFT product operation in Section \ref{sec:abstract-layer}, we now present its algorithmic refinement. This section introduces an efficient implementation of the product construction and refines the abstract representation of transition labels to a concrete interval algebra, enabling practical computation.
+Having introduced the abstract definition of the SFT product operation in Section \ref{sec:abstract-layer}, we now turn to its algorithmic refinement. In this section, we present an efficient implementation of the product construction and refine the representation of transition labels into a Boolean algebra locale, which serves as the interface structure.
 
 
 \paragraph{Boolean Algebra Locale}
@@ -313,7 +313,7 @@ A central algorithmic challenge in our implementation lies in the computation of
 
 
 \begin{figure}[hbt!]
-\begin{lstlisting}[language=SMTLIB]
+\begin{lstlisting}
 definition subtrans_comp where
 "subtrans_comp M q |$\alpha$| f q|$'$| F fe T D1 D2 =
  FOREACH {t.t|$\in$|T} (|$\lambda$| (q1,|$\alpha'$|,q1|$'$|) (D1,D2).
@@ -380,7 +380,7 @@ In our formalization, we refine the sets of storing states and transitions to re
 
 \subsection{Interval Implementation}
 
-Finally, we present the implementation of the interval algebra.
+Finally, we present the implementation of the interval algebra which implements all operations defined in boolean algebra locale.
 An interval is defined as a pair $(i, j)$ (represented as $[i-j]$ as well in the paper) representing the set $\{e \mid i \leq e \leq j\}$. To achieve greater expressiveness, our formalization extends this notion to interval lists of the form $[(i_1, j_1), \ldots, (i_n, j_n)]$, which denote the set $\bigcup_{1\leq k\leq n}\{e \mid i_k \leq e \leq j_k\}$. This generalization offers two key advantages: it enables more compact representation of transitions in SFAs and SFTs through merging, and it allows for efficient handling of interval operations without unnecessary splitting. For example, the set difference between intervals $(1, 5)$ and $(3, 4)$ can be directly represented as the interval list $[(1, 2), (5, 5)]$, which is also an interval.
 
 
