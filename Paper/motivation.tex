@@ -2,7 +2,8 @@
 \label{sec:motivation}
 
 Web applications frequently require string manipulation operations that must handle untrusted user input securely.
-We present a concrete example demonstrating how mutation XSS vulnerabilities can arise from improper string sanitization, illustrating the important role of SFTs
+XSS (Cross-Site Scripting) attacks are among top 3 security vulnerabilities in web applications according to OWASP~\cite{owasp-top10}.
+We present a concrete example from \cite{LB16} demonstrating how mutation XSS vulnerabilities can arise from improper string sanitization, illustrating the important role of SFTs
 can play in the verification.
 Listing \ref{lst-web-security} shows a code snippet that is vulnerable to mutation XSS attacks.
 
@@ -79,12 +80,12 @@ catElem.innerHTML = '<button onclick=
 "createCatList(\'' + y + '\')">' + x + '</button>';
 \end{lstlisting}
 
-The code assigns an HTML markup for a button to the DOM element \texttt{catElem}. This button creates a category named \texttt{cat}, whose value is provided by an untrusted third party. To mitigate potential security risks, the code attempts to sanitize the value of \texttt{cat} using the Closure Library~\cite{closure-library} string functions \texttt{htmlEscape} and \texttt{escapeString} (the latter implements JavaScript escaping). 
+The code assigns an HTML markup for a button to the DOM element \texttt{catElem}. This button creates a category named \texttt{cat}, whose value is provided by an untrusted third party. To mitigate potential security risks, the code attempts to sanitize the value of \texttt{cat} using the Closure Library~\cite{google-closure-library} string functions \texttt{htmlEscape} and \texttt{escapeString} (the latter implements JavaScript escaping). 
 
 When the input value \texttt{Flora \& Fauna} is provided for \texttt{cat}, the resulting HTML markup is as intended:
 \begin{verbatim}
-<button onclick="createCatList('Flora \&amp; Fauna')">
-Flora \&amp; Fauna</button>
+<button onclick="createCatList('Flora \&amp; Fauna
+')"> Flora \&amp; Fauna</button>
 \end{verbatim}
 On the other hand, inputting the value ');alert(1);// to cat,
 results in the HTML markup:
@@ -93,9 +94,10 @@ results in the HTML markup:
   //')"> &#39;);alert(1);//')</button>
 \end{verbatim}
 
-When this markup is inserted into the DOM via \texttt{innerHTML}, the browser implicitly performs a transduction: it first HTML-unescapes the value inside the \texttt{onclick} attribute, which enables the attacker’s script \texttt{alert(1)} to execute after \texttt{createCatList}. This subtle XSS vulnerability—a form of mutation XSS~\cite{mutation-xss}—arises not from the absence of escaping functions, but from applying them in the wrong order.
+When this markup is inserted into DOM via \texttt{innerHTML}, the browser implicitly performs a transduction: it first HTML-unescapes the value inside the \texttt{onclick}, which enables the attacker’s script \texttt{alert(1)} to execute after \texttt{createCatList}. This subtle XSS vulnerability arises not from the absence of escaping functions, but from applying them in the wrong order.
 
-Both \texttt{htmlEscape} and \texttt{escapeString} can be naturally modeled as SFTs, since they transform input strings into output strings. The above code snippet can be represented by the following string constraints (where $w_1$, $w_2$, and $w_3$ are constant strings):
+Both \texttt{htmlEscape} and \texttt{escapeString} can be naturally modeled as SFTs, since they transform input strings into output strings. The above code snippet can be represented by the following string constraints (where \texttt{w\_1},
+\texttt{w\_2}, and \texttt{w\_3} are constant strings):
 
 \begin{verbatim}
   1. x = SFT_htmlEscape(cat)
