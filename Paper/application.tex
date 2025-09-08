@@ -1,63 +1,64 @@
 \section{Applications and Evaluation}
 \label{sec:application}
-We evaluate our formalization and implementation of the SFT product operation across two key application domains: string sanitization and string replacement in string solving. These case studies highlight the practical value of our certified SFT product operation in real-world scenarios.
+We evaluate our formalization and implementation of the SFT product operation across two key application domains: string sanitization and string replacement in string solving. These case studies highlight the practical value of our certified SFT formalization in real-world scenarios.
 \subsection{Sanitizer}
 
-An important application of our formalization lies in string sanitization for web applications. Sanitizers are crucial for preventing security vulnerabilities such as cross-site scripting (XSS) attacks by ensuring that user inputs are properly encoded before rendering in web browsers. 
+Sanitizers are crucial for preventing security vulnerabilities such as cross-site scripting (XSS) attacks by ensuring that user inputs are properly encoded before rendering in web browsers.
 
-% Listing \ref{lst-html-encode} presents a C\# code snippet implementing an HTML encoding function—a fundamental sanitization operation. This function iterates through each character in the input string and encodes characters that are unsafe for HTML rendering.
+Listing \ref{lst-html-encode} presents a C\# code snippet implementing an HTML encoding function for Anti-XSS. This function iterates through each character in the input string and encodes characters that are unsafe for HTML rendering.
 
 
 
-% \begin{lstlisting}[language={[Sharp]C}, caption={C\# Code for AntiXSS.EncodeHtml version 2.0.}, label={lst-html-encode}, float=htbp]
-% static string EncodeHtml(string t)
-% {
-%   if (t == null) { return null; }
-%   if (t.Length == 0) {
-%     return string.Empty;
-%   }
-%   StringBuilder builder = new
-%     StringBuilder("", t.Length * 2);
-%   foreach (char c in t) {
-%     if ((((c > ''') && (c < '{')) |$\mid\mid$|
-%          ((c > '@') && (c < '['))) |$\mid\mid$|
-%          (((c == ' ') || ((c > '/') && (c < ':'))) |$\mid\mid$|
-%          (((c == '.') || (c == ',')) |$\mid\mid$|
-%          ((c == '-') || (c == '_'))))) {
-%           builder.Append(c);
-%       }
-%       else {
-%           builder.Append("&#" +
-%           ((int) c).ToString() + ";");
-%       }
-%   }
-%   return builder.ToString();
-% }
-% \end{lstlisting}
+\begin{lstlisting}[language={[Sharp]C}, caption={C\# Code for AntiXSS.EncodeHtml version 2.0.}, label={lst-html-encode}, float=htbp]
+static string EncodeHtml(string t)
+{
+  if (t == null) { return null; }
+  if (t.Length == 0) {
+    return string.Empty;
+  }
+  StringBuilder builder = new
+    StringBuilder("", t.Length * 2);
+  foreach (char c in t) {
+    if ((((c > ''') && (c < '{')) |$\mid\mid$|
+         ((c > '@') && (c < '['))) |$\mid\mid$|
+         (((c == ' ') || ((c > '/') && (c < ':'))) |$\mid\mid$|
+         (((c == '.') || (c == ',')) |$\mid\mid$|
+         ((c == '-') || (c == '_'))))) {
+          builder.Append(c);
+      }
+      else {
+          builder.Append("&#" +
+          ((int) c).ToString() + ";");
+      }
+  }
+  return builder.ToString();
+}
+\end{lstlisting}
 
-% Figure \ref{fig:html-sanitizer-sft} illustrates the SFT representation of the HTML encoding sanitizer function. The transducer accepts any input string and produces an output where safe characters are preserved using the identity function $\texttt{id}$, while unsafe characters are encoded as HTML entities. The set of safe characters is defined as $\texttt{safe\_chars} = [\texttt{' '}, \texttt{','}, \texttt{'.'}, \texttt{'-'}, \texttt{'\_'}] \cup [\texttt{'0'}-\texttt{'9'}] \cup [\texttt{'A'}-\texttt{'Z'}] \cup [\texttt{'a'}-\texttt{'z'}]$, which can be efficiently represented using the interval algebra we formalized. Unsafe characters are transformed using the encoding function $\texttt{encode}(c) = \texttt{``\&\#''} + \texttt{toString}(\texttt{ord}(c)) + \texttt{``\;''}$. When the alphabet is set to Unicode $[\mathtt{0x0000}, \mathtt{0x10FFFF}]$, the complement $\neg\texttt{safe\_chars}$ represents all Unicode characters outside the safe set, which can also be efficiently represented using our formalized interval operations.
-% \begin{figure}[htbp]
-% \centering
-% \begin{tikzpicture}[shorten >=1pt, node distance=2.5cm, on grid, auto]
-%   % States
-%   \node[state, initial, accepting] (q0) {$q_0$};
-%   \node[state] (q1) [right=3.5cm of q0] {$q_1$};
-%   \node[state] (q2) [below=of q0] {$q_2$};
+Figure \ref{fig:html-sanitizer-sft} illustrates the SFT representation of the HTML encoding sanitizer function.
+ The set of safe characters is defined as $\texttt{safe\_chars} = [\texttt{' '}, \texttt{','}, \texttt{'.'}, \texttt{'-'}, \texttt{'\_'}] \cup [\texttt{'0'}-\texttt{'9'}] \cup [\texttt{'A'}-\texttt{'Z'}] \cup [\texttt{'a'}-\texttt{'z'}]$, which can be efficiently represented using the interval algebra we formalized. Unsafe characters are transformed using the encoding function $\texttt{encode}(c) = \texttt{``\&\#''} + \texttt{toString}(\texttt{ord}(c)) + \texttt{``\;''}$. When the alphabet is set to Unicode $[\mathtt{0x0000}, \mathtt{0x10FFFF}]$, the complement $\neg\texttt{safe\_chars}$ represents all Unicode characters outside the safe set, which can also be efficiently represented using our formalized interval operations. \texttt{id}, \texttt{encode}, and $\lambda \_.\varepsilon$ are the identity, encode of unsafe characters, and empty word output functions, respectively.
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[shorten >=1pt, node distance=2.5cm, on grid, auto]
+  % States
+  \node[state, initial, accepting] (q0) {$q_0$};
+  \node[state] (q1) [right=3.5cm of q0] {$q_1$};
+  \node[state] (q2) [below=of q0] {$q_2$};
   
-%   \path[->] 
-%     % Transition for safe characters
-%     (q0) edge[bend left=20] node[above,midway=1] {$\texttt{safe\_chars}, \texttt{id}$} (q1)
-%     % Transition for unsafe characters  
-%     (q0) edge[bend right=20] node[left,midway] {$\neg\texttt{safe\_chars}, \texttt{encode}$} (q2)
-%     % Epsilon transitions back to q0
-%     (q1) edge[bend left=30] node[below,midway] {$\varepsilon, \lambda\varepsilon$} (q0)
-%     (q2) edge[bend right=20] node[right,midway] {$\varepsilon, \lambda\varepsilon$} (q0);
-% \end{tikzpicture}
-% \caption{SFT representation of the HTML encoding sanitizer function.}
-% \label{fig:html-sanitizer-sft1}
-% \end{figure}
+  \path[->] 
+    % Transition for safe characters
+    (q0) edge[bend left=20] node[above,midway=1] {$\texttt{safe\_chars}, \texttt{id}$} (q1)
+    % Transition for unsafe characters  
+    (q0) edge[bend right=20] node[left,midway] {$\neg\texttt{safe\_chars}, \texttt{encode}$} (q2)
+    % Epsilon transitions back to q0
+    (q1) edge[bend left=30] node[below,midway] {$\varepsilon, \lambda \_.\varepsilon$} (q0)
+    (q2) edge[bend right=20] node[right,midway] {$\varepsilon, \lambda \_.\varepsilon$} (q0);
+\end{tikzpicture}
+\caption{SFT representation of the HTML encoding sanitizer function.}
+\label{fig:html-sanitizer-sft}
+\end{figure}
 
-We first evaluate the performance of our SFT product operation by computing the product of the HTML encoding sanitizer SFT shown in Figure \ref{fig:html-sanitizer-sft} (see Section \ref{sec:motivation} for motivation) with SFAs constructed from randomly generated Unicode sequences. This product represents the sanitization result produced by the SFT. The experimental evaluation was conducted on a laptop equipped with an Apple M4 processor and 24 GB of memory, with a one-minute time limit imposed for each test.
+We first evaluate the performance of our SFT product operation by computing the product of the HTML encoding sanitizer SFT shown in Figure \ref{fig:html-sanitizer-sft} with SFAs constructed from randomly generated Unicode sequences. This product represents the sanitization result produced by the SFT. The experimental evaluation was conducted on a laptop equipped with an Apple M4 processor and 24 GB of memory, with a one-minute time limit imposed for each test.
 
 
 
@@ -93,7 +94,7 @@ Moreover, santizers are usually used in combination with other sanitizers to ens
                            & Trim + escapeString: \textbf{Safe} & 4/17 \\
                            & Trim + OWASP HTMLEncode: \textbf{Safe} & 4/18 \\
     \midrule
-    attack\_javascript     & GA Htmlescape + GA PreEscape + & 3/20 \\
+    attack\_javascript     & GA HtmlEscape + GA PreEscape + & 3/20 \\
                            &  gaSnippetesc: \textbf{safe} & \\
     \midrule
     attack\_json           & Trim + GA JSONESc : \textbf{Safe} & 4/16\\
@@ -109,7 +110,7 @@ Moreover, santizers are usually used in combination with other sanitizers to ens
 
 Table \ref{tab:sanitizer_attack} summarizes the verification results for various sanitizers against different attack models. The first column lists the attack models, the second column indicates whether the sanitizer is classified as safe or unsafe with respect to the attack, and the third column reports the size of the transducers used in the verification, given as [number of states/number of transitions]. For composed SFTs, the size reflects the total number of states and transitions across all SFTs.
 
-We evaluate a range of attack models for HTML, JavaScript, JSON, XML, and CSS. Listing \ref{lst-css-attack} shows the CSS attack model, which is used to verify the corresponding sanitizer. The attack model includes comments, declaration breakers, and known dangerous tokens such as \textbf{expression(}, \textbf{@import}, \textbf{behavior:}, \textbf{-moz-binding}, and \textbf{url(} (unless the URL is separately validated). Sanitizers include GA HtmlEscape, GA JSONEscape, GA XMLEscape, escapeString, and GA CleanseCSS, where "GA" means from Google. Sanitizers are often composed with preprocessing steps such as Trim, which removes leading and trailing whitespace characters. As shown in the table, GAHtmlEscape and escapeString are unsafe with respect to the HTML attack model without preprocessing, but become safe when combined with Trim. The \textbf{Size} column demonstrates the expressive power and succinctness of SFTs in modeling real-world transducers. We did not list the execution time of verification because all of them are quite efficent with less than 0.02 second to finish the verificaiton.
+We evaluate a range of attack models for HTML, JavaScript, JSON, XML, and CSS. Listing \ref{lst-css-attack} shows the CSS attack model, which is used to verify the corresponding sanitizer. The attack model includes comments, declaration breakers, and known dangerous tokens such as \textbf{expression(}, \textbf{@import}, \textbf{behavior:}, \textbf{-moz-binding}, and \textbf{url(} (unless the URL is separately validated). Sanitizers include GA HtmlEscape, GA JSONEscape, GA XMLEscape, escapeString, and CleanseCSS, where "GA" means from Google Analytics. Sanitizers are often composed with preprocessing steps such as Trim, which removes leading and trailing whitespace characters. As shown in the table, GAHtmlEscape and escapeString are unsafe with respect to the HTML attack model without preprocessing, but become safe when combined with Trim. The \textbf{Size} column demonstrates the expressive power and succinctness of SFTs in modeling real-world transducers. We did not list the execution time of verification because all of them are quite efficent with less than 0.02 second to finish the verificaiton.
 
 
 
@@ -129,30 +130,102 @@ We evaluate a range of attack models for HTML, JavaScript, JSON, XML, and CSS. L
 
 %\subsection{Modeling the Replacement Operation}
 
-% The string replacement, denoted as
-% $\texttt{replace}(\texttt{str}, \texttt{pattern}, \newline\texttt{replacement}, \texttt{flag})$, is a fundamental string transformation accepting four parameters:
-% \begin{itemize}
-%   \item $\texttt{str}$: The input string to be transformed.
-%   \item $\texttt{pattern}$: A regular expression defining the matching criteria.
-%   \item $\texttt{replacement}$: The string that replaces matched substrings.
-%   \item $\texttt{flag}=s/g$: The replacement mode flag, where $s$ denotes single occurrence replacement and $g$ denotes replace-all operation.
-% \end{itemize}
+\subsection{Applications to String Replacement}
+
+The string replacement, denoted as
+$\texttt{replace}(\texttt{str}, \texttt{pattern}, \newline\texttt{replacement}, \texttt{flag})$, is a fundamental string transformation accepting four parameters:
+(1) $\texttt{str}$: The input string to be transformed.
+(2) $\texttt{pattern}$: A regular expression defining the matching criteria.
+(3) $\texttt{replacement}$: The string that replaces matched substrings.
+(4) $\texttt{flag}=s/g$: The replacement mode flag, where $s$ denotes single first occurrence replacement and $g$ denotes all occurrences replace operation.
 
 % The operation's semantics is to replace the first occurrence (or all occurrences) of any substring $s'$ in \texttt{str} that matches $\texttt{pattern}$ with \texttt{replacement}.
 
-% To illustrate how SFTs model this operation, consider $\texttt{replace}(s, \texttt{/[0-9]+/}, "\texttt{NUM}", \texttt{flag})$. We construct the SFT representation through three steps:
+To illustrate how SFTs model this operation, consider $\texttt{replace}(s, \texttt{/[0-9]+/}, "\texttt{NUM}", \texttt{flag})$. We construct the corresponding SFT by the following three steps.
 
-% \begin{enumerate}
-%   \item Construct an SFA recognizing the pattern $\texttt{/[0-9]+/}$ and transform it into an SFT by augmenting each transition with output function "$f = \lambda x.~\texttt{None}$" that produces the empty string.
-%   \item Construct an SFA accepting the replacement string "\texttt{NUM}". Since constant strings are specialized regular expressions, we build their SFA representation and convert it to an SFT by adding $\varepsilon$-transitions with output functions that emit the replacement characters sequentially.
-%   \item Compose the two SFTs by connecting the accepting state of the pattern-matching SFT to the initial state of the replacement-generating SFT via $\varepsilon$-transitions.
-% \end{enumerate}
-
-
-% \noindent\emph{Step 1.}
-% Figure \ref{fig-snfa-pattern} illustrates the construction of the pattern-matching component. The left side shows the SFA that recognizes the regular expression $\texttt{/[0-9]+/}$, while the right side presents its transformation into an SFT. This transformation is achieved by augmenting each transition with the output function $\texttt{f} = \lambda x.~\texttt{None}$, which consistently produces the empty string, effectively "consuming" the matched digits without generating output.
+\begin{enumerate}
+  \item Construct an SFA recognizing the pattern $\texttt{/[0-9]+/}$ and transform it into an SFT by augmenting each transition with output function "$f = \lambda x.~\texttt{None}$" that produces the empty string.
+  \item Construct an SFA accepting the replacement string "\texttt{NUM}". Since constant strings are specialized regular expressions, we build their SFA representation and convert it to an SFT by adding $\varepsilon$-transitions with output functions that emit the replacement characters sequentially.
+  \item Compose the two SFTs by connecting the accepting state of the pattern-matching SFT to the initial state of the replacement-generating SFT via $\varepsilon$-transitions.
+\end{enumerate}
 
 
+%\noindent\emph{Step 1.}
+%Figure \ref{fig-snfa-pattern} illustrates the construction of the pattern-matching component. The left side shows the SFA that recognizes the regular expression $\texttt{/[0-9]+/}$, while the right side presents its transformation into an SFT. This transformation is achieved by augmenting each transition with the output function $\texttt{f} = \lambda x.~\texttt{None}$, which consistently produces the empty string, effectively "consuming" the matched digits without generating output.
+
+Figure \ref{fig-rearranged-automata} presents the complete SFT construction, obtained by composing the pattern-matching SFT generated from \texttt{/[0-9]+/}  with the replacement-generating SFT generated from "\texttt{NUM}", where the function \texttt{f} is defined as "$f = \lambda x.~\texttt{None}$" and the function \texttt{g} is defined as:
+\[
+\texttt{g} = \lambda~i~x.~\texttt{match}~i~\texttt{with}~
+\begin{cases}
+1 \mapsto [(78, 78)] & \text{(ASCII for 'N')} \\
+2 \mapsto [(85, 85)] & \text{(ASCII for 'U')} \\
+3 \mapsto [(77, 77)] & \text{(ASCII for 'M')} \\
+\_ \mapsto \texttt{None}
+\end{cases}
+\]
+
+\begin{figure}[h] \centering
+  \begin{tikzpicture}[shorten >=1pt, node distance=2cm, auto]
+    % Second automaton from the first figure
+    \node[state, initial] (q0') {$q_0'$}; 
+    \node[state] (q1') [right=of q0'] {$q_1'$}; 
+  
+     \path[->] 
+     (q0') edge [bend left] node {\texttt{[0-9]}, $\texttt{f}$} (q1')
+     (q1') edge [loop right] node {\texttt{[0-9]}, $\texttt{f}$} (q1');
+  
+    % Second automaton from the second figure
+    \node[state] (q0'') [below=1cm of q1'] {$q_0''$}; 
+    \node[state] (q1'') [right=of q0''] {$q_1''$}; 
+    \node[state, accepting] (q3'') [below=1cm of q0''] {$q_3''$}; 
+    \node[state] (q2'') [right=of q3''] {$q_2''$}; 
+  
+    \path[->] 
+    (q0'') edge node {\texttt{None}, \texttt{(g 1)}} (q1'')
+    (q1'') edge [bend left=5] node[left] {\texttt{None}, \texttt{(g 2)}} (q2'')
+    (q2'') edge node {\texttt{None}, \texttt{(g 3)}} (q3'')
+    (q1') edge [bend right=30] node {\texttt{None}, \texttt{f}} (q0'');
+  \end{tikzpicture}
+  \caption{The SFT for the replacement operation \\ $\texttt{replace}(s, \texttt{/[0-9]+/}, \text{``NUM''})$}
+  \label{fig-rearranged-automata}
+  \end{figure}
+
+  We can extend the above construction to model both singleton and replace-all operations. In this paper, we only illustrate the construction of replace-all in Figure \ref{fig:replace-all}. The SFT $\mathcal{T}_2$ combines pattern matching and replacement using the construction just described. The SFT $\mathcal{T}_1$ matches strings that do not contain any substrings matching the pattern. Two $\varepsilon$-transitions connect these components: one from $\mathcal{T}_1$'s accepting state to $\mathcal{T}_2$'s initial state, and another from $\mathcal{T}_2$'s accepting state back to $\mathcal{T}_1$'s initial state. This cyclic structure enables the replace-all operation by repeatedly applying pattern replacement until no more matches exist in the input string.
+
+
+
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[node distance=2cm, state/.style={circle, draw, minimum size=0.8cm}]
+  % First SFT rectangle
+  \node[draw, rectangle, minimum width=5.2cm, minimum height=2.1cm] (sft1-box) {};
+  \node[above=0.1cm of sft1-box.north] {\textbf{SFT} $\mathcal{T}_1$ (Non-matching)};
+  
+  % States inside first SFT
+  \node[state, initial] (p0) at ([xshift=-0.8cm]sft1-box.center) {$p_0$};
+  \node[state, accepting] (p1) at ([xshift=1.8cm]sft1-box.center) {$p_1$};
+  \path[->] (p0) edge[above] node {\shortstack{$\neg\texttt{pattern},$ \\ $\lambda x.x$}} (p1);
+  
+  % Second SFT rectangle
+  \node[draw, rectangle, minimum width=5.2cm, minimum height=2.1cm, below=1.5cm of sft1-box] (sft2-box) {};
+  \node[below=0.1cm of sft2-box.south] {\textbf{SFT} $\mathcal{T}_2$ (Matching)};
+  
+  % States inside second SFT
+  \node[state, initial] (s0) at ([xshift=-0.8cm]sft2-box.center) {$s_0$};
+  \node[state, accepting] (s1) at ([xshift=2cm]sft2-box.center) {$s_1$};
+  \path[->] (s0) edge[above] node {\shortstack{$\texttt{pattern},$ \\ $\texttt{replacement}$}} (s1);
+  
+  % Epsilon transition from accepting state of first SFT to initial state of second SFT
+  \path[->] (p1) edge[bend right=30] node[left] {\shortstack{$\varepsilon$, $\lambda\varepsilon$}} (s0);
+  
+  % Epsilon transition from accepting state of second SFT to initial state of first SFT
+  \path[->] (s1) edge[bend right=30] node[right] {\shortstack{$\varepsilon$, $\lambda\varepsilon$}} (p0);
+  
+\end{tikzpicture}
+\caption{The modeling of replace all operation.}
+\label{fig:replace-all}
+\end{figure}
 
 
 
@@ -292,9 +365,10 @@ We evaluate a range of attack models for HTML, JavaScript, JSON, XML, and CSS. L
 
 
 
-\subsection{Experiments of String Replacement Operations}
 
-We evaluate our transducer formalization and implementation by extending CertiStr \cite{cpp/KanLRS22} to support string replacement operations, which is a certified string solver that originally supports only basic string operations, such as concatenation and regular constraints. By integrating our SFT-based modeling of replacement operations, we develop CertiStrR, an extended string solver that supports two types of string replacement: (1) replacing the first occurrence of a substring matching a given pattern, and (2) replacing all occurrences of substrings matching a given pattern. The patterns can be either constant strings or regular expressions.
+We evaluate our SFT-based replacement operation by extending CertiStr \cite{cpp/KanLRS22}, a certified string solver that originally supports only basic string operations such as concatenation and regular constraints. CertiStr employs a forward-propagation approach to solve string constraints, which requires computing the forward image of string operations. Our SFT product operation provides an exact forward image computation for replacement operations, enabling seamless integration of replacement functionality into CertiStr's solving framework.
+
+By incorporating our SFT-based modeling of replacement, we develop CertiStrR—an extended string solver that supports two types of string replacement: (1) replacing the first occurrence of a substring matching a given pattern, and (2) replacing all occurrences of substrings matching a given pattern. The patterns can be either constant strings or regular expressions.
 
 
 
@@ -317,7 +391,7 @@ We evaluate our transducer formalization and implementation by extending CertiSt
 %   (check-sat)
 %   \end{lstlisting}
 
-We evaluate {CertiStrR} using benchmarks from SMT-LIB 2025~\cite{smtlib_benchmarks}, focusing on the \textsf{QF\_S} and \textsf{QF\_SLIA} logic fragments. The benchmarks are divided into two categories: (1) singleton matching and (2) replace-all matching. In addition to replacement, they also include string concatenation and regular constraints.
+We evaluate {CertiStrR} using benchmarks from SMT-LIB 2025~\cite{smtlib_benchmarks}, focusing on the \textsf{QF\_S} and \textsf{QF\_SLIA} logic fragments. The benchmarks are divided into two categories: (1) singleton matching and (2) replace-all matching. In addition to replacement, they also include string concatenation and regular constraints in the tests.
 
 
 % replace_re
@@ -389,11 +463,7 @@ Notably, PCP and RNA benchmarks cannot be solved by most state-of-the-art string
 solvers, including CVC5 \cite{cvc5} and Z3Str \cite{Z3-str3}, yet CertiStrR solves
 them efficiently. Among existing solvers, only OSTRICH \cite{pacmpl/ChenFHHHKLRW22} can handle these benchmarks.
 CertiStrR outperforms both Ostrich and CVC5 across most benchmark subgroups, with the only exception of the "Replace Str" category where CVC5 achieves better performance (though it experiences one timeout). CertiStrR demonstrates particularly strong performance in the "Replace All" category.
-
-CertiStrR employs a straightforward forward-propagation algorithm \cite{cpp/KanLRS22} combined with our SFT-based modeling of replacement operations. This combination not only resolves numerous test cases that state-of-the-art solvers fail to handle (either timing out or returning unknown results), but also achieves superior performance across most benchmark subgroups. These results demonstrate the effectiveness and efficiency of our certified SFT formalization and implementation.
-
-
-
+These results demonstrate the effectiveness and efficiency of our certified SFT formalization and implementation.
 
 \paragraph{Transducers vs. Replacement Operations.}  
 Although both transducers and replacement operations can express string transformations for security-related verification, transducers are strictly more expressive because they can capture dependencies between the input pattern and the replacement string. In contrast, all replacement operations in SMT-LIB treat the pattern and the replacement string as independent. For example, in the SFT shown in Figure~\ref{fig:html-sanitizer-sft}, a transition may be defined over an interval such as $['a'-'z']$, and the output function computes its output directly based on the specific input character. Replacement operations, however, cannot express such dependencies.  
