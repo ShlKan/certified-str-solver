@@ -3,8 +3,11 @@
 
 In this section, we recall a simple XSS example (see Listing
 \ref{lst-web-security}) from the CACM article 
-\cite{Kern}, which epitomizes the importance of the replaceall operator and
-string transductions, as well as other string operators like concatenation.
+\cite{Kern}, which epitomizes the indispensability of the replaceall operator 
+and string transductions, as well as other string operators like concatenation.
+In particular, string transductions are so common in web applications that they
+sometimes even happen silently (see \texttt{innerHTML} below). A more detailed
+account on this can be found in \cite{systematic-transduction}.
 %Web applications frequently perform complex string manipulations that must handle untrusted user input securely.
 %XSS (Cross-Site Scripting) attacks are among top 3 security vulnerabilities in web applications according to OWASP~\cite{owasp-top10}.
 %We present a concrete example from \cite{LB16} demonstrating how mutation XSS vulnerabilities can arise from improper string sanitization, illustrating the important role of SFTs

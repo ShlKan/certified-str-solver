@@ -69,13 +69,13 @@ formalization of the semantics of this theory \cite{verified-verifying}.
 Despite these, existing verified implementations for string analysis do not
 handle the following indispensable string operations for analysis of web
 applications (e.g. see
-\cite{DBLP:conf/popl/LinB16,Kern,Berkeley-JavaScript,DBLP:conf/sp/SaxenaAHMMS10,uss/HooimeijerLMSV11}):
+\cite{DBLP:conf/popl/LinB16,Kern,Berkeley-JavaScript,systematic-transduction,uss/HooimeijerLMSV11}):
 \emph{string transductions} and \emph{replaceall} operators. In particular, 
 string transductions are used frequently in web applications (e.g. for
 sanitization, as well as implicitly applied transductions, for instance
 through \texttt{innerHTML}) and are well-known to be critical for analyzing XSS
 vulnerabilities for web applications
-\cite{Berkeley-JavaScript,DBLP:conf/sp/SaxenaAHMMS10,Kern,uss/HooimeijerLMSV11,DBLP:conf/popl/LinB16}. In particular, SMT-LIB string constraints that 
+\cite{Berkeley-JavaScript,systematic-transduction,Kern,uss/HooimeijerLMSV11,DBLP:conf/popl/LinB16}. In particular, SMT-LIB string constraints that 
 arise from such applications require the \emph{replaceall} operator (part of
 SMT-LIB), which is currently not handled by any existing verified
 implementation. This paper tackles the formalization of SFA/SFT and
@@ -120,7 +120,7 @@ which are used for preventing XSS attacks, and (2) an SMT-LIB \cite{smtlib}
 compliant certified string solver handling equality, concatenation, regular
 constraints, and more importantly the string replaceall operator, which has been
 argued to be indispensable for analysis of XSS 
-\cite{DBLP:conf/popl/LinB16,Kern,Berkeley-JavaScript,DBLP:conf/sp/SaxenaAHMMS10,uss/HooimeijerLMSV11}.
+\cite{DBLP:conf/popl/LinB16,Kern,Berkeley-JavaScript,systematic-transduction,uss/HooimeijerLMSV11}.
 The experimental results demonstrate that our formalization achieves computational efficiency in constraint-solving scenarios.
 
 \OMIT{
