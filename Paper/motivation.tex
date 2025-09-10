@@ -98,17 +98,22 @@ results in the HTML markup:
   //')"> &#39;);alert(1);//')</button>
 \end{verbatim}
 
-When this markup is inserted into DOM via \texttt{innerHTML}, the browser implicitly performs a transduction: it first HTML-unescapes the value inside the \texttt{onclick}, which enables the attacker’s script \texttt{alert(1)} to execute after \texttt{createCatList}. This subtle XSS vulnerability arises not from the absence of escaping functions, but from applying them in the wrong order.
+When this markup is inserted into the DOM via \texttt{innerHTML}, 
+the resulting string appears as \verb|"createCatList('');alert| (\verb|1);..."|. It enables the attacker's script \texttt{alert(1)} to execute immediately after \texttt{createCatList}. 
+This subtle XSS vulnerability does not stem from the absence of escaping functions, but rather from applying them in the incorrect order.
 
 Both \texttt{htmlEscape} and \texttt{escapeString} can be naturally modeled as SFTs, since they transform input strings into output strings. The above code snippet can be represented by the following string constraints (where \texttt{w\_1},
 \texttt{w\_2}, and \texttt{w\_3} are constant strings):
 
 \begin{verbatim}
-  1. x = SFT_htmlEscape(cat);
-  2. y = SFT_escapeString(x);
+  1. x = SFT_htmlEscape(cat)
+  2. y = SFT_escapeString(x)
   3. z = w1 + y + w2 + x + w3;
-  4. catElem = SFT_HTMLdecode(z);
+  4. catElem.innerHTML = SFT_innerHTML(z)
+  5. catElem.innerHTML matches R_unsafe
 \end{verbatim}
+\texttt{SFT\_innerHTML} is a transducer implementing the browser transductions upon innerHTML
+assignments. \texttt{R\_unsafe} is a regular expression defining unsafe HTML patterns that can lead to XSS vulnerabilities.
 
 In the remainder of this paper, we formalize SFTs and demonstrate how they can be used to verify the correctness of sanitizer functions. We also show how to integrate SFT-based reasoning into existing string solvers, enabling support not only for basic regular and concatenation constraints, but also for more complex string verification problems involving replacement operations.
 

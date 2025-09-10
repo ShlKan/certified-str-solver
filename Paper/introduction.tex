@@ -113,8 +113,8 @@ The key operation of our formalization is the product operation between an SFT a
 In the refinement level, we implemented transition labels using an interval-based representation to examplify the refinement process. The formalization of interval algebra provides efficient set-theoretic operations—including membership checking, intersection, and difference computations—facilitating the refinement of transition labels from abstract sets to concrete intervals. Furthermore, leveraging the data refinement framework \cite{DBLP:conf/itp/Lammich13} in Isabelle/HOL, we store states and transitions using sophisticated data structures such as hashmaps and red-black trees, ensuring efficient automata manipulation.
 
 To evaluate the effectiveness and efficiency of our formalization, we 
-provide two applications: (1) analysis of the sanitizer \texttt{HTMLdecode},
-which is used for preventing XSS attacks, and (2) an SMT-LIB \cite{smtlib}
+provide two applications: (1) analysis of the web application sanitizers for html, css, json, and javascript
+which are used for preventing XSS attacks, and (2) an SMT-LIB \cite{smtlib}
 compliant certified string solver handling equality, concatenation, regular
 constraints, and more importantly the string replaceall operator, which has been
 argued to be indispensable for analysis of XSS 

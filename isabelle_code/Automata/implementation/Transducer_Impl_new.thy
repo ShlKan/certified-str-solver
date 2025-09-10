@@ -287,7 +287,8 @@ lemma subtrans_comp_correct:
   apply simp
   apply simp
   apply simp
-  apply simp defer apply simp
+   apply simp defer apply simp
+  defer
 proof - 
   {
     fix x1c x1d x2d x1e it x2e
@@ -528,6 +529,7 @@ lemma trans_comp_imp_correct:
        \<le> \<Down> (br ddt\<alpha> ddtinvar)
            (copy_tran' x1 (the (M' x2a None)) x2b Q')")  
   apply assumption  
+  defer
 proof -
   {
     fix x it \<sigma> x' it' \<sigma>' x1 x2 x1a x1b x2a x2b x1c x2c x1d x2d x1e x1f x2e x2f x1g x2g
