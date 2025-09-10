@@ -1,11 +1,15 @@
-\section{Motivation}
+\section{Motivating Example}
 \label{sec:motivation}
 
-Web applications frequently require string manipulation operations that must handle untrusted user input securely.
-XSS (Cross-Site Scripting) attacks are among top 3 security vulnerabilities in web applications according to OWASP~\cite{owasp-top10}.
-We present a concrete example from \cite{LB16} demonstrating how mutation XSS vulnerabilities can arise from improper string sanitization, illustrating the important role of SFTs
-can play in the verification.
-Listing \ref{lst-web-security} shows a code snippet that is vulnerable to mutation XSS attacks.
+In this section, we recall a simple XSS example (see Listing
+\ref{lst-web-security}) from the CACM article 
+\cite{Kern}, which epitomizes the importance of the replaceall operator and
+string transductions, as well as other string operators like concatenation.
+%Web applications frequently perform complex string manipulations that must handle untrusted user input securely.
+%XSS (Cross-Site Scripting) attacks are among top 3 security vulnerabilities in web applications according to OWASP~\cite{owasp-top10}.
+%We present a concrete example from \cite{LB16} demonstrating how mutation XSS vulnerabilities can arise from improper string sanitization, illustrating the important role of SFTs
+%can play in the verification.
+%Listing \ref{lst-web-security} shows a code snippet that is vulnerable to mutation XSS attacks.
 
 
 
@@ -100,9 +104,10 @@ Both \texttt{htmlEscape} and \texttt{escapeString} can be naturally modeled as S
 \texttt{w\_2}, and \texttt{w\_3} are constant strings):
 
 \begin{verbatim}
-  1. x = SFT_htmlEscape(cat)
-  2. y = SFT_escapeString(x)
-  3. catElem = w1 + y + w2 + x + w3;
+  1. x = SFT_htmlEscape(cat);
+  2. y = SFT_escapeString(x);
+  3. z = w1 + y + w2 + x + w3;
+  4. catElem = SFT_HTMLdecode(z);
 \end{verbatim}
 
 In the remainder of this paper, we formalize SFTs and demonstrate how they can be used to verify the correctness of sanitizer functions. We also show how to integrate SFT-based reasoning into existing string solvers, enabling support not only for basic regular and concatenation constraints, but also for more complex string verification problems involving replacement operations.
