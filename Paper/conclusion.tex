@@ -1,13 +1,7 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-In this paper, we have presented the first formalization of symbolic finite transducers in the proof assistant Isabelle/HOL. Our formalization provides flexible interfaces that facilitate diverse applications through two key features: support for $\varepsilon$-transitions in both inputs and outputs, and extensibility to various boolean algebras via the refinement framework.
+In this paper, we presented the first formalization of symbolic finite transducers (SFTs) in Isabelle/HOL. Our framework offers flexible interfaces that enable diverse applications, featuring support for $\varepsilon$-transitions on both inputs and outputs, as well as extensibility to various Boolean algebras through a refinement framework.
 
-To demonstrate the practical utility of our formalization, we developed CertiStrR, an extension of CertiStr \cite{cpp/KanLRS22}. This implementation adds support for string replacement operations and has been evaluated on benchmarks from SMT-LIB 2024 \cite{smtlib_benchmarks}. The experimental results confirm both the efficiency and effectiveness of our approach. While we focused on string solving applications, our extensible framework for transition labels is broadly applicable to other domains, including program verification.
-
-Future work includes extending our symbolic formalization in two key directions:
-%
-(1) Enriching the boolean algebra framework to support more complex theories, such as arithmetic constraints.
-(2) Incorporating prioritized transitions into SFTs, which would enable precise modeling of SMT-LIB's standard semantics for replacement operations, particularly the first-match behavior.
-These extensions will further enhance the expressiveness and practical applicability of our formalization while maintaining its formal verification guarantees.
+To demonstrate the practical utility of our formalization, we applied SFTs to model string sanitization functions commonly used in web applications and showed how to verify the correctness of these sanitizers. Furthermore, we developed CertiStrR, an extension of CertiStr \cite{cpp/KanLRS22}, which adds support for string replacement operations. We evaluated CertiStrR on benchmarks from SMT-LIB 2025 \cite{smtlib_benchmarks}, and the experimental results confirm both the efficiency and effectiveness of our approach.
 

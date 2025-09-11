@@ -192,7 +192,7 @@ Figure \ref{fig-rearranged-automata} presents the complete SFT construction, obt
   \label{fig-rearranged-automata}
   \end{figure}
 
-  We can extend the above construction to model both singleton and replace-all operations. In this paper, we only illustrate the construction of replace-all in Figure \ref{fig:replace-all}. The SFT $\mathcal{T}_2$ combines pattern matching and replacement using the construction just described. The SFT $\mathcal{T}_1$ matches strings that do not contain any substrings matching the pattern. Two $\varepsilon$-transitions connect these components: one from $\mathcal{T}_1$'s accepting state to $\mathcal{T}_2$'s initial state, and another from $\mathcal{T}_2$'s accepting state back to $\mathcal{T}_1$'s initial state. This cyclic structure enables the replace-all operation by repeatedly applying pattern replacement until no more matches exist in the input string.
+  We can extend the above construction to model both replace-first and replace-all operations. In this paper, we only illustrate the construction of replace-all in Figure \ref{fig:replace-all}. The SFT $\mathcal{T}_2$ combines pattern matching and replacement using the construction just described. The SFT $\mathcal{T}_1$ matches strings that do not contain any substrings matching the pattern. Two $\varepsilon$-transitions connect these components: one from $\mathcal{T}_1$'s accepting state to $\mathcal{T}_2$'s initial state, and another from $\mathcal{T}_2$'s accepting state back to $\mathcal{T}_1$'s initial state. This cyclic structure enables the replace-all operation by repeatedly applying pattern replacement until no more matches exist in the input string.
 
 
 
@@ -393,7 +393,7 @@ By incorporating our SFT-based modeling of replacement, we develop CertiStrR—a
 %   (check-sat)
 %   \end{lstlisting}
 
-We evaluate {CertiStrR} using benchmarks from SMT-LIB 2025~\cite{smtlib_benchmarks}, focusing on the \textsf{QF\_S} and \textsf{QF\_SLIA} logic fragments. The benchmarks are divided into two categories: (1) singleton matching and (2) replace-all matching. In addition to replacement, they also include string concatenation and regular constraints in the tests.
+We evaluate {CertiStrR} using benchmarks from SMT-LIB 2025~\cite{smtlib_benchmarks}, focusing on the \textsf{QF\_S} and \textsf{QF\_SLIA} logic fragments. The benchmarks are divided into two categories: (1) replace-first matching and (2) replace-all matching. In addition to replacement, they also include string concatenation and regular constraints in the tests.
 
 
 % replace_re
@@ -443,9 +443,9 @@ We evaluate {CertiStrR} using benchmarks from SMT-LIB 2025~\cite{smtlib_benchmar
   \toprule
   \textbf{Subgroup} & \textbf{Test} & \textbf{Count} & \textbf{SAT} & \textbf{UNSAT} & \textbf{Inconclusive} & \textbf{CertiStrR (s)} & \textbf{Ostrich (s/timeout)} & \textbf{CVC5 (s/timeout)} \\
   \midrule
-  \multirow{2}{*}{Replace Singleton} & Replace RE  & 94  & 77  & 16  & 1 & 0.79 & 166.27/27 & 2.67/20 \\
+  \multirow{2}{*}{Replace-First} & Replace RE  & 94  & 77  & 16  & 1 & 0.79 & 166.27/27 & 2.67/20 \\
    & Replace Str & 323 & 103 & 211 & 9 & 1.94 & 7.10/20 & 0.81/1 \\
-  \multirow{4}{*}{Replace All} & PCP & 1000 & 751 & 249 & 0 & 0.14 & 3.412/0 & unknown \\
+  \multirow{4}{*}{Replace-All} & PCP & 1000 & 751 & 249 & 0 & 0.14 & 3.412/0 & unknown \\
    & RNA SAT   & 500  & 500 & 0   & 0 & 2.81 & 55.61/0 & unknown \\
    & RNA UNSAT & 500  & 0   & 500 & 0 & 3.14 & 64.185/0 & unknown \\
    & WebApp      & 255  & 40  & 215 & 0 & 0.79 & 23.67/17 & 8.379/1 \\
@@ -468,14 +468,16 @@ CertiStrR outperforms both Ostrich and CVC5 across most benchmark subgroups, wit
 These results demonstrate the effectiveness and efficiency of our certified SFT formalization and implementation.
 
 \paragraph{Transducers vs. Replacement Operations.}  
-Although both transducers and replacement operations can express string transformations for security-related verification, transducers are strictly more expressive because they can capture dependencies between the input pattern and the replacement string. In contrast, all replacement operations in SMT-LIB treat the pattern and the replacement string as independent. For example, in the SFT shown in Figure~\ref{fig:html-sanitizer-sft}, a transition may be defined over an interval such as $['a'-'z']$, and the output function computes its output directly based on the specific input character. Replacement operations, however, cannot express such dependencies.  
+Although both transducers and replacement operations can express string transformations for security-related verification, transducers are strictly more expressive because they can capture dependencies between the input pattern and the replacement string. In contrast, all replacement operations in SMT-LIB treat the pattern and the replacement string as independent. For example, in the SFT shown in Figure~\ref{fig:html-sanitizer-sft}, a transition may be defined over an interval such as $[\texttt{a-z}]$, and the output function computes its output directly based on the input character. Replacement operations, however, cannot express such dependencies.
+Because the replacement string is not a function.
 
-Consider the transition $['a'-'z']/id$, where $id$ is the identity function. To model this transition with replacement operations, the interval must be explicitly expanded into the individual characters $\texttt{'a'}$ through $\texttt{'z'}$, requiring 26 nested \texttt{replace-all} operations—one for each character. Thus, modeling $['a'-'z']/id$ with replacement operations yields an expression of the form:
+Consider the transition $[\texttt{a-z}]/id$, where $id$ is the identity function. To model this transition with replacement operations, the interval must be explicitly expanded into the individual characters $\texttt{'a'}$ through $\texttt{'z'}$, requiring 26 nested \texttt{replace-all} operations—one for each character. Thus, modeling $[\texttt{a-z}]/id$ with replacement operations yields an expression of the form:
 \[
 \texttt{replace}(\texttt{replace}(\ldots,~\texttt{"b"},~\texttt{"b"},~g),~\texttt{"a"},~\texttt{"a"},~g).
 \]
 
-When the interval contains a large set of characters—as is common in web applications that support the full Unicode range of $0x10FFFF$ code points—this nested structure becomes impractical, leading to significant inefficiency and complexity in the replacement-based approach.
+When the interval contains a large set of characters—as is common in web applications that support the full Unicode range of 
+\texttt{0x10FFFF} code points—this nested structure becomes impractical, leading to significant inefficiency and complexity in the replacement-based approach.
 
 
 
@@ -496,7 +498,7 @@ Compared to CertiStr \cite{cpp/KanLRS22}, the interval formalization in CertiStr
   \small
   \begin{tabular}{lccc}
       \toprule
-      & \textbf{Defs} & \textbf{Lemmas} & \textbf{Proofs (LOC)} \\
+      & \textbf{Definitions} & \textbf{Lemmas} & \textbf{Proofs (LOC)} \\
       \midrule
       Abstract & 17 & 21 & 3274 \\
       Implementation & 51 & 43 & 2700 \\
