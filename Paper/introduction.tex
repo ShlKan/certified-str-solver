@@ -36,8 +36,8 @@ boolean algebra, allowing for a succinct representation of a set of transitions
 that can be conveniently manipulated. 
 %more expressive representations. 
 For example, in the interval algebra, a transition label might be specified as 
-an interval ($'\texttt{a}'-'\texttt{z}'$), encompassing all characters from
-$'\texttt{a}'$ to $'\texttt{z}'$. As another example, in the SMT-Algebra
+an interval [$\texttt{a}-\texttt{z}$], encompassing all characters from
+$\texttt{a}$ to $\texttt{z}$. As another example, in the SMT-Algebra
 (particularly, of the theory of Linear Integer Arithmetic), %or 
 one could associate an arithmetic condition ($x \mod 2 = 0$) to a transition, 
 denoting all even numbers. Efficient algorithms for manipulating (e.g. computing
@@ -128,17 +128,17 @@ which increasingly
 extended
 
 the SMT-LIB \cite{smtlib} compliant certified string solver \cite{cpp/KanLRS22}
-with replacement operations. We evaluated our implementation using a set of benchmarks from the SMT-LIB repository \cite{smtlib_benchmarks}. 
+with replacement operations. We evaluated our implementation using a set of benchmarks from the SMT-LIB repository \cite{smtlib_benchmarks}.
 }
 
 
 
 In summary, our formalization makes the following contributions:
 \begin{enumerate}
-\item We present the first formalization of symbolic finite transducers (SFTs) in the Isabelle/HOL. 
+\item We present the first formalization of symbolic finite transducers (SFTs) in Isabelle/HOL.
 We prove the correctness of key operations between SFTs and symbolic SFAs, such as the product operation between SFTs and SFAs.
-\item We leverage the refinement framework to create an extensible and efficient SFT formalization that is capable of accommodating various boolean algebras, ensuring adaptability to future transition label developments. The correctness of the refined efficient implementation is proved .
-\item We develop a certified interval algebra with efficient set-theoretic operations, enabling refinement of transition labels from abstract sets to concrete intervals.
+\item We leverage the refinement framework to develop an extensible and efficient SFT formalization capable of supporting diverse Boolean algebras, ensuring adaptability to future transition label representations. The correctness of the refined, efficient implementation is proved via structural isomorphism between refinement layers.
+\item We develop a certified interval algebra with verified set-theoretic operations, enabling refinement of transition labels from abstract sets to concrete intervals.
 \item We demonstrate the practical utility of our formalization by applying it to sanitizer analysis and integrating our formalized SFT into the verified forward-propagation string solver CertiStr \cite{cpp/KanLRS22}. This integration extends CertiStr from supporting only simple concatenation and regular constraints to handling more sophisticated string replacement operations.
 \end{enumerate}
 

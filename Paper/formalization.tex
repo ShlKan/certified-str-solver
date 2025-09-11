@@ -60,7 +60,7 @@ The mapping $\mathcal{M}_t$ associates each index with a specific output functio
 %We can see that the definition of transition labels in NFTs makes it is very easy to model the replacement operation.
 
 
-\paragraph{The product operation formalization.} We formalize the product operation between an SFT $\mathcal{T}$ and an SFA $\mathcal{A}$, denoted as $\mathcal{T} \times \mathcal{A}$ in Section \ref{sec:formalization}. The SFA is formalized as a record type \texttt{NFA in Figure \ref{fig-def-FAs}}.
+\paragraph{The product operation formalization.} We formalize the product operation between an SFT $\mathcal{T}$ and an SFA $\mathcal{A}$, denoted as $\mathcal{T} \times \mathcal{A}$ in Section \ref{sec:sft}. The SFA is formalized as a record type \texttt{NFA in Figure \ref{fig-def-FAs}}.
 An additional consideration in this operation is the presence of $\varepsilon$-transitions in our SFT formalization, which implies that the resulting automata may also contain $\varepsilon$-transitions.
 %
 Therefore, we need to formalize $\varepsilon$SFAs, which is shown in Fig. \ref{fig-def-FAs} as \texttt{eNFA}. The $\varepsilon$SFA formalization extends the standard SFA structure by introducing $\Delta_e'$, which captures $\varepsilon$-transitions as pairs of states, while maintaining the same labeled transition relation $\Delta$ as in standard SFAs.
@@ -223,8 +223,8 @@ locale bool_algebra =
  assumes
   empty_sem: "empty s = (sem s = {})"
                                     and
-  nempty_sem: "nempty_intervals s =
-                     ($\neg$ (empty s))" and
+  nempty_sem: "nempty s = $\neg$ (empty s)" 
+                                    and
   inter_sem: "sem (intersect s1 s2) =
                (sem s1) $\cap$ (sem s2)" and
   diff_sem: "sem (diff f1 f2 s1 s2) =
@@ -374,7 +374,7 @@ definition subtrans_comp where
 
 
 
-The implementation of \texttt{productT\_imp} follows \emph{Refine\_Monadic} framework's interfaces for sets to store states and transition relations. 
+The implementation of \texttt{productT\_imp} takes advantages of \emph{Refine\_Monadic} framework's interfaces for sets to store states and transition relations. 
 The \emph{Refine\_Monadic} framework provides a way to automatically refine these interfaces to more efficient data structure, such as red-black trees or hashmaps. 
 In our formalization, we refine the sets of storing states and transitions to red-black trees.
 
