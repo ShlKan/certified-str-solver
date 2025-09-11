@@ -135,13 +135,11 @@ with replacement operations. We evaluated our implementation using a set of benc
 
 In summary, our formalization makes the following contributions:
 \begin{enumerate}
-\item We present the first formalization of symbolic finite transducers in Isabelle/HOL proof assistant.
-\item We leverage the refinement framework to create an extensible SFT formalization that is capable of accommodating various boolean algebras, ensuring adaptability to future transition label developments.
-\item We develop an interval algebra with efficient set-theoretic operations, enabling refinement of transition labels from abstract sets to concrete intervals.
-\item We demonstrate the practical utility of our formalization through its
-    application to sanitizer analysis and a certified implementation of
-    a string constraint solver that handles equality, concatenation, regular
-        constraints, and the string replacement operator.
+\item We present the first formalization of symbolic finite transducers (SFTs) in the Isabelle/HOL. 
+We prove the correctness of key operations between SFTs and symbolic SFAs, such as the product operation between SFTs and SFAs.
+\item We leverage the refinement framework to create an extensible and efficient SFT formalization that is capable of accommodating various boolean algebras, ensuring adaptability to future transition label developments. The correctness of the refined efficient implementation is proved .
+\item We develop a certified interval algebra with efficient set-theoretic operations, enabling refinement of transition labels from abstract sets to concrete intervals.
+\item We demonstrate the practical utility of our formalization by applying it to sanitizer analysis and integrating our formalized SFT into the verified forward-propagation string solver CertiStr \cite{cpp/KanLRS22}. This integration extends CertiStr from supporting only simple concatenation and regular constraints to handling more sophisticated string replacement operations.
 \end{enumerate}
 
 \paragraph{Organization.}
