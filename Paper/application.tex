@@ -58,7 +58,7 @@ Figure \ref{fig:html-sanitizer-sft} illustrates the SFT representation of the HT
 \label{fig:html-sanitizer-sft}
 \end{figure}
 
-We first evaluate the performance of our SFT product operation by computing the product of the HTML encoding sanitizer SFT shown in Figure \ref{fig:html-sanitizer-sft} with SFAs constructed from randomly generated Unicode sequences. This product represents the sanitization result produced by the SFT. The experimental evaluation was conducted on a laptop equipped with an Apple M4 processor and 24 GB of memory, with a one-minute time limit imposed for each test.
+We first evaluate the performance of our SFT product operation by computing the product of the HTML encoding sanitizer shown in Figure \ref{fig:html-sanitizer-sft} with SFAs constructed from randomly generated Unicode sequences. This product represents the sanitization result by the SFT for the input sequence. The experimental evaluation was conducted on a laptop equipped with an Apple M4 processor and 24 GB of memory, with a one-minute time limit imposed for each test.
 
 
 
@@ -185,7 +185,7 @@ Figure \ref{fig-rearranged-automata} presents the complete SFT construction, obt
   \label{fig-rearranged-automata}
   \end{figure}
 
-  We can extend the above construction to model both replace-first and replace-all operations. In this paper, we only illustrate the construction of replace-all in Figure \ref{fig:replace-all}. The SFT $\mathcal{T}_2$ combines pattern matching and replacement using the construction just described. The SFT $\mathcal{T}_1$ matches strings that do not contain any substrings matching the pattern. Two $\varepsilon$-transitions connect these components: one from $\mathcal{T}_1$'s accepting state to $\mathcal{T}_2$'s initial state, and another from $\mathcal{T}_2$'s accepting state back to $\mathcal{T}_1$'s initial state. This cyclic structure enables the replace-all operation by repeatedly applying pattern replacement until no more matches exist in the input string.
+  We can extend the above construction to model both replace-first and replace-all. In this paper, we only illustrate the construction of replace-all in Figure \ref{fig:replace-all}. The SFT $\mathcal{T}_2$ combines pattern matching and replacement using the construction just described. The SFT $\mathcal{T}_1$ matches strings that do not contain any substrings matching the pattern. Two $\varepsilon$-transitions connect these components: one from $\mathcal{T}_1$'s accepting state to $\mathcal{T}_2$'s initial state, and another from $\mathcal{T}_2$'s accepting state back to $\mathcal{T}_1$'s initial state. This cyclic structure enables the replace-all operation by repeatedly applying pattern replacement until no more matches exist in the input string.
 
 
 
@@ -360,7 +360,7 @@ Figure \ref{fig-rearranged-automata} presents the complete SFT construction, obt
 
 
 
-We evaluate our SFT-based replacement operation by extending CertiStr \cite{cpp/KanLRS22}, a certified string solver that previously supported only basic string operations such as concatenation and regular constraints. The original CertiStr was incapable of verifying any XSS attack due to the lack of support for transducers and replacement operations.
+We evaluate our SFT-based replacement operation by extending CertiStr \cite{cpp/KanLRS22}, a certified string solver that previously supported only basic string operations: concatenation and regular constraints. The original CertiStr was incapable of verifying any XSS attack due to the lack of support for transducers and replacement operations.
 CertiStr employs a forward-propagation approach to solve string constraints, which requires computing the forward image of string operations. Our SFT product operation provides an exact forward image computation for replacement operations, enabling seamless integration of replacement functionality into CertiStr's solving framework.
 
 By incorporating our SFT-based modeling of replacement, we develop CertiStrR—an
@@ -390,7 +390,7 @@ a constant string or a regular expression.
 %   (check-sat)
 %   \end{lstlisting}
 
-We evaluate {CertiStrR} using benchmarks from SMT-LIB 2025~\cite{smtlib_benchmarks}, focusing on the \textsf{QF\_S} and \textsf{QF\_SLIA} logic fragments. The benchmarks are divided into two categories: (1) replace-first matching and (2) replace-all matching. In addition to replacement, they also include string concatenation and regular constraints in the tests.
+We evaluate {CertiStrR} using benchmarks from SMT-LIB 2025~\cite{smtlib_benchmarks}, focusing on the \textsf{QF\_S} and \textsf{QF\_SLIA} logic fragments. The benchmarks are divided into two categories: (1) replace-first and (2) replace-all. In addition to replacement, the tests also include string concatenation and regular constraints. Due to the limitation of CertiStrR's front-end, some constraints were rewritten or removed from the tests.
 
 
 % replace_re
@@ -442,6 +442,7 @@ We evaluate {CertiStrR} using benchmarks from SMT-LIB 2025~\cite{smtlib_benchmar
   \midrule
   \multirow{2}{*}{Replace-First} & Replace RE  & 94  & 77  & 16  & 1 & 0.79 & 166.27/27 & 2.67/20 \\
    & Replace Str & 323 & 103 & 211 & 9 & 1.94 & 7.10/20 & 0.81/1 \\
+     \midrule
   \multirow{4}{*}{Replace-All} & PCP & 1000 & 751 & 249 & 0 & 0.14 & 3.412/0 & unknown \\
    & RNA SAT   & 500  & 500 & 0   & 0 & 2.81 & 55.61/0 & unknown \\
    & RNA UNSAT & 500  & 0   & 500 & 0 & 3.14 & 64.185/0 & unknown \\
@@ -453,16 +454,16 @@ We evaluate {CertiStrR} using benchmarks from SMT-LIB 2025~\cite{smtlib_benchmar
 \end{table*}
 
 
-The experimental evaluation was conducted on a laptop with an Apple M4 processor and 24 GB of memory, with a \textbf{one-hour} time limit per test. Table~\ref{tab:string_operations} summarizes the results. The results from CertiStrR were classified into three categories: SAT (satisfiable), UNSAT (unsatisfiable), and Inconclusive. An "Inconclusive" result indicates that the solver cannot determine satisfiability due to the inherent incompleteness of the string solver's algorithm, not timeout (all tests completed within one minute). This occurs when the solver cannot determine whether string variables need to be assigned different values that satisfy all constraints.
+The experimental evaluation was conducted on a laptop with an Apple M4 processor and 24 GB of memory, with a \textbf{one-hour} time limit per test. Table~\ref{tab:string_operations} summarizes the results. The results from CertiStrR were classified into three categories: SAT (satisfiable), UNSAT (unsatisfiable), and Inconclusive. An "Inconclusive" result indicates that the solver cannot determine satisfiability due to the inherent incompleteness of the string solver's algorithm, not timeout (all tests completed within one hour). This occurs when the solver cannot determine whether string variables need to be assigned different values that satisfy all constraints. 
 
 We also compare our approach with two state-of-the-art string solvers: Ostrich \cite{pacmpl/ChenFHHHKLRW22} and CVC5 \cite{cvc5}.
 The experimental results demonstrate that string replacement operations, particularly replace-all operations, pose significant challenges for existing state-of-the-art solvers.
-The "unknown" label in the table indicates instances where CVC5 cannot determine satisfiability. 
+The "unknown" label in the table indicates the tests where CVC5 cannot determine satisfiability. 
 Notably, PCP and RNA benchmarks cannot be solved by most state-of-the-art string
 solvers, including CVC5 \cite{cvc5}, yet CertiStrR solves
 them efficiently. Among existing solvers, only OSTRICH \cite{pacmpl/ChenFHHHKLRW22} can handle these benchmarks.
-CertiStrR outperforms both Ostrich and CVC5 across most benchmark subgroups, with the only exception of the "Replace Str" category where CVC5 achieves better performance (though it experiences one timeout). CertiStrR demonstrates particularly strong performance in the "Replace All" category.
-These results demonstrate the effectiveness and efficiency of our certified SFT formalization and implementation.
+CertiStrR outperforms both Ostrich and CVC5 across most benchmark subgroups, with the only exception of the "Replace Str" category where CVC5 achieves better performance (though it experiences one timeout). CertiStrR demonstrates particularly strong performance in  "Replace All" category.
+These results demonstrate the effectiveness and efficiency of our SFT formalization and implementation.
 
 \paragraph{Transducers vs. Replacement Operations.}  
 Although both transducers and replacement operations can express string
@@ -475,10 +476,11 @@ an interval such as $[\texttt{a-z}]$, and the output function computes its
 output directly based on the input character. Replacement operations, however,
 cannot express such dependencies since the replacement string is not a function.
 
-Consider the transition $[\texttt{a-z}]/id$, where $id$ is the identity function. To model this transition with replacement operations, the interval must be explicitly expanded into the individual characters $\texttt{a}$ through $\texttt{z}$, requiring 26 nested \texttt{replace-all} operations—one for each character. Thus, modeling $[\texttt{a-z}]/id$ with replacement operations yields an expression of the form:
-\[
-\texttt{replace}(\texttt{replace}(\ldots,~\texttt{b},~\texttt{b},~g),~\texttt{a},~\texttt{a},~g).
-\]
+Consider a string transformation that maps each character in $[\texttt{a-z}]$ to its successor, with \texttt{z} wrapping around to \texttt{a}. Modeling this transformation using only replacement operations requires spliting the interval $[\texttt{a-z}]$ into individual characters, resulting in 26 separate \texttt{replace-all} operations—one for each letter. For example:
+\begin{verbatim}
+  replace(replace(..., b, c, g), a, b, g)
+\end{verbatim}
+
 
 When the interval contains a large set of characters—as is common in web applications that support the full Unicode range of 
 \texttt{0x10FFFF} code points—this nested structure becomes impractical, leading to significant inefficiency and complexity in the replacement-based approach.
@@ -494,8 +496,8 @@ When the interval contains a large set of characters—as is common in web appli
 While SFTs constitute the central contribution of this paper, they are not sufficient on their own to support the applications we target. A more comprehensive symbolic framework for automata libraries is necessary. Beyond the existing automata library supported by CertiStr \cite{cpp/KanLRS22}, which already includes operations such as SFA product and SFA concatenation, we needed to develop additional \emph{certified} SFA operations from scratch. These include $\varepsilon$SFAs, translation from $\varepsilon$SFAs to SFAs, translation from SFAs to Symbolic Deterministic Finite Automata (SDFA), and negation of SFAs. Table~\ref{tab:abstract_impl} summarizes the certified development effort that was carried out specifically for this work.
 
 The abstract-level development encompasses all formalizations presented in Section~\ref{sec:abstract-layer}, including SFTs and the additional SFA operations used in this paper's application. The implementation-level development covers all formalizations described in Section~\ref{sec_alg_refinement}, including the refinement of the product operation and other SFA operations used in this paper's application. The final row of Table~\ref{tab:abstract_impl} corresponds to the effort devoted to interval formalization. The most challenging component proved to be the correctness proof of the product operation at the abstract level (Figure~\ref{fig-def-product-correct}).
-
-Compared to CertiStr \cite{cpp/KanLRS22}, the interval formalization in CertiStrR is substantially more complex, primarily because intervals were extended from single pairs to lists.
+%
+%Compared to CertiStr \cite{cpp/KanLRS22}, the interval formalization in CertiStrR is substantially more complex, primarily because intervals were extended from single pairs to lists.
 
 
 \begin{table}[h]
