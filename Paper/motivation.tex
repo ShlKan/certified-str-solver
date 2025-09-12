@@ -105,8 +105,8 @@ When this markup is inserted into the DOM via \texttt{innerHTML},
 the resulting string appears as \verb|"createCatList('');alert| (\verb|1);..."|. It enables the attacker's script \texttt{alert(1)} to execute immediately after \texttt{createCatList}. 
 This subtle XSS vulnerability does not stem from the absence of escaping functions, but rather from applying them in the incorrect order.
 
-Both \texttt{htmlEscape} and \texttt{escapeString} can be naturally modeled as SFTs, since they transform input strings into output strings. The above code snippet can be represented by the following string constraints (where \texttt{w\_1},
-\texttt{w\_2}, and \texttt{w\_3} are constant strings):
+Both \texttt{htmlEscape} and \texttt{escapeString} can be naturally modeled as SFTs, since they transform input strings into output strings. The above code snippet can be represented by the following string constraints (where \texttt{w1},
+\texttt{w2}, and \texttt{w3} are constant strings):
 
 \begin{verbatim}
   1. x = SFT_htmlEscape(cat)

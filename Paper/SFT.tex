@@ -65,16 +65,16 @@ To make the operation \emph{product} more general, we extend the operation to an
     \node[state, accepting] (q_2) [below=2.2cm of q_1] {$q_2$}; 
  
     \path[->] 
-    (q_0) edge node {[$'\texttt{a}'-'\texttt{z}'$],$f_1$} (q_1)
-    (q_1) edge node[right] {[$'\texttt{A}'-'\texttt{Z}'$],$f_2$} (q_2)
-    (q_1) edge[loop above] node {[$'\texttt{a}'-'\texttt{z}'$],$f_1$} (q_1)
-    (q_2) edge[loop below] node {[$'\texttt{A}'-'\texttt{Z}'$],$f_2$} (q_2);
+    (q_0) edge node {[$\texttt{a}-\texttt{z}$],$f_1$} (q_1)
+    (q_1) edge node[right] {[$\texttt{A}-\texttt{Z}$],$f_2$} (q_2)
+    (q_1) edge[loop above] node {[$\texttt{a}-\texttt{z}$],$f_1$} (q_1)
+    (q_2) edge[loop below] node {[$\texttt{A}-\texttt{Z}$],$f_2$} (q_2);
   \end{tikzpicture}
     \caption{An example of SFT}
     \label{fig-example-ft}
 \end{figure}
 
-    Figure \ref{fig-example-ft} illustrates an SFT that accepts words matching the regular expression $/['\texttt{a}'-'\texttt{z}']+['\texttt{A}'-'\texttt{Z}']+/$. The transition labels utilize intervals of the form $[i\text{-}j]$, which are interpreted as predicates $\lambda x.~i \leq x \leq j$. The output functions $f_1$ and $f_2$ perform case transformations: $f_1 = \lambda x.~\texttt{toUpper}(x)$ converts lowercase letters to uppercase, while $f_2 = \lambda x.~\texttt{toLower}(x)$ performs the inverse operation. For example, given the input string \texttt{"bigSMALL"}, this SFT produces the output \texttt{"BIGsmall"}.
+Figure \ref{fig-example-ft} illustrates an SFT that accepts words matching the regular expression $/[\texttt{a}-\texttt{z}]+[\texttt{A}-\texttt{Z}]+/$. The transition labels utilize intervals of the form $[i\text{-}j]$, which are interpreted as predicates $\lambda x.~i \leq x \leq j$. The output functions $f_1$ and $f_2$ perform case transformations: $f_1 = \lambda x.~\texttt{toUpper}(x)$ converts lowercase letters to uppercase, while $f_2 = \lambda x.~\texttt{toLower}(x)$ performs the inverse operation. For example, given the input string \texttt{bigSMALL}, this SFT produces the output \texttt{BIGsmall}.
 
 
 %The transition labels can be more complex. For instance, it can be a predicate over integers as: $\lambda x.~ x >0 \land x \text{ mod } 2 = 0$. This symbolic label corresponds to the set of even natural numbers.

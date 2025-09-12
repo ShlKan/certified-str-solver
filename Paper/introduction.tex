@@ -122,10 +122,9 @@ In the refinement level, we implemented transition labels using an interval-base
 
 To evaluate the effectiveness and efficiency of our formalization, we 
 provide two applications: (1) analysis of the web application sanitizers for html, css, json, and javascript
-which are used for preventing XSS attacks, and (2) an SMT-LIB \cite{smtlib}
-compliant certified string solver handling equality, concatenation, regular
+which are used for preventing XSS attacks, and (2) a certified string solver handling equality, concatenation, regular
 constraints, and more importantly the string replaceall operator, which has been
-argued to be indispensable for analysis of XSS 
+argued to be indispensable for analysis of XSS
 \cite{DBLP:conf/popl/LinB16,Kern,Berkeley-JavaScript,systematic-transduction,uss/HooimeijerLMSV11}.
 The experimental results demonstrate that our formalization achieves computational efficiency in constraint-solving scenarios.
 
@@ -141,7 +140,7 @@ with replacement operations. We evaluated our implementation using a set of benc
 
 In summary, our formalization makes the following contributions:
 \begin{enumerate}
-\item We present the first formalization of symbolic finite transducers (SFTs) in Isabelle/HOL.
+\item We present the first formalization of symbolic finite transducers  in Isabelle/HOL.
 We prove the correctness of key operations of SFTs and symbolic SFAs, such as the product operation between SFTs and SFAs.
 \item We leverage the refinement framework to develop an extensible and efficient SFT formalization capable of supporting diverse Boolean algebras, ensuring adaptability to future transition label representations. The correctness of the refined, efficient implementation is proved via structural isomorphism between refinement layers.
 \item We develop a certified interval algebra with verified set-theoretic operations, enabling refinement of transition labels from abstract sets to concrete intervals.

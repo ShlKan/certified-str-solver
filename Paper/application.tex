@@ -137,17 +137,19 @@ Sanitizers include GA HtmlEscape, GA JSONEscape, GA XMLEscape, escapeString, and
 The string replacement, denoted as
 $\texttt{replace}(\texttt{str}, \texttt{pattern}, \newline\texttt{replacement}, \texttt{flag})$, is a fundamental string transformation accepting four parameters:
 (1) $\texttt{str}$: The input string to be transformed.
-(2) $\texttt{pattern}$: A regular expression defining the matching criteria.
+(2) $\texttt{pattern}$: A regular expression defining the matching pattern.
 (3) $\texttt{replacement}$: The string that replaces matched substrings.
-(4) $\texttt{flag}=s/g$: The replacement mode flag, where $s$ denotes single first occurrence replacement and $g$ denotes all occurrences replace operation.
+(4) $\texttt{flag}=s/g$: The replacement mode flag, where $s$ denotes single first occurrence replacement and $g$ denotes all occurrences replacement operation.
 
 % The operation's semantics is to replace the first occurrence (or all occurrences) of any substring $s'$ in \texttt{str} that matches $\texttt{pattern}$ with \texttt{replacement}.
 
-To illustrate how SFTs model this operation, consider $\texttt{replace}(s, \texttt{/[0-9]+/}, "\texttt{NUM}", \texttt{flag})$. We construct the corresponding SFT by the following three steps.
+To illustrate how SFTs model this operation, consider $\texttt{replace}(s, \texttt{/[0-9]+/},~$\texttt{NUM}$,~\texttt{flag})$. We construct the corresponding SFT by the following three steps.
 
 \begin{enumerate}
-  \item Construct an SFA recognizing the pattern $\texttt{/[0-9]+/}$ and transform it into an SFT by augmenting each transition with output function "$f = \lambda x.~\texttt{None}$" that produces the empty string.
-  \item Construct an SFA accepting the replacement string "\texttt{NUM}". Since constant strings are specialized regular expressions, we build their SFA representation and convert it to an SFT by adding $\varepsilon$-transitions with output functions that emit the replacement characters sequentially.
+  \item Construct an SFA recognizing the pattern $\texttt{/[0-9]+/}$ and transform it into an SFT by augmenting each transition with output function "$\lambda x.~\texttt{None}$" that produces the empty string.
+  \item Construct an SFA accepting the replacement string \texttt{NUM} and convert it to an SFT by
+  replacing each transtion in the SFA $(q, c, q')$ with
+  $(q, (\texttt{None},~\lambda \_.~c ), q')$.
   \item Compose the two SFTs by connecting the accepting state of the pattern-matching SFT to the initial state of the replacement-generating SFT via $\varepsilon$-transitions.
 \end{enumerate}
 
@@ -155,16 +157,7 @@ To illustrate how SFTs model this operation, consider $\texttt{replace}(s, \text
 %\noindent\emph{Step 1.}
 %Figure \ref{fig-snfa-pattern} illustrates the construction of the pattern-matching component. The left side shows the SFA that recognizes the regular expression $\texttt{/[0-9]+/}$, while the right side presents its transformation into an SFT. This transformation is achieved by augmenting each transition with the output function $\texttt{f} = \lambda x.~\texttt{None}$, which consistently produces the empty string, effectively "consuming" the matched digits without generating output.
 
-Figure \ref{fig-rearranged-automata} presents the complete SFT construction, obtained by composing the pattern-matching SFT generated from \texttt{/[0-9]+/}  with the replacement-generating SFT generated from "\texttt{NUM}", where the function \texttt{f} is defined as "$f = \lambda x.~\texttt{None}$" and the function \texttt{g} is defined as:
-\[
-\texttt{g} = \lambda~i~x.~\texttt{match}~i~\texttt{with}~
-\begin{cases}
-1 \mapsto [(78, 78)] & \text{(ASCII for 'N')} \\
-2 \mapsto [(85, 85)] & \text{(ASCII for 'U')} \\
-3 \mapsto [(77, 77)] & \text{(ASCII for 'M')} \\
-\_ \mapsto \texttt{None}
-\end{cases}
-\]
+Figure \ref{fig-rearranged-automata} presents the complete SFT construction, obtained by composing the pattern-matching SFT generated from \texttt{/[0-9]+/}  with the replacement-generating SFT generated from \texttt{NUM}.
 
 \begin{figure}[h] \centering
   \begin{tikzpicture}[shorten >=1pt, node distance=2cm, auto]
@@ -173,8 +166,8 @@ Figure \ref{fig-rearranged-automata} presents the complete SFT construction, obt
     \node[state] (q1') [right=of q0'] {$q_1'$}; 
   
      \path[->] 
-     (q0') edge [bend left] node {\texttt{[0-9]}, $\texttt{f}$} (q1')
-     (q1') edge [loop right] node {\texttt{[0-9]}, $\texttt{f}$} (q1');
+     (q0') edge [bend left] node {\texttt{[0-9]}, $\lambda~x.~\texttt{None}$} (q1')
+     (q1') edge [loop right] node {\texttt{[0-9]}, $\lambda~x.~\texttt{None}$} (q1');
   
     % Second automaton from the second figure
     \node[state] (q0'') [below=1cm of q1'] {$q_0''$}; 
@@ -183,12 +176,12 @@ Figure \ref{fig-rearranged-automata} presents the complete SFT construction, obt
     \node[state] (q2'') [right=of q3''] {$q_2''$}; 
   
     \path[->] 
-    (q0'') edge node {\texttt{None}, \texttt{(g 1)}} (q1'')
-    (q1'') edge [bend left=5] node[left] {\texttt{None}, \texttt{(g 2)}} (q2'')
-    (q2'') edge node {\texttt{None}, \texttt{(g 3)}} (q3'')
-    (q1') edge [bend right=30] node {\texttt{None}, \texttt{f}} (q0'');
+    (q0'') edge node {\texttt{None}, $\lambda\_.\texttt{N}$} (q1'')
+    (q1'') edge [bend left=5] node[left] {\texttt{None}, $\lambda\_.\texttt{U}$} (q2'')
+    (q2'') edge node {\texttt{None}, $\lambda\_.\texttt{M}$} (q3'')
+    (q1') edge [bend right=30] node {\texttt{None}, $\lambda x.~\texttt{None}$} (q0'');
   \end{tikzpicture}
-  \caption{The SFT for the replacement operation \\ $\texttt{replace}(s, \texttt{/[0-9]+/}, \text{``NUM''})$}
+  \caption{The SFT for the replacement operation $\texttt{replace}(s,\texttt{/[0-9]+/}, \texttt{NUM})$}
   \label{fig-rearranged-automata}
   \end{figure}
 
@@ -367,13 +360,13 @@ Figure \ref{fig-rearranged-automata} presents the complete SFT construction, obt
 
 
 
-
-We evaluate our SFT-based replacement operation by extending CertiStr \cite{cpp/KanLRS22}, a certified string solver that supports only basic string operations such as concatenation and regular constraints. CertiStr employs a forward-propagation approach to solve string constraints, which requires computing the forward image of string operations. Our SFT product operation provides an exact forward image computation for replacement operations, enabling seamless integration of replacement functionality into CertiStr's solving framework.
+We evaluate our SFT-based replacement operation by extending CertiStr \cite{cpp/KanLRS22}, a certified string solver that previously supported only basic string operations such as concatenation and regular constraints. The original CertiStr was incapable of verifying any XSS attack due to the lack of support for transducers and replacement operations.
+CertiStr employs a forward-propagation approach to solve string constraints, which requires computing the forward image of string operations. Our SFT product operation provides an exact forward image computation for replacement operations, enabling seamless integration of replacement functionality into CertiStr's solving framework.
 
 By incorporating our SFT-based modeling of replacement, we develop CertiStrR—an
 extended string solver that supports two types of string replacement: (1)
 replacing the first occurrence of a substring matching a given pattern, and (2)
-replacing all occurrences of substrings matching a given pattern, i.e., either 
+replacing all occurrences of substrings matching a given pattern, i.e., either
 a constant string or a regular expression.
 
 
@@ -466,7 +459,7 @@ We also compare our approach with two state-of-the-art string solvers: Ostrich \
 The experimental results demonstrate that string replacement operations, particularly replace-all operations, pose significant challenges for existing state-of-the-art solvers.
 The "unknown" label in the table indicates instances where CVC5 cannot determine satisfiability. 
 Notably, PCP and RNA benchmarks cannot be solved by most state-of-the-art string
-solvers, including CVC5 \cite{cvc5} and Z3Str \cite{Z3-str3}, yet CertiStrR solves
+solvers, including CVC5 \cite{cvc5}, yet CertiStrR solves
 them efficiently. Among existing solvers, only OSTRICH \cite{pacmpl/ChenFHHHKLRW22} can handle these benchmarks.
 CertiStrR outperforms both Ostrich and CVC5 across most benchmark subgroups, with the only exception of the "Replace Str" category where CVC5 achieves better performance (though it experiences one timeout). CertiStrR demonstrates particularly strong performance in the "Replace All" category.
 These results demonstrate the effectiveness and efficiency of our certified SFT formalization and implementation.
@@ -482,9 +475,9 @@ an interval such as $[\texttt{a-z}]$, and the output function computes its
 output directly based on the input character. Replacement operations, however,
 cannot express such dependencies since the replacement string is not a function.
 
-Consider the transition $[\texttt{a-z}]/id$, where $id$ is the identity function. To model this transition with replacement operations, the interval must be explicitly expanded into the individual characters $\texttt{'a'}$ through $\texttt{'z'}$, requiring 26 nested \texttt{replace-all} operations—one for each character. Thus, modeling $[\texttt{a-z}]/id$ with replacement operations yields an expression of the form:
+Consider the transition $[\texttt{a-z}]/id$, where $id$ is the identity function. To model this transition with replacement operations, the interval must be explicitly expanded into the individual characters $\texttt{a}$ through $\texttt{z}$, requiring 26 nested \texttt{replace-all} operations—one for each character. Thus, modeling $[\texttt{a-z}]/id$ with replacement operations yields an expression of the form:
 \[
-\texttt{replace}(\texttt{replace}(\ldots,~\texttt{"b"},~\texttt{"b"},~g),~\texttt{"a"},~\texttt{"a"},~g).
+\texttt{replace}(\texttt{replace}(\ldots,~\texttt{b},~\texttt{b},~g),~\texttt{a},~\texttt{a},~g).
 \]
 
 When the interval contains a large set of characters—as is common in web applications that support the full Unicode range of 

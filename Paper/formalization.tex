@@ -30,7 +30,7 @@ record (|$'q,$||$~'a,$| |$'i,$| |$'b$|) |$\texttt{NFT}$| =
 type_synonym |$('q,~'a,~'i)$| LTTS = "|$('q \times ('a \text{ set option }\times 'i) \times 'q)$| set"
 type_synonym |$('a,~'b)$| Tlabel = "|$'a \text{ option}~\Rightarrow~'b$ set option"
 	\end{lstlisting}
-\caption{The formalization of $SFTs$ in Isabelle/HOL}
+\caption{The formalization of SFTs in Isabelle/HOL}
 \label{fig-def-FT}
 \end{figure}
 
@@ -212,9 +212,9 @@ Having introduced the abstract definition of the SFT product operation in Sectio
 
 \paragraph{Boolean Algebra Locale}
 
-Figure \ref{fig-bool-algebra-locale} presents the simplified definition of a boolean algebra locale. The type variable \texttt{'b} represents any boolean algebra, while the type variable \texttt{'a} denotes the element type of the sets that the boolean algebra represents. The locale defines a collection of operations and assumptions that characterize boolean algebra behavior, including operations for set semantics, emptiness checks, non-emptiness checks, intersection, difference, and element membership. The function "\texttt{sem}" provides the semantic interpretation of a boolean algebra as a set, with all other operations' assumptions defined in terms of this set semantics.
+Figure \ref{fig-bool-algebra-locale} presents the simplified definition of a boolean algebra locale. The type variable \texttt{$'$b} represents any boolean algebra, while the type variable \texttt{$'$a} denotes the element type of the sets that the boolean algebra represents. The locale defines a collection of operations and assumptions that characterize boolean algebra behavior, including operations for set semantics, emptiness checks, non-emptiness checks, intersection, difference, and element membership. The function "\texttt{sem}" provides the semantic interpretation of a boolean algebra as a set, with all other operations' assumptions defined in terms of this set semantics.
 
-The locale serves as an interface to boolean algebra implementations. Any concrete boolean algebra implementation must provide a concrete instantiation of this locale, which includes defining the type variable \texttt{'b} and providing implementations for all operations along with proofs of the required assumptions.
+The locale serves as an interface to boolean algebra implementations. Any concrete boolean algebra implementation must provide a concrete instantiation of this locale, which includes defining the type variable $'$\texttt{b} and providing implementations for all operations along with proofs of the required assumptions.
 
 
 \begin{figure}[hbt!]
@@ -233,7 +233,7 @@ locale bool_algebra =
                                     and
   inter_sem: "sem (intersect s1 s2) =
                (sem s1) $\cap$ (sem s2)" and
-  diff_sem: "sem (diff f1 f2 s1 s2) =
+  diff_sem: "sem (diff s1 s2) =
                (sem s1) - (sem s2)" and
   elem_sem: "elem a s $\equiv$  (a $\in$ sem s)"
 \end{lstlisting}
@@ -246,7 +246,8 @@ locale bool_algebra =
 
 \paragraph{Implementation layer of the product operation.} We now present the algorithmic implementation of the product operation between an SFT and an SFA\footnote{For clarity of presentation, we show a simplified version of the Isabelle/HOL implementation while preserving the essential algorithmic structure.} based on Refined\_monadic framework.
 
-Figure \ref{fig-compute-nft-product} illustrates the core algorithm \texttt{productT\_impl}, which is implemented using the \emph{Refine\_Monadic} framework. Note that in the implementation, there are some refined operations: \texttt {nft\_tranfun}, \texttt{nfa\_states}, \texttt{nfa\_trans}, \texttt{nfa\_initial}, and \texttt{nfa\_accepting}. These are corresponding to the states, transitions, initial states, accepting states, and output function mapping of the SFT.
+Figure \ref{fig-compute-nft-product} illustrates the algorithm \texttt{productT\_impl}, which is implemented using the \emph{Refine\_Monadic} framework. Note that in the implementation, there are some refined operations:  \texttt{nfa\_states}, \texttt{nfa\_trans}, \texttt{nfa\_initial}, \texttt{nfa\_accepting},
+and \texttt{nft\_tranfun}. These are corresponding to the states, transitions, initial states, accepting states, and output function mapping of the SFT.
 
 The operation \texttt{prods\_imp}, shown in Figure \ref{fig-def-prods_imp}, computes the Cartesian product of two state sets. This function employs the \texttt{FOREACH} construct, a higher-order iteration operator analogous to OCaml's \texttt{Set.fold}. Specifically, given a set $S$, a function $f$ of type $'a \Rightarrow 'b \Rightarrow 'b$, and an initial accumulator $I$ of type $'b$, the expression $\texttt{FOREACH}~S~f~I$ systematically applies $f$ to each element in $S$, accumulating results in a principled manner.
 
