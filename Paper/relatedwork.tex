@@ -1,16 +1,38 @@
 \section{Related Work}
 \label{sec:related-work}
 
-\emph{Symbolic Automata and Transducers.} Symbolic Automata and Transducers \cite{cav/DAntoniV17,VeanesHLMB12Transducer, popl/DAntoniV14, entcs/DAntoniKW18, sofsem/TammV18} represent a significant advancement in automata theory, offering improved efficiency in operations and enhanced expressiveness through algebraic theories that support infinite alphabets. This symbolic framework has been progressively extended to accommodate more complex structures: symbolic tree transducers \cite{ershov/VeanesB11} handle hierarchical data structures, while symbolic pushdown automata \cite{cav/DAntoniA14} manage nested word structures. Recent developments in 2024 have further expanded the scope of symbolic techniques to include B\"{u}chi automata and omega-regular languages \cite{pacmpl/VeanesBEZ25}, enabling verification of infinite-state systems and analysis of non-terminating computations.
+\emph{Symbolic Automata and Transducers.} Symbolic Automata and Transducers \cite{cav/DAntoniV17,VeanesHLMB12Transducer, popl/DAntoniV14, entcs/DAntoniKW18, sofsem/TammV18} represent a significant advancement in automata theory, offering improved efficiency in operations and enhanced expressiveness through algebraic theories that support infinite alphabets. This symbolic framework has been progressively extended to accommodate more complex structures: symbolic tree transducers \cite{ershov/VeanesB11} handle hierarchical data structures, while symbolic pushdown automata \cite{cav/DAntoniA14} manage nested word structures. 
+%Recent developments in 2024 have further expanded the scope of symbolic techniques to include B\"{u}chi automata and omega-regular languages \cite{pacmpl/VeanesBEZ25}, enabling verification of infinite-state systems and analysis of non-terminating computations.
 
-\emph{Applications of Symbolic Transducers.} The efficiency, scalability, and expressive power of symbolic automata and transducers have led to their widespread adoption in numerous real-world applications. These applications span diverse domains, including: constraint solving for program analysis \cite{lpar/VeanesBM10}, security-critical sanitizer analysis for web applications \cite{uss/HooimeijerLMSV11}, runtime verification of system behaviors \cite{osdi/YaseenABCL20}, and automated program inversion for software transformation \cite{pldi/HuD17}. Each application leverages the symbolic approach's ability to handle complex patterns and infinite alphabets efficiently.
+\emph{Applications of Symbolic Transducers.} The efficiency, scalability, and
+expressive power of symbolic automata and transducers have led to their
+widespread adoption in numerous applications, including: constraint solving for program analysis \cite{lpar/VeanesBM10}, security-critical sanitizer analysis for web applications \cite{uss/HooimeijerLMSV11}, runtime verification of system behaviors \cite{osdi/YaseenABCL20}, automated program inversion for software 
+transformation \cite{pldi/HuD17}, and string solving
+\cite{pacmpl/ChenFHHHKLRW22,CHL+19}. Each application leverages the symbolic 
+approach's ability to handle complex
+patterns and large alphabets efficiently.
 
-\emph{Formalization of Symbolic Automata and Transducers.} While classical automata theories have been extensively formalized in interactive theorem provers \cite{Tuerk-NFA, Lammich2014TheCA, Peter14, cpp/DoczkalKS13}, with some work on transducer formalization \cite{afp/LochmannFSTS21}, the symbolic variants of automata and transducers remain largely unexplored in formal verification. To our knowledge, CertiStr \cite{cpp/KanLRS22} represents the only existing work on symbolic automata formalization in a proof assistant. Our work advances this frontier by extending the formal treatment to both SFTs and $\varepsilon$SFAs.
+\emph{Formalization of Symbolic Automata and Transducers.} While classical automata theories have been extensively formalized in interactive theorem provers \cite{Tuerk-NFA, Lammich2014TheCA, Peter14, cpp/DoczkalKS13}, with some work on transducer formalization \cite{afp/LochmannFSTS21}, the symbolic variants of automata and transducers remain largely unexplored in formal verification. 
+%To our knowledge, CertiStr \cite{cpp/KanLRS22} represents the only existing work on symbolic automata formalization in a proof assistant. Our work advances this frontier by extending the formal treatment to both SFTs and $\varepsilon$SFAs.
 
 
-\emph{String Solving.} A significant application of our certified transducer framework is in string constraint solving, a field that has seen intensive research development over the past decade. While our work provides formal verification guarantees, there exists a rich ecosystem of non-certified string solvers, each with distinct capabilities: Kaluza \cite{Berkeley-JavaScript} specializes in JavaScript analysis, CVC5 \cite{cvc5}, Z3-str3 \cite{Z3-str3} builds on the Z3 framework, S3P \cite{DBLP:conf/ccs/TrinhCJ14}, Ostrich \cite{pacmpl/ChenFHHHKLRW22}, and SLOTH \cite{HJLRV18}.
-As more and more bugs have beein uncovered in existing string solvers \cite{DBLP:conf/cav/BlotskyMBZKG18} and SMT solvers \cite{Mansur20} 
-We believe that our work will benefit the community by providing a formal foundation for string solvers development.
+\emph{String Solving.} A significant application of our certified transducer
+framework is in string constraint solving, a field that has seen intensive
+research development over the past decade. While our work provides formal
+verification guarantees, there exists a rich ecosystem of non-certified string
+solvers, which has in the last few years led to a standardized SMT-LIB 2.6/2.7 
+unicode string theory and annual competition. SMT-LIB compatible string 
+solvers include Z3 \cite{z3}, Z3-alpha \cite{z3alpha}, Z3-Noodler 
+\cite{noodler,noodler-int,noodler-len, noodler-tool}, Z3str3RE \cite{z3str3re},
+cvc5 \cite{cvc5}, Z3str4 \cite{z3str4}, Trau \cite{trau0,trau-tool,trau2}, and 
+OSTRICH \cite{ostrich}. Recent SMT competition over string theory has revealed
+superiority of automata-based methods (based on restrictions of symbolic
+automata). For this reason,
+%: Kaluza \cite{Berkeley-JavaScript} specializes in JavaScript analysis, CVC5 \cite{cvc5}, Z3-str3 \cite{Z3-str3} builds on the Z3 framework, S3P \cite{DBLP:conf/ccs/TrinhCJ14}, Ostrich \cite{pacmpl/ChenFHHHKLRW22}, and SLOTH \cite{HJLRV18}.
+%As more and more 
+%Numerous bugs have been uncovered in existing string solvers \cite{DBLP:conf/cav/BlotskyMBZKG18} and SMT solvers \cite{Mansur20} 
+our work will benefit the community by providing a formal 
+foundation for string solvers development.
 
 
 

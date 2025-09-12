@@ -38,15 +38,21 @@ type_synonym |$('a,~'b)$| Tlabel = "|$'a \text{ option}~\Rightarrow~'b$ set opti
 
 
 Firstly, $'a \text{ set option }$ is the input type of the transition, it accepts a set of elements of type $'a$ or $\texttt{None}$ corresponding to empty string $\varepsilon$. 
-Accepting a set of $'a$ elements aims to express the same but more abstract semantics of the input labels in Definition \ref{def-sft}, in which an input label is a predicate. A predicate's semantics as introduced before represents a set of elements that make the predicate true. But predicates have various different forms. For instance, the interval $[1-9]$ represents the set $\{e \mid 1 \leq e \leq 9\}$. The predicate $\lambda b.~ b[7] = 1$, where $b$ is a bit vector of length 8, denotes the set of bit vectors that have a 1 in the 7th position. All these different forms of labels are abstracted as sets in our formalization.
+Accepting a set of $'a$ elements aims to express the same but more abstract semantics of the input labels in Definition \ref{def-sft}, in which an input label is a predicate. A predicate's semantics as introduced before represents a set of elements that make the predicate true. But predicates have various different forms. For instance, the interval $[1-9]$ represents the set $\{e \mid 1 \leq e \leq 9\}$. The predicate $\lambda b.~ b[7] = 1$, where $b$ is a bit vector of length 8, denotes the set of bit vectors that have a 1 in the 7th position. All different forms of labels are abstracted as sets in our formalization.
 %
 The value $\texttt{None}$ represents the empty string $\varepsilon$ in our formalization, indicating a transition that consumes no input but may still produce output elements. This design choice facilitates the modeling of real-world applications in SFTs, as we will demonstrate in our application to string solvers.
 
 The second element of type $'i$ in LTTS serves as an index into the output function space. 
 %
-We use indices instead of functions themselves to enable the reuse of the same output functions for different transitions.
+We use indices instead of functions %themselves 
+to enable the reuse of the same output functions for different transitions.
 %
-The mapping $\mathcal{M}_t$ associates each index with a specific output function. These output functions, formalized by \texttt{Tlabel}, map a single input element to a set of possible output elements rather than to a single element. This design enables non-deterministic output behavior, where the transducer may select any element from the output set randomly or according to specified criteria. Additionally, output functions can produce the empty string $\varepsilon$ by returning $\texttt{None}$, providing further flexibility in transition behavior.
+The mapping $\mathcal{M}_t$ associates each index with a specific output
+function. These output functions, formalized by \texttt{Tlabel}, map a single
+input element to a set of possible output elements rather than to a single
+element. This design enables nondeterministic output behavior, where the
+transducer may select any element from the output set arbitrarily or according
+to specified criteria. Further, output functions can produce empty string $\varepsilon$ by returning $\texttt{None}$, providing further flexibility in transition behavior.
 
 %Now let us look at an example. In some modern programming languages, there are support for replacement operations : $\texttt{replace}(\texttt{str}, \texttt{pattern}, \texttt{replacement})$. This operation replaces the first occurrence of the substring  in \texttt{str} that matches \texttt{pattern} (which usually a regular expression) with the string \texttt{replacement}). 
 %We can easily model this operation using our formalization of NFTs with the following steps:

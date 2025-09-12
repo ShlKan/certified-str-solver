@@ -2,7 +2,8 @@
 \label{sec:sft}
 
 
-We begin by presenting a mathematical definition of SFTs \cite{VeanesHLMB12Transducer}, abstracting from the specific implementation details of Isabelle/HOL.
+We recall the definition of SFTs \cite{VeanesHLMB12Transducer}, 
+abstracting from specific implementation details in Isabelle/HOL.
 
 Let $\mathcal{U}$ be a multi-sorted carrier set or background universe, which is equipped with functions and relations over the elements. We use $\tau$ as a sort and $\mathcal{U}^\tau$ denotes the sub-universe of elements of type $\tau$.
 We have a special type $\mathbb{B}$ with $\mathcal{U}^\mathbb{B} = \{ \top, \bot\}$, which corresponds to the boolean type.
@@ -30,7 +31,7 @@ For each transition $q\xrightarrow{\phi, f} q'$, if there exists an element $a\i
 SFTs accept an input word and generate an output word. This can be defined by \emph{runs} of SFTs.
 An SFT run $\sigma$ is a sequence $(q_0, \phi_0, f_0, q_1),(q_1, \phi_1, f_1, q_2),\ldots, (q_{n-1}, \phi_{n-1}, f_{n-1}, q_n)$ such that $q_0\in \mathcal{I}$ and $(q_i,
 \phi_i, f_i, q_{i+1}), 0 \leq i \leq n-1$ is a transition in $\Delta$.
-$\sigma$ is an accepting run when $q_n$ is an accepting state.
+$\sigma$ is \emph{accepting} when $q_n \in \mathcal{F}$.
 
 For a word $w = a_0,\ldots, a_{n-1}$, it is accepted by $\sigma$ if and only if $a_i \in \llbracket\phi_i \rrbracket$ for $0 \leq i \leq n - 1$. When $w$ is accepted, run $\sigma$ generates an output sequence $w'= f_0~a_0, \ldots, f_{n-1}~a_{n-1}$. We define:
 \begin{itemize}
