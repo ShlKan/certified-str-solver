@@ -22,19 +22,21 @@ research development over the past decade. While our work provides formal
 verification guarantees, there exists a rich ecosystem of non-certified string
 solvers, which has in the last few years led to a standardized SMT-LIB 2.6/2.7 
 unicode string theory and annual competition. SMT-LIB compatible string 
-solvers include Z3 \cite{z3}, Z3-alpha \cite{z3alpha}, Z3-Noodler 
+solvers include Z3 \cite{Z3}, Z3-alpha \cite{z3alpha}, Z3-Noodler 
 \cite{noodler,noodler-int,noodler-len, noodler-tool}, Z3str3RE \cite{z3str3re},
-cvc5 \cite{cvc5}, Z3str4 \cite{z3str4}, Trau \cite{trau0,trau-tool,trau2}, and 
-OSTRICH \cite{ostrich}. Recent SMT competition over string theory has revealed
+cvc5 \cite{cvc5}, Z3str4 \cite{z3str4}, Trau \cite{Z3-trau,trau-tool}, and 
+OSTRICH \cite{ostrich,CHL+19,pacmpl/ChenFHHHKLRW22}. 
+Recent SMT competition over string theory has revealed
 superiority of automata-based methods (based on restrictions of symbolic
-automata). For this reason,
+automata). 
+We envision that our work will benefit the string solving community by 
+providing a formal foundation for string solvers development.
 %: Kaluza \cite{Berkeley-JavaScript} specializes in JavaScript analysis, CVC5 \cite{cvc5}, Z3-str3 \cite{Z3-str3} builds on the Z3 framework, S3P \cite{DBLP:conf/ccs/TrinhCJ14}, Ostrich \cite{pacmpl/ChenFHHHKLRW22}, and SLOTH \cite{HJLRV18}.
 %As more and more 
 %Numerous bugs have been uncovered in existing string solvers \cite{DBLP:conf/cav/BlotskyMBZKG18} and SMT solvers \cite{Mansur20} 
-our work will benefit the community by providing a formal 
-foundation for string solvers development.
 
 
 
-\emph{Certified SMT Solvers.} Beyond string theories, certification efforts in SMT solving have extended to other domains. For example, the work by Shi et al. \cite{DBLP:conf/cav/ShiFLTWY20}, who developed a certified SMT solver for quantifier-free bit-vector theory, demonstrating the broader applicability of interactive theorem proving in certified SMT solver development. The work by Mansur et al. \cite{verified-verifying} define a formal semantics for SMT-LIB string
+\emph{Certified SMT Solvers.} Certification efforts 
+for SMT (other than string theories) also exist. For example, the work by Shi et al. \cite{DBLP:conf/cav/ShiFLTWY20}, who developed a certified SMT solver for quantifier-free bit-vector theory, demonstrating the broader applicability of interactive theorem proving in certified SMT solver development. The work by Mansur et al. \cite{verified-verifying} define a formal semantics for SMT-LIB string
 to check compatibility between solvers and SMTLIB standard.

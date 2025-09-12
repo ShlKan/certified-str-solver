@@ -368,9 +368,13 @@ Figure \ref{fig-rearranged-automata} presents the complete SFT construction, obt
 
 
 
-We evaluate our SFT-based replacement operation by extending CertiStr \cite{cpp/KanLRS22}, a certified string solver that originally supports only basic string operations such as concatenation and regular constraints. CertiStr employs a forward-propagation approach to solve string constraints, which requires computing the forward image of string operations. Our SFT product operation provides an exact forward image computation for replacement operations, enabling seamless integration of replacement functionality into CertiStr's solving framework.
+We evaluate our SFT-based replacement operation by extending CertiStr \cite{cpp/KanLRS22}, a certified string solver that supports only basic string operations such as concatenation and regular constraints. CertiStr employs a forward-propagation approach to solve string constraints, which requires computing the forward image of string operations. Our SFT product operation provides an exact forward image computation for replacement operations, enabling seamless integration of replacement functionality into CertiStr's solving framework.
 
-By incorporating our SFT-based modeling of replacement, we develop CertiStrR—an extended string solver that supports two types of string replacement: (1) replacing the first occurrence of a substring matching a given pattern, and (2) replacing all occurrences of substrings matching a given pattern. The patterns can be either constant strings or regular expressions.
+By incorporating our SFT-based modeling of replacement, we develop CertiStrR—an
+extended string solver that supports two types of string replacement: (1)
+replacing the first occurrence of a substring matching a given pattern, and (2)
+replacing all occurrences of substrings matching a given pattern, i.e., either 
+a constant string or a regular expression.
 
 
 
@@ -468,8 +472,15 @@ CertiStrR outperforms both Ostrich and CVC5 across most benchmark subgroups, wit
 These results demonstrate the effectiveness and efficiency of our certified SFT formalization and implementation.
 
 \paragraph{Transducers vs. Replacement Operations.}  
-Although both transducers and replacement operations can express string transformations for security-related verification, transducers are strictly more expressive because they can capture dependencies between the input pattern and the replacement string. In contrast, all replacement operations in SMT-LIB treat the pattern and the replacement string as independent. For example, in the SFT shown in Figure~\ref{fig:html-sanitizer-sft}, a transition may be defined over an interval such as $[\texttt{a-z}]$, and the output function computes its output directly based on the input character. Replacement operations, however, cannot express such dependencies.
-Because the replacement string is not a function.
+Although both transducers and replacement operations can express string
+transformations for security-related verification, transducers are strictly more
+expressive because they can capture dependencies between the input pattern and
+the replacement string. In contrast, all replacement operations in SMT-LIB treat
+the pattern and the replacement string as independent. For example, in the SFT
+in Figure~\ref{fig:html-sanitizer-sft}, a transition may be defined over
+an interval such as $[\texttt{a-z}]$, and the output function computes its
+output directly based on the input character. Replacement operations, however,
+cannot express such dependencies since the replacement string is not a function.
 
 Consider the transition $[\texttt{a-z}]/id$, where $id$ is the identity function. To model this transition with replacement operations, the interval must be explicitly expanded into the individual characters $\texttt{'a'}$ through $\texttt{'z'}$, requiring 26 nested \texttt{replace-all} operations—one for each character. Thus, modeling $[\texttt{a-z}]/id$ with replacement operations yields an expression of the form:
 \[
@@ -486,7 +497,8 @@ When the interval contains a large set of characters—as is common in web appli
 
 \subsection{Effort of Certified Development}
 
-This subsection discusses the development effort required for our certified SFT formalization. While SFTs constitute the central contribution of this paper, they are not sufficient on their own to support the applications we target. A more comprehensive symbolic framework for automata libraries is necessary. Beyond the existing automata library supported by CertiStr \cite{cpp/KanLRS22}, which already includes operations such as SFA product and SFA concatenation, we needed to develop additional \emph{certified} SFA operations from scratch. These include $\varepsilon$SFAs, translation from $\varepsilon$SFAs to SFAs, translation from SFAs to Symbolic Deterministic Finite Automata (SDFA), and negation of SFAs. Table~\ref{tab:abstract_impl} summarizes the certified development effort that was carried out specifically for this work.
+%This subsection discusses the development effort required for our certified SFT formalization. 
+While SFTs constitute the central contribution of this paper, they are not sufficient on their own to support the applications we target. A more comprehensive symbolic framework for automata libraries is necessary. Beyond the existing automata library supported by CertiStr \cite{cpp/KanLRS22}, which already includes operations such as SFA product and SFA concatenation, we needed to develop additional \emph{certified} SFA operations from scratch. These include $\varepsilon$SFAs, translation from $\varepsilon$SFAs to SFAs, translation from SFAs to Symbolic Deterministic Finite Automata (SDFA), and negation of SFAs. Table~\ref{tab:abstract_impl} summarizes the certified development effort that was carried out specifically for this work.
 
 The abstract-level development encompasses all formalizations presented in Section~\ref{sec:abstract-layer}, including SFTs and the additional SFA operations used in this paper's application. The implementation-level development covers all formalizations described in Section~\ref{sec_alg_refinement}, including the refinement of the product operation and other SFA operations used in this paper's application. The final row of Table~\ref{tab:abstract_impl} corresponds to the effort devoted to interval formalization. The most challenging component proved to be the correctness proof of the product operation at the abstract level (Figure~\ref{fig-def-product-correct}).
 
