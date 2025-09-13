@@ -112,7 +112,7 @@ Table \ref{tab:sanitizer_attack} summarizes the verification results for various
 
 We evaluate a range of attack models for HTML, JavaScript, JSON, XML, and CSS. Listing \ref{lst-css-attack} shows the CSS attack model, which is used to verify the corresponding sanitizer. The attack model includes comments, declaration breakers, and known dangerous tokens such as \textbf{expression(}, \textbf{@import}, \textbf{behavior:}, \textbf{-moz-binding}, and \textbf{url(} (unless the URL is separately validated).
 These are unsafe and undesired strings in CSS contexts.
-Sanitizers include GA HtmlEscape, GA JSONEscape, GA XMLEscape, escapeString, and CleanseCSS, where "GA" means from Google Analytics. Sanitizers are often composed with preprocessing steps such as Trim, which removes leading and trailing whitespace characters. As shown in the table, GAHtmlEscape and escapeString are unsafe with respect to the HTML attack model without preprocessing, but become safe when combined with Trim. The \textbf{Size} column demonstrates the expressive power and succinctness of SFTs in modeling real-world transducers. We did not list the execution time of verification because all of them are quite efficent with less than 0.02 second to finish the verificaiton.
+Sanitizers include GA HtmlEscape, GA JSONEscape, GA XMLEscape, escapeString, and CleanseCSS, where "GA" means from Google Analytics. Sanitizers are often composed with preprocessing steps such as Trim, which removes leading and trailing whitespace characters. As shown in the table, GAHtmlEscape and escapeString are unsafe with respect to the HTML attack model without preprocessing, but become safe when combined with Trim. The \textbf{Size} column demonstrates the succinctness of SFTs in modeling real-world transducers. We did not list the execution time of verification because all of them are quite efficent with less than 0.02 second to finish the verificaiton.
 
 
 
@@ -185,7 +185,7 @@ Figure \ref{fig-rearranged-automata} presents the complete SFT construction, obt
   \label{fig-rearranged-automata}
   \end{figure}
 
-  We can extend the above construction to model both replace-first and replace-all. In this paper, we only illustrate the construction of replace-all in Figure \ref{fig:replace-all}. The SFT $\mathcal{T}_2$ combines pattern matching and replacement using the construction just described. The SFT $\mathcal{T}_1$ matches strings that do not contain any substrings matching the pattern. Two $\varepsilon$-transitions connect these components: one from $\mathcal{T}_1$'s accepting state to $\mathcal{T}_2$'s initial state, and another from $\mathcal{T}_2$'s accepting state back to $\mathcal{T}_1$'s initial state. This cyclic structure enables the replace-all operation by repeatedly applying pattern replacement until no more matches exist in the input string.
+  We can extend the above construction to model both replace-first and replace-all for XSS attack verification. In this paper, we only illustrate the construction of replace-all in Figure \ref{fig:replace-all}. The SFT $\mathcal{T}_2$ combines pattern matching and replacement using the construction just described. The SFT $\mathcal{T}_1$ matches strings that do not contain any substrings matching the pattern. Two $\varepsilon$-transitions connect these components: one from $\mathcal{T}_1$'s accepting state to $\mathcal{T}_2$'s initial state, and another from $\mathcal{T}_2$'s accepting state back to $\mathcal{T}_1$'s initial state. This cyclic structure enables the replace-all operation by repeatedly applying pattern replacement until no more matches exist in the input string. Replace-first modeling has no transtion from $\mathcal{T}_2$'s accepting state back to $\mathcal{T}_1$'s initial state.
 
 
 
@@ -465,7 +465,7 @@ them efficiently. Among existing solvers, only OSTRICH \cite{pacmpl/ChenFHHHKLRW
 CertiStrR outperforms both Ostrich and CVC5 across most benchmark subgroups, with the only exception of the "Replace Str" category where CVC5 achieves better performance (though it experiences one timeout). CertiStrR demonstrates particularly strong performance in  "Replace All" category.
 These results demonstrate the effectiveness and efficiency of our SFT formalization and implementation.
 
-\paragraph{Transducers vs. Replacement Operations.}  
+\paragraph{Transducers vs. Replacement Operations.}
 Although both transducers and replacement operations can express string
 transformations for security-related verification, transducers are strictly more
 expressive because they can capture dependencies between the input pattern and
@@ -476,9 +476,9 @@ an interval such as $[\texttt{a-z}]$, and the output function computes its
 output directly based on the input character. Replacement operations, however,
 cannot express such dependencies since the replacement string is not a function.
 
-Consider a string transformation that maps each character in $[\texttt{a-z}]$ to its successor, with \texttt{z} wrapping around to \texttt{a}. Modeling this transformation using only replacement operations requires spliting the interval $[\texttt{a-z}]$ into individual characters, resulting in 26 separate \texttt{replace-all} operations—one for each letter. For example:
+Consider a string transformation that replace each character in $[\texttt{a-z}]$ with its ASCII code. Modeling this transformation using only replacement operations requires spliting the interval $[\texttt{a-z}]$ into individual characters, resulting in 26 separate \texttt{replace-all} operations—one for each letter. For example:
 \begin{verbatim}
-  replace(replace(..., b, c, g), a, b, g)
+  replace(replace(..., b, 0x62, g), a, 0x61, g)
 \end{verbatim}
 
 
