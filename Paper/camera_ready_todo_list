@@ -1,0 +1,44 @@
+# Camera Ready Todo List - CPP 2026 Paper #58
+
+## Review #58A Comments
+
+### Major Issues
+- [ ] Clarify if CertiStrR is obtained via code export (at least partly)
+- [ ] Analyze and explain the models in Section A (sanitizers) - verify if vulnerabilities are correct
+- [ ] Add explanation for why CertiStrR performs order-of-magnitude faster than state-of-the-art solvers
+
+### Text Corrections
+- [ ] Line 65: Change "15 years ago" to "2010" (will remain true)
+- [ ] Line 223: Add "we know" to "any existing..."
+- [ ] Line 280: Change several "." to ","
+- [ ] Line 395: Change "set option" to "option set" or explain
+- [ ] Line 406: Remove redundant text "The value None..." (already said around line 380)
+- [ ] Line 408: Drop "This design choice..." sentence (not adding value)
+- [ ] Line 417: Simplify "rather than ... criteria." to "to model nondeterminism."
+- [ ] Line 454: Add missing "set" - should be "('q � 'a � 'q) set"
+- [ ] Line 459: Drop technical definition or improve Isabelle notation formatting
+- [ ] Line 468: Improve Isabelle notation (same as line 459)
+- [ ] Line 498: Fix equation according to correctness statement (Fig.6) - define F properly
+- [ ] Line 512: Remove unnecessary parentheses
+- [ ] Line 1008: Clarify if HtmlEscape vulnerability is known and if responsible disclosure was made
+
+### Technical Improvements
+- [ ] Figure 6: Discharge F_ok1 and F_ok2 by defining F properly with better naming
+- [ ] Better use of Isabelle notation throughout (e.g., line 452 suggestion)
+
+## Review #58B Comments
+
+### Clarifications Needed
+- [ ] Explain how string replacement algorithm deals with overlapping occurrences (e.g., "baab" in "xbaabaaby")
+- [ ] Clarify SFT behavior in Fig. 15 for input "a123b" - explain nondeterministic replacement behavior
+- [ ] Section 5.2: Explain what SAT/UNSAT means for string replacement tests
+- [ ] Elaborate on complications in formalization of SFA/SFT compared to classical FA/FT
+
+## Review #58C Comments
+
+### Related Work
+- [ ] Add citation/remark about recent symbolic derivatives formalization efforts
+- [ ] Specifically mention: "Finiteness of Symbolic Derivatives in Lean" by Zhuchko, Maarand, Veanes, and Ebner
+
+### Formatting
+- [ ] Figure 5: Fix odd and wrong spacing of many primes
