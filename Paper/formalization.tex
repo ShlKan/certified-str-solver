@@ -37,10 +37,10 @@ type_synonym |$('a,~'b)$| Tlabel = "|$'a \text{ option}~\Rightarrow~'b$ set opti
 
 
 
-Firstly, $'a \text{ set option }$ is the input type of the transition, it accepts a set of elements of type $'a$ or $\texttt{None}$ corresponding to empty string $\varepsilon$. 
+Firstly, $'a \text{ set option }$ is the input type (\texttt{option} type of set) of the transition, it accepts a set of elements of type $'a$ or $\texttt{None}$ corresponding to empty string $\varepsilon$. 
 Accepting a set of $'a$ elements aims to express the same but more abstract semantics of the input labels in Definition \ref{def-sft}, in which an input label is a predicate. A predicate's semantics as introduced before represents a set of elements that make the predicate true. But predicates have various different forms. For instance, the interval $[1-9]$ represents the set $\{e \mid 1 \leq e \leq 9\}$. The predicate $\lambda b.~ b[7] = 1$, where $b$ is a bit vector of length 8, denotes the set of bit vectors that have a 1 in the 7th position. All different forms of labels are abstracted as sets in our formalization.
 %
-The value $\texttt{None}$ represents the empty string $\varepsilon$ in our formalization, indicating a transition that consumes no input but may still produce output elements. This design choice facilitates the modeling of real-world applications in SFTs, as we will demonstrate in our application to string solvers.
+The value $\texttt{None}$ (empty string) facilitates the modeling of real-world applications in SFTs, as we will demonstrate in our application to string solvers.
 
 The second element of type $'i$ in LTTS serves as an index into the output function space. 
 %
@@ -49,8 +49,7 @@ to enable the reuse of the same output functions for different transitions.
 %
 The mapping $\mathcal{M}_t$ associates each index with a specific output
 function. These output functions, formalized by \texttt{Tlabel}, map a single
-input element to a set of possible output elements rather than to a single
-element. This design enables nondeterministic output behavior, where the
+input element to a set of possible output elements to model nondeterministic output behavior, where the
 transducer may select any element from the output set arbitrarily or according
 to specified criteria. Further, output functions can produce empty string $\varepsilon$ by returning $\texttt{None}$, providing further flexibility in transition behavior.
 
@@ -75,44 +74,49 @@ In this paper, we present only the definitions of  $\varepsilon$SFAs and SFAs, w
 \begin{figure}[hbt!]
 	\begin{lstlisting}
 record (|$'q,$||$~'a$|) |$\texttt{NFA}$| =
-	|$\mathcal{Q}$| :: "|$'q$| set"
-	|$\Delta$| :: "(|$'q,$||$~'a$|) LTS"
-	|$\mathcal{I}$| :: "|$'q$| set"
-	|$\mathcal{F}$| :: "|$'q$| set"
+	    |$\mathcal{Q}$| :: "|$'q$| set"
+	    |$\Delta$| :: "(|$'q,$||$~'a$|) LTS"
+	    |$\mathcal{I}$| :: "|$'q$| set"
+	    |$\mathcal{F}$| :: "|$'q$| set"
 
 record (|$'q,$||$~'a$|) |$\texttt{eNFA}$| =
-	|$\mathcal{Q}_e$| :: "|$'q$| set"
-	|$\Delta_e$| :: "(|$'q,$||$~'a$|) LTS"
-	|$\Delta_e'$| :: "|$('q * 'q)$| set"
-	|$\mathcal{I}_e$| :: "|$'q$| set"
-	|$\mathcal{F}_e$| :: "|$'q$| set"
+	    |$\mathcal{Q}_e$| :: "|$'q$| set"
+	    |$\Delta_e$| :: "(|$'q,$||$~'a$|) LTS"
+	    |$\Delta_e'$| :: "|$('q * 'q)$| set"
+	    |$\mathcal{I}_e$| :: "|$'q$| set"
+	    |$\mathcal{F}_e$| :: "|$'q$| set"
 
-type_synonym |$('q, 'a)$| LTS = "|$'q \times 'a \text{ set }\times 'q$|"    
+type_synonym |$('q, 'a)$| LTS =
+          "|$'q~\times~'a \text{ set }\times ~'q$| set"
 	\end{lstlisting}
 \caption{The formalization of $\varepsilon$SFAs and SFAs}
 \label{fig-def-FAs}
 \end{figure}
 
 
-Having established these foundational definitions, we can now formalize the product operation. 
+Having established these foundational definitions, we can now formalize the product operation.
 
 \begin{figure}[hbt!]
 	\begin{lstlisting}
-definition productT :: |$"('q,'a,'i,'b)"$| NFT |$\Rightarrow$| 
-   |$('q,'a)$| NFA |$\Rightarrow$||$(('a,'b)$| Tlabel |$\Rightarrow 'a \text{ set}$| 
+definition productT :: |$"('q,'a,'i,'b)"$| NFT |$\Rightarrow$|
+   |$('q,'a)$| NFA |$\Rightarrow$||$(('a,'b)$| Tlabel |$\Rightarrow 'a \text{ set}$|
    |$\Rightarrow 'b\text{ set option})\Rightarrow$| |$('q\times 'q, ~'b)$| eNFA where
 "productT |$\mathcal{T}$| |$\mathcal{A}$| F = |$\llparenthesis$|
   |$\mathcal{Q}e = \mathcal{Q}_t~\mathcal{T} \times \mathcal{Q} ~\mathcal{A}$|,
-  |$\Delta_e = \{((p,p'),~\texttt{the }(((\mathcal{M}_t~\mathcal{T})~f)\texttt{ None}),~(q, p'))\mid $|
+  |$\Delta_e =$| (* case of |$\epsilon$|-transitions *)
+      |$\{((p,p'),~\texttt{the }(((\mathcal{M}_t~\mathcal{T})~f)\texttt{ None}),~(q, p'))\mid $|
        |$p, p', q, f.~p'\in \mathcal{Q}~\mathcal{A}~\land$| |$(p, (\texttt{None}, f), q)\in \Delta_t~\mathcal{T}$|
         |$ \land~\exists S.~(\mathcal{M}_t~\mathcal{T})~f~\texttt{None} = \text{Some } S\} ~\cup$|
-      |$\{((p,p'),~\texttt{the }(F~((\mathcal{M}_t~\mathcal{T})~f)~(\sigma_1\cap\sigma_2)),(q, q'))\mid $|
+      (* case of non-|$\epsilon$|-transitions *)
+      |$\{((p,p'),~\texttt{the }(\texttt{F}~((\mathcal{M}_t~\mathcal{T})~f)~(\sigma_1\cap\sigma_2)),(q, q'))\mid $|
        |$p, p', q, \sigma_1, \sigma_2, q', f.~(p, (\text{Some }\sigma_1, f), q)\in \Delta_t~\mathcal{T} \land$|
        |$ (p', \sigma_2, q')\in\Delta~\mathcal{A}\land \sigma_1\cap \sigma_2 \neq \emptyset~\land$|
-          |$ \exists S.~F~((\mathcal{M}_t~\mathcal{T})~f)~(\sigma_1\cap\sigma_2) = \text{Some } S\}$|,
-  |$\Delta_e' = \{((p,p'),~(q, p'))\mid p, p', q, f.~p'\in \mathcal{Q}~\mathcal{A} \land$|
+          |$ \exists S.~\texttt{F}~((\mathcal{M}_t~\mathcal{T})~f)~(\sigma_1\cap\sigma_2) = \text{Some } S\}$|,
+  |$\Delta_e' =$| (* case of |$\epsilon$|-transitions *)
+      |$\{((p,p'),~(q, p'))\mid p, p', q, f.~p'\in \mathcal{Q}~\mathcal{A} \land$|
        |$(p, (None, f), q)\in \Delta_t~\mathcal{T}~\land $|
        |$(\mathcal{M}_t~\mathcal{T})~f~\texttt{None} = \text{None}\} ~\cup$|
+      (* case of non-|$\epsilon$|-transitions *)
       |$\{((p,p'),~(q, q'))\mid p, p', q, \sigma_1, \sigma_2, q', f.~$|
         |$ (p, (\text{Some }\sigma_1, f), q)\in \Delta_t~\mathcal{T} \land (p', \sigma_2, q')\in\Delta~\mathcal{A}$|
         |$\land~\sigma_1\cap \sigma_2 \neq \emptyset~\land\exists x\in(\sigma_1\cap\sigma_2).$|
@@ -128,7 +132,7 @@ Figure \ref{fig-def-FTProd} depicts the abstract level formalization for the pro
 result of the product operation is an $\varepsilon$SFA.
 But we need to explain the role of parameter $\text{\texttt{F}}$. The output function $f$ for each transition in $\Delta_t$ is of type "$'a\;\text{option} \Rightarrow 'b\;\text{set option}$", which applies to a \emph{single} element of type $'a$ or $\varepsilon$. $\text{\texttt{F}}$ extends $f$ to apply $f$ to a set of elements. More precisely, let $f$ be an output function, the semantics of $\text{\texttt{F}}$ is defined as follows:
 
-\[\texttt{F}~f~A=\texttt{Some } (\bigcup_{a\in A} (\text{if }f~a= \text{Some }S \texttt{ then } S \texttt{ else } \emptyset))\].
+\[\texttt{F}~f~A=\texttt{Some } \bigcup_{a\in A} \text{if }f~a= \text{Some }S \texttt{ then } S \texttt{ else } \emptyset\].
 
 The transition relations $\Delta_e$ and $\Delta_e'$ are determinted by considering two distinct cases based on the nature of transitions in the SFT: $\varepsilon$-transitions and non-$\varepsilon$-transitions. In both cases, the transition labels in the resulting $\varepsilon$SFA are derived from the composition of the SFT's output function and the SFA's input labels. Let us consider $\Delta_e$ first.
 
@@ -186,14 +190,14 @@ definition outputL ::
 	\begin{lstlisting}
 lemma productT_correct:
   fixes |$\mathcal{T}$| |$\mathcal{A}$| F
-  assumes 
-   F_ok1: "|$\forall~f~s.~(\forall e \in s.~f~(\text{Some } e) = \text{None})\longleftrightarrow$|
-       |$\text{ F}~f~s = \text{None}"$|
-   and F_ok2: "|$\forall~f~s.~ \texttt{F}~f~s\neq \texttt{None} \longrightarrow$| F |$f~s$| = 
+  assumes
+   F_None: "|$\forall~f~s.~(\forall e \in s.~f~(\text{Some } e) = \text{None})\longleftrightarrow$|
+       |$\text{ F}~f~s = \text{None}"$| and
+   F_Some: "|$\forall~f~s.~ \texttt{F}~f~s\neq \texttt{None} \longrightarrow$| F |$f~s$| =
         |$\text{Some }(\cup~\{\texttt{S} \mid e~\texttt{S}.~e \in s~\land~$|
         |$f~(\text{Some }e) = \text{ Some S}\})$|"
       and wfTA: "NFT_wf |$\mathcal{T}~\land \text{ NFA } \mathcal{A}$|"
-  |$\textcolor{blue}{\text{shows}}$| "|$\mathcal{L}_e$| (productT |$\mathcal{T}~\mathcal{A}$| F) = outputL 
+  |$\textcolor{blue}{\text{shows}}$| "|$\mathcal{L}_e$| (productT |$\mathcal{T}~\mathcal{A}$| F) = outputL
           |$\mathcal{T}~\mathcal{A}$|"
 
 	\end{lstlisting}
@@ -201,7 +205,7 @@ lemma productT_correct:
 \label{fig-def-product-correct}
 \end{figure}
 
-Figure \ref{fig-def-product-correct} presents Lemma \texttt{productT\_correct}, which establishes the correctness of the product operation. The lemma's assumptions, \texttt{F\_ok1} and \texttt{F\_ok2}, specify the essential properties of function \texttt{F}. 
+Figure \ref{fig-def-product-correct} presents Lemma \texttt{productT\_correct}, which establishes the correctness of the product operation. The assumptions, \texttt{F\_None} and \texttt{F\_Some}, specify the essential properties of function \texttt{F}. 
 The assumptions $\texttt{NFT\_wf}~\mathcal{T}$ and $\texttt{NFA}~\mathcal{A}$ ensure that the SFT $\mathcal{T}$ and the SFA $\mathcal{A}$ are well-formed.
 The conclusion, marked by \textcolor{blue}{\texttt{shows}}, demonstrates that the language of the constructed $\varepsilon$SFA ($\mathcal{L}_e$ denotes the language of $\varepsilon$SFA) from $\mathcal{T} \times \mathcal{A}$ coincides with the mathematical semantics defined by \texttt{outputL}, thereby establishing semantic preservation of the product construction.
 

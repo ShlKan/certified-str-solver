@@ -19,9 +19,9 @@ With these notations and the above definitions, we can define SFTs as follows.
    \item $\mathcal{Q}$ is a finite set of states,
    \item $\mathcal{I}\subseteq \mathcal{Q}$ is the set of initial states,
    \item $\mathcal{F} \subseteq\mathcal{Q}$ is the set of accepting states,
-   \item $\Delta$ is the set of transition relations. Each element in $\Delta$ is of the form $(q, \phi, f, q')$ or written as $q\xrightarrow{\phi, f} q'$, where $q$ and $q'$ are states in $\mathcal{Q}$.
-   $\phi$ is a predicate of type $\tau_1\rightarrow \mathbb{B}$.
-   $f$ is a lambda term of type $\tau_1\rightarrow \tau_2$. $f$ is called an \emph{output function}.
+   \item $\Delta$ is the set of transition relations. Each element in $\Delta$ is of the form $(q, \phi, f, q')$ or written as $q\xrightarrow{\phi, f} q'$, where $q$ and $q'$ are states in $\mathcal{Q}$,
+   $\phi$ is a predicate of type $\tau_1\rightarrow \mathbb{B}$,
+   $f$ is a lambda term of type $\tau_1\rightarrow \tau_2$, and $f$ is called an \emph{output function}.
    \end{itemize}
 
 For each transition $q\xrightarrow{\phi, f} q'$, if there exists an element $a\in \llbracket \phi \rrbracket$, where $a$ is called an input,  then the application $(f~a)$ is the output.

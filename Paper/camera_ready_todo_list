@@ -8,23 +8,23 @@
 - [ ] Add explanation for why CertiStrR performs order-of-magnitude faster than state-of-the-art solvers
 
 ### Text Corrections
-- [ ] Line 65: Change "15 years ago" to "2010" (will remain true)
-- [ ] Line 223: Add "we know" to "any existing..."
-- [ ] Line 280: Change several "." to ","
-- [ ] Line 395: Change "set option" to "option set" or explain
-- [ ] Line 406: Remove redundant text "The value None..." (already said around line 380)
-- [ ] Line 408: Drop "This design choice..." sentence (not adding value)
-- [ ] Line 417: Simplify "rather than ... criteria." to "to model nondeterminism."
-- [ ] Line 454: Add missing "set" - should be "('q � 'a � 'q) set"
-- [ ] Line 459: Drop technical definition or improve Isabelle notation formatting
-- [ ] Line 468: Improve Isabelle notation (same as line 459)
-- [ ] Line 498: Fix equation according to correctness statement (Fig.6) - define F properly
-- [ ] Line 512: Remove unnecessary parentheses
+- [x] Line 65: Change "15 years ago" to "2010" (will remain true)
+- [x] Line 223: Add "we know" to "any existing..."
+- [x] Line 280: Change several "." to ","
+- [x] Line 395: Change "set option" to "option set" or explain
+- [x] Line 406: Remove redundant text "The value None..." (already said around line 380)
+- [x] Line 408: Drop "This design choice..." sentence (not adding value)
+- [x] Line 417: Simplify "rather than ... criteria." to "to model nondeterminism."
+- [x] Line 454: Add missing "set" - should be "('q � 'a � 'q) set"
+- [x] Line 459: Drop technical definition or improve Isabelle notation formatting
+- [x] Line 468: Improve Isabelle notation (same as line 459)
+- [x] Line 498: Fix equation according to correctness statement (Fig.6) - define F properly
+- [x] Line 512: Remove unnecessary parentheses
 - [ ] Line 1008: Clarify if HtmlEscape vulnerability is known and if responsible disclosure was made
 
 ### Technical Improvements
-- [ ] Figure 6: Discharge F_ok1 and F_ok2 by defining F properly with better naming
-- [ ] Better use of Isabelle notation throughout (e.g., line 452 suggestion)
+- [x] Figure 6: Discharge F_ok1 and F_ok2 by defining F properly with better naming
+- [x] Better use of Isabelle notation throughout (e.g., line 452 suggestion)
 
 ## Review #58B Comments
 
