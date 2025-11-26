@@ -98,9 +98,9 @@ Having established these foundational definitions, we can now formalize the prod
 
 \begin{figure}[hbt!]
 	\begin{lstlisting}
-definition productT :: |$"('q,'a,'i,'b)"$| NFT |$\Rightarrow$|
-   |$('q,'a)$| NFA |$\Rightarrow$||$(('a,'b)$| Tlabel |$\Rightarrow 'a \text{ set}$|
-   |$\Rightarrow 'b\text{ set option})\Rightarrow$| |$('q\times 'q, ~'b)$| eNFA where
+definition productT :: |$"('{q},~'a,~'i,~'b)"$| NFT
+  |$\Rightarrow$| |$('q,~'a)$| NFA |$\Rightarrow$||$(('a,~'b)$| Tlabel |$\Rightarrow~'a \text{ set}$|
+  |$\Rightarrow~'b\text{ set option})\Rightarrow$| |$('q~\times~'q, ~'b)$| eNFA where
 "productT |$\mathcal{T}$| |$\mathcal{A}$| F = |$\llparenthesis$|
   |$\mathcal{Q}e = \mathcal{Q}_t~\mathcal{T} \times \mathcal{Q} ~\mathcal{A}$|,
   |$\Delta_e =$| (* case of |$\epsilon$|-transitions *)
@@ -404,3 +404,6 @@ To facilitate formal reasoning and optimize performance, in addition to the abov
 \end{enumerate}
 
 We prove that all interval operations preserve canonical form when applied to canonically-formed inputs. This invariant serves two purposes: it simplifies formal proofs by eliminating the need to reason about malformed or overlapping intervals, and it enables more efficient implementations of interval operations by reducing the number of cases to consider.
+
+
+The formalization of SFA/SFT presents distinct challenges compared to classical FA/FT, primarily stemming from the symbolic nature of transition labels. Unlike classical automata where labels are concrete alphabet symbols, SFAs and SFTs use Boolean algebras to represent potentially infinite label sets. This introduces two key complications. First, our formalization must accommodate different Boolean algebra implementations (intervals, bit vectors, predicates, etc.) while maintaining uniform semantics, necessitating the locale-based abstraction layer that separates the fixed automata structure from variable label theories. Second, operations on transition labels—such as intersection and membership testing—require Boolean algebra computations rather than simple syntactic comparisons. This demands explicit reasoning about semantic preservation: we must prove that operations on Boolean algebra representations (e.g., interval intersection) correctly preserve the set semantics defined by the \texttt{sem} function. These complications, absent in classical automata where label operations are trivial, required careful architectural design and substantial additional proof effort to establish correctness.

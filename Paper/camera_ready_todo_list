@@ -3,9 +3,9 @@
 ## Review #58A Comments
 
 ### Major Issues
-- [ ] Clarify if CertiStrR is obtained via code export (at least partly)
-- [ ] Analyze and explain the models in Section A (sanitizers) - verify if vulnerabilities are correct
-- [ ] Add explanation for why CertiStrR performs order-of-magnitude faster than state-of-the-art solvers
+- [x] Clarify if CertiStrR is obtained via code export (at least partly)
+- [x] Analyze and explain the models in Section A (sanitizers) - verify if vulnerabilities are correct
+- [x] Add explanation for why CertiStrR performs order-of-magnitude faster than state-of-the-art solvers
 
 ### Text Corrections
 - [x] Line 65: Change "15 years ago" to "2010" (will remain true)
@@ -20,7 +20,7 @@
 - [x] Line 468: Improve Isabelle notation (same as line 459)
 - [x] Line 498: Fix equation according to correctness statement (Fig.6) - define F properly
 - [x] Line 512: Remove unnecessary parentheses
-- [ ] Line 1008: Clarify if HtmlEscape vulnerability is known and if responsible disclosure was made
+- [x] Line 1008: Clarify if HtmlEscape vulnerability is known and if responsible disclosure was made
 
 ### Technical Improvements
 - [x] Figure 6: Discharge F_ok1 and F_ok2 by defining F properly with better naming
@@ -29,16 +29,16 @@
 ## Review #58B Comments
 
 ### Clarifications Needed
-- [ ] Explain how string replacement algorithm deals with overlapping occurrences (e.g., "baab" in "xbaabaaby")
-- [ ] Clarify SFT behavior in Fig. 15 for input "a123b" - explain nondeterministic replacement behavior
-- [ ] Section 5.2: Explain what SAT/UNSAT means for string replacement tests
-- [ ] Elaborate on complications in formalization of SFA/SFT compared to classical FA/FT
+- [x] Explain how string replacement algorithm deals with overlapping occurrences (e.g., "baab" in "xbaabaaby")
+- [x] Clarify SFT behavior in Fig. 15 for input "a123b" - explain nondeterministic replacement behavior
+- [x] Section 5.2: Explain what SAT/UNSAT means for string replacement tests
+- [x] Elaborate on complications in formalization of SFA/SFT compared to classical FA/FT
 
 ## Review #58C Comments
 
 ### Related Work
-- [ ] Add citation/remark about recent symbolic derivatives formalization efforts
-- [ ] Specifically mention: "Finiteness of Symbolic Derivatives in Lean" by Zhuchko, Maarand, Veanes, and Ebner
+- [x] Add citation/remark about recent symbolic derivatives formalization efforts
+- [x] Specifically mention: "Finiteness of Symbolic Derivatives in Lean" by Zhuchko, Maarand, Veanes, and Ebner
 
 ### Formatting
-- [ ] Figure 5: Fix odd and wrong spacing of many primes
+- [x] Figure 5: Fix odd and wrong spacing of many primes

@@ -362,6 +362,7 @@ Figure \ref{fig-rearranged-automata} presents the complete SFT construction, obt
 
 We evaluate our SFT-based replacement operation by extending CertiStr \cite{cpp/KanLRS22}, a certified string solver that previously supported only basic string operations: concatenation and regular constraints. The original CertiStr was incapable of verifying any XSS attack due to the lack of support for transducers and replacement operations.
 CertiStr employs a forward-propagation approach to solve string constraints, which requires computing the forward image of string operations. Our SFT product operation provides an exact forward image computation for replacement operations, enabling seamless integration of replacement functionality into CertiStr's solving framework.
+The OCaml code of the SFT implementation is extracted from our Isabelle formalization using Isabelle's extraction mechanism, ensuring that the core solving algorithm of CertiStr remains certified.
 
 By incorporating our SFT-based modeling of replacement, we develop CertiStrR—an
 extended string solver that supports two types of string replacement: (1)
@@ -454,7 +455,7 @@ We evaluate {CertiStrR} using benchmarks from SMT-LIB 2025~\cite{smtlib_benchmar
 \end{table*}
 
 
-The experimental evaluation was conducted on a laptop with an Apple M4 processor and 24 GB of memory, with a \textbf{one-hour} time limit per test. Table~\ref{tab:string_operations} summarizes the results. The results from CertiStrR were classified into three categories: SAT (satisfiable), UNSAT (unsatisfiable), and Inconclusive. An "Inconclusive" result indicates that the solver cannot determine satisfiability due to the inherent incompleteness of the string solver's algorithm, not timeout (all tests completed within one hour). This occurs when the solver cannot determine whether string variables need to be assigned different values that satisfy all constraints. 
+The experimental evaluation was conducted on a laptop with an Apple M4 processor and 24 GB of memory, with a \textbf{one-hour} time limit per test. Table~\ref{tab:string_operations} summarizes the results. The results from CertiStrR were classified into three categories: SAT (satisfiable), indicating that there exist assignments of string variables satisfying the constraints; UNSAT (unsatisfiable), indicating that no such assignments exist; and Inconclusive. An "Inconclusive" result indicates that the solver cannot determine satisfiability due to the inherent incompleteness of the string solver's algorithm, not timeout (all tests completed within one hour). This occurs when the solver cannot determine whether string variables need to be assigned different values that satisfy all constraints. 
 
 We also compare our approach with two state-of-the-art string solvers: Ostrich \cite{pacmpl/ChenFHHHKLRW22} and CVC5 \cite{cvc5}.
 The experimental results demonstrate that string replacement operations, particularly replace-all operations, pose significant challenges for existing state-of-the-art solvers.
@@ -464,6 +465,10 @@ solvers, including CVC5 \cite{cvc5}, yet CertiStrR solves
 them efficiently. Among existing solvers, only OSTRICH \cite{pacmpl/ChenFHHHKLRW22} can handle these benchmarks.
 CertiStrR outperforms both Ostrich and CVC5 across most benchmark subgroups, with the only exception of the "Replace Str" category where CVC5 achieves better performance (though it experiences one timeout). CertiStrR demonstrates particularly strong performance in  "Replace All" category.
 These results demonstrate the effectiveness and efficiency of our SFT formalization and implementation.
+
+Our approach demonstrates superior efficiency compared to other string solving approaches for several key reasons. First, our SFTs are implemented with compact symbolic labels that enable efficient representation of infinite alphabets, and we employ red-black trees for storing states, ensuring logarithmic-time lookup and insertion operations. Second, our forward propagation strategy proves more efficient than alternative approaches such as term rewriting or backpropagation employed by other solvers. While forward propagation supports only a limited set of string constraints—for instance, it is only complete for string constraints satisfy tree properties \cite{cpp/KanLRS22}—this trade-off between completeness and efficiency enables our solver to handle large-scale benchmarks that remain intractable for more general but computationally expensive approaches.
+
+
 
 \paragraph{Transducers vs. Replacement Operations.}
 Although both transducers and replacement operations can express string
@@ -484,10 +489,6 @@ Consider a string transformation that replace each character in $[\texttt{a-z}]$
 
 When the interval contains a large set of characters—as is common in web applications that support the full Unicode range of 
 \texttt{0x10FFFF} code points—this nested structure becomes impractical, leading to significant inefficiency and complexity in the replacement-based approach.
-
-
-
-
 
 
 \subsection{Effort of Certified Development}
