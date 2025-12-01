@@ -6,13 +6,24 @@
 
 \emph{Applications of Symbolic Transducers.} The efficiency, scalability, and
 expressive power of symbolic automata and transducers have led to their
-widespread adoption in numerous applications, including: constraint solving for program analysis \cite{lpar/VeanesBM10}, security-critical sanitizer analysis for web applications \cite{uss/HooimeijerLMSV11}, runtime verification of system behaviors \cite{osdi/YaseenABCL20}, automated program inversion for software 
+widespread adoption in numerous applications, including: constraint solving for
+program analysis \cite{lpar/VeanesBM10,CHL+19}, security-critical sanitizer
+analysis for web applications \cite{uss/HooimeijerLMSV11,pacmpl/ChenFHHHKLRW22,HJLRV18}, runtime verification of system behaviors \cite{osdi/YaseenABCL20}, automated 
+program inversion for software 
 transformation \cite{pldi/HuD17}, and string solving
-\cite{pacmpl/ChenFHHHKLRW22,CHL+19}. Each application leverages the symbolic 
-approach's ability to handle complex
-patterns and large alphabets efficiently.
+\cite{pacmpl/ChenFHHHKLRW22,CHL+19,HJLRV18}. Each application leverages the 
+symbolic approach's ability to handle complex patterns and large alphabets 
+efficiently.
 
-\emph{Formalization of Symbolic Automata and Transducers.} While classical automata theories have been extensively formalized in interactive theorem provers \cite{Tuerk-NFA, Lammich2014TheCA, Peter14, cpp/DoczkalKS13}, with some work on transducer formalization \cite{afp/LochmannFSTS21}, the symbolic variants of automata and transducers remain largely unexplored in formal verification. 
+\emph{Formalization of Symbolic Automata and Transducers.} While classical
+automata theories have been extensively formalized in interactive theorem
+provers \cite{Tuerk-NFA, Lammich2014TheCA, Peter14, cpp/DoczkalKS13}, with some
+work on transducer formalization \cite{afp/LochmannFSTS21}, the symbolic
+variants of automata and transducers remain largely unexplored in formal
+verification. Initial works on formalizing symbolic automata and symbolic
+regular expressions are available (e.g. see \cite{cpp/KanLRS22,ZMVE25,ZVE24}),
+but (to the best of our knowledge) our work is the first that formalizes
+symbolic transducers.
 %To our knowledge, CertiStr \cite{cpp/KanLRS22} represents the only existing work on symbolic automata formalization in a proof assistant. Our work advances this frontier by extending the formal treatment to both SFTs and $\varepsilon$SFAs.
 
 
