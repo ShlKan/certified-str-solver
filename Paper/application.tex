@@ -5,11 +5,10 @@ We evaluate our formalization and implementation of the SFT product operation ac
 
 Sanitizers are crucial for preventing security vulnerabilities such as cross-site scripting (XSS) attacks by ensuring that user inputs are properly encoded before rendering in web browsers.
 
-Listing \ref{lst-html-encode} presents a C\# code snippet implementing an HTML encoding function for Anti-XSS. This function iterates through each character in the input string and encodes characters that are unsafe for HTML rendering.
+Figure \ref{lst-html-encode} presents a C\# code snippet implementing an HTML encoding function for Anti-XSS. This function iterates through each character in the input string and encodes characters that are unsafe for HTML rendering.
 
-
-
-\begin{lstlisting}[language={[Sharp]C}, caption={C\# Code for AntiXSS.EncodeHtml version 2.0.}, label={lst-html-encode}, float=htbp]
+\begin{figure}[hbt!]
+\begin{lstlisting}[language={[Sharp]C}]
 static string EncodeHtml(string t)
 {
   if (t == null) { return null; }
@@ -34,6 +33,9 @@ static string EncodeHtml(string t)
   return builder.ToString();
 }
 \end{lstlisting}
+\caption{C\# Code for AntiXSS.EncodeHtml version 2.0.}
+\label{lst-html-encode}
+\end{figure}
 
 Figure \ref{fig:html-sanitizer-sft} illustrates the SFT representation of the HTML encoding sanitizer function.
  The set of safe characters is defined as $\texttt{safe\_chars} = [\texttt{' '}, \texttt{','}, \texttt{'.'}, \texttt{'-'}, \texttt{'\_'}] \cup [\texttt{'0'}-\texttt{'9'}] \cup [\texttt{'A'}-\texttt{'Z'}] \cup [\texttt{'a'}-\texttt{'z'}]$, which can be efficiently represented using the interval algebra we formalized. Unsafe characters are transformed using the encoding function $\texttt{encode}(c) = \texttt{``\&\#''} + \texttt{toString}(\texttt{ord}(c)) + \texttt{``;''}$. When the alphabet is set to Unicode $[\mathtt{0x0000}, \mathtt{0x10FFFF}]$, the complement $\neg\texttt{safe\_chars}$ represents all Unicode characters outside the safe set, which can also be efficiently represented using our formalized interval operations. \texttt{id}, \texttt{encode}, and $\lambda \_.\varepsilon$ are the identity, encode of unsafe characters, and empty word output functions, respectively.
@@ -83,6 +85,8 @@ Moreover, santizers are usually used in combination with other sanitizers to ens
 \begin{table}[h]
   \centering
   \small
+  \caption{Sanitizer verfication result}
+  \label{tab:sanitizer_attack}
   \setlength{\tabcolsep}{4pt} % Reduced column gap
   \begin{tabular}{p{2.2cm}ll} % Increased width for automatic line break
     \toprule
@@ -104,8 +108,6 @@ Moreover, santizers are usually used in combination with other sanitizers to ens
     attack\_ccs            & Trim + GA CleanseCSS : \textbf{Safe} & 25/46\\
     \bottomrule
   \end{tabular}
-  \caption{Sanitizer verfication result}
-  \label{tab:sanitizer_attack}
 \end{table}
 
 Table \ref{tab:sanitizer_attack} summarizes the verification results for various sanitizers against different attack models. The first column lists the attack models, the second column indicates whether the sanitizer is classified as safe or unsafe with respect to the attack, and the third column reports the size of the transducers used in the verification, given as [number of states/number of transitions]. For composed SFTs, the size reflects the total number of states and transitions across all SFTs.
@@ -117,7 +119,7 @@ Sanitizers include GA HtmlEscape, GA JSONEscape, GA XMLEscape, escapeString, and
 
 
 
-\begin{lstlisting}[language={}, caption={CSS attack model for sanitizer verification.}, label={lst-css-attack}, float=htbp]
+\begin{lstlisting}[language={}, caption={CSS attack model for sanitizer verification}, captionpos=b, label={lst-css-attack}, float=htbp]
 |$\Sigma$|* ( / \* [\s\S]*? \*/
   |$\mid$| ; |$\mid$| \{ |$\mid$| \}
   |$\mid$| [eE][xX][pP][rR][eE][sS][sS][iI]
@@ -435,6 +437,8 @@ We evaluate {CertiStrR} using benchmarks from SMT-LIB 2025~\cite{smtlib_benchmar
 \begin{table*}[h]
 \centering
 \small
+\caption{Experimental results}
+\label{tab:string_operations}
 \setlength{\tabcolsep}{4pt}
 \renewcommand{\arraystretch}{1.1}
 \begin{tabular}{llccccccc}
@@ -450,8 +454,6 @@ We evaluate {CertiStrR} using benchmarks from SMT-LIB 2025~\cite{smtlib_benchmar
    & WebApp      & 255  & 40  & 215 & 0 & 0.79 & 23.67/17 & 8.379/1 \\
   \bottomrule
 \end{tabular}
-\caption{Experimental results}
-\label{tab:string_operations}
 \end{table*}
 
 
@@ -504,6 +506,8 @@ The abstract-level development encompasses all formalizations presented in Secti
 \begin{table}[h]
   \centering
   \small
+  \caption{Overview of the effort of certified development}
+  \label{tab:abstract_impl}
   \begin{tabular}{lccc}
       \toprule
       & \textbf{Definitions} & \textbf{Lemmas} & \textbf{Proofs (LOC)} \\
@@ -513,6 +517,4 @@ The abstract-level development encompasses all formalizations presented in Secti
       Interval & 15 & 29 & 1500 \\
       \bottomrule
   \end{tabular}
-  \caption{Overview of the effort of certified development}
-  \label{tab:abstract_impl}
 \end{table}

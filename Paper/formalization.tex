@@ -248,7 +248,7 @@ locale bool_algebra =
 
 
 
-\paragraph{Implementation layer of the product operation.} We now present the algorithmic implementation of the product operation between an SFT and an SFA\footnote{For clarity of presentation, we show a simplified version of the Isabelle/HOL implementation while preserving the essential algorithmic structure.} based on Refined\_monadic framework.
+\paragraph{Implementation layer of the product operation.} We now present the algorithmic implementation of the product operation between an SFT and an SFA based on Refined\_monadic framework.
 
 Figure \ref{fig-compute-nft-product} illustrates the algorithm \texttt{productT\_impl}, which is implemented using the \emph{Refine\_Monadic} framework. Note that in the implementation, there are some refined operations:  \texttt{nfa\_states}, \texttt{nfa\_trans}, \texttt{nfa\_initial}, \texttt{nfa\_accepting},
 and \texttt{nft\_tranfun}. These are corresponding to the states, transitions, initial states, accepting states, and output function mapping of the SFT.
@@ -377,7 +377,7 @@ definition subtrans_comp where
   \label{fig-def-productT_imp_correct}
   \end{figure}
 
-  The correctness of the product computation is established through a refinement proof, demonstrating that \texttt{productT\_imp} (Figure \ref{fig-compute-nft-product}) correctly implements the abstract specification \texttt{productT} (Figure \ref{fig-def-FTProd}). This refinement relationship is formally specified in Figure \ref{fig-def-productT_imp_correct}, where we leverage the \emph{Refine\_Monadic} framework's data refinement.
+  The correctness of the product operation is established by a refinement proof, demonstrating that \texttt{productT\_imp} (Figure \ref{fig-compute-nft-product}) correctly implements the abstract specification \texttt{productT} (Figure \ref{fig-def-FTProd}). This refinement relationship is formally specified in Figure \ref{fig-def-productT_imp_correct}, where we leverage the \emph{Refine\_Monadic} framework's data refinement.
 
   The refinement is expressed through the relation $\mathbf{C} \leq \texttt{SPEC}~\mathbf{A}$, which asserts that the concrete implementation $\mathbf{C}$ is an element of the abstract specification $\mathbf{A}$. More precisely,  the concrete implementation must produce an $\varepsilon$SFA that is structurally equivalent or isomorphic to the one produced by the abstract algorithm \texttt{productT}.
 

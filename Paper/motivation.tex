@@ -80,7 +80,7 @@ account on this can be found in \cite{systematic-transduction}.
 % However, incorrectly using sanitizers can still lead to XSS vulnerabilities.
 % The following is an example of incorrectly using santizer that leads to XSS vulnerability.
 
-\begin{lstlisting}[language={}, caption={Mutation XSS attack code example}, label={lst-web-security}, float=htbp]
+\begin{lstlisting}[language={}, caption={Mutation XSS attack code example},captionpos=b, label={lst-web-security}, float=htbp]
 var x = goog.string.htmlEscape(cat);
 var y = goog.string.escapeString(x);
 catElem.innerHTML = '<button onclick=

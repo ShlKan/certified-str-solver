@@ -1,4 +1,4 @@
-\documentclass[sigplan,10pt]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
+\documentclass[sigplan,screen]{acmart}
 %This is a template for producing LIPIcs articles. 
 %See lipics-v2021-authors-guidelines.pdf for further information.
 %for A4 paper format use option "a4paper", for US-letter use option "letterpaper"
@@ -24,6 +24,8 @@
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{multirow}
+\usepackage{balance}
+\usepackage{microtype}
 
 \input{comm}
 
@@ -33,27 +35,7 @@
   morecomment=[l];,
   morestring=[b]"
 }
-\lstset{
-  language=SMTLIB,
-  basicstyle=\ttfamily\small,
-  keywordstyle=\color{blue}\bfseries,
-  commentstyle=\color{green!50!black},
-  numbers=left,
-  numberstyle=\tiny\color{gray},
-  stepnumber=1,
-  numbersep=5pt,
-  backgroundcolor=\color{gray!10},
-  frame=single,
-  breaklines=true,
-  captionpos=b,
-  showstringspaces=false
-}
 
-\bibliographystyle{plainurl}% the mandatory bibstyle
-
-%\titlerunning{Dummy short title} %TODO optional, please use if title is longer than one line
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \lstdefinelanguage{Isabelle}{
     keywords={definition,theorem,lemma,proof,qed,by,auto,simp,apply,done,
               where,fixes,assumes,shows,if,then,else,let,in,case,of,
@@ -64,16 +46,27 @@
   }
 
 \lstset{
-  language=Isabelle,
-	basicstyle=\ttfamily,
-	keywordstyle=\color{blue}\bfseries,
-	morekeywords={definition,if,then,else,where,record,fun,lemma,type_synonym,fixes,shows,assumes,and, locale},
-	escapeinside={|}{|},
-  sensitive=true
+  basicstyle=\ttfamily,
+  keywordstyle=\color{blue}\bfseries,
+  morekeywords={definition,if,then,else,where,record,fun,lemma,type_synonym,fixes,shows,assumes,and,locale,set-logic,declare-fun,assert,check-sat,get-model},
+  escapeinside={|}{|},
+  sensitive=true,
+  commentstyle=\color{green!50!black},
+  morecomment=[l];,
+  morestring=[b]",
+  breaklines=true,
+  showstringspaces=false
 }
 
+\bibliographystyle{ACM-Reference-Format}% the mandatory bibstyle
+
+%\titlerunning{Dummy short title} %TODO optional, please use if title is longer than one line
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{document}
-\title{Certified Symbolic Finite Transducers: Formalization and Applications to
+
+\title[Certified Symbolic Finite Transducers]{Certified Symbolic Finite Transducers: Formalization and Applications to
 String Analysis}
 
 \special{papersize=8.5in,11in}
@@ -82,27 +75,49 @@ String Analysis}
 
 
 \author{Shuanglong Kan}
-\email{shuanglong.kan@barkhauseninstitut.org}
 \orcid{0000-0002-4132-2626}
 \affiliation{%
+  \department{ Verified System Design Automation Group}
   \institution{Barkhausen Institut}
   \city{Dresden}
   \country{Germany}
 }
+\email{shuanglong.kan@barkhauseninstitut.org}
 
 \author{Anthony W. Lin}
-\email{awlin@mpi-sws.org}
 \orcid{0000-0003-4715-5096}
 \affiliation{
+  \department{Department of Computer Science}
   \institution{University of Kaiserslautern-Landau \& MPI-SWS}
   \city{Kaiserslautern}
   \country{Germany}
 }
+\email{awlin@mpi-sws.org}
 
 
 
 
 \input{abstract.tex}
+
+\begin{CCSXML}
+<ccs2012>
+   <concept>
+       <concept_id>10003752.10003790.10003794</concept_id>
+       <concept_desc>Theory of computation~Automated reasoning</concept_desc>
+       <concept_significance>500</concept_significance>
+       </concept>
+   <concept>
+       <concept_id>10003752.10003766.10003773.10003774</concept_id>
+       <concept_desc>Theory of computation~Transducers</concept_desc>
+       <concept_significance>500</concept_significance>
+       </concept>
+ </ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Theory of computation~Automated reasoning}
+\ccsdesc[500]{Theory of computation~Transducers}
+
+\keywords{symbolic transducers, Isabelle/HOL, string theory, SMT solvers} %TODO mandatory; please add comma-separated list of keywords
 \maketitle
 
 \input{introduction.tex}
@@ -120,6 +135,6 @@ String Analysis}
 
 \input{conclusion.tex}
 
-
+\balance
 \bibliography{literature}
 \end{document}
