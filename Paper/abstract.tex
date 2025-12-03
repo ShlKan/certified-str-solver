@@ -9,32 +9,15 @@
     and SFAs allow the representation of the alphabet as an effective boolean
     algebra including finite unions of intervals, as well as 
     SMT-Algebras.
-    %can be instantiated with various Boolean algebras, 
     The
     security-critical nature of many of these applications demands trustworthy
     implementations of such systems. To this end, we present the first 
     formalization of SFTs and their most important algorithms in
     Isabelle/HOL. 
-    %This symbolic approach enables not only efficient FT operations—such as computing the output language of an FT given a regular language—but also supports infinite alphabets.
-%
     To evaluate the effectiveness of our formalization, we apply the formalized 
     SFTs to two applications: (1) sanitizers for web applications used for 
     preventing XSS attacks, and (2) string solving, which increasingly
     employs intricate string replacement operations.
-    %a string solver that models replacement operations with various semantics, including left-most and replace-all matching. 
     Our experimental results demonstrate that our methods are competitive with
     the existing unverified implementations.
-
-    %that our approach achieves computational efficiency in constraint-solving scenarios.
-
-    %, thereby providing a more expressive framework for operations that encompass both recognition and transformation. 
-%FTs have wide applications, including program analysis, string constraint 
-    %solving, and security-critical sanitizer analysis. 
-%However, there is currently no scalable formalization of FTs. This is primarily because transition labels in FTs are not formalized symbolically, resulting in transition explosion and significant performance bottlenecks in practical applications.
-
-    \OMIT{
-In this paper, we present a formalization of FTs in the symbolic setting using Isabelle/HOL, where transition labels can be instantiated with various Boolean algebras, such as intervals and arithmetic predicates. This symbolic approach enables not only efficient FT operations—such as computing the output language of an FT given a regular language—but also supports infinite alphabets.
-%
-To evaluate the effectiveness of our formalization, we apply the formalized SFTs to two applications: (1) \texttt{HTMLdecode}, a sanitizer used for preventing XSS attacks, and (2) a string solver that models replacement operations with various semantics, including left-most and replace-all matching. Experimental results demonstrate that our approach achieves computational efficiency in constraint-solving scenarios.
-    }
 \end{abstract}
