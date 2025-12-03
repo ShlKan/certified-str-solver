@@ -250,8 +250,8 @@ locale bool_algebra =
 
 \paragraph{Implementation layer of the product operation.} We now present the algorithmic implementation of the product operation between an SFT and an SFA based on Refined\_monadic framework.
 
-Figure \ref{fig-compute-nft-product} illustrates the algorithm \texttt{productT\_impl}, which is implemented using the \emph{Refine\_Monadic} framework. Note that in the implementation, there are some refined operations:  \texttt{nfa\_states}, \texttt{nfa\_trans}, \texttt{nfa\_initial}, \texttt{nfa\_accepting},
-and \texttt{nft\_tranfun}. These are corresponding to the states, transitions, initial states, accepting states, and output function mapping of the SFT.
+Figure \ref{fig-compute-nft-product} illustrates the algorithm \texttt{productT\_impl}, which is implemented using the \emph{Refine\_Monadic} framework. Note that in the implementation, there are some refined operations:  \texttt{nfa\_states}, \texttt{nfa\_trans}, \texttt{nfa\_initial}, \texttt{nft\_tranfun},
+and \texttt{nfa\_accepting}. These are corresponding to the states, transitions, initial states, accepting states, and output function mapping of the SFT.
 
 The operation \texttt{prods\_imp}, shown in Figure \ref{fig-def-prods_imp}, computes the Cartesian product of two state sets. This function employs the \texttt{FOREACH} construct, a higher-order iteration operator analogous to OCaml's \texttt{Set.fold}. Specifically, given a set $S$, a function $f$ of type $'a \Rightarrow 'b \Rightarrow 'b$, and an initial accumulator $I$ of type $'b$, the expression $\texttt{FOREACH}~S~f~I$ systematically applies $f$ to each element in $S$, accumulating results in a principled manner.
 
@@ -351,7 +351,7 @@ definition subtrans_comp where
     \end{figure}
 
 
-    We now present the implementation of \texttt{subtrans\_comp} in detail, as shown in Figure \ref{fig-def-subtrans_comp} (the implementation of \texttt{subtrans\_comp\_$\varepsilon$} follows analogous principles). For a transtion $(q, (\text{Some}~\alpha, f), q')$ in the SFT, this function traverses all transitions in the SFA, represented by the set \texttt{T}. For each transition $(q_1, \alpha', q_1')\in \texttt{T}$, the function performs two key operations when the intersection of input labels is non-empty ($\alpha \cap \alpha' \neq \emptyset$, verified using \texttt{nemptyIs}):
+    We now present the implementation of \texttt{subtrans\_comp} in detail shown in Figure \ref{fig-def-subtrans_comp} (\texttt{subtrans\_comp\_$\varepsilon$} follows analogous principles). For a transtion $(q, (\text{Some}~\alpha, f), q')$ in the SFT, this function traverses all transitions in the SFA, represented by the set \texttt{T}. For each transition $(q_1, \alpha', q_1')\in \texttt{T}$, the function performs two key operations when the intersection of input labels is non-empty ($\alpha \cap \alpha' \neq \emptyset$, verified using \texttt{nemptyIs}):
 
     \begin{enumerate}
       \item Computes non-$\varepsilon$-transitions ($\texttt{D1}$): When the output function applied to the intersection $\alpha \cap \alpha'$ yields a non-empty set, a new transition is added to $\texttt{D1}$ with the computed output label.
