@@ -33,4 +33,4 @@ The automatically generated OCaml code for SFTs from Isabelle can be found in [G
 ## Papers
 1. [Shuanglong Kan, Anthony Widjaja Lin, Philipp Rümmer, Micha Schrader:
 CertiStr: a certified string solver. CPP 2022: 210-224](https://arxiv.org/abs/2112.06039) [Distinguished Paper Award]
-2. [Shuanglong Kan: Certified Symbolic Transducer with Applications in String Solving], CPP 2026 (https://arxiv.org/abs/2504.07203)
+2. [Shuanglong Kan, Anthony Widjaja Lin: Certified Symbolic Transducer with Applications in String Solving], CPP 2026 (https://arxiv.org/abs/2504.07203)
